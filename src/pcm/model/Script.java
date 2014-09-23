@@ -15,8 +15,8 @@ public class Script extends AbstractAction {
 	public final String name;
 	public Color backColor;
 	public Color textColor;
-	public int onAllSet = 0;
-	public int onClose = 0;
+	public ActionRange onAllSet = null;
+	public ActionRange onClose = null;
 	public String imageDirectory = null;
 	public ActionRange startRange = null;
 
@@ -88,10 +88,14 @@ public class Script extends AbstractAction {
 			menuItems.put(menuItem.n, menuItem);
 		} else if (name == Statement.OnAllSet) {
 			String args[] = cmd.args();
-			onAllSet = Integer.parseInt(args[0]);
+			onAllSet = args.length > 1 ? new ActionRange(
+					Integer.parseInt(args[0]), Integer.parseInt(args[1]))
+					: new ActionRange(Integer.parseInt(args[0]));
 		} else if (name == Statement.OnClose) {
 			String args[] = cmd.args();
-			onClose = Integer.parseInt(args[0]);
+			onClose = args.length > 1 ? new ActionRange(
+					Integer.parseInt(args[0]), Integer.parseInt(args[1]))
+					: new ActionRange(Integer.parseInt(args[0]));
 		} else if (name == Statement.Range) {
 			String args[] = cmd.args();
 			startRange = args.length > 1 ? new ActionRange(

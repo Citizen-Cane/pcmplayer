@@ -207,10 +207,10 @@ public class Player extends TeaseScript {
 		action = chooseAction(actions);
 		if (action == null) {
 			TeaseLib.log("All actions set");
-			if (script.onAllSet != 0 && invokedOnAllSet == false) {
+			if (script.onAllSet != null && invokedOnAllSet == false) {
 				TeaseLib.log("Invoking OnAllSet handler");
 				invokedOnAllSet = true;
-				range = new ActionRange(script.onAllSet);
+				range = script.onAllSet;
 				actions = range(script, range);
 				if (actions.size() == 0) {
 					throw new AllActionsSetException(action, script);
