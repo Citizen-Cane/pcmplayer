@@ -17,8 +17,8 @@ import pcm.model.ValidationError;
 import pcm.state.Condition;
 import pcm.state.State;
 import pcm.state.Visual;
-import teaselib.Persistence;
 import teaselib.Host;
+import teaselib.Persistence;
 import teaselib.TeaseLib;
 import teaselib.TeaseScript;
 
@@ -51,7 +51,7 @@ public class Player extends TeaseScript {
 			if (validateScripts) {
 				List<ValidationError> validationErrors = new ArrayList<>();
 				validate(script, validationErrors);
-				for(String s : scripts.scripts())
+				for(String s : scripts.names())
 				{
 					Script other = scripts.get(s);
 					if (other != script)

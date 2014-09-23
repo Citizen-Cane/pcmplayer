@@ -3,6 +3,7 @@ package pcm.controller;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,8 +42,9 @@ public class ScriptCache {
 		return script;
 	}
 
-	public Set<String> scripts()
+	public Set<String> names()
 	{
-		return cache.keySet();
+		// Avoid concurrent modification exception when adding scripts while iterating names 
+		return new HashSet<>(cache.keySet());
 	}
 }
