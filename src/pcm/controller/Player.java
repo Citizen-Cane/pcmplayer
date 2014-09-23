@@ -34,15 +34,16 @@ public class Player extends TeaseScript {
 	Script script = null;
 	ActionRange range = null;
 	private final State state;
+	boolean invokedOnAllSet;
 
-	public Player(URI[] assets, String assetsBasePath,
-			Host host, Persistence persistence)
-			throws IOException {
+	public Player(URI[] assets, String assetsBasePath, Host host,
+			Persistence persistence) throws IOException {
 		// TODO Singleton may be too inflexible
 		// TODO Resource loader doesn't have to be replaceable
 		super(new TeaseLib(host, persistence, assets, assetsBasePath));
 		this.scripts = new ScriptCache(teaseLib.resources, SCRIPTS);
 		this.state = new State(teaseLib.host, teaseLib.persistence);
+		this.invokedOnAllSet = false;
 	}
 
 	public void play(String name) {
@@ -51,11 +52,9 @@ public class Player extends TeaseScript {
 			if (validateScripts) {
 				List<ValidationError> validationErrors = new ArrayList<>();
 				validate(script, validationErrors);
-				for(String s : scripts.names())
-				{
+				for (String s : scripts.names()) {
 					Script other = scripts.get(s);
-					if (other != script)
-					{
+					if (other != script) {
 						validate(other, validationErrors);
 					}
 				}
@@ -129,6 +128,7 @@ public class Player extends TeaseScript {
 	private void resetScript() throws ScriptExecutionError {
 		TeaseLib.log("Starting script " + script.name);
 		state.restore(script);
+		invokedOnAllSet = false;
 		script.execute(state);
 		range = script.startRange;
 		mistress = script.mistressImages;
@@ -154,44 +154,14 @@ public class Player extends TeaseScript {
 		}
 	}
 
-	public void play() throws AllActionsSetException, ScriptExecutionError,
-			ParseError, IOException {
+	public void play() throws AllActionsSetException, ScriptExecutionError
+			{
 		resetScript();
 		// TODO Search for any mistress instead of using hard-coded path
 		Action action = null;
 		try {
-			boolean invokedOnAllSet = false;
-			while (true) {
-				// Choose action
-				List<Action> actions = range(script, range);
-				if (actions.size() == 0) {
-					TeaseLib.log("All actions set");
-					if (script.onAllSet != 0 && invokedOnAllSet == false) {
-						TeaseLib.log("Invoking OnAllSet handler");
-						invokedOnAllSet = true;
-						range = new ActionRange(script.onAllSet);
-						continue;
-					} else {
-						throw new AllActionsSetException(action, script);
-					}
-				} else {
-					action = chooseAction(actions);
-				}
-				// Process action
-				range = execute(action);
-				// Yep, that's a special case, since we have to change the
-				// script
-				if (range == null) {
-					// Quit
-					show(null);
-					break;
-				} else if (range instanceof ActionLoadSbd) {
-					ActionLoadSbd loadSbd = (ActionLoadSbd) range;
-					script = loadSbd.script;
-					resetScript();
-					range = loadSbd;
-				}
-				// TODO OnClose handler
+			while (range != null) {
+				action = play(action, null);
 			}
 		} catch (ScriptError e) {
 			throw e;
@@ -199,6 +169,61 @@ public class Player extends TeaseScript {
 			throw new ScriptExecutionError(action, "Error executing script", t,
 					script);
 		}
+	}
+
+	private Action play(Action action, ActionRange playRange)
+			throws AllActionsSetException, ScriptExecutionError {
+		while (true) {
+			// Choose action
+			action = getAction();
+			if (playRange != null) {
+				if (!playRange.contains(action.number)) {
+					return action;
+				}
+			}
+			// Process action
+			range = execute(action);
+			if (range == null) {
+				// Quit
+				action = null;
+				show(null);
+				break;
+			} else if (range instanceof ActionLoadSbd) {
+				ActionLoadSbd loadSbd = (ActionLoadSbd) range;
+				script = loadSbd.script;
+				resetScript();
+				range = loadSbd;
+				// Jumping into a different script definitely exits the play range
+				action = getAction();
+			}
+			// TODO OnClose handler
+		}
+		return action;
+	}
+
+	private Action getAction() throws AllActionsSetException {
+		Action action;
+		List<Action> actions = range(script, range);
+		action = chooseAction(actions);
+		if (action == null) {
+			TeaseLib.log("All actions set");
+			if (script.onAllSet != 0 && invokedOnAllSet == false) {
+				TeaseLib.log("Invoking OnAllSet handler");
+				invokedOnAllSet = true;
+				range = new ActionRange(script.onAllSet);
+				actions = range(script, range);
+				if (actions.size() == 0) {
+					throw new AllActionsSetException(action, script);
+				} else {
+					action = chooseAction(actions);
+				}
+			} else {
+				throw new AllActionsSetException(action, script);
+			}
+		} else {
+			action = chooseAction(actions);
+		}
+		return action;
 	}
 
 	public ActionRange execute(Action action) throws ScriptExecutionError {
@@ -310,67 +335,72 @@ public class Player extends TeaseScript {
 	 * @return
 	 */
 	public Action chooseAction(List<Action> actions) {
-		if (actions.size() == 1) {
+		if (actions.size() == 0) {
+			return null;
+		} else if (actions.size() == 1) {
 			return actions.get(0);
-		}
-		StringBuilder actionList = null;
-		for (Action action : actions) {
-			int number = action.number;
-			if (actionList == null) {
-				actionList = new StringBuilder("Action:\t" + number);
-			} else {
-				actionList.append("\t");
-				actionList.append(number);
+		} else {
+			StringBuilder actionList = null;
+			for (Action action : actions) {
+				int number = action.number;
+				if (actionList == null) {
+					actionList = new StringBuilder("Action:\t" + number);
+				} else {
+					actionList.append("\t");
+					actionList.append(number);
+				}
 			}
-		}
-		TeaseLib.log(actionList.toString());
-		// Normalize all actions into the interval [0...100], the choose one
-		// "poss" 100 is used to implement an "else" clause, since PCM script
-		// doesn't have one otherwise
-		double normalized = 100.0;
-		double weights[] = new double[actions.size()];
-		double sum = 0.0;
-		StringBuilder weightList = null;
-		for (int i = 0; i < weights.length; i++) {
-			Action action = actions.get(i);
-			Integer weight = action.poss;
-			double relativeWeight = normalized / weights.length;
-			sum += weight != null ? weight
-			// This would be mathematically correct
-			// if none of the action specified a "poss" value
-					: relativeWeight;
-			weights[i] = sum;
-			String w = String.format("%.2f", relativeWeight);
-			if (weightList == null) {
-				weightList = new StringBuilder("Weight:\t" + w);
-			} else {
-				weightList.append("\t");
-				weightList.append(w);
+			TeaseLib.log(actionList.toString());
+			// Normalize all actions into the interval [0...100], the choose one
+			// "poss" 100 is used to implement an "else" clause, since PCM
+			// script
+			// doesn't have one otherwise
+			double normalized = 100.0;
+			double weights[] = new double[actions.size()];
+			double sum = 0.0;
+			StringBuilder weightList = null;
+			for (int i = 0; i < weights.length; i++) {
+				Action action = actions.get(i);
+				Integer weight = action.poss;
+				double relativeWeight = normalized / weights.length;
+				sum += weight != null ? weight
+				// This would be mathematically correct
+				// if none of the action specified a "poss" value
+						: relativeWeight;
+				weights[i] = sum;
+				String w = String.format("%.2f", relativeWeight);
+				if (weightList == null) {
+					weightList = new StringBuilder("Weight:\t" + w);
+				} else {
+					weightList.append("\t");
+					weightList.append(w);
+				}
 			}
-		}
-		TeaseLib.log(weightList.toString());
-		// Normalize and build interval
-		for (int i = 0; i < weights.length; i++) {
-			weights[i] *= normalized / sum;
-		}
-		// Choose a value
-		double value = getRandom(0, (int) normalized);
-		Action action = null;
-		for (int i = 0; i < weights.length; i++) {
-			if (value <= weights[i]) {
-				action = actions.get(i);
-				break;
+			TeaseLib.log(weightList.toString());
+			// Normalize and build interval
+			for (int i = 0; i < weights.length; i++) {
+				weights[i] *= normalized / sum;
 			}
+			// Choose a value
+			double value = getRandom(0, (int) normalized);
+			Action action = null;
+			for (int i = 0; i < weights.length; i++) {
+				if (value <= weights[i]) {
+					action = actions.get(i);
+					break;
+				}
+			}
+			if (action == null) {
+				action = actions.get(weights.length);
+			}
+			TeaseLib.log("Random = " + value + " -> choosing action "
+					+ action.number);
+			return action;
 		}
-		if (action == null) {
-			action = actions.get(weights.length);
-		}
-		TeaseLib.log("Random = " + value + " -> choosing action "
-				+ action.number);
-		return action;
 	}
 
-	public void validate(Script script, List<ValidationError> validationErrors) throws ParseError {
+	public void validate(Script script, List<ValidationError> validationErrors)
+			throws ParseError {
 		script.validate(validationErrors);
 		for (Action action : script.actions.values()) {
 			// if (action.image != null && !action.image.isEmpty())
@@ -384,8 +414,7 @@ public class Player extends TeaseScript {
 			// }
 			action.validate(script, validationErrors);
 			for (ScriptError scriptError : validationErrors) {
-				if (scriptError.script == null)
-				{
+				if (scriptError.script == null) {
 					scriptError.script = script;
 				}
 			}
