@@ -84,6 +84,7 @@ public abstract class AbstractAction {
 		// Add-Ons
 		StopText,
 		Inject,
+		Break,
 		;
 		public final static Map<String, Statement> lookup = new HashMap<>();
 	}
@@ -134,19 +135,19 @@ public abstract class AbstractAction {
 		Statement name = cmd.statement;
 		if (name == Statement.YesText)
 		{
-			yesText = allArgsFrom(cmd.args());
+			yesText = cmd.all();
 		}
 		else if (name == Statement.NoText)
 		{
-			noText = allArgsFrom(cmd.args());
+			noText = cmd.all();
 		}
 		else if (name == Statement.ResumeText)
 		{
-			resumeText = allArgsFrom(cmd.args());
+			resumeText = cmd.all();
 		}
 		else if (name == Statement.StopText)
 		{
-			stopText = allArgsFrom(cmd.args());
+			stopText = cmd.all();
 		}
 		else if (name == Statement.ResetRange)
 		{

@@ -11,6 +11,7 @@ import pcm.state.Interaction.NeedsRangeProvider;
 import pcm.state.Visual;
 import pcm.state.Interactions.Ask;
 import pcm.state.Interactions.AskYesNo;
+import pcm.state.Interactions.Break;
 import pcm.state.Interactions.LoadSbd;
 import pcm.state.Interactions.Pause;
 import pcm.state.Interactions.PopUp;
@@ -307,6 +308,15 @@ public class Action extends AbstractAction {
 				setInteraction(ask);
 			} else if (name == Statement.Quit) {
 				setInteraction(Quit.instance);
+			} else if (name == Statement.Break) {
+				String args[] = cmd.args();
+				if (!args[2].toLowerCase().equals("stop"))
+				{
+					throw new IllegalArgumentException(Statement.Break.toString() + ": Ony 'stop' is supported");
+				}
+				setInteraction(new Break(new ActionRange(Integer.parseInt(args[0]),
+						Integer.parseInt(args[1])), new ActionRange(Integer.parseInt(args[3]),
+						Integer.parseInt(args[4]))));
 			} else {
 				super.add(cmd);
 			}

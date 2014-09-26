@@ -19,6 +19,7 @@ import pcm.state.State;
 import pcm.state.Visual;
 import teaselib.Host;
 import teaselib.Persistence;
+import teaselib.ScriptInterruptedException;
 import teaselib.TeaseLib;
 import teaselib.TeaseScript;
 
@@ -32,7 +33,7 @@ public class Player extends TeaseScript {
 	public static boolean debugOutput = false;
 
 	Script script = null;
-	ActionRange range = null;
+	public ActionRange range = null;
 	private final State state;
 	boolean invokedOnAllSet;
 
@@ -49,7 +50,8 @@ public class Player extends TeaseScript {
 	public void play(String name) {
 		try {
 			script = scripts.get(name);
-			if (validateScripts) {
+			if (false) {
+				// if (validateScripts) {
 				List<ValidationError> validationErrors = new ArrayList<>();
 				validate(script, validationErrors);
 				for (String s : scripts.names()) {
@@ -151,54 +153,57 @@ public class Player extends TeaseScript {
 			// implementing closure
 			// range = new ActionRange(4849); // Test sequences after
 			// implementing closure
+			// range = new ActionRange(3038); // break command test
 		}
 	}
 
-	public void play() throws AllActionsSetException, ScriptExecutionError
-			{
+	public void play() throws AllActionsSetException, ScriptExecutionError {
 		resetScript();
 		// TODO Search for any mistress instead of using hard-coded path
-		Action action = null;
-		try {
-			while (range != null) {
-				action = play(action, null);
-			}
-		} catch (ScriptError e) {
-			throw e;
-		} catch (Throwable t) {
-			throw new ScriptExecutionError(action, "Error executing script", t,
-					script);
+		while (range != null) {
+			play((ActionRange) null);
 		}
 	}
 
-	private Action play(Action action, ActionRange playRange)
-			throws AllActionsSetException, ScriptExecutionError {
+	public void play(ActionRange playRange) throws AllActionsSetException,
+			ScriptExecutionError {
 		while (true) {
 			// Choose action
-			action = getAction();
-			if (playRange != null) {
-				if (!playRange.contains(action.number)) {
-					return action;
+			Action action = getAction();
+			try {
+				if (playRange != null) {
+					if (!playRange.contains(action.number)) {
+						range = new ActionRange(action.number);
+						return;
+					}
 				}
-			}
-			// Process action
-			range = execute(action);
-			if (range == null) {
-				// Quit
-				action = null;
-				show(null);
-				break;
-			} else if (range instanceof ActionLoadSbd) {
-				ActionLoadSbd loadSbd = (ActionLoadSbd) range;
-				script = loadSbd.script;
-				resetScript();
-				range = loadSbd;
-				// Jumping into a different script definitely exits the play range
-				action = getAction();
+				// Process action
+				range = execute(action);
+				if (range == null) {
+					// Quit
+					action = null;
+					show(null);
+					break;
+				} else if (range instanceof ActionLoadSbd) {
+					ActionLoadSbd loadSbd = (ActionLoadSbd) range;
+					script = loadSbd.script;
+					resetScript();
+					range = loadSbd;
+					// Jumping into a different script definitely exits the play
+					// range
+					action = getAction();
+				}
+			} catch(ScriptInterruptedException e) {
+				throw e;
+			} catch (ScriptError e) {
+				throw e;
 			}
 			// TODO OnClose handler
+			catch (Throwable t) {
+				throw new ScriptExecutionError(action,
+						"Error executing script", t, script);
+			}
 		}
-		return action;
 	}
 
 	private Action getAction() throws AllActionsSetException {
@@ -220,8 +225,6 @@ public class Player extends TeaseScript {
 			} else {
 				throw new AllActionsSetException(action, script);
 			}
-		} else {
-			action = chooseAction(actions);
 		}
 		return action;
 	}
@@ -335,14 +338,16 @@ public class Player extends TeaseScript {
 	 * @return
 	 */
 	public Action chooseAction(List<Action> actions) {
+		Action action;
 		if (actions.size() == 0) {
-			return null;
+			action = null;
 		} else if (actions.size() == 1) {
-			return actions.get(0);
+			action = actions.get(0);
+			TeaseLib.log("-> choosing action " + action.number);
 		} else {
 			StringBuilder actionList = null;
-			for (Action action : actions) {
-				int number = action.number;
+			for (Action a : actions) {
+				int number = a.number;
 				if (actionList == null) {
 					actionList = new StringBuilder("Action:\t" + number);
 				} else {
@@ -360,8 +365,8 @@ public class Player extends TeaseScript {
 			double sum = 0.0;
 			StringBuilder weightList = null;
 			for (int i = 0; i < weights.length; i++) {
-				Action action = actions.get(i);
-				Integer weight = action.poss;
+				Action a = actions.get(i);
+				Integer weight = a.poss;
 				double relativeWeight = normalized / weights.length;
 				sum += weight != null ? weight
 				// This would be mathematically correct
@@ -383,7 +388,7 @@ public class Player extends TeaseScript {
 			}
 			// Choose a value
 			double value = getRandom(0, (int) normalized);
-			Action action = null;
+			action = null;
 			for (int i = 0; i < weights.length; i++) {
 				if (value <= weights[i]) {
 					action = actions.get(i);
@@ -395,8 +400,8 @@ public class Player extends TeaseScript {
 			}
 			TeaseLib.log("Random = " + value + " -> choosing action "
 					+ action.number);
-			return action;
 		}
+		return action;
 	}
 
 	public void validate(Script script, List<ValidationError> validationErrors)
