@@ -115,9 +115,9 @@ public class ScriptParser {
 	}
 
 	private void parseStatement(AbstractAction abstractAction, String line)
-			throws IllegalArgumentException {
+			throws IllegalArgumentException, ParseError {
 
-		ScriptLineTokenizer cmd = new ScriptLineTokenizer(line);
+		ScriptLineTokenizer cmd = new ScriptLineTokenizer(l, line);
 		// Inject?
 		// Global statements
 		if (cmd.statement == Statement.Inject) {

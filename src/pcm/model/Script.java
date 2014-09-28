@@ -52,7 +52,7 @@ public class Script extends AbstractAction {
 	}
 
 	@Override
-	public void add(ScriptLineTokenizer cmd) {
+	public void add(ScriptLineTokenizer cmd) throws ParseError {
 		Statement name = cmd.statement;
 		if (name == Statement.Restore) {
 			// Restore is always executed, but

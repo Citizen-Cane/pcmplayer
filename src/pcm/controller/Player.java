@@ -86,47 +86,6 @@ public class Player extends TeaseScript {
 		}
 	}
 
-	// Failure in script constructor
-	private void showError(ScriptError e) {
-		TeaseLib.log(this, e);
-		showError(createErrorMessage(e));
-	}
-
-	private String createErrorMessage(ScriptError e) {
-		Throwable cause = e.getCause();
-		String scriptName = e.script != null ? e.script.name : script.name;
-		final String message;
-		if (cause != null) {
-			message = "Script " + scriptName + ": " + e.getMessage() + "\n"
-					+ cause.getClass().getSimpleName() + ": "
-					+ cause.getMessage();
-		} else {
-			message = "Script " + scriptName + ": " + e.getMessage();
-		}
-		return message;
-	}
-
-	private void showError(Throwable t, String scriptName) {
-		TeaseLib.log(this, t);
-		Throwable cause = t.getCause();
-		if (cause != null) {
-			showError("Script " + scriptName + ", " + t.getMessage() + "\n"
-					+ cause.getClass().getSimpleName() + ": "
-					+ cause.getMessage());
-		} else {
-			showError("Script " + scriptName + ", " + t.getClass().getName()
-					+ ": " + t.getMessage());
-		}
-	}
-
-	private void showError(String error) {
-		TeaseLib.log(error);
-		teaseLib.host.show(error);
-		List<String> choices = new ArrayList<>();
-		choices.add("Oh Dear");
-		choose(choices);
-	}
-
 	private void resetScript() throws ScriptExecutionError {
 		TeaseLib.log("Starting script " + script.name);
 		state.restore(script);
@@ -153,7 +112,7 @@ public class Player extends TeaseScript {
 			// implementing closure
 			// range = new ActionRange(4849); // Test sequences after
 			// implementing closure
-			// range = new ActionRange(3038); // break command test
+			// range = new ActionRange(9501); // quit null pointer test
 		}
 	}
 
@@ -182,6 +141,7 @@ public class Player extends TeaseScript {
 				if (range == null) {
 					// Quit
 					action = null;
+					setImage(null);
 					show(null);
 					break;
 				} else if (range instanceof ActionLoadSbd) {
@@ -425,7 +385,48 @@ public class Player extends TeaseScript {
 			}
 		}
 	}
+	// Failure in script constructor
+	private void showError(ScriptError e) {
+		TeaseLib.log(this, e);
+		showError(createErrorMessage(e));
+	}
+
+	private String createErrorMessage(ScriptError e) {
+		Throwable cause = e.getCause();
+		String scriptName = e.script != null ? e.script.name : script.name;
+		final String message;
+		if (cause != null) {
+			message = "Script " + scriptName + ": " + e.getMessage() + "\n"
+					+ cause.getClass().getSimpleName() + ": "
+					+ cause.getMessage();
+		} else {
+			message = "Script " + scriptName + ": " + e.getMessage();
+		}
+		return message;
+	}
+
+	private void showError(Throwable t, String scriptName) {
+		TeaseLib.log(this, t);
+		Throwable cause = t.getCause();
+		if (cause != null) {
+			showError("Script " + scriptName + ", " + t.getMessage() + "\n"
+					+ cause.getClass().getSimpleName() + ": "
+					+ cause.getMessage());
+		} else {
+			showError("Script " + scriptName + ", " + t.getClass().getName()
+					+ ": " + t.getMessage());
+		}
+	}
+
+	private void showError(String error) {
+		TeaseLib.log(error);
+		teaseLib.host.show(error);
+		List<String> choices = new ArrayList<>();
+		choices.add("Oh Dear");
+		choose(choices);
+	}
 }
+
 
 // http://stackoverflow.com/questions/11012819/how-can-i-get-a-resource-folder-from-inside-my-jar-file
 // http://www.uofr.net/~greg/java/get-resource-listing.html

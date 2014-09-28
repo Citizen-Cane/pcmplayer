@@ -4,6 +4,7 @@ import pcm.model.AbstractAction.Statement;
 import pcm.state.Command;
 import pcm.state.State;
 
+@Deprecated
 public class Injection implements Command {
 	public final int start;
 	public final int end;
@@ -36,11 +37,15 @@ public class Injection implements Command {
 				line.append(" ");
 				line.append(arg);
 			}
-			ScriptLineTokenizer cmd = new ScriptLineTokenizer(line.toString());
+			ScriptLineTokenizer cmd = new ScriptLineTokenizer(0, line.toString());
 			// Inject
 			for (Action action : script.actions.getAll(new ActionRange(start,
 					end))) {
-				action.add(cmd);
+				try {
+					action.add(cmd);
+				} catch (ParseError e) {
+					throw new ScriptExecutionError("Error parsing injecte statement", e);
+				}
 			}
 			applied = true;
 		}

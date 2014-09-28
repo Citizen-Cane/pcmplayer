@@ -7,14 +7,16 @@ import java.util.Vector;
 import pcm.model.AbstractAction.Statement;
 
 public class ScriptLineTokenizer {
+	public final int lineNumber;
 	private final String line;
 	private final StringTokenizer tokenizer;
 	
 	public final Statement statement;
 	private String args[];
 	
-	public ScriptLineTokenizer(String line)
+	public ScriptLineTokenizer(int lineNumber, String line)
 	{
+		this.lineNumber = lineNumber;
 		this.line = line;
 		// Cut off comment at the end of the line
 		int commentStart = line.indexOf("'");
