@@ -2,8 +2,8 @@ package pcm.state.visuals;
 
 import java.util.Vector;
 
+import pcm.controller.Player;
 import pcm.state.Visual;
-import teaselib.TeaseScript;
 
 /**
  * @author someone
@@ -36,12 +36,12 @@ public class Txt implements Visual {
 	}
 	
 	@Override
-	public void render(TeaseScript teaseScript) {
+	public void render(Player player) {
 		teaselib.text.Message message = new teaselib.text.Message();
 		for(String text : txt)
 		{
 			message.add(text);
 		}
-		teaseScript.show(message.toString());
+		player.show(message.toString());
 	}
 }

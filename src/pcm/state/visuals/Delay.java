@@ -1,7 +1,7 @@
 package pcm.state.visuals;
 
+import pcm.controller.Player;
 import pcm.state.Visual;
-import teaselib.TeaseScript;
 
 public class Delay implements Visual {
 	public final int from;
@@ -17,7 +17,7 @@ public class Delay implements Visual {
 	}
 
 	@Override
-	public void render(TeaseScript teaseScript) {
-		teaseScript.delay(teaseScript.getRandom(from, to));
+	public void render(Player player) {
+		player.delay(player.getRandom(from, to));
 	}
 }

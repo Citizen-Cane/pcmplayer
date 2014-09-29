@@ -1,7 +1,7 @@
 package pcm.state;
 
-import teaselib.TeaseScript;
+import pcm.controller.Player;
 
 public interface Visual {
-	public void render(TeaseScript teaseScript);
+	public void render(Player player);
 }

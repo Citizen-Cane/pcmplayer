@@ -1,7 +1,7 @@
 package pcm.state.visuals;
 
+import pcm.controller.Player;
 import pcm.state.Visual;
-import teaselib.TeaseScript;
 
 public class Exec implements Visual {
 	String fileName;
@@ -12,8 +12,8 @@ public class Exec implements Visual {
 
 
 	@Override
-	public void render(TeaseScript teaseScript) {
-		teaseScript.showDesktopItem(fileName);
+	public void render(Player player) {
+		player.showDesktopItem(fileName);
 	}
 
 	@Override

@@ -1,7 +1,7 @@
 package pcm.state.visuals;
 
+import pcm.controller.Player;
 import pcm.state.Visual;
-import teaselib.TeaseScript;
 
 public class Image implements Visual {
 	public final String name;
@@ -11,7 +11,7 @@ public class Image implements Visual {
 	}
 
 	@Override
-	public void render(TeaseScript teaseScript) {
-		teaseScript.setImage(name);
+	public void render(Player player) {
+		player.setImage(name);
 	}
 }

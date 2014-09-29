@@ -1,7 +1,7 @@
 package pcm.state.visuals;
 
+import pcm.controller.Player;
 import pcm.state.Visual;
-import teaselib.TeaseScript;
 
 public class Message implements Visual {
 
@@ -13,7 +13,7 @@ public class Message implements Visual {
 	}
 
 	@Override
-	public void render(TeaseScript teaseScript) {
-		teaseScript.say(message);
+	public void render(Player player) {
+		player.say(message);
 	}
 }
