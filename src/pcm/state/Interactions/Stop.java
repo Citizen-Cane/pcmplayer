@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pcm.model.Action;
-import pcm.model.ActionDelay;
 import pcm.model.ActionRange;
 import pcm.model.ParseError;
 import pcm.model.Script;
@@ -15,27 +14,23 @@ import pcm.state.Interaction.NeedsRangeProvider;
 import teaselib.TeaseLib;
 import teaselib.TeaseScript;
 
-public class Stop extends ActionDelay implements Interaction,
-		NeedsRangeProvider {
+public class Stop implements Interaction, NeedsRangeProvider {
 
+	private final ActionRange stop;
 	private Interaction rangeProvider = null;
 
-	private int actual = 0;
-
-	public Stop(int from, int to, ActionRange stop) {
-		super(from, to, stop);
+	public Stop(ActionRange stop) {
+		this.stop = stop;
 	}
 
 	@Override
 	public ActionRange getRange(Script script, Action action, Runnable visuals,
 			TeaseScript teaseScript) throws ScriptExecutionError {
 		String stopText = stopText(script, action);
-		TeaseLib.log("Delay " + toString() + ": " + actual + " seconds, '"
-				+ stopText + "'");
-		actual = teaseScript.getRandom(from, to);
+		TeaseLib.log(getClass().getSimpleName() + " " + toString());
 		List<String> choice = new ArrayList<>(1);
 		choice.add(stopText);
-		int result = teaseScript.choose(choice, actual, visuals);
+		int result = teaseScript.choose(choice, visuals);
 		if (result != TeaseScript.Timeout) {
 			TeaseLib.log("-> Stop");
 			teaseScript.teaseLib.host.stopSounds();
@@ -56,15 +51,14 @@ public class Stop extends ActionDelay implements Interaction,
 
 	@Override
 	public String toString() {
-		return from + "-" + to;
+		return  stop.toString();
 	}
 
 	@Override
 	public void validate(Script script, Action action,
 			List<ValidationError> validationErrors) throws ParseError {
 		script.actions.validate(action, stop, validationErrors);
-		if (rangeProvider != null)
-		{
+		if (rangeProvider != null) {
 			rangeProvider.validate(script, action, validationErrors);
 		}
 	}

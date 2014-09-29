@@ -53,14 +53,16 @@ public class Action extends AbstractAction {
 
 	public void finalizeParsing() throws ValidationError {
 		if (visuals != null) {
+			// Get delay
 			final Visual visual;
 			if (visuals.containsKey(Statement.Delay) == true) {
-				visual = visuals.get(Statement.ActionDelay);
+				visual = visuals.get(Statement.Delay);
 			} else if (visuals.containsKey(Statement.ActionDelay) == true) {
 				visual = visuals.get(Statement.ActionDelay);
 			} else {
 				visual = null;
 			}
+			// Message or txt
 			final boolean hasMessageStatement = visuals
 					.containsKey(Statement.Message);
 			final boolean hasTxtStatement = visuals.containsKey(Statement.Txt);
@@ -72,6 +74,8 @@ public class Action extends AbstractAction {
 			final boolean hasDelay;
 			if (visual instanceof Delay) {
 				hasDelay = ((Delay) visual).from > 0;
+			} else if (visual instanceof ActionDelay) {
+				hasDelay = ((ActionDelay) visual).from > 0;
 			} else {
 				hasDelay = hasMessage;
 			}
@@ -119,10 +123,110 @@ public class Action extends AbstractAction {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see pcm.model.AbstractAction#add(pcm.model.ScriptLineTokenizer)
+	 */
 	@Override
-	public void add(ScriptLineTokenizer cmd) {
-		Statement name = cmd.statement;
-		if (name == Statement.Must) {
+	public void add(ScriptLineTokenizer cmd) throws ParseError {
+		final Statement name = cmd.statement;
+		// Some visuals depend on other statements, and thus must appear in
+		// the correct order in the sbd-script.
+		// This has been overseen when designing the parser. As a result,
+		// these dependencies have been modeled by throwing ParseExceptions, but
+		// the order of appearence in the script can easily be changed.
+		// Since Mine seems the only script worth porting, so this will not be
+		// fixed here.
+		// Affected statements:
+		// - noimage & txt
+		// noimage and message, but the message is collected by the parser, not
+		// as a statement, therefore a special case and it works
+		if (name == Statement.NoImage) {
+			if (visuals != null && visuals.containsKey(Statement.Txt)) {
+				throw new ParseError(cmd.lineNumber, number, cmd.all(),
+						".noimage switch must precede .txt");
+			}
+			addVisual(name, NoImage.instance);			
+		} else if (name == Statement.Image) {
+			// image = allArgsFrom(args);
+			addVisual(name, new Image(cmd.allArgs()));
+		} else if (name == Statement.PlayWav) {
+			addVisual(name, new Sound(cmd.allArgs()));
+		} else if (name == Statement.Exec) {
+			addVisual(name, new Exec(cmd.allArgs()));
+		} else if (name == Statement.Message) {
+			throw new IllegalStateException(name.toString());
+		} else if (name == Statement.Txt) {
+			addTxt(cmd.all());
+		} else if (name == Statement.Pause) {
+			setInteraction(new Pause());
+		} else if (name == Statement.Delay || name == Statement.ActionDelay) {
+			String args[] = cmd.args();
+			if (args.length == 1) {
+				if (name == Statement.Delay) {
+					// Ignore delay, instead the speech duration is used
+					// actionDelay = new ActionDelay(0);
+				} else {
+					int delay = Integer.parseInt(args[0]);
+					if (name == Statement.ActionDelay) {
+						// actionDelay = new ActionDelay(delay);
+						addVisual(name, new Delay(delay));
+					} else {
+						if (delay == 0) {
+							// Treated as "compute"-action, usually in
+							// combination
+							// with .noimage,
+							// because in the original PCMistress, the image
+							// would
+							// otherwise still be loaded
+							// actionDelay = new ActionDelay(delay);
+							addVisual(Statement.Image, NoImage.instance);
+						} else {
+							// Ignored, delay is calculated based on speech or
+							// message length
+						}
+					}
+				}
+			} else if (args.length == 2) {
+				if (name == Statement.Delay) {
+					// Ignore delay, instead the speech duration is used
+					// actionDelay = new ActionDelay(0);
+				} else {
+					// actionDelay = new ActionDelay(Integer.parseInt(args[0]),
+					// Integer.parseInt(args[1]));
+					addVisual(name, new Delay(Integer.parseInt(args[0]),
+							Integer.parseInt(args[1])));
+				}
+			} else if (args.length == 4) {
+				// actionDelay = new ActionDelay(Integer.parseInt(args[0]),
+				// Integer.parseInt(args[1]), new ActionRange(
+				// Integer.parseInt(args[3])));
+				addVisual(
+						Statement.ActionDelay,
+						new Delay(Integer.parseInt(args[0]), Integer
+								.parseInt(args[1])));
+				setInteraction(new Stop(new ActionRange(
+						Integer.parseInt(args[3]))));
+			} else if (args.length == 5) {
+				// actionDelay = new ActionDelay(Integer.parseInt(args[0]),
+				// Integer.parseInt(args[1]), new ActionRange(
+				// Integer.parseInt(args[3]),
+				// Integer.parseInt(args[4])));
+				addVisual(
+						Statement.ActionDelay,
+						new Delay(Integer.parseInt(args[0]), Integer
+								.parseInt(args[1])));
+				setInteraction(new Stop(new ActionRange(
+						Integer.parseInt(args[3]), Integer.parseInt(args[4]))));
+			} else {
+				throw new IllegalArgumentException(cmd.toString());
+			}
+		} else if (name == Statement.Say) {
+			say = true;
+		}
+		// Commands
+		else if (name == Statement.Must) {
 			Must must = new Must();
 			for (String arg : cmd.args()) {
 				must.add(new Integer(arg));
@@ -192,79 +296,6 @@ public class Action extends AbstractAction {
 				throw new IllegalArgumentException();
 			}
 			addCommand(repeatDel);
-		} else if (name == Statement.Image) {
-			// image = allArgsFrom(args);
-			addVisual(name, new Image(cmd.allArgs()));
-		} else if (name == Statement.NoImage) {
-			addVisual(name, NoImage.instance);
-		} else if (name == Statement.PlayWav) {
-			addVisual(name, new Sound(cmd.allArgs()));
-		} else if (name == Statement.Exec) {
-			addVisual(name, new Exec(cmd.allArgs()));
-		} else if (name == Statement.Message) {
-			throw new IllegalStateException(name.toString());
-		} else if (name == Statement.Txt) {
-			addTxt(cmd.all());
-		} else if (name == Statement.Pause) {
-			setInteraction(new Pause());
-		} else if (name == Statement.Delay || name == Statement.ActionDelay) {
-			String args[] = cmd.args();
-			if (args.length == 1) {
-				if (name == Statement.Delay) {
-					// Ignore delay, instead the speech duration is used
-					// actionDelay = new ActionDelay(0);
-				} else {
-					int delay = Integer.parseInt(args[0]);
-					if (name == Statement.ActionDelay) {
-						// actionDelay = new ActionDelay(delay);
-						addVisual(name, new Delay(delay));
-					} else {
-						if (delay == 0) {
-							// Treated as "compute"-action, usually in
-							// combination
-							// with .noimage,
-							// because in the original PCMistress, the image
-							// would
-							// otherwise still be loaded
-							// actionDelay = new ActionDelay(delay);
-							addVisual(Statement.Image, NoImage.instance);
-						} else {
-							// Ignored, delay is calculated based on speech or
-							// message length
-						}
-					}
-				}
-			} else if (args.length == 2) {
-				if (name == Statement.Delay) {
-					// Ignore delay, instead the speech duration is used
-					// actionDelay = new ActionDelay(0);
-				} else {
-					// actionDelay = new ActionDelay(Integer.parseInt(args[0]),
-					// Integer.parseInt(args[1]));
-					addVisual(name, new Delay(Integer.parseInt(args[0]),
-							Integer.parseInt(args[1])));
-				}
-			} else if (args.length == 4) {
-				// actionDelay = new ActionDelay(Integer.parseInt(args[0]),
-				// Integer.parseInt(args[1]), new ActionRange(
-				// Integer.parseInt(args[3])));
-				setInteraction(new Stop(Integer.parseInt(args[0]),
-						Integer.parseInt(args[1]), new ActionRange(
-								Integer.parseInt(args[3]))));
-			} else if (args.length == 5) {
-				// actionDelay = new ActionDelay(Integer.parseInt(args[0]),
-				// Integer.parseInt(args[1]), new ActionRange(
-				// Integer.parseInt(args[3]),
-				// Integer.parseInt(args[4])));
-				setInteraction(new Stop(Integer.parseInt(args[0]),
-						Integer.parseInt(args[1]), new ActionRange(
-								Integer.parseInt(args[3]),
-								Integer.parseInt(args[4]))));
-			} else {
-				throw new IllegalArgumentException(cmd.toString());
-			}
-		} else if (name == Statement.Say) {
-			say = true;
 		} else if (name == Statement.Save) {
 			String args[] = cmd.args();
 			addCommand(new Save(Integer.parseInt(args[0]),
@@ -272,54 +303,55 @@ public class Action extends AbstractAction {
 		} else if (name == Statement.Poss) {
 			String args[] = cmd.args();
 			poss = new Integer(args[0]);
-		} else {
-			// All interactions
-			if (name == Statement.Range) {
-				String args[] = cmd.args();
-				int start = Integer.parseInt(args[0]);
-				if (args.length > 1) {
-					int end = Integer.parseInt(args[1]);
-					setInteraction(new Range(start, end));
-				} else {
-					setInteraction(new Range(start));
-				}
-			} else if (name == Statement.YesNo) {
-				String args[] = cmd.args();
-				setInteraction(new AskYesNo(Integer.parseInt(args[0]),
-						Integer.parseInt(args[1]), Integer.parseInt(args[2]),
-						Integer.parseInt(args[3])));
-			} else if (name == Statement.LoadSbd) {
-				String args[] = cmd.args();
-				String script = args[0];
-				int endIndex = script.lastIndexOf('.');
-				setInteraction(new LoadSbd(endIndex < 0 ? script
-						: script.substring(0, endIndex),
-						Integer.parseInt(args[1]), Integer.parseInt(args[2])));
-			} else if (name == Statement.PopUp) {
-				String args[] = cmd.args();
-				setInteraction(new PopUp(Integer.parseInt(args[0]),
-						Integer.parseInt(args[1])));
-			} else if (name == Statement.Ask) {
-				String args[] = cmd.args();
-				Ask ask = new Ask(Integer.parseInt(args[0]),
-						Integer.parseInt(args[1]));
-				// Ask must also be a command, in order to pick up the state
-				addCommand(ask);
-				setInteraction(ask);
-			} else if (name == Statement.Quit) {
-				setInteraction(Quit.instance);
-			} else if (name == Statement.Break) {
-				String args[] = cmd.args();
-				if (!args[2].toLowerCase().equals("stop"))
-				{
-					throw new IllegalArgumentException(Statement.Break.toString() + ": Ony 'stop' is supported");
-				}
-				setInteraction(new Break(new ActionRange(Integer.parseInt(args[0]),
-						Integer.parseInt(args[1])), new ActionRange(Integer.parseInt(args[3]),
-						Integer.parseInt(args[4]))));
+		} 
+		// interactions
+		else if (name == Statement.Range) {
+			String args[] = cmd.args();
+			int start = Integer.parseInt(args[0]);
+			if (args.length > 1) {
+				int end = Integer.parseInt(args[1]);
+				setInteraction(new Range(start, end));
 			} else {
-				super.add(cmd);
+				setInteraction(new Range(start));
 			}
+		} else if (name == Statement.YesNo) {
+			String args[] = cmd.args();
+			setInteraction(new AskYesNo(Integer.parseInt(args[0]),
+					Integer.parseInt(args[1]), Integer.parseInt(args[2]),
+					Integer.parseInt(args[3])));
+		} else if (name == Statement.LoadSbd) {
+			String args[] = cmd.args();
+			String script = args[0];
+			int endIndex = script.lastIndexOf('.');
+			setInteraction(new LoadSbd(endIndex < 0 ? script
+					: script.substring(0, endIndex),
+					Integer.parseInt(args[1]), Integer.parseInt(args[2])));
+		} else if (name == Statement.PopUp) {
+			String args[] = cmd.args();
+			setInteraction(new PopUp(Integer.parseInt(args[0]),
+					Integer.parseInt(args[1])));
+		} else if (name == Statement.Ask) {
+			String args[] = cmd.args();
+			Ask ask = new Ask(Integer.parseInt(args[0]),
+					Integer.parseInt(args[1]));
+			// Ask must also be a command, in order to pick up the state
+			addCommand(ask);
+			setInteraction(ask);
+		} else if (name == Statement.Quit) {
+			setInteraction(Quit.instance);
+		} else if (name == Statement.Break) {
+			String args[] = cmd.args();
+			if (!args[2].toLowerCase().equals("stop")) {
+				throw new IllegalArgumentException(
+						Statement.Break.toString()
+								+ ": Ony 'stop' is supported");
+			}
+			setInteraction(new Break(new ActionRange(
+					Integer.parseInt(args[0]), Integer.parseInt(args[1])),
+					new ActionRange(Integer.parseInt(args[3]), Integer
+							.parseInt(args[4]))));
+		} else {
+			super.add(cmd);
 		}
 	}
 
@@ -350,7 +382,8 @@ public class Action extends AbstractAction {
 		}
 	}
 
-	public void validate(Script script, List<ValidationError> validationErrors) throws ParseError {
+	public void validate(Script script, List<ValidationError> validationErrors)
+			throws ParseError {
 		// if (timeFrom != null)
 		// {
 		// for(String duration : timeFrom.values())
@@ -393,27 +426,28 @@ public class Action extends AbstractAction {
 		// }
 		// TODO no .noimage + .delay 0
 		// TODO Only actiondelay shopuld remain
-		if (visuals != null)
-		{
+		if (visuals != null) {
 			if (say == true && visuals.containsKey(Statement.Txt)) {
-				validationErrors.add(new ValidationError(this, "Can't speak .txt"));
+				validationErrors.add(new ValidationError(this,
+						"Can't speak .txt"));
 			}
 			if (say == true && !visuals.containsKey(Statement.Message)) {
-				validationErrors.add(new ValidationError(this, "Unexpected .say without message"));
+				validationErrors.add(new ValidationError(this,
+						"Unexpected .say without message"));
 			}
 			if (say == false && visuals.containsKey(Statement.Message)) {
-				validationErrors.add(new ValidationError(this, "Must use .txt to display quiet message"));
+				validationErrors.add(new ValidationError(this,
+						"Must use .txt to display quiet message"));
 			}
-			if (visuals.containsKey(Statement.Txt) && visuals.containsKey(Statement.Message)) {
-				validationErrors.add(new ValidationError(this, "Both .txt and message is supported"));
+			if (visuals.containsKey(Statement.Txt)
+					&& visuals.containsKey(Statement.Message)) {
+				validationErrors.add(new ValidationError(this,
+						"Both .txt and message is supported"));
 			}
 		}
-		if (interaction != null)
-		{
+		if (interaction != null) {
 			interaction.validate(script, this, validationErrors);
-		}
-		else
-		{
+		} else {
 			validationErrors.add(new ValidationError(this, "No interaction"));
 		}
 	}

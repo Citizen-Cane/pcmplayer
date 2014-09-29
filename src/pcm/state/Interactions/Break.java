@@ -38,7 +38,7 @@ NeedsRangeProvider {
 		String stopText = stopText(script, action);
 		List<String> choice = new ArrayList<>(1);
 		choice.add(stopText);
-		int result = teaseScript.choose(choice, TeaseScript.NoTimeout, () -> {
+		int result = teaseScript.choose(choice, () -> {
 			try {
 				player.range = rangeProvider.getRange(script, action, null, teaseScript); 
 				player.play(actionRange);
