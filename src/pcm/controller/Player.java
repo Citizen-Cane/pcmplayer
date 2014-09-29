@@ -50,8 +50,7 @@ public class Player extends TeaseScript {
 	public void play(String name) {
 		try {
 			script = scripts.get(name);
-			if (false) {
-				// if (validateScripts) {
+			if (validateScripts) {
 				List<ValidationError> validationErrors = new ArrayList<>();
 				validate(script, validationErrors);
 				for (String s : scripts.names()) {
