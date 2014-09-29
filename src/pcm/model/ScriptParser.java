@@ -118,75 +118,29 @@ public class ScriptParser {
 			throws IllegalArgumentException, ParseError {
 
 		ScriptLineTokenizer cmd = new ScriptLineTokenizer(l, line);
-		// Inject?
 		// Global statements
 		if (cmd.statement == Statement.Inject) {
+			throw new UnsupportedOperationException("Injections may lead to script inconsistencies");
 			// Inject command
-			String[] args = cmd.args();
-			Statement injectedStatement = parseStatement(args[2].substring(1));
-			String[] injection = new String[args.length - 3];
-			System.arraycopy(args, 3, injection, 0, injection.length);
-			abstractAction.addCommand(new Injection(script, Integer
-					.parseInt(args[0]), Integer.parseInt(args[1]),
-					injectedStatement, injection));
+			//			String[] args = cmd.args();
+			//			Statement injectedStatement = parseStatement(args[2].substring(1));
+			//			String[] injection = new String[args.length - 3];
+			//			System.arraycopy(args, 3, injection, 0, injection.length);
+			//			abstractAction.addCommand(new Injection(script, Integer
+			//					.parseInt(args[0]), Integer.parseInt(args[1]),
+			//					injectedStatement, injection));
 		} else {
 			// Local statements
 			abstractAction.add(cmd);
 		}
-		
-//		StringTokenizer commandLine = getArgTokenizer(line);
-//		String token = commandLine.nextToken().toLowerCase();
-//		String statementString = token.substring(1);
-//		final Statement statement = parseStatement(statementString);
-//		String args[] = getArgs(commandLine);
-//		parseStatement(abstractAction, statement, args);
 	}
 
-//	private void parseStatement(AbstractAction abstractAction,
-//			final Statement statement, String[] args) {
-//		// Global statements
-//		if (statement == Statement.Inject) {
-//			// Inject command
-//			Statement injectedStatement = parseStatement(args[2].substring(1));
-//			String[] injection = new String[args.length - 3];
-//			System.arraycopy(args, 3, injection, 0, injection.length);
-//			abstractAction.addCommand(new Injection(script, Integer
-//					.parseInt(args[0]), Integer.parseInt(args[1]),
-//					injectedStatement, injection));
-//		} else {
-//			// Local statements
-//			abstractAction.add(statement, args);
-//		}
-//	}
-
-	private Statement parseStatement(String statement) {
-		String key = statement.toLowerCase();
-		if (Statement.lookup.containsKey(key)) {
-			return Statement.lookup.get(key);
-		} else {
-			throw new IllegalArgumentException("Unknown statement " + statement);
-		}
-	}
-
-//	private StringTokenizer getArgTokenizer(String line) {
-//		// Cut off comment at the end of the line
-//		int commentStart = line.indexOf("'");
-//		line = (commentStart > 0 ? line.substring(0, commentStart) : line)
-//				.trim();
-//		return new StringTokenizer(line, " \t");
-//	}
-//
-//	private String[] getArgs(StringTokenizer args) {
-//		Vector<String> parsed = new Vector<>();
-//		while (args.hasMoreTokens()) {
-//			parsed.add(args.nextToken());
-//		}
-//		return toStringArray(parsed);
-//	}
-//
-//	private String[] toStringArray(Vector<String> collection) {
-//		return Arrays.copyOf(collection.toArray(), collection.size(),
-//				String[].class);
-//	}
-
+	//	private Statement parseStatement(String statement) {
+	//		String key = statement.toLowerCase();
+	//		if (Statement.lookup.containsKey(key)) {
+	//			return Statement.lookup.get(key);
+	//		} else {
+	//			throw new IllegalArgumentException("Unknown statement " + statement);
+	//		}
+	//	}
 }
