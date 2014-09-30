@@ -1,7 +1,7 @@
 package pcm.controller;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
+import java.lang.ref.SoftReference;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -15,7 +15,7 @@ import teaselib.TeaseLib;
 
 public class ScriptCache {
 
-	Map<String, WeakReference<Script>> cache = new HashMap<>();
+	Map<String, SoftReference<Script>> cache = new HashMap<>();
 	ResourceLoader resourceLoader;
 	final String path;
 	
@@ -31,13 +31,16 @@ public class ScriptCache {
 		String key = name.toLowerCase();
 		if (cache.containsKey(key))
 		{
-			TeaseLib.log("Using cached script " + name);
 			script = cache.get(key).get();
 		}
-		if (script == null)
+		if (script != null)
+		{
+			TeaseLib.log("Using cached script " + name);
+		}
+		else
 		{
 			script = new Script(name, this, resourceLoader.script(path + name));
-			cache.put(key, new WeakReference<>(script));
+			cache.put(key, new SoftReference<>(script));
 		}
 		return script;
 	}
