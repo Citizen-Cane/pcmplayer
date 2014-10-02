@@ -53,7 +53,7 @@ public class Actions {
 		List<Action> actions = getAll(range);
 		if (actions.isEmpty()) {
 			validationErrors.add(new ValidationError(action, "Range " + range.start + "-"
-					+ range.end + " doesn't contain any actions"));
+					+ range.end + " is empty"));
 		}
 		else if (actions.get(0).number != range.start) {
 			validationErrors.add(new ValidationError(action, "Range " + range.start + "-"
