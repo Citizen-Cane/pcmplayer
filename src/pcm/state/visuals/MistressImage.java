@@ -2,6 +2,7 @@ package pcm.state.visuals;
 
 import pcm.controller.Player;
 import pcm.state.Visual;
+import teaselib.TeaseScript;
 
 public class MistressImage implements Visual {
 	public static final MistressImage instance = new MistressImage();
@@ -11,7 +12,6 @@ public class MistressImage implements Visual {
 	
 	@Override
 	public void render(Player player) {
-		// TODO Should be automatic in TeaseScript
-//		teaseScript.setImage(teaseScript.mistress.next());
+		player.setImage(TeaseScript.MistressImage);
 	}
 }

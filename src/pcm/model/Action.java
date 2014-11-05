@@ -77,7 +77,9 @@ public class Action extends AbstractAction {
 			} else if (visual instanceof ActionDelay) {
 				hasDelay = ((ActionDelay) visual).from > 0;
 			} else {
-				hasDelay = hasMessage;
+				// Since the script ends with Quit, the delay is actually
+				// infinite
+				hasDelay = hasMessage || interaction instanceof Quit;
 			}
 			if (hasDelay) {
 				if (!visuals.containsKey(Statement.Image)
@@ -147,7 +149,7 @@ public class Action extends AbstractAction {
 				throw new ParseError(cmd.lineNumber, number, cmd.all(),
 						".noimage switch must precede .txt");
 			}
-			addVisual(name, NoImage.instance);			
+			addVisual(name, NoImage.instance);
 		} else if (name == Statement.Image) {
 			// image = allArgsFrom(args);
 			addVisual(name, new Image(cmd.allArgs()));
@@ -303,7 +305,7 @@ public class Action extends AbstractAction {
 		} else if (name == Statement.Poss) {
 			String args[] = cmd.args();
 			poss = new Integer(args[0]);
-		} 
+		}
 		// interactions
 		else if (name == Statement.Range) {
 			String args[] = cmd.args();
@@ -324,8 +326,8 @@ public class Action extends AbstractAction {
 			String script = args[0];
 			int endIndex = script.lastIndexOf('.');
 			setInteraction(new LoadSbd(endIndex < 0 ? script
-					: script.substring(0, endIndex),
-					Integer.parseInt(args[1]), Integer.parseInt(args[2])));
+					: script.substring(0, endIndex), Integer.parseInt(args[1]),
+					Integer.parseInt(args[2])));
 		} else if (name == Statement.PopUp) {
 			String args[] = cmd.args();
 			setInteraction(new PopUp(Integer.parseInt(args[0]),
@@ -342,14 +344,12 @@ public class Action extends AbstractAction {
 		} else if (name == Statement.Break) {
 			String args[] = cmd.args();
 			if (!args[2].toLowerCase().equals("stop")) {
-				throw new IllegalArgumentException(
-						Statement.Break.toString()
-								+ ": Ony 'stop' is supported");
+				throw new IllegalArgumentException(Statement.Break.toString()
+						+ ": Ony 'stop' is supported");
 			}
-			setInteraction(new Break(new ActionRange(
-					Integer.parseInt(args[0]), Integer.parseInt(args[1])),
-					new ActionRange(Integer.parseInt(args[3]), Integer
-							.parseInt(args[4]))));
+			setInteraction(new Break(new ActionRange(Integer.parseInt(args[0]),
+					Integer.parseInt(args[1])), new ActionRange(
+					Integer.parseInt(args[3]), Integer.parseInt(args[4]))));
 		} else {
 			super.add(cmd);
 		}
@@ -435,7 +435,7 @@ public class Action extends AbstractAction {
 				validationErrors.add(new ValidationError(this,
 						"Unexpected .say without message"));
 			}
-			if (say == false && visuals.containsKey(Statement.Message)) {
+			if (say == false && visuals.containsKey(Statement.Message) && !(interaction instanceof Quit)) {
 				validationErrors.add(new ValidationError(this,
 						"Must use .txt to display quiet message"));
 			}
