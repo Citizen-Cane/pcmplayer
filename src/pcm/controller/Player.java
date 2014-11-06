@@ -47,7 +47,7 @@ public class Player extends TeaseScript {
 		this.invokedOnAllSet = false;
 	}
 
-	public void play(String name) {
+	public void play(String name, ActionRange startRange) {
 		try {
 			script = scripts.get(name);
 			if (validateScripts) {
@@ -76,7 +76,18 @@ public class Player extends TeaseScript {
 		}
 		if (script != null) {
 			try {
-				play();
+				resetScript();
+				if (startRange != null)
+				{
+					range = startRange;
+				}
+				else
+				{
+					range = script.startRange;
+				}
+				while (range != null) {
+					play((ActionRange) null);
+				}
 			} catch (ScriptError e) {
 				showError(e);
 			} catch (Throwable e) {
@@ -90,37 +101,8 @@ public class Player extends TeaseScript {
 		state.restore(script);
 		invokedOnAllSet = false;
 		script.execute(state);
-		range = script.startRange;
-		mistress = script.mistressImages;
-		if (debugOutput) {
-			// Inject start range for debug purposes
-			// range = new ActionRange(1449); // Toys menu
-			// range = new ActionRange(2692); // Punishment wank
-			// range = new ActionRange(1011);
-			// range = new ActionRange(1176);
-			// range = new ActionRange(800); // Debug menu
-			// range = new ActionRange(9500); // End with NoImage
-			// range = new ActionRange(8090); // Wanking, sound and delay
-			// range = new ActionRange(1004); // speech and comma
-			// range = new ActionRange(1007); // Speech recognition, askYN
-			// range = new ActionRange(1363); // Wait 10 seconds
-			// range = new ActionRange(1038); // self-bondage warning (.txt)
-			// range = new ActionRange(????); // Corner time .txt test
-			// range = new ActionRange(3039); // Stop button test
-			// range = new ActionRange(3078); // Test sequences after
-			// implementing closure
-			// range = new ActionRange(4849); // Test sequences after
-			// implementing closure
-			// range = new ActionRange(9501); // quit null pointer test
-		}
-	}
-
-	public void play() throws AllActionsSetException, ScriptExecutionError {
-		resetScript();
 		// TODO Search for any mistress instead of using hard-coded path
-		while (range != null) {
-			play((ActionRange) null);
-		}
+		mistress = script.mistressImages;
 	}
 
 	public void play(ActionRange playRange) throws AllActionsSetException,
