@@ -347,9 +347,16 @@ public class Action extends AbstractAction {
 				throw new IllegalArgumentException(Statement.Break.toString()
 						+ ": Ony 'stop' is supported");
 			}
-			setInteraction(new Break(new ActionRange(Integer.parseInt(args[0]),
-					Integer.parseInt(args[1])), new ActionRange(
-					Integer.parseInt(args[3]), Integer.parseInt(args[4]))));
+			if (args.length == 4) {
+				setInteraction(new Break(new ActionRange(
+						Integer.parseInt(args[0]), Integer.parseInt(args[1])),
+						new ActionRange(Integer.parseInt(args[3]))));
+			} else {
+				setInteraction(new Break(new ActionRange(
+						Integer.parseInt(args[0]), Integer.parseInt(args[1])),
+						new ActionRange(Integer.parseInt(args[3]), Integer
+								.parseInt(args[4]))));
+			}
 		} else {
 			super.add(cmd);
 		}
