@@ -79,7 +79,7 @@ public class Action extends AbstractAction {
 			} else {
 				// Since the script ends with Quit, the delay is actually
 				// infinite
-				hasDelay = hasMessage || interaction instanceof Quit;
+				hasDelay = hasMessage;
 			}
 			if (hasDelay) {
 				if (!visuals.containsKey(Statement.Image)
@@ -435,7 +435,7 @@ public class Action extends AbstractAction {
 				validationErrors.add(new ValidationError(this,
 						"Unexpected .say without message"));
 			}
-			if (say == false && visuals.containsKey(Statement.Message) && !(interaction instanceof Quit)) {
+			if (say == false && visuals.containsKey(Statement.Message)) {
 				validationErrors.add(new ValidationError(this,
 						"Must use .txt to display quiet message"));
 			}
