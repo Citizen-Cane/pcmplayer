@@ -9,6 +9,6 @@ public class NoImage implements Visual {
 
 	@Override
 	public void render(Player player) {
-		player.setImage(TeaseScript.NoImage);
+		player.showImage(TeaseScript.NoImage);
 	}
 }

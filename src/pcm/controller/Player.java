@@ -122,7 +122,7 @@ public class Player extends TeaseScript {
 				if (range == null) {
 					// Quit
 					action = null;
-					setImage(NoImage);
+					showImage(NoImage);
 					show(null);
 					break;
 				} else if (range instanceof ActionLoadSbd) {
