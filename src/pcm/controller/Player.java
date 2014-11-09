@@ -102,7 +102,7 @@ public class Player extends TeaseScript {
 		invokedOnAllSet = false;
 		script.execute(state);
 		// TODO Search for any mistress instead of using hard-coded path
-		mistress = script.mistressImages;
+		dominant = script.mistressImages;
 	}
 
 	public void play(ActionRange playRange) throws AllActionsSetException,

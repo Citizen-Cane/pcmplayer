@@ -12,6 +12,6 @@ public class MistressImage implements Visual {
 	
 	@Override
 	public void render(Player player) {
-		player.showImage(TeaseScript.MistressImage);
+		player.showImage(TeaseScript.DominantImage);
 	}
 }
