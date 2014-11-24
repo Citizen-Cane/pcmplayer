@@ -1,5 +1,6 @@
 package pcm.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -17,11 +18,15 @@ import pcm.model.ValidationError;
 import pcm.state.Condition;
 import pcm.state.State;
 import pcm.state.Visual;
+import teaselib.DummyHost;
+import teaselib.DummyPersistence;
 import teaselib.Host;
 import teaselib.Persistence;
 import teaselib.ScriptInterruptedException;
 import teaselib.TeaseLib;
 import teaselib.TeaseScript;
+import teaselib.texttospeech.ScriptScanner;
+import teaselib.texttospeech.TextToSpeechRecorder;
 
 public class Player extends TeaseScript {
 
@@ -37,11 +42,55 @@ public class Player extends TeaseScript {
 	private final State state;
 	boolean invokedOnAllSet;
 
-	public Player(URI[] assets, String assetsBasePath, Host host,
+	public static void main(String argv[]) {
+		String resourcesBase = "scripts/";
+		String assetRoot = "Mine/";
+		String libBase = "lib/";
+		URI[] uris = {
+				new File(resourcesBase + "Mine Scripts.zip").toURI(),
+				new File(resourcesBase + "Mine Resources.zip").toURI(),
+				new File(resourcesBase + "Mine Mistress.zip").toURI(),
+				new File(resourcesBase + "Mine.jar").toURI(),
+				new File(libBase + "TeaseLib.jar").toURI() };
+		try {
+			// TODO Init resource in teaselib init, after initializing the logs
+			// TODO Test whether all URI exist, without the IOException would be
+			// inappropriate
+			TeaseLib teaseLib = new TeaseLib(
+					new DummyHost(),
+					new DummyPersistence(),
+					resourcesBase,
+					uris,
+					assetRoot);
+			ScriptCache scripts = new ScriptCache(teaseLib.resources, SCRIPTS);
+			// Get the main script
+			Script main = scripts.get("Mine");
+			// and validate to load all the sub scripts
+			validate(main, new ArrayList<>());
+			TextToSpeechRecorder recorder = new TextToSpeechRecorder(teaseLib.resources);
+			for (String scriptName : scripts.names()) {
+				Script script = scripts.get(scriptName);
+				ScriptScanner scriptScanner = new PCMScriptScanner(script);
+				recorder.create(scriptScanner);
+			}
+			recorder.finish();
+		} catch (ParseError e) {
+			TeaseLib.log(argv, e);
+		} catch (ValidationError e) {
+			TeaseLib.log(argv, e);
+		} catch (IOException e) {
+			TeaseLib.log(argv, e);
+		} catch (Throwable t) {
+			TeaseLib.log(argv, t);
+		}
+		System.exit(0);
+	}
+
+	public Player(String basePath, URI[] assets, String assetsBasePath, Host host,
 			Persistence persistence) throws IOException {
 		// TODO Singleton may be too inflexible
 		// TODO Resource loader doesn't have to be replaceable
-		super(new TeaseLib(host, persistence, assets, assetsBasePath));
+		super(new TeaseLib(host, persistence, basePath, assets, assetsBasePath));
 		this.scripts = new ScriptCache(teaseLib.resources, SCRIPTS);
 		this.state = new State(teaseLib.host, teaseLib.persistence);
 		this.invokedOnAllSet = false;
@@ -51,21 +100,7 @@ public class Player extends TeaseScript {
 		try {
 			script = scripts.get(name);
 			if (validateScripts) {
-				List<ValidationError> validationErrors = new ArrayList<>();
-				validate(script, validationErrors);
-				for (String s : scripts.names()) {
-					Script other = scripts.get(s);
-					if (other != script) {
-						validate(other, validationErrors);
-					}
-				}
-				if (validationErrors.size() > 0) {
-					for (ScriptError scriptError : validationErrors) {
-						TeaseLib.log(createErrorMessage(scriptError));
-					}
-					throw new ValidationError("Validation failed, "
-							+ validationErrors.size() + " issues");
-				}
+				validateAll();
 			}
 		} catch (ScriptError e) {
 			showError(e);
@@ -77,12 +112,9 @@ public class Player extends TeaseScript {
 		if (script != null) {
 			try {
 				resetScript();
-				if (startRange != null)
-				{
+				if (startRange != null) {
 					range = startRange;
-				}
-				else
-				{
+				} else {
 					range = script.startRange;
 				}
 				while (range != null) {
@@ -93,6 +125,24 @@ public class Player extends TeaseScript {
 			} catch (Throwable e) {
 				showError(e, name);
 			}
+		}
+	}
+
+	private void validateAll() throws ParseError, ValidationError, IOException {
+		List<ValidationError> validationErrors = new ArrayList<>();
+		validate(script, validationErrors);
+		for (String s : scripts.names()) {
+			Script other = scripts.get(s);
+			if (other != script) {
+				validate(other, validationErrors);
+			}
+		}
+		if (validationErrors.size() > 0) {
+			for (ScriptError scriptError : validationErrors) {
+				TeaseLib.log(createErrorMessage(scriptError));
+			}
+			throw new ValidationError("Validation failed, "
+					+ validationErrors.size() + " issues");
 		}
 	}
 
@@ -134,7 +184,7 @@ public class Player extends TeaseScript {
 					// range
 					action = getAction();
 				}
-			} catch(ScriptInterruptedException e) {
+			} catch (ScriptInterruptedException e) {
 				throw e;
 			} catch (ScriptError e) {
 				throw e;
@@ -345,7 +395,7 @@ public class Player extends TeaseScript {
 		return action;
 	}
 
-	public void validate(Script script, List<ValidationError> validationErrors)
+	public static void validate(Script script, List<ValidationError> validationErrors)
 			throws ParseError {
 		script.validate(validationErrors);
 		for (Action action : script.actions.values()) {
@@ -366,6 +416,7 @@ public class Player extends TeaseScript {
 			}
 		}
 	}
+
 	// Failure in script constructor
 	private void showError(ScriptError e) {
 		TeaseLib.log(this, e);
@@ -407,7 +458,6 @@ public class Player extends TeaseScript {
 		choose(choices);
 	}
 }
-
 
 // http://stackoverflow.com/questions/11012819/how-can-i-get-a-resource-folder-from-inside-my-jar-file
 // http://www.uofr.net/~greg/java/get-resource-listing.html

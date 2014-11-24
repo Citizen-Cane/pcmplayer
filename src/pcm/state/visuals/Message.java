@@ -16,4 +16,9 @@ public class Message implements Visual {
 	public void render(Player player) {
 		player.say(message);
 	}
+	
+	public teaselib.text.Message getMessage()
+	{
+		return message;
+	}
 }
