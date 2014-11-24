@@ -45,7 +45,7 @@ public class Player extends TeaseScript {
 	public static void main(String argv[]) {
 		String resourcesBase = "scripts/";
 		String assetRoot = "Mine/";
-		String libBase = "lib/";
+		String libBase = "lib/TeaseLib";
 		URI[] uris = {
 				new File(resourcesBase + "Mine Scripts.zip").toURI(),
 				new File(resourcesBase + "Mine Resources.zip").toURI(),
