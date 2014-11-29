@@ -18,10 +18,9 @@ import pcm.model.ValidationError;
 import pcm.state.Condition;
 import pcm.state.State;
 import pcm.state.Visual;
+import teaselib.Actor;
 import teaselib.DummyHost;
 import teaselib.DummyPersistence;
-import teaselib.Host;
-import teaselib.Persistence;
 import teaselib.ScriptInterruptedException;
 import teaselib.TeaseLib;
 import teaselib.TeaseScript;
@@ -68,9 +67,10 @@ public class Player extends TeaseScript {
 			// and validate to load all the sub scripts
 			validate(main, new ArrayList<>());
 			TextToSpeechRecorder recorder = new TextToSpeechRecorder(teaseLib.resources);
+			Actor actor = new Actor(Actor.Dominant, "en-us");
 			for (String scriptName : scripts.names()) {
 				Script script = scripts.get(scriptName);
-				ScriptScanner scriptScanner = new PCMScriptScanner(script);
+				ScriptScanner scriptScanner = new PCMScriptScanner(script, actor);
 				recorder.create(scriptScanner);
 			}
 			recorder.finish();
@@ -86,11 +86,8 @@ public class Player extends TeaseScript {
 		System.exit(0);
 	}
 
-	public Player(String basePath, URI[] assets, String assetsBasePath, Host host,
-			Persistence persistence) throws IOException {
-		// TODO Singleton may be too inflexible
-		// TODO Resource loader doesn't have to be replaceable
-		super(new TeaseLib(host, persistence, basePath, assets, assetsBasePath));
+	public Player(TeaseLib teaseLib) throws IOException {
+		super(teaseLib, "en-us");
 		this.scripts = new ScriptCache(teaseLib.resources, SCRIPTS);
 		this.state = new State(teaseLib.host, teaseLib.persistence);
 		this.invokedOnAllSet = false;
@@ -152,7 +149,7 @@ public class Player extends TeaseScript {
 		invokedOnAllSet = false;
 		script.execute(state);
 		// TODO Search for any mistress instead of using hard-coded path
-		dominant = script.mistressImages;
+		dominantImages = script.mistressImages;
 	}
 
 	public void play(ActionRange playRange) throws AllActionsSetException,

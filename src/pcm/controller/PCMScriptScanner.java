@@ -8,15 +8,18 @@ import pcm.model.AbstractAction.Statement;
 import pcm.model.Action;
 import pcm.model.Script;
 import pcm.state.Visual;
+import teaselib.Actor;
 import teaselib.text.Message;
 import teaselib.texttospeech.ScriptScanner;
 
 public class PCMScriptScanner implements ScriptScanner {
 
 	private Script script;
-
-	public PCMScriptScanner(Script script) {
+	private Actor actor;
+	
+	public PCMScriptScanner(Script script, Actor actor) {
 		this.script = script;
+		this.actor = actor;
 	}
 
 	@Override
@@ -33,9 +36,9 @@ public class PCMScriptScanner implements ScriptScanner {
 				if (visuals.containsKey(Statement.Message)) {
 					Visual visual = visuals.get(Statement.Message);
 					if (visual instanceof pcm.state.visuals.Message) {
-						Message message = ((pcm.state.visuals.Message) visual)
+						Vector<String> message = ((pcm.state.visuals.Message) visual)
 								.getMessage();
-						r.add(message);
+						r.add(new Message(actor, message));
 					} else {
 						// It's NoMessage, and there's nothing to do
 					}

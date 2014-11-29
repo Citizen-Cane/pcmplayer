@@ -38,7 +38,8 @@ public class ScriptParser {
 					throw new ParseError(l, n, line, t, script);
 				}
 			} else {
-				throw new ParseError(l, n, line, "Unexpected script input", script);
+				throw new ParseError(l, n, line, "Unexpected script input",
+						script);
 			}
 		}
 		return;
@@ -82,13 +83,12 @@ public class ScriptParser {
 					}
 					if (message != null) {
 						action.addVisual(Statement.Message,
-								new Message(new teaselib.text.Message(message)));
+								new Message(message));
 					}
 					action.finalizeParsing();
 				}
 			} catch (ScriptError e) {
-				if (e.script == null)
-				{
+				if (e.script == null) {
 					e.script = script;
 				}
 				throw e;
@@ -120,27 +120,29 @@ public class ScriptParser {
 		ScriptLineTokenizer cmd = new ScriptLineTokenizer(l, line);
 		// Global statements
 		if (cmd.statement == Statement.Inject) {
-			throw new UnsupportedOperationException("Injections may lead to script inconsistencies");
+			throw new UnsupportedOperationException(
+					"Injections may lead to script inconsistencies");
 			// Inject command
-			//			String[] args = cmd.args();
-			//			Statement injectedStatement = parseStatement(args[2].substring(1));
-			//			String[] injection = new String[args.length - 3];
-			//			System.arraycopy(args, 3, injection, 0, injection.length);
-			//			abstractAction.addCommand(new Injection(script, Integer
-			//					.parseInt(args[0]), Integer.parseInt(args[1]),
-			//					injectedStatement, injection));
+			// String[] args = cmd.args();
+			// Statement injectedStatement =
+			// parseStatement(args[2].substring(1));
+			// String[] injection = new String[args.length - 3];
+			// System.arraycopy(args, 3, injection, 0, injection.length);
+			// abstractAction.addCommand(new Injection(script, Integer
+			// .parseInt(args[0]), Integer.parseInt(args[1]),
+			// injectedStatement, injection));
 		} else {
 			// Local statements
 			abstractAction.add(cmd);
 		}
 	}
 
-	//	private Statement parseStatement(String statement) {
-	//		String key = statement.toLowerCase();
-	//		if (Statement.lookup.containsKey(key)) {
-	//			return Statement.lookup.get(key);
-	//		} else {
-	//			throw new IllegalArgumentException("Unknown statement " + statement);
-	//		}
-	//	}
+	// private Statement parseStatement(String statement) {
+	// String key = statement.toLowerCase();
+	// if (Statement.lookup.containsKey(key)) {
+	// return Statement.lookup.get(key);
+	// } else {
+	// throw new IllegalArgumentException("Unknown statement " + statement);
+	// }
+	// }
 }

@@ -1,23 +1,26 @@
 package pcm.state.visuals;
 
+import java.util.Vector;
+
 import pcm.controller.Player;
 import pcm.state.Visual;
 
 public class Message implements Visual {
 
-	teaselib.text.Message message;
+	Vector<String> message;
 	
 	
-	public Message(teaselib.text.Message message) {
+	public Message(Vector<String> message) {
 		this.message = message;
 	}
 
 	@Override
 	public void render(Player player) {
-		player.say(message);
+		String[] array  = new String[message.size()];
+		player.say(message.toArray(array));
 	}
 	
-	public teaselib.text.Message getMessage()
+	public Vector<String> getMessage()
 	{
 		return message;
 	}

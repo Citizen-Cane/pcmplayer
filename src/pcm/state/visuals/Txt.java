@@ -37,7 +37,7 @@ public class Txt implements Visual {
 	
 	@Override
 	public void render(Player player) {
-		teaselib.text.Message message = new teaselib.text.Message();
+		teaselib.text.Message message = new teaselib.text.Message(player.actor);
 		for(String text : txt)
 		{
 			message.add(text);
