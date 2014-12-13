@@ -2,6 +2,7 @@ package pcm.state.Interactions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import pcm.controller.Player;
 import pcm.model.AbstractAction.Statement;
@@ -18,13 +19,27 @@ import teaselib.TeaseLib;
 import teaselib.TeaseScript;
 
 public class Break implements Interaction, NeedsRangeProvider {
-    private ActionRange actionRange;
-    private ActionRange stop;
+    private final ActionRange actionRange;
+    private ActionRange stopRange = null;
+    private ActionRange cumRange = null;
     private Interaction rangeProvider = null;
 
-    public Break(ActionRange actionRange, ActionRange stop) {
+    public Break(ActionRange actionRange, ActionRange stopRange) {
         this.actionRange = actionRange;
-        this.stop = stop;
+        this.stopRange = stopRange;
+        this.cumRange = null;
+    }
+
+    public Break(ActionRange actionRange, Map<String, ActionRange> choices) {
+        this.actionRange = actionRange;
+        for (String keyword : choices.keySet()) {
+            ActionRange range = choices.get(keyword);
+            if (keyword.toLowerCase().equals("cum")) {
+                this.cumRange = range;
+            } else if (keyword.toLowerCase().equals("stop")) {
+                this.stopRange = range;
+            }
+        }
     }
 
     @Override
@@ -34,11 +49,15 @@ public class Break implements Interaction, NeedsRangeProvider {
         visuals.run();
         // TODO change TeaseScript to Player since it's just that
         Player player = (Player) teaseScript;
+        List<String> choices = new ArrayList<>(2);
+        String cumText = cumRange != null ? action.getResponseText(
+                Statement.CumText, script) : null;
+        if (cumRange != null) {
+            choices.add(cumText);
+        }
         String stopText = action.getResponseText(Statement.StopText, script);
-        List<String> choice = new ArrayList<>(1);
-        choice.add(stopText);
-        int result = teaseScript.choose(
-                choice,
+        choices.add(stopText);
+        String result = teaseScript.choose(
                 () -> {
                     try {
                         player.range = rangeProvider.getRange(script, action,
@@ -49,11 +68,15 @@ public class Break implements Interaction, NeedsRangeProvider {
                     } catch (Throwable t) {
                         TeaseLib.log(this, t);
                     }
-                });
-        if (result != TeaseScript.Timeout) {
+                }, choices);
+        if (result == cumText) {
             TeaseLib.log("-> Stop");
             teaseScript.teaseLib.host.stopSounds();
-            return stop;
+            return cumRange;
+        } else if (result == stopText) {
+            TeaseLib.log("-> Stop");
+            teaseScript.teaseLib.host.stopSounds();
+            return stopRange;
         } else {
             return player.range;
         }
@@ -66,14 +89,23 @@ public class Break implements Interaction, NeedsRangeProvider {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + ": " + actionRange.toString()
-                + " to  stop: " + stop.toString();
+        String s = getClass().getSimpleName() + ": " + actionRange.toString()
+                + " to  stop: " + stopRange.toString();
+        if (cumRange != null) {
+            s = s + ", to  cum: " + cumRange.toString();
+        }
+        return s;
     }
 
     @Override
     public void validate(Script script, Action action,
             List<ValidationError> validationErrors) throws ParseError {
         script.actions.validate(action, actionRange, validationErrors);
-        script.actions.validate(action, stop, validationErrors);
+        if (stopRange != null) {
+            script.actions.validate(action, stopRange, validationErrors);
+        }
+        if (cumRange != null) {
+            script.actions.validate(action, cumRange, validationErrors);
+        }
     }
 }

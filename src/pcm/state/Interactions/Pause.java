@@ -31,7 +31,16 @@ public class Pause implements Interaction, Interaction.NeedsRangeProvider {
 
     @Override
     public void setRangeProvider(Interaction rangeProvider) {
-        this.rangeProvider = rangeProvider;
+        if (this.rangeProvider != null) {
+            if (this.rangeProvider instanceof NeedsRangeProvider) {
+                ((NeedsRangeProvider) this.rangeProvider)
+                        .setRangeProvider(rangeProvider);
+            } else {
+                throw new IllegalStateException(rangeProvider.toString());
+            }
+        } else {
+            this.rangeProvider = rangeProvider;
+        }
     }
 
     @Override

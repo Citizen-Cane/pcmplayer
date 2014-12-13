@@ -2,6 +2,7 @@ package pcm.model;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import pcm.state.Command;
@@ -138,20 +139,24 @@ public class Action extends AbstractAction {
         // This has been overseen when designing the parser. As a result,
         // these dependencies have been modeled by throwing ParseExceptions, but
         // the order of appearence in the script can easily be changed.
-        // Since Mine seems the only script worth porting, so this will not be
+        // Since Mine seems the only script worth porting, this will not be
         // fixed here.
         // Affected statements:
         // - noimage & txt
+        // - image & txt
         // noimage and message, but the message is collected by the parser, not
         // as a statement, therefore a special case and it works
         if (name == Statement.NoImage) {
             if (visuals != null && visuals.containsKey(Statement.Txt)) {
                 throw new ParseError(cmd.lineNumber, number, cmd.all(),
-                        ".noimage switch must precede .txt");
+                        ".noimage statement must precede .txt");
             }
             addVisual(name, NoImage.instance);
         } else if (name == Statement.Image) {
-            // image = allArgsFrom(args);
+            if (visuals != null && visuals.containsKey(Statement.Txt)) {
+                throw new ParseError(cmd.lineNumber, number, cmd.all(),
+                        ".image statement must precede .txt");
+            }
             addVisual(name, new Image(cmd.allArgs()));
         } else if (name == Statement.PlayWav) {
             addVisual(name, new Sound(cmd.allArgs()));
@@ -193,17 +198,11 @@ public class Action extends AbstractAction {
             } else if (args.length == 2) {
                 if (name == Statement.Delay) {
                     // Ignore delay, instead the speech duration is used
-                    // actionDelay = new ActionDelay(0);
                 } else {
-                    // actionDelay = new ActionDelay(Integer.parseInt(args[0]),
-                    // Integer.parseInt(args[1]));
                     addVisual(name, new Delay(Integer.parseInt(args[0]),
                             Integer.parseInt(args[1])));
                 }
             } else if (args.length == 4) {
-                // actionDelay = new ActionDelay(Integer.parseInt(args[0]),
-                // Integer.parseInt(args[1]), new ActionRange(
-                // Integer.parseInt(args[3])));
                 addVisual(
                         Statement.ActionDelay,
                         new Delay(Integer.parseInt(args[0]), Integer
@@ -211,10 +210,6 @@ public class Action extends AbstractAction {
                 setInteraction(new Stop(new ActionRange(
                         Integer.parseInt(args[3]))));
             } else if (args.length == 5) {
-                // actionDelay = new ActionDelay(Integer.parseInt(args[0]),
-                // Integer.parseInt(args[1]), new ActionRange(
-                // Integer.parseInt(args[3]),
-                // Integer.parseInt(args[4])));
                 addVisual(
                         Statement.ActionDelay,
                         new Delay(Integer.parseInt(args[0]), Integer
@@ -323,11 +318,12 @@ public class Action extends AbstractAction {
                     Integer.parseInt(args[3])));
         } else if (name == Statement.LoadSbd) {
             String args[] = cmd.args();
-            String script = args[0];
-            int endIndex = script.lastIndexOf('.');
-            setInteraction(new LoadSbd(endIndex < 0 ? script
-                    : script.substring(0, endIndex), Integer.parseInt(args[1]),
-                    Integer.parseInt(args[2])));
+            String arg0 = args[0];
+            int endIndex = arg0.lastIndexOf('.');
+            String script = endIndex < 0 ? arg0 : arg0.substring(0, endIndex);
+            setInteraction(args.length > 2 ? new LoadSbd(script,
+                    Integer.parseInt(args[1]), Integer.parseInt(args[2]))
+                    : new LoadSbd(script, Integer.parseInt(args[1])));
         } else if (name == Statement.PopUp) {
             String args[] = cmd.args();
             setInteraction(new PopUp(Integer.parseInt(args[0]),
@@ -343,23 +339,45 @@ public class Action extends AbstractAction {
             setInteraction(Quit.instance);
         } else if (name == Statement.Break) {
             String args[] = cmd.args();
-            if (!args[2].toLowerCase().equals("stop")) {
-                throw new IllegalArgumentException(Statement.Break.toString()
-                        + ": Ony 'stop' is supported");
-            }
-            if (args.length == 4) {
-                setInteraction(new Break(new ActionRange(
-                        Integer.parseInt(args[0]), Integer.parseInt(args[1])),
-                        new ActionRange(Integer.parseInt(args[3]))));
-            } else {
-                setInteraction(new Break(new ActionRange(
-                        Integer.parseInt(args[0]), Integer.parseInt(args[1])),
-                        new ActionRange(Integer.parseInt(args[3]), Integer
-                                .parseInt(args[4]))));
-            }
+            setInteraction(new Break(new ActionRange(Integer.parseInt(args[0]),
+                    Integer.parseInt(args[1])), rangesFromArgv(args, 2)));
         } else {
             super.add(cmd);
         }
+    }
+
+    /**
+     * Parse the remainder of argv into a sequence of action ranges
+     * 
+     * @param args
+     *            Arguments
+     * @param index
+     *            Start index.
+     * @return
+     */
+    private Map<String, ActionRange> rangesFromArgv(String[] args, int index) {
+        Map<String, ActionRange> ranges = new LinkedHashMap<>();
+        while (index < args.length) {
+            String key = args[index++];
+            ActionRange actionRange;
+            int start = Integer.parseInt(args[index++]);
+            if (index < args.length) {
+                // More parameters
+                try {
+                    int end = Integer.parseInt(args[index]);
+                    index++;
+                    actionRange = new ActionRange(start, end);
+                } catch (NumberFormatException e) {
+                    // Next keyword
+                    actionRange = new ActionRange(start);
+                }
+            } else {
+                // Single value range
+                actionRange = new ActionRange(start);
+            }
+            ranges.put(key, actionRange);
+        }
+        return ranges;
     }
 
     private void setInteraction(Interaction interaction) {
@@ -401,46 +419,12 @@ public class Action extends AbstractAction {
 
     public void validate(Script script, List<ValidationError> validationErrors)
             throws ParseError {
-        // if (timeFrom != null)
-        // {
-        // for(String duration : timeFrom.values())
-        // {
-        // if (!Duration.validate(duration))
-        // {
-        // throw new ValidationError(this,
-        // "Wrong format for timeFrom statement: " + duration);
-        // }
-        // }
-        // }
         if (poss != null) {
             if (poss == 0 || poss > 100) {
                 validationErrors.add(new ValidationError(this,
                         "Invalid value for poss statement (" + poss + ")"));
             }
         }
-        // if (range == null && yes == null && no == null && stop == null
-        // && popup == null && loadSbd == null && quit == false) {
-        // throw new ValidationError(this, "No range specified");
-        // }
-        // if (set != null && unset != null)
-        // {
-        // for(Integer s : set)
-        // {
-        // if (unset.contains(s))
-        // {
-        // throw new ValidationError(this, s.toString() +
-        // " both set and unset -> undefined behavior");
-        // }
-        // }
-        // for(Integer u : unset)
-        // {
-        // if (set.contains(u))
-        // {
-        // throw new ValidationError(this, u.toString() +
-        // " both set and unset -> undefined behavior");
-        // }
-        // }
-        // }
         // TODO no .noimage + .delay 0
         // TODO Only actiondelay shopuld remain
         if (visuals != null) {
@@ -463,7 +447,11 @@ public class Action extends AbstractAction {
             }
         }
         if (interaction != null) {
-            interaction.validate(script, this, validationErrors);
+            try {
+                interaction.validate(script, this, validationErrors);
+            } catch (Exception e) {
+                validationErrors.add(new ValidationError(this, e.getMessage()));
+            }
         } else {
             validationErrors.add(new ValidationError(this, "No interaction"));
         }

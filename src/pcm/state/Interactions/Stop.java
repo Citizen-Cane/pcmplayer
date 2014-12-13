@@ -1,6 +1,5 @@
 package pcm.state.Interactions;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import pcm.model.AbstractAction.Statement;
@@ -29,10 +28,8 @@ public class Stop implements Interaction, NeedsRangeProvider {
             TeaseScript teaseScript) throws ScriptExecutionError {
         String stopText = action.getResponseText(Statement.StopText, script);
         TeaseLib.log(getClass().getSimpleName() + " " + toString());
-        List<String> choice = new ArrayList<>(1);
-        choice.add(stopText);
-        int result = teaseScript.choose(choice, visuals);
-        if (result != TeaseScript.Timeout) {
+        String result = teaseScript.choose(visuals, stopText);
+        if (result == stopText) {
             TeaseLib.log("-> Stop");
             teaseScript.teaseLib.host.stopSounds();
             return stop;
