@@ -36,7 +36,6 @@ import pcm.state.visuals.MistressImage;
 import pcm.state.visuals.NoImage;
 import pcm.state.visuals.NoMessage;
 import pcm.state.visuals.Sound;
-import pcm.state.visuals.Txt;
 
 public class Action extends AbstractAction {
     public final int number;
@@ -63,15 +62,15 @@ public class Action extends AbstractAction {
             } else {
                 visual = null;
             }
-            // Message or txt
+            // Message or txt?
             final boolean hasMessageStatement = visuals
                     .containsKey(Statement.Message);
-            final boolean hasTxtStatement = visuals.containsKey(Statement.Txt);
-            if (hasMessageStatement && hasTxtStatement)
+            final boolean hasTxt = visuals.containsKey(Statement.Txt);
+            if (hasMessageStatement && hasTxt)
                 throw new ValidationError(
                         this,
                         "Spoken messages and .txt are exclusive because PCMPlayer/TeaseLib supports only one text area");
-            final boolean hasMessage = hasMessageStatement || hasTxtStatement;
+            final boolean hasMessage = hasMessageStatement || hasTxt;
             final boolean hasDelay;
             if (visual instanceof Delay) {
                 hasDelay = ((Delay) visual).from > 0;
@@ -86,9 +85,8 @@ public class Action extends AbstractAction {
                 if (!visuals.containsKey(Statement.Image)
                         && !visuals.containsKey(Statement.NoImage)) {
                     addVisual(Statement.Image, MistressImage.instance);
-                }
-                if (!hasMessage) {
-                    addVisual(Statement.Message, NoMessage.instance);
+                } else if (!hasMessage && !hasTxt) {
+                    addVisual(Statement.Txt, NoMessage.instance);
                 }
             } else {
                 if (visuals.containsKey(Statement.NoImage)) {
@@ -115,17 +113,6 @@ public class Action extends AbstractAction {
         visuals.put(statement, visual);
     }
 
-    public void addTxt(String txtLine) {
-        if (visuals == null) {
-            addVisual(Statement.Txt, new Txt(txtLine));
-        } else if (visuals.containsKey(Statement.Txt)) {
-            Txt txt = (Txt) visuals.get(Statement.Txt);
-            txt.add(txtLine);
-        } else {
-            addVisual(Statement.Txt, new Txt(txtLine));
-        }
-    }
-
     /*
      * (non-Javadoc)
      * 
@@ -134,29 +121,9 @@ public class Action extends AbstractAction {
     @Override
     public void add(ScriptLineTokenizer cmd) throws ParseError {
         final Statement name = cmd.statement;
-        // Some visuals depend on other statements, and thus must appear in
-        // the correct order in the sbd-script.
-        // This has been overseen when designing the parser. As a result,
-        // these dependencies have been modeled by throwing ParseExceptions, but
-        // the order of appearence in the script can easily be changed.
-        // Since Mine seems the only script worth porting, this will not be
-        // fixed here.
-        // Affected statements:
-        // - noimage & txt
-        // - image & txt
-        // noimage and message, but the message is collected by the parser, not
-        // as a statement, therefore a special case and it works
         if (name == Statement.NoImage) {
-            if (visuals != null && visuals.containsKey(Statement.Txt)) {
-                throw new ParseError(cmd.lineNumber, number, cmd.all(),
-                        ".noimage statement must precede .txt");
-            }
             addVisual(name, NoImage.instance);
         } else if (name == Statement.Image) {
-            if (visuals != null && visuals.containsKey(Statement.Txt)) {
-                throw new ParseError(cmd.lineNumber, number, cmd.all(),
-                        ".image statement must precede .txt");
-            }
             addVisual(name, new Image(cmd.allArgs()));
         } else if (name == Statement.PlayWav) {
             addVisual(name, new Sound(cmd.allArgs()));
@@ -165,7 +132,8 @@ public class Action extends AbstractAction {
         } else if (name == Statement.Message) {
             throw new IllegalStateException(name.toString());
         } else if (name == Statement.Txt) {
-            addTxt(cmd.all());
+            throw new IllegalStateException(name.toString());
+            // addTxt(cmd.all());
         } else if (name == Statement.Pause) {
             setInteraction(new Pause());
         } else if (name == Statement.Delay || name == Statement.ActionDelay) {

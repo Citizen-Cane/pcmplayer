@@ -227,11 +227,11 @@ public class Player extends TeaseScript {
                 }
             }
         };
-        ActionRange range = action.interaction.getRange(script, action,
-                visuals, this);
         // May already have been called due to an implicit call to choice(),
         // but that isn't guaranteed
         completeAll();
+        ActionRange range = action.interaction.getRange(script, action,
+                visuals, this);
         return range;
     }
 
