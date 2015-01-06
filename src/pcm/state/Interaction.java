@@ -11,12 +11,31 @@ import pcm.model.ValidationError;
 import teaselib.TeaseScript;
 
 public interface Interaction {
-	ActionRange getRange(Script script, Action action, Runnable visuals,
-			TeaseScript teaseScript) throws ScriptExecutionError;
+    /**
+     * Return a range to be executed next.
+     * 
+     * @param script
+     *            The script.
+     * @param action
+     *            The current action.
+     * @param visuals
+     *            The visuals to be rendered before returning the range.
+     *            Interactions without interaction (ouch) should call
+     *            completeAll() before returning, in order to allow the visuals
+     *            to complete, or completeMandatory (explicitly or implicitly)
+     * @param teaseScript
+     *            The TeaseScript instance for rendering the interaction
+     * 
+     * @return
+     * @throws ScriptExecutionError
+     */
+    ActionRange getRange(Script script, Action action, Runnable visuals,
+            TeaseScript teaseScript) throws ScriptExecutionError;
 
-	void validate(Script script, Action action, List<ValidationError> validationErrors) throws ParseError;
-	
-	public interface NeedsRangeProvider {
-		public void setRangeProvider(Interaction rangeProvider);
-	}
+    void validate(Script script, Action action,
+            List<ValidationError> validationErrors) throws ParseError;
+
+    public interface NeedsRangeProvider {
+        public void setRangeProvider(Interaction rangeProvider);
+    }
 }

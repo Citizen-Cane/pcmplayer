@@ -22,7 +22,7 @@ public class Quit implements Interaction {
             TeaseScript teaseScript) {
         TeaseLib.log(getClass().getSimpleName());
         visuals.run();
-        teaseScript.completeMandatory();
+        teaseScript.completeAll();
         return null;
     }
 
