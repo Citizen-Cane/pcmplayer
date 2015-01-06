@@ -47,6 +47,7 @@ public class Break implements Interaction, NeedsRangeProvider {
             TeaseScript teaseScript) throws ScriptExecutionError {
         // First run the visuals of this actions (likely not any, but who knows)
         visuals.run();
+        teaseScript.completeMandatory();
         // TODO change TeaseScript to Player since it's just that
         Player player = (Player) teaseScript;
         List<String> choices = new ArrayList<>(2);

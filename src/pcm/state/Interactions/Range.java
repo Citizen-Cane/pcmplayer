@@ -12,35 +12,35 @@ import teaselib.TeaseScript;
 
 public class Range implements Interaction {
 
-	private final int start;
-	private final int end;
+    private final int start;
+    private final int end;
 
-	public Range(int start) {
-		this.start = start;
-		this.end = start;
-	}
+    public Range(int start) {
+        this.start = start;
+        this.end = start;
+    }
 
-	public Range(int start, int end) {
-		this.start = start;
-		this.end = end;
-	}
+    public Range(int start, int end) {
+        this.start = start;
+        this.end = end;
+    }
 
-	@Override
-	public ActionRange getRange(Script script, Action action, Runnable visuals,
-			TeaseScript teaseScript) {
-		if (visuals != null)
-		{
-			visuals.run();
-		}
-		ActionRange actionRange = new ActionRange(start, end);
-		TeaseLib.log(actionRange.toString());
-		return actionRange;
-	}
+    @Override
+    public ActionRange getRange(Script script, Action action, Runnable visuals,
+            TeaseScript teaseScript) {
+        if (visuals != null) {
+            visuals.run();
+        }
+        teaseScript.completeMandatory();
+        ActionRange actionRange = new ActionRange(start, end);
+        TeaseLib.log(actionRange.toString());
+        return actionRange;
+    }
 
-	@Override
-	public void validate(Script script, Action action,
-			List<ValidationError> validationErrors) {
-		script.actions.validate(action, new ActionRange(start, end),
-				validationErrors);
-	}
+    @Override
+    public void validate(Script script, Action action,
+            List<ValidationError> validationErrors) {
+        script.actions.validate(action, new ActionRange(start, end),
+                validationErrors);
+    }
 }

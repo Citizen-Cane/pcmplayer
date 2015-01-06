@@ -225,6 +225,17 @@ public class Player extends TeaseScript {
                 for (Visual visual : action.visuals.values()) {
                     visual.render(this);
                 }
+                // One would think that we have to wait for all visuals to at
+                // least complete
+                // their mandatory part. But interactions perform differently,
+                // for instance
+                // class Ask displays its user interface while the visuals
+                // render, to allow
+                // the message to be spoken during checkbox selection.
+                // Interactions that eventually call choose(...) do this
+                // implicitly, but all other classes like Range have to call it
+                // when suitable,
+                // to prevent text and messages appearing too fast
             }
         };
         // May already have been called due to an implicit call to choice(),

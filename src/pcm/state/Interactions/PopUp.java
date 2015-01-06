@@ -39,6 +39,7 @@ public class PopUp implements Interaction {
         }
         TeaseLib.log(getClass().getSimpleName() + " " + choices.toString());
         visuals.run();
+        teaseScript.completeMandatory();
         String result = teaseScript.choose(choices);
         return items.get(choices.indexOf(result)).range;
     }

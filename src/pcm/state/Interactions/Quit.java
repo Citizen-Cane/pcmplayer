@@ -12,21 +12,22 @@ import teaselib.TeaseScript;
 
 public class Quit implements Interaction {
 
-	private Quit() {
-	}
+    private Quit() {
+    }
 
-	public static final Quit instance = new Quit();
+    public static final Quit instance = new Quit();
 
-	@Override
-	public ActionRange getRange(Script script, Action action, Runnable visuals,
-			TeaseScript teaseScript) {
-		TeaseLib.log(getClass().getSimpleName());
-		visuals.run();
-		return null;
-	}
+    @Override
+    public ActionRange getRange(Script script, Action action, Runnable visuals,
+            TeaseScript teaseScript) {
+        TeaseLib.log(getClass().getSimpleName());
+        visuals.run();
+        teaseScript.completeMandatory();
+        return null;
+    }
 
-	@Override
-	public void validate(Script script, Action action,
-			List<ValidationError> validationErrors) {
-	}
+    @Override
+    public void validate(Script script, Action action,
+            List<ValidationError> validationErrors) {
+    }
 }
