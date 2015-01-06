@@ -58,7 +58,10 @@ public class Action extends AbstractAction {
             if (visuals.containsKey(Statement.Delay) == true) {
                 visual = visuals.get(Statement.Delay);
             } else if (visuals.containsKey(Statement.ActionDelay) == true) {
-                visual = visuals.get(Statement.ActionDelay);
+                // ActionDelay is mapped to Delay statement, and may not appear
+                // in action visuals
+                throw new IllegalStateException(
+                        Statement.ActionDelay.toString());
             } else {
                 visual = null;
             }
@@ -74,21 +77,23 @@ public class Action extends AbstractAction {
             final boolean hasDelay;
             if (visual instanceof Delay) {
                 hasDelay = ((Delay) visual).from > 0;
-            } else if (visual instanceof ActionDelay) {
-                hasDelay = ((ActionDelay) visual).from > 0;
             } else {
                 // Since the script ends with Quit, the delay is actually
                 // infinite
                 hasDelay = hasMessage;
             }
             if (hasDelay) {
+                // Automatic mistress image
                 if (!visuals.containsKey(Statement.Image)
                         && !visuals.containsKey(Statement.NoImage)) {
                     addVisual(Statement.Image, MistressImage.instance);
-                } else if (!hasMessage && !hasTxt) {
+                }
+                // Add empty message in order to render NoImage + NoMessage
+                if (!hasMessage && !hasTxt) {
                     addVisual(Statement.Txt, NoMessage.instance);
                 }
             } else {
+                // Without a delay, nothing is rendered
                 if (visuals.containsKey(Statement.NoImage)) {
                     visuals.remove(Statement.NoImage);
                 }
@@ -124,66 +129,44 @@ public class Action extends AbstractAction {
         if (name == Statement.NoImage) {
             addVisual(name, NoImage.instance);
         } else if (name == Statement.Image) {
-            addVisual(name, new Image(cmd.allArgs()));
+            addVisual(name, new Image(cmd.asFilename()));
         } else if (name == Statement.PlayWav) {
-            addVisual(name, new Sound(cmd.allArgs()));
+            addVisual(name, new Sound(cmd.asFilename()));
         } else if (name == Statement.Exec) {
-            addVisual(name, new Exec(cmd.allArgs()));
+            addVisual(name, new Exec(cmd.asFilename()));
         } else if (name == Statement.Message) {
             throw new IllegalStateException(name.toString());
         } else if (name == Statement.Txt) {
             throw new IllegalStateException(name.toString());
             // addTxt(cmd.all());
         } else if (name == Statement.Pause) {
+            String resumeText = cmd.asText();
+            if (!resumeText.isEmpty()) {
+                addResponse(Statement.ResumeText, resumeText);
+            }
             setInteraction(new Pause());
         } else if (name == Statement.Delay || name == Statement.ActionDelay) {
             String args[] = cmd.args();
             if (args.length == 1) {
-                if (name == Statement.Delay) {
-                    // Ignore delay, instead the speech duration is used
-                    // actionDelay = new ActionDelay(0);
-                } else {
-                    int delay = Integer.parseInt(args[0]);
-                    if (name == Statement.ActionDelay) {
-                        // actionDelay = new ActionDelay(delay);
-                        addVisual(name, new Delay(delay));
-                    } else {
-                        if (delay == 0) {
-                            // Treated as "compute"-action, usually in
-                            // combination
-                            // with .noimage,
-                            // because in the original PCMistress, the image
-                            // would
-                            // otherwise still be loaded
-                            // actionDelay = new ActionDelay(delay);
-                            addVisual(Statement.Image, NoImage.instance);
-                        } else {
-                            // Ignored, delay is calculated based on speech or
-                            // message length
-                        }
-                    }
-                }
+                int delay = Integer.parseInt(args[0]);
+                addVisual(Statement.Delay, new Delay(delay));
             } else if (args.length == 2) {
-                if (name == Statement.Delay) {
-                    // Ignore delay, instead the speech duration is used
-                } else {
-                    addVisual(name, new Delay(Integer.parseInt(args[0]),
-                            Integer.parseInt(args[1])));
-                }
+                int from = Integer.parseInt(args[0]);
+                int to = Integer.parseInt(args[1]);
+                addVisual(Statement.Delay, new Delay(from, to));
             } else if (args.length == 4) {
-                addVisual(
-                        Statement.ActionDelay,
-                        new Delay(Integer.parseInt(args[0]), Integer
-                                .parseInt(args[1])));
-                setInteraction(new Stop(new ActionRange(
-                        Integer.parseInt(args[3]))));
+                int from = Integer.parseInt(args[0]);
+                int to = Integer.parseInt(args[1]);
+                addVisual(Statement.Delay, new Delay(from, to));
+                int stop = Integer.parseInt(args[3]);
+                setInteraction(new Stop(new ActionRange(stop)));
             } else if (args.length == 5) {
-                addVisual(
-                        Statement.ActionDelay,
-                        new Delay(Integer.parseInt(args[0]), Integer
-                                .parseInt(args[1])));
-                setInteraction(new Stop(new ActionRange(
-                        Integer.parseInt(args[3]), Integer.parseInt(args[4]))));
+                int from = Integer.parseInt(args[0]);
+                int to = Integer.parseInt(args[1]);
+                addVisual(Statement.Delay, new Delay(from, to));
+                int stopFrom = Integer.parseInt(args[3]);
+                int stopTo = Integer.parseInt(args[4]);
+                setInteraction(new Stop(new ActionRange(stopFrom, stopTo)));
             } else {
                 throw new IllegalArgumentException(cmd.toString());
             }
@@ -412,6 +395,22 @@ public class Action extends AbstractAction {
                     && visuals.containsKey(Statement.Message)) {
                 validationErrors.add(new ValidationError(this,
                         "Both .txt and message is supported"));
+            }
+            // delay 0 & noimage
+            if (visuals.containsKey(Statement.Delay)
+                    && visuals.containsKey(Statement.NoImage)) {
+                Delay delay = (Delay) visuals.get(Statement.Delay);
+                if (delay.to == 0) {
+                    validationErrors
+                            .add(new ValidationError(this,
+                                    "Delay 0 + NoImage is deprecated and should be removed"));
+                }
+            } else if (visuals.containsKey(Statement.Delay)) {
+                Delay delay = (Delay) visuals.get(Statement.Delay);
+                if (delay.to == 0) {
+                    validationErrors.add(new ValidationError(this,
+                            "Delay 0 is deprecated and should be removed"));
+                }
             }
         }
         if (interaction != null) {

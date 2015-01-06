@@ -71,6 +71,10 @@ public abstract class AbstractAction {
         if (responses == null) {
             responses = new HashMap<>();
         }
+        if (responses.containsKey(statement)) {
+            throw new IllegalArgumentException("Duplicate "
+                    + statement.toString());
+        }
         responses.put(statement, response);
     }
 
@@ -88,15 +92,15 @@ public abstract class AbstractAction {
     public void add(ScriptLineTokenizer cmd) throws ParseError {
         Statement name = cmd.statement;
         if (name == Statement.YesText) {
-            addResponse(name, cmd.all());
+            addResponse(name, cmd.asText());
         } else if (name == Statement.NoText) {
-            addResponse(name, cmd.all());
+            addResponse(name, cmd.asText());
         } else if (name == Statement.ResumeText) {
-            addResponse(name, cmd.all());
+            addResponse(name, cmd.asText());
         } else if (name == Statement.StopText) {
-            addResponse(name, cmd.all());
+            addResponse(name, cmd.asText());
         } else if (name == Statement.CumText) {
-            addResponse(name, cmd.all());
+            addResponse(name, cmd.asText());
         } else if (name == Statement.ResetRange) {
             String args[] = cmd.args();
             addCommand(new ResetRange(Integer.parseInt(args[0]),
