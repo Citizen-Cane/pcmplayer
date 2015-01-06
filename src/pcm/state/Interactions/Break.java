@@ -70,11 +70,11 @@ public class Break implements Interaction, NeedsRangeProvider {
                     }
                 }, choices);
         if (result == cumText) {
-            TeaseLib.log("-> Stop");
+            TeaseLib.log("-> break:cum");
             teaseScript.teaseLib.host.stopSounds();
             return cumRange;
         } else if (result == stopText) {
-            TeaseLib.log("-> Stop");
+            TeaseLib.log("-> break:stop");
             teaseScript.teaseLib.host.stopSounds();
             return stopRange;
         } else {
