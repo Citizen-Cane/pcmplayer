@@ -89,7 +89,14 @@ public class Script extends AbstractAction {
         } else if (name == Statement.AskCheck) {
             String args[] = cmd.args();
             AskItem askItem = new AskItem(Integer.parseInt(args[0]),
-                    Integer.parseInt(args[1]), allArgsFrom(args, 2));
+                    Integer.parseInt(args[1]), AskItem.ALWAYS, allArgsFrom(
+                            args, 2));
+            askItems.put(askItem.n, askItem);
+        } else if (name == Statement.AskCheck2) {
+            String args[] = cmd.args();
+            AskItem askItem = new AskItem(Integer.parseInt(args[0]),
+                    Integer.parseInt(args[1]), Integer.parseInt(args[2]),
+                    allArgsFrom(args, 3));
             askItems.put(askItem.n, askItem);
         } else if (name == Statement.Menu) {
             String args[] = cmd.args();

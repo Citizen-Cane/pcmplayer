@@ -31,7 +31,6 @@ public class Stop implements Interaction, NeedsRangeProvider {
         String result = teaseScript.choose(visuals, stopText);
         if (result == stopText) {
             TeaseLib.log("-> Stop");
-            teaseScript.teaseLib.host.stopSounds();
             return stop;
         } else {
             return rangeProvider.getRange(script, action, null, teaseScript);

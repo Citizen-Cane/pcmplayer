@@ -47,7 +47,28 @@ public abstract class AbstractAction {
         // but the .NoImage statement is needed in some situations
 
         // Add-Ons
-        CumText, StopText, Inject, Break, ;
+
+        /**
+         * Text for the Cum button in brreak statemetn
+         */
+        CumText,
+
+        /**
+         * Text for the stop button
+         */
+        StopText,
+
+        /**
+         * Displasy break buttons while executing a given range
+         */
+        Break,
+
+        /**
+         * Displays the checkbox if the specified action number is set
+         */
+        AskCheck2,
+
+        ;
         public final static Map<String, Statement> lookup = new HashMap<>();
     }
 

@@ -51,11 +51,15 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
                 if (askItem.action == 0) {
                     message = askItem.message;
                 } else {
-                    Boolean value = state.get(askItem.action) == State.SET ? Boolean.TRUE
-                            : Boolean.FALSE;
-                    values.add(value);
-                    choices.add(askItem.message);
-                    indices.add(new Integer(askItem.action));
+                    int condition = askItem.condition;
+                    if (condition == AskItem.ALWAYS
+                            || state.get(condition).equals(State.SET)) {
+                        Boolean value = state.get(askItem.action) == State.SET ? Boolean.TRUE
+                                : Boolean.FALSE;
+                        values.add(value);
+                        choices.add(askItem.message);
+                        indices.add(new Integer(askItem.action));
+                    }
                 }
             }
         }
