@@ -13,11 +13,13 @@ import pcm.state.Visual;
 import pcm.state.Interactions.Ask;
 import pcm.state.Interactions.AskYesNo;
 import pcm.state.Interactions.Break;
+import pcm.state.Interactions.GoSub;
 import pcm.state.Interactions.LoadSbd;
 import pcm.state.Interactions.Pause;
 import pcm.state.Interactions.PopUp;
 import pcm.state.Interactions.Quit;
 import pcm.state.Interactions.Range;
+import pcm.state.Interactions.Return;
 import pcm.state.Interactions.Stop;
 import pcm.state.commands.Repeat;
 import pcm.state.commands.RepeatAdd;
@@ -292,6 +294,17 @@ public class Action extends AbstractAction {
             String args[] = cmd.args();
             setInteraction(new Break(new ActionRange(Integer.parseInt(args[0]),
                     Integer.parseInt(args[1])), rangesFromArgv(args, 2)));
+        } else if (name == Statement.GoSub) {
+            String args[] = cmd.args();
+            int start = Integer.parseInt(args[0]);
+            if (args.length > 1) {
+                int end = Integer.parseInt(args[1]);
+                setInteraction(new GoSub(new ActionRange(start, end)));
+            } else {
+                setInteraction(new GoSub(new ActionRange(start)));
+            }
+        } else if (name == Statement.Return) {
+            setInteraction(new Return());
         } else {
             super.add(cmd);
         }

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 import pcm.controller.ScriptCache;
 import teaselib.TeaseLib;
@@ -28,11 +29,13 @@ public class Script extends AbstractAction {
     private static final String MISTRESS = "mistress/";
 
     private final ScriptCache scriptCache;
+    public final Stack<ActionRange> stack;
 
     public Script(String name, ScriptCache scriptCache, BufferedReader reader)
             throws ParseError, ValidationError, IOException {
         this.name = name;
         this.scriptCache = scriptCache;
+        this.stack = scriptCache.stack;
         ScriptParser parser = new ScriptParser(this, reader);
         TeaseLib.log("Parsing script " + name);
         try {

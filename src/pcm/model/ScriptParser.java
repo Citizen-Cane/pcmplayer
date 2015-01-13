@@ -78,7 +78,7 @@ public class ScriptParser {
                         }
                         // Other statements
                         else if (line.startsWith(".")) {
-                            // .txt message have to be executed last,
+                            // .txt messages must be executed last,
                             // so this has to be added last
                             ScriptLineTokenizer cmd = new ScriptLineTokenizer(
                                     l, line);

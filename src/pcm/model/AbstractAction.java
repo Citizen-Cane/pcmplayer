@@ -68,6 +68,16 @@ public abstract class AbstractAction {
          */
         AskCheck2,
 
+        /**
+         * Execute a range as a sub program
+         */
+        GoSub,
+
+        /**
+         * Return from a sub program and continue execution
+         */
+        Return,
+
         ;
         public final static Map<String, Statement> lookup = new HashMap<>();
     }
