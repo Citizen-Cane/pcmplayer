@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 
 import pcm.model.AbstractAction.Statement;
-import pcm.state.visuals.Message;
+import pcm.state.visuals.SpokenMessage;
 import pcm.state.visuals.Txt;
 
 public class ScriptParser {
@@ -69,12 +69,16 @@ public class ScriptParser {
                 } else {
                     action = new Action(n);
                     previousActionNumber = action.number;
-                    Message message = null;
+                    SpokenMessage message = null;
                     Txt txt = null;
                     while ((line = readLine()) != null) {
                         // Start of a new action
                         if (line.toLowerCase().startsWith(ACTIONMATCH)) {
                             break;
+                        }
+                        // another message
+                        else if (line.startsWith("[]")) {
+                            message.newSection();
                         }
                         // Other statements
                         else if (line.startsWith(".")) {
@@ -101,7 +105,7 @@ public class ScriptParser {
                         // spoken Message
                         else {
                             if (message == null) {
-                                message = new Message(line);
+                                message = new SpokenMessage(line);
                             } else {
                                 message.add(line);
                             }
