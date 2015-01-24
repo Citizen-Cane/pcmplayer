@@ -95,12 +95,24 @@ public class Action extends AbstractAction {
                     addVisual(Statement.Txt, NoMessage.instance);
                 }
             } else {
-                // Without a delay, nothing is rendered
                 if (visuals.containsKey(Statement.NoImage)) {
+                    // .delay 0 + .noimage actions are compute actions,
+                    // So without a delay, nothing should be rendered
                     visuals.remove(Statement.NoImage);
                 }
                 if (visuals.containsKey(Statement.Message)) {
+                    // Without a delay, or delay == 0,
+                    // nothing would be rendered anyway
                     visuals.remove(Statement.Message);
+                }
+                if (visuals.containsKey(Statement.Image)) {
+                    // Otherwise, the image would be displayed in the next
+                    // action with a message, which would be incorrect
+                    // In the original PCMistress program,
+                    // such images wouldn't be rendered at all,
+                    // or just pop up for a fraction of a second
+                    throw new ValidationError(this,
+                            "Without a message, a Delay statement is needed to display the image");
                 }
             }
         }
