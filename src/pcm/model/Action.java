@@ -42,7 +42,6 @@ import pcm.state.visuals.Sound;
 public class Action extends AbstractAction {
     public final int number;
     public Integer poss = null;
-    public boolean say = false;
 
     public Vector<Condition> conditions = null;
     public LinkedHashMap<Statement, Visual> visuals = null;
@@ -185,7 +184,7 @@ public class Action extends AbstractAction {
                 throw new IllegalArgumentException(cmd.toString());
             }
         } else if (name == Statement.Say) {
-            say = true;
+            // Ignore, because message are spoken per default
         }
         // Commands
         else if (name == Statement.Must) {
@@ -404,18 +403,6 @@ public class Action extends AbstractAction {
         // TODO no .noimage + .delay 0
         // TODO Only actiondelay shopuld remain
         if (visuals != null) {
-            if (say == true && visuals.containsKey(Statement.Txt)) {
-                validationErrors.add(new ValidationError(this,
-                        "Can't speak .txt"));
-            }
-            if (say == true && !visuals.containsKey(Statement.Message)) {
-                validationErrors.add(new ValidationError(this,
-                        "Unexpected .say without message"));
-            }
-            if (say == false && visuals.containsKey(Statement.Message)) {
-                validationErrors.add(new ValidationError(this,
-                        "Must use .txt to display quiet message"));
-            }
             if (visuals.containsKey(Statement.Txt)
                     && visuals.containsKey(Statement.Message)) {
                 validationErrors.add(new ValidationError(this,
