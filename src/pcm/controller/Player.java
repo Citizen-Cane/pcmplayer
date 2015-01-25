@@ -1,8 +1,6 @@
 package pcm.controller;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,7 +25,7 @@ import teaselib.TeaseScript;
 import teaselib.texttospeech.ScriptScanner;
 import teaselib.texttospeech.TextToSpeechRecorder;
 
-public class Player extends TeaseScript {
+public abstract class Player extends TeaseScript {
 
     private static final String SCRIPTS = "scripts/";
 
@@ -44,18 +42,14 @@ public class Player extends TeaseScript {
     public static void main(String argv[]) {
         String resourcesBase = "scripts/";
         String assetRoot = "Mine/";
-        String libBase = "lib/TeaseLib";
-        URI[] uris = { new File(resourcesBase + "Mine Scripts.zip").toURI(),
-                new File(resourcesBase + "Mine Resources.zip").toURI(),
-                new File(resourcesBase + "Mine Mistress.zip").toURI(),
-                new File(resourcesBase + "Mine.jar").toURI(),
-                new File(libBase + "TeaseLib.jar").toURI() };
         try {
             // TODO Init resource in teaselib init, after initializing the logs
             // TODO Test whether all URI exist, without the IOException would be
             // inappropriate
             TeaseLib teaseLib = new TeaseLib(new DummyHost(),
-                    new DummyPersistence(), resourcesBase, uris, assetRoot);
+                    new DummyPersistence(), resourcesBase, assetRoot);
+            teaseLib.addAssets("Mine Scripts.zip", "Mine Resources.zip",
+                    "Mine Mistress.zip");
             ScriptCache scripts = new ScriptCache(teaseLib.resources, SCRIPTS);
             // Get the main script
             Script main = scripts.get("Mine");
@@ -83,8 +77,8 @@ public class Player extends TeaseScript {
         System.exit(0);
     }
 
-    public Player(TeaseLib teaseLib) throws IOException {
-        super(teaseLib, "en-us");
+    public Player(TeaseLib teaseLib, String locale) throws IOException {
+        super(teaseLib, locale);
         this.scripts = new ScriptCache(teaseLib.resources, SCRIPTS);
         this.state = new State(teaseLib.host, teaseLib.persistence);
         this.invokedOnAllSet = false;
