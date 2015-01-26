@@ -54,7 +54,7 @@ public abstract class Player extends TeaseScript {
             // Get the main script
             Script main = scripts.get("Mine");
             // and validate to load all the sub scripts
-            validate(main, new ArrayList<>());
+            validate(main, new ArrayList<ValidationError>());
             TextToSpeechRecorder recorder = new TextToSpeechRecorder(
                     teaseLib.resources);
             Actor actor = new Actor(Actor.Dominant, "en-us");
@@ -208,28 +208,45 @@ public abstract class Player extends TeaseScript {
         return action;
     }
 
-    public ActionRange execute(Action action) throws ScriptExecutionError {
+    public ActionRange execute(final Action action) throws ScriptExecutionError {
         // Mark this action as executed
         state.set(action);
         // Perform commands
         action.execute(state);
         // Render visuals
+        // It looks so much better with 1.8 ...
+        /*
         Runnable visuals = () -> {
             if (action.visuals != null) {
                 for (Visual visual : action.visuals.values()) {
-                    visual.render(this);
+                visual.render(this);
                 }
-                // One would think that we have to wait for all visuals to at
-                // least complete
-                // their mandatory part. But interactions perform differently,
-                // for instance
-                // class Ask displays its user interface while the visuals
-                // render, to allow
-                // the message to be spoken during checkbox selection.
-                // Interactions that eventually call choose(...) do this
-                // implicitly, but all other classes like Range have to call it
-                // when suitable,
-                // to prevent text and messages appearing too fast
+            }
+        };
+        */
+
+        // One would think that we have to wait for all visuals to
+        // at
+        // least complete
+        // their mandatory part. But interactions perform
+        // differently,
+        // for instance
+        // class Ask displays its user interface while the visuals
+        // render, to allow
+        // the message to be spoken during checkbox selection.
+        // Interactions that eventually call choose(...) do this
+        // implicitly, but all other classes like Range have to call
+        // it
+        // when suitable,
+        // to prevent text and messages appearing too fast
+        Runnable visuals = new Runnable() {
+            @Override
+            public void run() {
+                if (action.visuals != null) {
+                    for (Visual visual : action.visuals.values()) {
+                        visual.render(Player.this);
+                    }
+                }
             }
         };
         // May already have been called due to an implicit call to choice(),

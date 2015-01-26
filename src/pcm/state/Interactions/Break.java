@@ -43,12 +43,13 @@ public class Break implements Interaction, NeedsRangeProvider {
     }
 
     @Override
-    public ActionRange getRange(Script script, Action action, Runnable visuals,
-            TeaseScript teaseScript) throws ScriptExecutionError {
+    public ActionRange getRange(final Script script, final Action action,
+            Runnable visuals, final TeaseScript teaseScript)
+            throws ScriptExecutionError {
         // First run the visuals of this actions (likely not any, but who knows)
         visuals.run();
         // TODO change TeaseScript to Player since it's just that
-        Player player = (Player) teaseScript;
+        final Player player = (Player) teaseScript;
         List<String> choices = new ArrayList<>(2);
         String cumText = cumRange != null ? action.getResponseText(
                 Statement.CumText, script) : null;
@@ -57,18 +58,21 @@ public class Break implements Interaction, NeedsRangeProvider {
         }
         String stopText = action.getResponseText(Statement.StopText, script);
         choices.add(stopText);
-        String result = teaseScript.choose(
-                () -> {
-                    try {
-                        player.range = rangeProvider.getRange(script, action,
-                                null, teaseScript);
-                        player.play(actionRange);
-                    } catch (ScriptInterruptedException e) {
-                        // Expected
-                    } catch (Throwable t) {
-                        TeaseLib.log(this, t);
-                    }
-                }, choices);
+        Runnable playRange = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    player.range = rangeProvider.getRange(script, action, null,
+                            teaseScript);
+                    player.play(actionRange);
+                } catch (ScriptInterruptedException e) {
+                    // Expected
+                } catch (Throwable t) {
+                    TeaseLib.log(this, t);
+                }
+            }
+        };
+        String result = teaseScript.choose(playRange, choices);
         if (result == cumText) {
             TeaseLib.log("-> break:cum");
             return cumRange;
