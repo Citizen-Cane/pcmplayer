@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import pcm.controller.Player;
 import pcm.model.Action;
 import pcm.model.ActionRange;
 import pcm.model.AskItem;
@@ -16,7 +17,6 @@ import pcm.state.Interaction;
 import pcm.state.Interaction.NeedsRangeProvider;
 import pcm.state.State;
 import teaselib.TeaseLib;
-import teaselib.TeaseScript;
 
 public class Ask implements Command, Interaction, NeedsRangeProvider {
     private final int start;
@@ -38,7 +38,7 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
 
     @Override
     public ActionRange getRange(Script script, Action action, Runnable visuals,
-            TeaseScript teaseScript) throws ScriptExecutionError {
+            Player player) throws ScriptExecutionError {
         List<Boolean> values = new ArrayList<>();
         List<String> choices = new ArrayList<>();
         List<Integer> indices = new ArrayList<>();
@@ -67,7 +67,7 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
         visuals.run();
         // Don't wait, display checkboxes while displaying the message
         List<Boolean> results;
-        while ((results = teaseScript.showCheckboxes(message, choices, values)) == null)
+        while ((results = player.showCheckboxes(message, choices, values)) == null)
             ;
         for (int i = 0; i < indices.size(); i++) {
             if (results.get(i) == true) {
@@ -76,7 +76,7 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
                 state.unset(indices.get(i));
             }
         }
-        return rangeProvider.getRange(script, action, null, teaseScript);
+        return rangeProvider.getRange(script, action, null, player);
     }
 
     @Override

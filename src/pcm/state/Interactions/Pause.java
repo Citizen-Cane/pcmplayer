@@ -3,6 +3,7 @@ package pcm.state.Interactions;
 import java.util.ArrayList;
 import java.util.List;
 
+import pcm.controller.Player;
 import pcm.model.AbstractAction.Statement;
 import pcm.model.Action;
 import pcm.model.ActionRange;
@@ -12,21 +13,20 @@ import pcm.model.ScriptExecutionError;
 import pcm.model.ValidationError;
 import pcm.state.Interaction;
 import teaselib.TeaseLib;
-import teaselib.TeaseScript;
 
 public class Pause implements Interaction, Interaction.NeedsRangeProvider {
     private Interaction rangeProvider = null;
 
     @Override
     public ActionRange getRange(Script script, Action action, Runnable visuals,
-            TeaseScript teaseScript) throws ScriptExecutionError {
+            Player player) throws ScriptExecutionError {
         String resume = action.getResponseText(Statement.ResumeText, script);
         TeaseLib.log("Pause: " + resume);
         List<String> choices = new ArrayList<>(1);
         choices.add(resume);
         visuals.run();
-        teaseScript.choose(choices);
-        return rangeProvider.getRange(script, action, null, teaseScript);
+        player.choose(choices);
+        return rangeProvider.getRange(script, action, null, player);
     }
 
     @Override

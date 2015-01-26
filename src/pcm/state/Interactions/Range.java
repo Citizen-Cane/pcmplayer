@@ -2,13 +2,13 @@ package pcm.state.Interactions;
 
 import java.util.List;
 
+import pcm.controller.Player;
 import pcm.model.Action;
 import pcm.model.ActionRange;
 import pcm.model.Script;
 import pcm.model.ValidationError;
 import pcm.state.Interaction;
 import teaselib.TeaseLib;
-import teaselib.TeaseScript;
 
 public class Range implements Interaction {
 
@@ -27,11 +27,11 @@ public class Range implements Interaction {
 
     @Override
     public ActionRange getRange(Script script, Action action, Runnable visuals,
-            TeaseScript teaseScript) {
+            Player player) {
         if (visuals != null) {
             visuals.run();
         }
-        teaseScript.completeAll();
+        player.completeAll();
         ActionRange actionRange = new ActionRange(start, end);
         TeaseLib.log(actionRange.toString());
         return actionRange;

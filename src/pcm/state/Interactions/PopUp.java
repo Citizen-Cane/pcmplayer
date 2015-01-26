@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import pcm.controller.Player;
 import pcm.model.Action;
 import pcm.model.ActionRange;
 import pcm.model.MenuItem;
@@ -12,7 +13,6 @@ import pcm.model.ScriptExecutionError;
 import pcm.model.ValidationError;
 import pcm.state.Interaction;
 import teaselib.TeaseLib;
-import teaselib.TeaseScript;
 
 public class PopUp implements Interaction {
     private final int start;
@@ -25,7 +25,7 @@ public class PopUp implements Interaction {
 
     @Override
     public ActionRange getRange(Script script, Action action, Runnable visuals,
-            TeaseScript teaseScript) throws ScriptExecutionError {
+            Player player) throws ScriptExecutionError {
         List<MenuItem> items = new ArrayList<>();
         List<String> choices = new ArrayList<>();
         Map<Integer, MenuItem> menuItems = script.menuItems;
@@ -39,8 +39,8 @@ public class PopUp implements Interaction {
         }
         TeaseLib.log(getClass().getSimpleName() + " " + choices.toString());
         visuals.run();
-        teaseScript.completeMandatory();
-        String result = teaseScript.choose(choices);
+        player.completeMandatory();
+        String result = player.choose(choices);
         return items.get(choices.indexOf(result)).range;
     }
 

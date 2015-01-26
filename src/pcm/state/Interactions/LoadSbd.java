@@ -3,6 +3,7 @@ package pcm.state.Interactions;
 import java.io.IOException;
 import java.util.List;
 
+import pcm.controller.Player;
 import pcm.model.Action;
 import pcm.model.ActionLoadSbd;
 import pcm.model.ActionRange;
@@ -11,7 +12,6 @@ import pcm.model.Script;
 import pcm.model.ScriptExecutionError;
 import pcm.model.ValidationError;
 import pcm.state.Interaction;
-import teaselib.TeaseScript;
 
 public class LoadSbd implements Interaction {
     private final String scriptName;
@@ -30,9 +30,9 @@ public class LoadSbd implements Interaction {
 
     @Override
     public ActionRange getRange(Script script, Action action, Runnable visuals,
-            TeaseScript teaseScript) throws ScriptExecutionError {
+            Player player) throws ScriptExecutionError {
         visuals.run();
-        teaseScript.completeAll();
+        player.completeAll();
         Script loadSbd;
         try {
             loadSbd = script.load(scriptName);

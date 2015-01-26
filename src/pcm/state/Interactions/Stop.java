@@ -2,6 +2,7 @@ package pcm.state.Interactions;
 
 import java.util.List;
 
+import pcm.controller.Player;
 import pcm.model.AbstractAction.Statement;
 import pcm.model.Action;
 import pcm.model.ActionRange;
@@ -12,7 +13,6 @@ import pcm.model.ValidationError;
 import pcm.state.Interaction;
 import pcm.state.Interaction.NeedsRangeProvider;
 import teaselib.TeaseLib;
-import teaselib.TeaseScript;
 
 public class Stop implements Interaction, NeedsRangeProvider {
 
@@ -25,15 +25,15 @@ public class Stop implements Interaction, NeedsRangeProvider {
 
     @Override
     public ActionRange getRange(Script script, Action action, Runnable visuals,
-            TeaseScript teaseScript) throws ScriptExecutionError {
+            Player player) throws ScriptExecutionError {
         String stopText = action.getResponseText(Statement.StopText, script);
         TeaseLib.log(getClass().getSimpleName() + " " + toString());
-        String result = teaseScript.choose(visuals, stopText);
+        String result = player.choose(visuals, stopText);
         if (result == stopText) {
             TeaseLib.log("-> Stop");
             return stop;
         } else {
-            return rangeProvider.getRange(script, action, null, teaseScript);
+            return rangeProvider.getRange(script, action, null, player);
         }
     }
 

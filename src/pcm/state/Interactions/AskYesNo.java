@@ -3,6 +3,7 @@ package pcm.state.Interactions;
 import java.util.ArrayList;
 import java.util.List;
 
+import pcm.controller.Player;
 import pcm.model.AbstractAction.Statement;
 import pcm.model.Action;
 import pcm.model.ActionRange;
@@ -11,7 +12,6 @@ import pcm.model.ScriptExecutionError;
 import pcm.model.ValidationError;
 import pcm.state.Interaction;
 import teaselib.TeaseLib;
-import teaselib.TeaseScript;
 
 public class AskYesNo implements Interaction {
     private final int startYes;
@@ -28,7 +28,7 @@ public class AskYesNo implements Interaction {
 
     @Override
     public ActionRange getRange(Script script, Action action, Runnable visuals,
-            final TeaseScript teaseScript) throws ScriptExecutionError {
+            final Player player) throws ScriptExecutionError {
         String yes = action.getResponseText(Statement.YesText, script);
         String no = action.getResponseText(Statement.NoText, script);
         TeaseLib.log("AskYesNo: '" + yes + "', '" + no + '+');
@@ -36,7 +36,7 @@ public class AskYesNo implements Interaction {
         choices.add(yes);
         choices.add(no);
         visuals.run();
-        if (teaseScript.choose(choices) == yes) {
+        if (player.choose(choices) == yes) {
             TeaseLib.log("-> Yes");
             return new ActionRange(startYes, endYes);
         } else {

@@ -16,7 +16,6 @@ import pcm.state.Interaction;
 import pcm.state.Interaction.NeedsRangeProvider;
 import teaselib.ScriptInterruptedException;
 import teaselib.TeaseLib;
-import teaselib.TeaseScript;
 
 public class Break implements Interaction, NeedsRangeProvider {
     private final ActionRange actionRange;
@@ -44,12 +43,9 @@ public class Break implements Interaction, NeedsRangeProvider {
 
     @Override
     public ActionRange getRange(final Script script, final Action action,
-            Runnable visuals, final TeaseScript teaseScript)
-            throws ScriptExecutionError {
-        // First run the visuals of this actions (likely not any, but who knows)
+            Runnable visuals, final Player player) throws ScriptExecutionError {
+        // First run the visuals of this action
         visuals.run();
-        // TODO change TeaseScript to Player since it's just that
-        final Player player = (Player) teaseScript;
         List<String> choices = new ArrayList<>(2);
         String cumText = cumRange != null ? action.getResponseText(
                 Statement.CumText, script) : null;
@@ -63,7 +59,7 @@ public class Break implements Interaction, NeedsRangeProvider {
             public void run() {
                 try {
                     player.range = rangeProvider.getRange(script, action, null,
-                            teaseScript);
+                            player);
                     player.play(actionRange);
                 } catch (ScriptInterruptedException e) {
                     // Expected
@@ -72,7 +68,7 @@ public class Break implements Interaction, NeedsRangeProvider {
                 }
             }
         };
-        String result = teaseScript.choose(playRange, choices);
+        String result = player.choose(playRange, choices);
         if (result == cumText) {
             TeaseLib.log("-> break:cum");
             return cumRange;

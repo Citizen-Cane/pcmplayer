@@ -2,6 +2,7 @@ package pcm.state.Interactions;
 
 import java.util.List;
 
+import pcm.controller.Player;
 import pcm.model.Action;
 import pcm.model.ActionRange;
 import pcm.model.ParseError;
@@ -10,7 +11,6 @@ import pcm.model.ScriptExecutionError;
 import pcm.model.ValidationError;
 import pcm.state.Interaction;
 import teaselib.TeaseLib;
-import teaselib.TeaseScript;
 
 /**
  * @author someone
@@ -29,10 +29,10 @@ public class GoSub implements Interaction, Interaction.NeedsRangeProvider {
 
     @Override
     public ActionRange getRange(Script script, Action action, Runnable visuals,
-            TeaseScript teaseScript) throws ScriptExecutionError {
+            Player player) throws ScriptExecutionError {
         TeaseLib.log("Gosub -> " + range.toString());
         script.stack.push(rangeProvider.getRange(script, action, null,
-                teaseScript));
+                player));
         return range;
     }
 
