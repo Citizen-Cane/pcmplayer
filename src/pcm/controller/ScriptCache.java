@@ -17,7 +17,7 @@ import teaselib.TeaseLib;
 
 public class ScriptCache {
 
-    Map<String, SoftReference<Script>> cache = new HashMap<>();
+    Map<String, SoftReference<Script>> cache = new HashMap<String, SoftReference<Script>>();
     ResourceLoader resourceLoader;
     final String path;
     public final Stack<ActionRange> stack;
@@ -25,7 +25,7 @@ public class ScriptCache {
     public ScriptCache(ResourceLoader resourceLoader, String path) {
         this.resourceLoader = resourceLoader;
         this.path = path;
-        stack = new Stack<>();
+        stack = new Stack<ActionRange>();
     }
 
     public Script get(String name) throws ParseError, ValidationError,
@@ -39,7 +39,7 @@ public class ScriptCache {
             TeaseLib.log("Using cached script " + name);
         } else {
             script = new Script(name, this, resourceLoader.script(path + name));
-            cache.put(key, new SoftReference<>(script));
+            cache.put(key, new SoftReference<Script>(script));
         }
         return script;
     }
@@ -47,6 +47,6 @@ public class ScriptCache {
     public Set<String> names() {
         // Avoid concurrent modification exception when adding scripts while
         // iterating names
-        return new HashSet<>(cache.keySet());
+        return new HashSet<String>(cache.keySet());
     }
 }

@@ -30,7 +30,7 @@ public class ScriptLineTokenizer {
 
     public String[] args() {
         if (args == null) {
-            Vector<String> parsed = new Vector<>();
+            Vector<String> parsed = new Vector<String>();
             while (tokenizer.hasMoreTokens()) {
                 parsed.add(tokenizer.nextToken());
             }

@@ -22,7 +22,7 @@ public class Pause implements Interaction, Interaction.NeedsRangeProvider {
             Player player) throws ScriptExecutionError {
         String resume = action.getResponseText(Statement.ResumeText, script);
         TeaseLib.log("Pause: " + resume);
-        List<String> choices = new ArrayList<>(1);
+        List<String> choices = new ArrayList<String>(1);
         choices.add(resume);
         visuals.run();
         player.choose(choices);

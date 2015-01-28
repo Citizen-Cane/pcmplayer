@@ -32,7 +32,7 @@ public class AskYesNo implements Interaction {
         String yes = action.getResponseText(Statement.YesText, script);
         String no = action.getResponseText(Statement.NoText, script);
         TeaseLib.log("AskYesNo: '" + yes + "', '" + no + '+');
-        final List<String> choices = new ArrayList<>();
+        final List<String> choices = new ArrayList<String>();
         choices.add(yes);
         choices.add(no);
         visuals.run();

@@ -52,7 +52,7 @@ public class Script extends AbstractAction {
     }
 
     private void scriptDefaults() {
-        responses = new HashMap<>();
+        responses = new HashMap<Statement, String>();
         responses.put(Statement.YesText, "Yes, Miss");
         responses.put(Statement.NoText, "No, Miss");
         responses.put(Statement.ResumeText, "Ready, Miss");

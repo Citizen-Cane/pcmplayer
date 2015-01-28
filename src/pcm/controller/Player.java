@@ -117,7 +117,7 @@ public abstract class Player extends TeaseScript {
     }
 
     private void validateAll() throws ParseError, ValidationError, IOException {
-        List<ValidationError> validationErrors = new ArrayList<>();
+        List<ValidationError> validationErrors = new ArrayList<ValidationError>();
         validate(script, validationErrors);
         for (String s : scripts.names()) {
             Script other = scripts.get(s);
@@ -174,7 +174,7 @@ public abstract class Player extends TeaseScript {
                 }
             } catch (ScriptInterruptedException e) {
                 throw e;
-            } catch (ScriptError e) {
+            } catch (ScriptExecutionError e) {
                 throw e;
             }
             // TODO OnClose handler
@@ -216,14 +216,9 @@ public abstract class Player extends TeaseScript {
         // Render visuals
         // It looks so much better with 1.8 ...
         /*
-        Runnable visuals = () -> {
-            if (action.visuals != null) {
-                for (Visual visual : action.visuals.values()) {
-                visual.render(this);
-                }
-            }
-        };
-        */
+         * Runnable visuals = () -> { if (action.visuals != null) { for (Visual
+         * visual : action.visuals.values()) { visual.render(this); } } };
+         */
 
         // One would think that we have to wait for all visuals to
         // at
@@ -469,7 +464,7 @@ public abstract class Player extends TeaseScript {
     private void showError(String error) {
         TeaseLib.log(error);
         teaseLib.host.show(error);
-        List<String> choices = new ArrayList<>();
+        List<String> choices = new ArrayList<String>();
         choices.add("Oh Dear");
         choose(choices);
     }

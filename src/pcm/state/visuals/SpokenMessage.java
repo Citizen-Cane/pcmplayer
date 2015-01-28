@@ -8,17 +8,17 @@ import pcm.state.Visual;
 
 public class SpokenMessage implements Visual {
 
-    List<List<String>> messages = new Vector<>();
+    List<List<String>> messages = new Vector<List<String>>();
     Vector<String> message = null;
 
     public SpokenMessage(String text) {
-        this.messages = new Vector<>();
+        this.messages = new Vector<List<String>>();
         add(text);
     }
 
     public void add(String text) {
         if (message == null) {
-            message = new Vector<>();
+            message = new Vector<String>();
             messages.add(message);
         }
         message.add(text);

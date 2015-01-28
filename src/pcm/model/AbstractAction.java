@@ -79,7 +79,7 @@ public abstract class AbstractAction {
         Return,
 
         ;
-        public final static Map<String, Statement> lookup = new HashMap<>();
+        public final static Map<String, Statement> lookup = new HashMap<String, Statement>();
     }
 
     {
@@ -93,14 +93,14 @@ public abstract class AbstractAction {
 
     public void addCommand(Command command) {
         if (this.commands == null) {
-            this.commands = new Vector<>();
+            this.commands = new Vector<Command>();
         }
         commands.add(command);
     }
 
     void addResponse(Statement statement, String response) {
         if (responses == null) {
-            responses = new HashMap<>();
+            responses = new HashMap<Statement, String>();
         }
         if (responses.containsKey(statement)) {
             throw new IllegalArgumentException("Duplicate "

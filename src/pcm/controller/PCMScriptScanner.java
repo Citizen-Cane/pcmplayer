@@ -30,7 +30,7 @@ public class PCMScriptScanner implements ScriptScanner {
 
     @Override
     public Iterator<Message> iterator() {
-        Vector<Message> r = new Vector<>();
+        Vector<Message> r = new Vector<Message>();
         for (Action action : script.actions.values()) {
             Map<Statement, Visual> visuals = action.visuals;
             if (visuals != null) {

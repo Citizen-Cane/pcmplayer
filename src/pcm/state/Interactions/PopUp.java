@@ -26,8 +26,8 @@ public class PopUp implements Interaction {
     @Override
     public ActionRange getRange(Script script, Action action, Runnable visuals,
             Player player) throws ScriptExecutionError {
-        List<MenuItem> items = new ArrayList<>();
-        List<String> choices = new ArrayList<>();
+        List<MenuItem> items = new ArrayList<MenuItem>();
+        List<String> choices = new ArrayList<String>();
         Map<Integer, MenuItem> menuItems = script.menuItems;
         for (int i = start; i <= end; i++) {
             Integer index = new Integer(i);

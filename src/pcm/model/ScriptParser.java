@@ -122,7 +122,12 @@ public class ScriptParser {
                     }
                     action.finalizeParsing();
                 }
-            } catch (ScriptError e) {
+            } catch (ParseError e) {
+                if (e.script == null) {
+                    e.script = script;
+                }
+                throw e;
+            } catch (ValidationError e) {
                 if (e.script == null) {
                     e.script = script;
                 }

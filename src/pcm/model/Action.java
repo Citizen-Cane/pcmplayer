@@ -119,14 +119,14 @@ public class Action extends AbstractAction {
 
     public void addCondition(Condition condition) {
         if (this.conditions == null) {
-            this.conditions = new Vector<>();
+            this.conditions = new Vector<Condition>();
         }
         conditions.add(condition);
     }
 
     public void addVisual(Statement statement, Visual visual) {
         if (this.visuals == null) {
-            this.visuals = new LinkedHashMap<>();
+            this.visuals = new LinkedHashMap<Statement, Visual>();
         }
         visuals.put(statement, visual);
     }
@@ -331,7 +331,7 @@ public class Action extends AbstractAction {
      * @return
      */
     private Map<String, ActionRange> rangesFromArgv(String[] args, int index) {
-        Map<String, ActionRange> ranges = new LinkedHashMap<>();
+        Map<String, ActionRange> ranges = new LinkedHashMap<String, ActionRange>();
         while (index < args.length) {
             String key = args[index++];
             ActionRange actionRange;

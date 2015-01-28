@@ -46,7 +46,7 @@ public class Break implements Interaction, NeedsRangeProvider {
             Runnable visuals, final Player player) throws ScriptExecutionError {
         // First run the visuals of this action
         visuals.run();
-        List<String> choices = new ArrayList<>(2);
+        List<String> choices = new ArrayList<String>(2);
         String cumText = cumRange != null ? action.getResponseText(
                 Statement.CumText, script) : null;
         if (cumRange != null) {
