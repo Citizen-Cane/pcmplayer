@@ -152,12 +152,6 @@ public class Action extends AbstractAction {
         } else if (name == Statement.Txt) {
             throw new IllegalStateException(name.toString());
             // addTxt(cmd.all());
-        } else if (name == Statement.Pause) {
-            String resumeText = cmd.asText();
-            if (!resumeText.isEmpty()) {
-                addResponse(Statement.ResumeText, resumeText);
-            }
-            setInteraction(new Pause());
         } else if (name == Statement.Delay || name == Statement.ActionDelay) {
             String args[] = cmd.args();
             if (args.length == 1) {
@@ -275,6 +269,12 @@ public class Action extends AbstractAction {
             } else {
                 setInteraction(new Range(start));
             }
+        } else if (name == Statement.Pause) {
+            String resumeText = cmd.asText();
+            if (!resumeText.isEmpty()) {
+                addResponse(Statement.ResumeText, resumeText);
+            }
+            setInteraction(new Pause());
         } else if (name == Statement.YesNo) {
             String args[] = cmd.args();
             setInteraction(new AskYesNo(Integer.parseInt(args[0]),
