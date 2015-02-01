@@ -463,7 +463,7 @@ public abstract class Player extends TeaseScript {
 
     private void showError(String error) {
         TeaseLib.log(error);
-        teaseLib.host.show(error);
+        teaseLib.host.show(null, error);
         List<String> choices = new ArrayList<String>();
         choices.add("Oh Dear");
         choose(choices);
