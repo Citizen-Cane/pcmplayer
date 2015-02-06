@@ -48,16 +48,28 @@ public class Script extends AbstractAction {
             e.script = this;
             throw e;
         }
-        scriptDefaults();
+        completeScriptDefaults();
     }
 
-    private void scriptDefaults() {
-        responses = new HashMap<Statement, String>();
-        responses.put(Statement.YesText, "Yes, Miss");
-        responses.put(Statement.NoText, "No, Miss");
-        responses.put(Statement.ResumeText, "Ready, Miss");
-        responses.put(Statement.StopText, "Please stop, Miss");
-        responses.put(Statement.CumText, "I came, Miss");
+    private void completeScriptDefaults() {
+        if (responses == null) {
+            responses = new HashMap<Statement, String>();
+            if (!responses.containsKey(Statement.YesText)) {
+                responses.put(Statement.YesText, "Yes, Miss");
+            }
+            if (!responses.containsKey(Statement.NoText)) {
+                responses.put(Statement.NoText, "No, Miss");
+            }
+            if (!responses.containsKey(Statement.ResumeText)) {
+                responses.put(Statement.ResumeText, "Ready, Miss");
+            }
+            if (!responses.containsKey(Statement.StopText)) {
+                responses.put(Statement.StopText, "Please stop, Miss");
+            }
+            if (!responses.containsKey(Statement.CumText)) {
+                responses.put(Statement.CumText, "I came, Miss");
+            }
+        }
     }
 
     public Script load(String name) throws ParseError, ValidationError,
