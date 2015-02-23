@@ -15,6 +15,7 @@ import pcm.model.ScriptExecutionError;
 import pcm.model.ValidationError;
 import pcm.state.Condition;
 import pcm.state.State;
+import pcm.state.Validatable;
 import pcm.state.Visual;
 import teaselib.Actor;
 import teaselib.DummyHost;
@@ -420,6 +421,14 @@ public abstract class Player extends TeaseScript {
             // }
             // }
             action.validate(script, validationErrors);
+            if (action.visuals != null) {
+                for (Visual visual : action.visuals.values()) {
+                    if (visual instanceof Validatable) {
+                        ((Validatable) visual).validate(script, action,
+                                validationErrors);
+                    }
+                }
+            }
             for (ScriptError scriptError : validationErrors) {
                 if (scriptError.script == null) {
                     scriptError.script = script;
