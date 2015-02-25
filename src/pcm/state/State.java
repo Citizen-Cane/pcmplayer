@@ -137,11 +137,11 @@ public class State {
     }
 
     private String read(String name) {
-        return persistence.read(script.name + "." + name);
+        return persistence.get(script.name + "." + name);
     }
 
     private void write(String name, Object value) {
-        persistence.write(script.name + "." + name,
+        persistence.set(script.name + "." + name,
                 value != null ? value.toString() : null);
     }
 
