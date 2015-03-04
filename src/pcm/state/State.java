@@ -32,6 +32,7 @@ import teaselib.Persistence;
  */
 public class State {
 
+    private final String root;
     private Script script = null;
     private final Host renderer;
     private final Persistence persistence;
@@ -47,7 +48,8 @@ public class State {
 
     private static final String TIMEKEYS = "TimeKeys";
 
-    public State(Host renderer, Persistence persistence) {
+    public State(String root, Host renderer, Persistence persistence) {
+        this.root = root;
         this.renderer = renderer;
         this.persistence = persistence;
     }
@@ -137,21 +139,12 @@ public class State {
     }
 
     private String read(String name) {
-        return persistence.get(script.name + "." + name);
+        return persistence.get(root + "." + script.name + "." + name);
     }
 
     private void write(String name, Object value) {
-        persistence.set(script.name + "." + name,
+        persistence.set(root + "." + script.name + "." + name,
                 value != null ? value.toString() : null);
-    }
-
-    public Integer get(int n) {
-        Integer n_ = n;
-        if (data.containsKey(n_)) {
-            return data.get(n_);
-        } else {
-            return UNSET;
-        }
     }
 
     public Integer get(Integer n) {
@@ -162,15 +155,14 @@ public class State {
         }
     }
 
-    public void set(int n) {
-        data.put(new Integer(n), SET);
+    public void set(Integer n) {
+        data.put(n, SET);
         times.remove(n);
     }
 
     public void set(Collection<Integer> set) {
         for (Integer n : set) {
-            data.put(n, SET);
-            times.remove(n);
+            set(n);
         }
     }
 
@@ -183,6 +175,7 @@ public class State {
     }
 
     public void setTime(Integer n, Date date) {
+        data.remove(n);
         times.put(n, date);
     }
 
@@ -193,33 +186,33 @@ public class State {
     }
 
     public void unset(Integer n) {
-        data.put(n, UNSET);
+        data.remove(n);
         times.remove(n);
     }
 
     public void resetRange(int start, int end) {
         for (int i = start; i <= end; i++) {
             Integer n = new Integer(i);
-            if (data.containsKey(n)) {
-                data.remove(n);
-                times.remove(n);
-            }
+            unset(n);
         }
     }
 
     public void repeatSet(Integer n, int m) {
         Integer v = -m;
         data.put(n, v.equals(SET) ? SET : v);
+        times.remove(n);
     }
 
     public void repeatAdd(Integer n, int m) {
         Integer v = data.containsKey(n) ? data.get(n) - m : -m;
         data.put(n, v.equals(SET) ? SET : v);
+        times.remove(n);
     }
 
     public void repeatDel(Integer n, int m) {
         int v = data.containsKey(n) ? data.get(n) + m : 0;
         data.put(n, v < SET ? new Integer(v) : SET);
+        times.remove(n);
     }
 
     public long getTime() {

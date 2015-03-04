@@ -14,6 +14,7 @@ import pcm.model.ScriptError;
 import pcm.model.ScriptExecutionError;
 import pcm.model.ValidationError;
 import pcm.state.Condition;
+import pcm.state.MappedState;
 import pcm.state.State;
 import pcm.state.Validatable;
 import pcm.state.Visual;
@@ -23,6 +24,7 @@ import teaselib.DummyPersistence;
 import teaselib.ScriptInterruptedException;
 import teaselib.TeaseLib;
 import teaselib.TeaseScript;
+import teaselib.persistence.Toys;
 import teaselib.texttospeech.ScriptScanner;
 import teaselib.texttospeech.TextToSpeechRecorder;
 
@@ -37,7 +39,7 @@ public abstract class Player extends TeaseScript {
 
     Script script = null;
     public ActionRange range = null;
-    private final State state;
+    private final MappedState state;
     boolean invokedOnAllSet;
 
     public static void main(String argv[]) {
@@ -81,8 +83,35 @@ public abstract class Player extends TeaseScript {
     public Player(TeaseLib teaseLib, String locale) throws IOException {
         super(teaseLib, locale);
         this.scripts = new ScriptCache(teaseLib.resources, SCRIPTS);
-        this.state = new State(teaseLib.host, teaseLib.persistence);
         this.invokedOnAllSet = false;
+        MappedState mappedState = new MappedState(this,
+                teaseLib.resources.namespace, teaseLib.host,
+                teaseLib.persistence);
+        this.state = mappedState;
+        // Test code for mappings, should end up in script
+        // Toy categories - multiple items on host
+        mappedState.addMapping(311, get(Toys.Wrist_Restraints));
+        mappedState.addMapping(312, get(Toys.Ankle_Restraints));
+        mappedState.addMapping(325, get(Toys.Collars));
+        mappedState.addMapping(340, get(Toys.Gags));
+        mappedState.addMapping(350, get(Toys.Buttplugs));
+        mappedState.addMapping(370, get(Toys.Spanking_Implements));
+        mappedState.addMapping(380, get(Toys.Chastity_Devices));
+        mappedState.addMapping(389, get(Toys.Vibrators));
+
+        // Toy simple mappings
+        mappedState.addMapping(301, get(Toys.Nipple_clamps));
+        mappedState.addMapping(310, get(Toys.Clothespins));
+        mappedState.addMapping(330, get(Toys.Rope));
+        mappedState.addMapping(334, get(Toys.Chains));
+        mappedState.addMapping(382, get(Toys.Blindfold));
+        mappedState.addMapping(384, get(Toys.Humbler));
+        mappedState.addMapping(388, get(Toys.Anal_Dildo));
+
+        mappedState.addMapping(383, get(Toys.Enema_Kit));
+        // TODO mappedState.addMapping(383, get(Toys.Enema_Bulb));
+        mappedState.addMapping(387, get(Toys.Pussy_Clamps));
+        mappedState.addMapping(385, get(Toys.Ball_Stretcher));
     }
 
     public void play(String name, ActionRange startRange) {
@@ -240,7 +269,7 @@ public abstract class Player extends TeaseScript {
             public void run() {
                 if (action.visuals != null) {
                     for (Visual visual : action.visuals.values()) {
-                        visual.render(Player.this);
+                        render(visual);
                     }
                 }
             }
@@ -251,6 +280,10 @@ public abstract class Player extends TeaseScript {
         ActionRange range = action.interaction.getRange(script, action,
                 visuals, this);
         return range;
+    }
+
+    public void render(Visual visual) {
+        visual.render(this);
     }
 
     /**
