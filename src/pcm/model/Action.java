@@ -11,7 +11,7 @@ import pcm.state.Interaction;
 import pcm.state.Interaction.NeedsRangeProvider;
 import pcm.state.Visual;
 import pcm.state.Interactions.Ask;
-import pcm.state.Interactions.AskYesNo;
+import pcm.state.Interactions.YesNo;
 import pcm.state.Interactions.Break;
 import pcm.state.Interactions.GoSub;
 import pcm.state.Interactions.LoadSbd;
@@ -52,7 +52,7 @@ public class Action extends AbstractAction {
         this.number = n;
     }
 
-    public void finalizeParsing() throws ValidationError {
+    public void finalizeParsing(Script script) throws ValidationError {
         if (visuals != null) {
             // Get delay
             final Visual visual;
@@ -73,7 +73,8 @@ public class Action extends AbstractAction {
             if (hasMessageStatement && hasTxt)
                 throw new ValidationError(
                         this,
-                        "Spoken messages and .txt are exclusive because PCMPlayer/TeaseLib supports only one text area");
+                        "Spoken messages and .txt are exclusive because PCMPlayer/TeaseLib supports only one text area",
+                        script);
             final boolean hasMessage = hasMessageStatement || hasTxt;
             final boolean hasDelay;
             if (visual instanceof Delay) {
@@ -110,8 +111,10 @@ public class Action extends AbstractAction {
                     // In the original PCMistress program,
                     // such images wouldn't be rendered at all,
                     // or just pop up for a fraction of a second
-                    throw new ValidationError(this,
-                            "Without a message, a Delay statement is needed to display the image");
+                    throw new ValidationError(
+                            this,
+                            "Without a message, a Delay statement is needed to display the image",
+                            script);
                 }
             }
         }
@@ -277,7 +280,7 @@ public class Action extends AbstractAction {
             setInteraction(new Pause());
         } else if (name == Statement.YesNo) {
             String args[] = cmd.args();
-            setInteraction(new AskYesNo(Integer.parseInt(args[0]),
+            setInteraction(new YesNo(Integer.parseInt(args[0]),
                     Integer.parseInt(args[1]), Integer.parseInt(args[2]),
                     Integer.parseInt(args[3])));
         } else if (name == Statement.LoadSbd) {
@@ -397,7 +400,8 @@ public class Action extends AbstractAction {
         if (poss != null) {
             if (poss == 0 || poss > 100) {
                 validationErrors.add(new ValidationError(this,
-                        "Invalid value for poss statement (" + poss + ")"));
+                        "Invalid value for poss statement (" + poss + ")",
+                        script));
             }
         }
         // TODO no .noimage + .delay 0
@@ -406,7 +410,7 @@ public class Action extends AbstractAction {
             if (visuals.containsKey(Statement.Txt)
                     && visuals.containsKey(Statement.Message)) {
                 validationErrors.add(new ValidationError(this,
-                        "Both .txt and message is supported"));
+                        "Both .txt and message is supported", script));
             }
             // delay 0 & noimage
             if (visuals.containsKey(Statement.Delay)
@@ -414,25 +418,31 @@ public class Action extends AbstractAction {
                 Delay delay = (Delay) visuals.get(Statement.Delay);
                 if (delay.to == 0) {
                     validationErrors
-                            .add(new ValidationError(this,
-                                    "Delay 0 + NoImage is deprecated and should be removed"));
+                            .add(new ValidationError(
+                                    this,
+                                    "Delay 0 + NoImage is deprecated and should be removed",
+                                    script));
                 }
             } else if (visuals.containsKey(Statement.Delay)) {
                 Delay delay = (Delay) visuals.get(Statement.Delay);
                 if (delay.to == 0) {
                     validationErrors.add(new ValidationError(this,
-                            "Delay 0 is deprecated and should be removed"));
+                            "Delay 0 is deprecated and should be removed",
+                            script));
                 }
             }
         }
         if (interaction != null) {
             try {
                 interaction.validate(script, this, validationErrors);
+            } catch (ParseError e) {
+                validationErrors.add(new ValidationError(this, e));
             } catch (Exception e) {
-                validationErrors.add(new ValidationError(this, e.getMessage()));
+                validationErrors.add(new ValidationError(this, e, script));
             }
         } else {
-            validationErrors.add(new ValidationError(this, "No interaction"));
+            validationErrors.add(new ValidationError(this, "No interaction",
+                    script));
         }
     }
 

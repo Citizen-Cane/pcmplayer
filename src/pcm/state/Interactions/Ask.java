@@ -91,8 +91,8 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
                         // Render message for selecting the mapped items
                         Action action2 = script.actions.get(n);
                         if (action2 == null) {
-                            throw new ScriptExecutionError(script,
-                                    "Missing mapping action for " + n);
+                            throw new ScriptExecutionError("Missing mapping action for " + n,
+                                    script);
                         }
                         LinkedHashMap<Statement, Visual> visuals2 = action2.visuals;
                         if (visuals2 != null) {

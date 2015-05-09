@@ -98,12 +98,13 @@ public class Break implements Interaction, NeedsRangeProvider {
     @Override
     public void validate(Script script, Action action,
             List<ValidationError> validationErrors) throws ParseError {
-        script.actions.validate(action, actionRange, validationErrors);
+        script.actions.validate(script, action, actionRange, validationErrors);
         if (stopRange != null) {
-            script.actions.validate(action, stopRange, validationErrors);
+            script.actions
+                    .validate(script, action, stopRange, validationErrors);
         }
         if (cumRange != null) {
-            script.actions.validate(action, cumRange, validationErrors);
+            script.actions.validate(script, action, cumRange, validationErrors);
         }
     }
 }

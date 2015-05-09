@@ -41,16 +41,16 @@ public class Actions {
 
     }
 
-    public void validate(Action action, ActionRange range,
+    public void validate(Script script, Action action, ActionRange range,
             List<ValidationError> validationErrors) {
         List<Action> actions = getAll(range);
         if (actions.isEmpty()) {
             validationErrors.add(new ValidationError(action, "Range "
-                    + range.start + "-" + range.end + " is empty"));
+                    + range.start + "-" + range.end + " is empty", script));
         } else if (actions.get(0).number != range.start) {
             validationErrors.add(new ValidationError(action, "Range "
                     + range.start + "-" + range.end + " must start at "
-                    + range.start));
+                    + range.start, script));
         }
     }
 

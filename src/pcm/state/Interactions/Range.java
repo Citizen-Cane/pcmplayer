@@ -40,7 +40,7 @@ public class Range implements Interaction {
     @Override
     public void validate(Script script, Action action,
             List<ValidationError> validationErrors) {
-        script.actions.validate(action, new ActionRange(start, end),
+        script.actions.validate(script, action, new ActionRange(start, end),
                 validationErrors);
     }
 }

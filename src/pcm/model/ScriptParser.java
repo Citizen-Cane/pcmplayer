@@ -60,12 +60,14 @@ public class ScriptParser {
                 int start = ACTIONMATCH.length();
                 int end = line.indexOf("]");
                 if (end < start) {
-                    throw new ParseError(l, 0, line, "Invalid action number");
+                    throw new ParseError(l, 0, line, "Invalid action number",
+                            script);
                 }
                 n = Integer.parseInt(line.substring(start, end));
                 if (n <= previousActionNumber) {
                     throw new ParseError(l, n, line,
-                            "Action must be defined in increasing order");
+                            "Action must be defined in increasing order",
+                            script);
                 } else {
                     action = new Action(n);
                     previousActionNumber = action.number;
@@ -120,7 +122,7 @@ public class ScriptParser {
                     if (txt != null) {
                         action.addVisual(Statement.Txt, txt);
                     }
-                    action.finalizeParsing();
+                    action.finalizeParsing(script);
                 }
             } catch (ParseError e) {
                 if (e.script == null) {

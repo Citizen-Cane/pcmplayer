@@ -160,7 +160,7 @@ public abstract class Player extends TeaseScript {
                 TeaseLib.log(createErrorMessage(scriptError));
             }
             throw new ValidationError("Validation failed, "
-                    + validationErrors.size() + " issues");
+                    + validationErrors.size() + " issues", script);
         }
     }
 

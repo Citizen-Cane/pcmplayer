@@ -56,7 +56,8 @@ public class SpokenMessage implements Visual, Validatable {
                 try {
                     message.add(part);
                 } catch (Exception e) {
-                    validationErrors.add(new ValidationError(action, e));
+                    validationErrors
+                            .add(new ValidationError(action, e, script));
                 }
             }
         }

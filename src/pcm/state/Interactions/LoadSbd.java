@@ -54,14 +54,14 @@ public class LoadSbd implements Interaction {
             List<ValidationError> validationErrors) throws ParseError {
         try {
             Script loadSbd = script.load(scriptName);
-            loadSbd.actions.validate(action, new ActionRange(start, end),
-                    validationErrors);
+            loadSbd.actions.validate(script, action,
+                    new ActionRange(start, end), validationErrors);
         } catch (ParseError e) {
             throw e;
         } catch (ValidationError e) {
             validationErrors.add(e);
         } catch (IOException e) {
-            validationErrors.add(new ValidationError(action, e));
+            validationErrors.add(new ValidationError(action, e, script));
         }
     }
 }

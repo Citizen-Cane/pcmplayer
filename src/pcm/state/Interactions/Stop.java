@@ -50,7 +50,7 @@ public class Stop implements Interaction, NeedsRangeProvider {
     @Override
     public void validate(Script script, Action action,
             List<ValidationError> validationErrors) throws ParseError {
-        script.actions.validate(action, stop, validationErrors);
+        script.actions.validate(script, action, stop, validationErrors);
         if (rangeProvider != null) {
             rangeProvider.validate(script, action, validationErrors);
         }

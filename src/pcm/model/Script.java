@@ -45,7 +45,9 @@ public class Script extends AbstractAction {
                 actions.put(action.number, action);
             }
         } catch (ParseError e) {
-            e.script = this;
+            if (e.script == null) {
+                e.script = this;
+            }
             throw e;
         }
         completeScriptDefaults();
@@ -148,16 +150,18 @@ public class Script extends AbstractAction {
         if (responses.containsKey(name)) {
             return responses.get(name);
         } else {
-            throw new ScriptExecutionError(this, "Default text missing for "
-                    + name);
+            throw new ScriptExecutionError("Default text missing for "
+                    + name, this);
         }
     }
 
     public void validate(List<ValidationError> validationErrors) {
         if (startRange == null) {
-            validationErrors.add(new ValidationError("Missing start range"));
+            validationErrors.add(new ValidationError("Missing start range",
+                    this));
         } else if (!startRange.validate()) {
-            validationErrors.add(new ValidationError("Wrong start range"));
+            validationErrors
+                    .add(new ValidationError("Wrong start range", this));
         }
         // TeaseLib.resources().exists(imageDirectory);
         // if (!new File(root + ).exists)

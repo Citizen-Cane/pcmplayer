@@ -13,13 +13,13 @@ import pcm.model.ValidationError;
 import pcm.state.Interaction;
 import teaselib.TeaseLib;
 
-public class AskYesNo implements Interaction {
+public class YesNo implements Interaction {
     private final int startYes;
     private final int endYes;
     private final int startNo;
     private final int endNo;
 
-    public AskYesNo(int startYes, int endYes, int startNo, int endNo) {
+    public YesNo(int startYes, int endYes, int startNo, int endNo) {
         this.startYes = startYes;
         this.endYes = endYes;
         this.startNo = startNo;
@@ -48,9 +48,9 @@ public class AskYesNo implements Interaction {
     @Override
     public void validate(Script script, Action action,
             List<ValidationError> validationErrors) {
-        script.actions.validate(action, new ActionRange(startYes, endYes),
-                validationErrors);
-        script.actions.validate(action, new ActionRange(startNo, endNo),
-                validationErrors);
+        script.actions.validate(script, action, new ActionRange(startYes,
+                endYes), validationErrors);
+        script.actions.validate(script, action,
+                new ActionRange(startNo, endNo), validationErrors);
     }
 }
