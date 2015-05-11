@@ -43,8 +43,8 @@ public abstract class Player extends TeaseScript {
     boolean invokedOnAllSet;
 
     public static void main(String argv[]) {
-        String resourcesBase = "scripts/";
-        String assetRoot = "Mine/";
+        String resourcesBase = "scripts";
+        String assetRoot = "Mine";
         try {
             // TODO Init resource in teaselib init, after initializing the logs
             // TODO Test whether all URI exist, without the IOException would be
