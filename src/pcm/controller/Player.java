@@ -80,7 +80,7 @@ public abstract class Player extends TeaseScript {
         System.exit(0);
     }
 
-    public Player(TeaseLib teaseLib, String locale) throws IOException {
+    public Player(TeaseLib teaseLib, String locale) {
         super(teaseLib, locale);
         this.scripts = new ScriptCache(teaseLib.resources, SCRIPTS);
         this.invokedOnAllSet = false;

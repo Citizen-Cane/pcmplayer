@@ -1,5 +1,7 @@
 package pcm.model;
 
+import teaselib.util.Interval;
+
 
 public class ActionRange extends Interval {
 	public ActionRange(int start)
