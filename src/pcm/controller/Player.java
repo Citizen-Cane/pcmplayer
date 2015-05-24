@@ -80,13 +80,12 @@ public abstract class Player extends TeaseScript {
         System.exit(0);
     }
 
-    public Player(TeaseLib teaseLib, String locale) {
-        super(teaseLib, locale);
+    public Player(TeaseLib teaseLib, String locale, String namespace) {
+        super(teaseLib, locale, namespace);
         this.scripts = new ScriptCache(teaseLib.resources, SCRIPTS);
         this.invokedOnAllSet = false;
-        MappedState mappedState = new MappedState(this,
-                teaseLib.resources.namespace, teaseLib.host,
-                teaseLib.persistence);
+        MappedState mappedState = new MappedState(this, namespace,
+                teaseLib.host, teaseLib.persistence);
         this.state = mappedState;
         // Test code for mappings, should end up in script
         // Toy categories - multiple items on host
