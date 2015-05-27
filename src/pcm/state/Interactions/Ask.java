@@ -72,7 +72,7 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
         visuals.run();
         // Don't wait, display checkboxes while displaying the message
         List<Boolean> results;
-        results = player.showCheckboxes(title, choices, values, false);
+        results = player.showItems(title, choices, values, false);
         MappedState mappedState = (MappedState) state;
         for (int i = 0; i < indices.size(); i++) {
             Integer n = indices.get(i);
@@ -83,7 +83,7 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
                     if (items.size() == 1) {
                         // Just a single item - just set
                         state.set(n);
-                    } else if (player.isAvailable(items)) {
+                    } else if (player.isAnyAvailable(items)) {
                         // Nothing to do, already applied
                         // Cache result
                         // mappedState.setOverride(n);
@@ -91,8 +91,8 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
                         // Render message for selecting the mapped items
                         Action action2 = script.actions.get(n);
                         if (action2 == null) {
-                            throw new ScriptExecutionError("Missing mapping action for " + n,
-                                    script);
+                            throw new ScriptExecutionError(
+                                    "Missing mapping action for " + n, script);
                         }
                         LinkedHashMap<Statement, Visual> visuals2 = action2.visuals;
                         if (visuals2 != null) {
@@ -131,7 +131,7 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
             itemChoices.add(item.displayName);
         }
         // The check box title is reused
-        List<Boolean> itemResults = player.showCheckboxes(title, itemChoices,
+        List<Boolean> itemResults = player.showItems(title, itemChoices,
                 itemValues, false);
         // Apply changes to category items
         boolean anySet = false;

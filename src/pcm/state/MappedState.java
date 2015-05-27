@@ -52,7 +52,7 @@ public class MappedState extends State {
     public Integer get(Integer n) {
         if (mapping.containsKey(n)) {
             List<Item> items = mapping.get(n);
-            boolean available = player.isAvailable(items);
+            boolean available = player.isAnyAvailable(items);
             if (available) {
                 super.set(n);
             } else {

@@ -4,14 +4,16 @@ import pcm.controller.Player;
 import pcm.state.Visual;
 
 public class Image implements Visual {
-	public final String name;
-	
-	public Image(String path) {
-		this.name = path;
-	}
+    private static final String IMAGES = "images/";
 
-	@Override
-	public void render(Player player) {
-		player.showImage(name);
-	}
+    public final String name;
+
+    public Image(String path) {
+        this.name = path;
+    }
+
+    @Override
+    public void render(Player player) {
+        player.showImage(IMAGES + name);
+    }
 }
