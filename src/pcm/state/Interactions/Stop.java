@@ -28,7 +28,7 @@ public class Stop implements Interaction, NeedsRangeProvider {
             Player player) throws ScriptExecutionError {
         String stopText = action.getResponseText(Statement.StopText, script);
         TeaseLib.log(getClass().getSimpleName() + " " + toString());
-        String result = player.choose(visuals, stopText);
+        String result = player.reply(visuals, stopText);
         if (result == stopText) {
             TeaseLib.log("-> Stop");
             return stop;

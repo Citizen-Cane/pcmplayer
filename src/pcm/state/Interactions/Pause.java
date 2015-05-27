@@ -25,7 +25,7 @@ public class Pause implements Interaction, Interaction.NeedsRangeProvider {
         List<String> choices = new ArrayList<String>(1);
         choices.add(resume);
         visuals.run();
-        player.choose(choices);
+        player.reply(choices);
         return rangeProvider.getRange(script, action, null, player);
     }
 

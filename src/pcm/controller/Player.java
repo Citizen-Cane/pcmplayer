@@ -422,7 +422,7 @@ public abstract class Player extends TeaseScript {
                 weights[i] *= normalized / sum;
             }
             // Choose a value
-            double value = getRandom(0, (int) normalized);
+            double value = random(0, (int) normalized);
             action = null;
             for (int i = 0; i < weights.length; i++) {
                 if (value <= weights[i]) {
@@ -505,9 +505,7 @@ public abstract class Player extends TeaseScript {
     private void showError(String error) {
         TeaseLib.log(error);
         teaseLib.host.show(null, error);
-        List<String> choices = new ArrayList<String>();
-        choices.add("Oh Dear");
-        choose(choices);
+        reply("Oh Dear");
     }
 }
 

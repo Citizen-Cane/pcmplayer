@@ -40,7 +40,7 @@ public class PopUp implements Interaction {
         TeaseLib.log(getClass().getSimpleName() + " " + choices.toString());
         visuals.run();
         player.completeMandatory();
-        String result = player.choose(choices);
+        String result = player.reply(choices);
         return items.get(choices.indexOf(result)).range;
     }
 

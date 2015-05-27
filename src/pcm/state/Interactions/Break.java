@@ -68,7 +68,7 @@ public class Break implements Interaction, NeedsRangeProvider {
                 }
             }
         };
-        String result = player.choose(playRange, choices);
+        String result = player.reply(playRange, choices);
         if (result == cumText) {
             TeaseLib.log("-> break:cum");
             return cumRange;

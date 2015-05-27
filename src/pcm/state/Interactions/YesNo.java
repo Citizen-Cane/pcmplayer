@@ -36,7 +36,7 @@ public class YesNo implements Interaction {
         choices.add(yes);
         choices.add(no);
         visuals.run();
-        if (player.choose(choices) == yes) {
+        if (player.reply(choices) == yes) {
             TeaseLib.log("-> Yes");
             return new ActionRange(startYes, endYes);
         } else {

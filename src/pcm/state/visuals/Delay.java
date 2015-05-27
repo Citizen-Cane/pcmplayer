@@ -18,6 +18,6 @@ public class Delay implements Visual {
 
 	@Override
 	public void render(Player player) {
-		player.delay(player.getRandom(from, to));
+		player.delay(player.random(from, to));
 	}
 }
