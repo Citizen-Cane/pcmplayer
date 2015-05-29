@@ -4,7 +4,7 @@ import pcm.controller.Player;
 import pcm.state.Visual;
 
 public class Image implements Visual {
-    private static final String IMAGES = "images/";
+    public static final String IMAGES = "images/";
 
     public final String name;
 

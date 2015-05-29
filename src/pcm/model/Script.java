@@ -10,7 +10,6 @@ import java.util.Stack;
 
 import pcm.controller.ScriptCache;
 import teaselib.TeaseLib;
-import teaselib.image.ImageResourcesIterator;
 
 public class Script extends AbstractAction {
     public final String name;
@@ -25,8 +24,7 @@ public class Script extends AbstractAction {
     public Map<Integer, AskItem> askItems = new HashMap<Integer, AskItem>();
     public Map<Integer, MenuItem> menuItems = new HashMap<Integer, MenuItem>();
 
-    public ImageResourcesIterator mistressImages = null;
-    private static final String MISTRESS = "mistress/";
+    public String mistressImages = null;
 
     private final ScriptCache scriptCache;
     public final Stack<ActionRange> stack;
@@ -96,8 +94,7 @@ public class Script extends AbstractAction {
         } else if (name == Statement.SsDir) {
             String args[] = cmd.args();
             imageDirectory = allArgsFrom(args).replace('\\', '/');
-            mistressImages = new ImageResourcesIterator(MISTRESS + "Vana/"
-                    + imageDirectory);
+            mistressImages = imageDirectory;
         } else if (name == Statement.AskTitle) {
             String args[] = cmd.args();
             AskItem askItem = new AskItem(Integer.parseInt(args[0]),
@@ -150,8 +147,8 @@ public class Script extends AbstractAction {
         if (responses.containsKey(name)) {
             return responses.get(name);
         } else {
-            throw new ScriptExecutionError("Default text missing for "
-                    + name, this);
+            throw new ScriptExecutionError("Default text missing for " + name,
+                    this);
         }
     }
 

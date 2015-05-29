@@ -24,13 +24,15 @@ import teaselib.DummyPersistence;
 import teaselib.ScriptInterruptedException;
 import teaselib.TeaseLib;
 import teaselib.TeaseScript;
+import teaselib.image.ImageResourcesIterator;
 import teaselib.persistence.Toys;
 import teaselib.texttospeech.ScriptScanner;
 import teaselib.texttospeech.TextToSpeechRecorder;
 
 public abstract class Player extends TeaseScript {
 
-    private static final String SCRIPTS = "scripts/";
+    private static final String Scripts = "scripts/";
+    private static final String Mistress = "mistress/Vana/";
 
     private final ScriptCache scripts;
 
@@ -53,7 +55,7 @@ public abstract class Player extends TeaseScript {
                     new DummyPersistence(), resourcesBase, assetRoot);
             teaseLib.addAssets("Mine Scripts.zip", "Mine Resources.zip",
                     "Mine Mistress.zip");
-            ScriptCache scripts = new ScriptCache(teaseLib.resources, SCRIPTS);
+            ScriptCache scripts = new ScriptCache(teaseLib.resources, Scripts);
             // Get the main script
             Script main = scripts.get("Mine");
             // and validate to load all the sub scripts
@@ -82,7 +84,7 @@ public abstract class Player extends TeaseScript {
 
     public Player(TeaseLib teaseLib, String locale, String namespace) {
         super(teaseLib, locale, namespace);
-        this.scripts = new ScriptCache(teaseLib.resources, SCRIPTS);
+        this.scripts = new ScriptCache(teaseLib.resources, Scripts);
         this.invokedOnAllSet = false;
         MappedState mappedState = new MappedState(this, namespace,
                 teaseLib.host, teaseLib.persistence);
@@ -169,7 +171,8 @@ public abstract class Player extends TeaseScript {
         invokedOnAllSet = false;
         script.execute(state);
         // TODO Search for any mistress instead of using hard-coded path
-        dominantImages = script.mistressImages;
+        dominantImages = new ImageResourcesIterator(Mistress
+                + script.mistressImages, teaseLib.resources);
     }
 
     public void play(ActionRange playRange) throws AllActionsSetException,
