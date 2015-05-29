@@ -24,7 +24,7 @@ import teaselib.DummyPersistence;
 import teaselib.ScriptInterruptedException;
 import teaselib.TeaseLib;
 import teaselib.TeaseScript;
-import teaselib.image.ImageResourcesIterator;
+import teaselib.image.RandomImages;
 import teaselib.persistence.Toys;
 import teaselib.texttospeech.ScriptScanner;
 import teaselib.texttospeech.TextToSpeechRecorder;
@@ -171,8 +171,8 @@ public abstract class Player extends TeaseScript {
         invokedOnAllSet = false;
         script.execute(state);
         // TODO Search for any mistress instead of using hard-coded path
-        dominantImages = new ImageResourcesIterator(Mistress
-                + script.mistressImages, teaseLib.resources);
+        dominantImages = new RandomImages(teaseLib.resources, Mistress
+                        + script.mistressImages);
     }
 
     public void play(ActionRange playRange) throws AllActionsSetException,
