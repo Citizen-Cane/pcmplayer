@@ -171,8 +171,8 @@ public abstract class Player extends TeaseScript {
         invokedOnAllSet = false;
         script.execute(state);
         // TODO Search for any mistress instead of using hard-coded path
-        dominantImages = new RandomImages(teaseLib.resources, Mistress
-                        + script.mistressImages);
+        actor.images = new RandomImages(teaseLib.resources, Mistress
+                + script.mistressImages);
     }
 
     public void play(ActionRange playRange) throws AllActionsSetException,
