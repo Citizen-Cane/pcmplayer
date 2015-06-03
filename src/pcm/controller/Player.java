@@ -193,7 +193,7 @@ public abstract class Player extends TeaseScript {
                     // Quit
                     action = null;
                     showImage(NoImage);
-                    show(null);
+                    show("");
                     break;
                 } else if (range instanceof ActionLoadSbd) {
                     ActionLoadSbd loadSbd = (ActionLoadSbd) range;
