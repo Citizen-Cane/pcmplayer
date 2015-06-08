@@ -14,6 +14,6 @@ public class Image implements Visual {
 
     @Override
     public void render(Player player) {
-        player.showImage(IMAGES + name);
+        player.setImage(IMAGES + name);
     }
 }
