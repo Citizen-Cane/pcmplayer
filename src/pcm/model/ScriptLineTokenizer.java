@@ -70,7 +70,7 @@ public class ScriptLineTokenizer {
         }
     }
 
-    private Statement parseStatement(String statement) {
+    private static Statement parseStatement(String statement) {
         String key = statement.toLowerCase();
         if (Statement.lookup.containsKey(key)) {
             return Statement.lookup.get(key);
@@ -79,7 +79,7 @@ public class ScriptLineTokenizer {
         }
     }
 
-    private String[] toStringArray(Vector<String> collection) {
+    private static String[] toStringArray(Vector<String> collection) {
         return Arrays.copyOf(collection.toArray(), collection.size(),
                 String[].class);
     }

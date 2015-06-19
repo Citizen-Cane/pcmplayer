@@ -120,7 +120,7 @@ public abstract class AbstractAction {
         return null;
     }
 
-    public void add(ScriptLineTokenizer cmd) throws ParseError {
+    public void add(ScriptLineTokenizer cmd) {
         Statement name = cmd.statement;
         if (name == Statement.YesText) {
             addResponse(name, cmd.asText());

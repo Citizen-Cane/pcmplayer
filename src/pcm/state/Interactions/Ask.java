@@ -121,7 +121,7 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
         return rangeProvider.getRange(script, action, null, player);
     }
 
-    private boolean checkDetailedItems(Player player, String title,
+    private static boolean checkDetailedItems(Player player, String title,
             List<Item> items) {
         // Ask which items of the category have been set
         List<Boolean> itemValues = new ArrayList<Boolean>();

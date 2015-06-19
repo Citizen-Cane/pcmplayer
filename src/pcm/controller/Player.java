@@ -383,6 +383,7 @@ public abstract class Player extends TeaseScript {
             action = actions.get(0);
             TeaseLib.log("-> choosing action " + action.number);
         } else {
+            // Log code
             StringBuilder actionList = null;
             for (Action a : actions) {
                 int number = a.number;
@@ -393,7 +394,9 @@ public abstract class Player extends TeaseScript {
                     actionList.append(number);
                 }
             }
-            TeaseLib.log(actionList.toString());
+            if (actionList != null) {
+                TeaseLib.log("Action list is empty");
+            }
             // Normalize all actions into the interval [0...100], the choose one
             // "poss" 100 is used to implement an "else" clause, since PCM
             // script
@@ -401,6 +404,7 @@ public abstract class Player extends TeaseScript {
             double normalized = 100.0;
             double weights[] = new double[actions.size()];
             double sum = 0.0;
+            // Log weights
             StringBuilder weightList = null;
             for (int i = 0; i < weights.length; i++) {
                 Action a = actions.get(i);
@@ -419,7 +423,11 @@ public abstract class Player extends TeaseScript {
                     weightList.append(w);
                 }
             }
-            TeaseLib.log(weightList.toString());
+            if (weightList != null) {
+                TeaseLib.log(weightList.toString());
+            } else {
+                TeaseLib.log("Weight list is empty");
+            }
             // Normalize and build interval
             for (int i = 0; i < weights.length; i++) {
                 weights[i] *= normalized / sum;
@@ -443,7 +451,7 @@ public abstract class Player extends TeaseScript {
     }
 
     public static void validate(Script script,
-            List<ValidationError> validationErrors) throws ParseError {
+            List<ValidationError> validationErrors) {
         script.validate(validationErrors);
         for (Action action : script.actions.values()) {
             // if (action.image != null && !action.image.isEmpty())

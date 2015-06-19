@@ -30,7 +30,7 @@ public class Duration {
      *            milliseconds of the duration
      * @return
      */
-    private long parse(String duration) {
+    private static long parse(String duration) {
         long hours = Integer.parseInt(duration.substring(0, 2));
         long minutes = Integer.parseInt(duration.substring(3, 5));
         long seconds = Integer.parseInt(duration.substring(6, 8));

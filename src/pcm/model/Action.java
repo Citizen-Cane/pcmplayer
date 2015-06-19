@@ -11,7 +11,6 @@ import pcm.state.Interaction;
 import pcm.state.Interaction.NeedsRangeProvider;
 import pcm.state.Visual;
 import pcm.state.Interactions.Ask;
-import pcm.state.Interactions.YesNo;
 import pcm.state.Interactions.Break;
 import pcm.state.Interactions.GoSub;
 import pcm.state.Interactions.LoadSbd;
@@ -21,6 +20,7 @@ import pcm.state.Interactions.Quit;
 import pcm.state.Interactions.Range;
 import pcm.state.Interactions.Return;
 import pcm.state.Interactions.Stop;
+import pcm.state.Interactions.YesNo;
 import pcm.state.commands.Repeat;
 import pcm.state.commands.RepeatAdd;
 import pcm.state.commands.RepeatDel;
@@ -140,7 +140,7 @@ public class Action extends AbstractAction {
      * @see pcm.model.AbstractAction#add(pcm.model.ScriptLineTokenizer)
      */
     @Override
-    public void add(ScriptLineTokenizer cmd) throws ParseError {
+    public void add(ScriptLineTokenizer cmd) {
         final Statement name = cmd.statement;
         if (name == Statement.NoImage) {
             addVisual(name, NoImage.instance);
@@ -333,7 +333,8 @@ public class Action extends AbstractAction {
      *            Start index.
      * @return
      */
-    private Map<String, ActionRange> rangesFromArgv(String[] args, int index) {
+    private static Map<String, ActionRange> rangesFromArgv(String[] args,
+            int index) {
         Map<String, ActionRange> ranges = new LinkedHashMap<String, ActionRange>();
         while (index < args.length) {
             String key = args[index++];
@@ -395,8 +396,7 @@ public class Action extends AbstractAction {
         return script.getResponseText(name);
     }
 
-    public void validate(Script script, List<ValidationError> validationErrors)
-            throws ParseError {
+    public void validate(Script script, List<ValidationError> validationErrors) {
         if (poss != null) {
             if (poss == 0 || poss > 100) {
                 validationErrors.add(new ValidationError(this,

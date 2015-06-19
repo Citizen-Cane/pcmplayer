@@ -46,7 +46,7 @@ public class ScriptParser {
         return;
     }
 
-    public Action parseAction() throws ParseError, ValidationError, IOException {
+    public Action parseAction() throws ParseError, ValidationError {
         if (line == null) {
             return null;
         } else {
@@ -55,7 +55,6 @@ public class ScriptParser {
                 // Start new action
                 if (n > 0) {
                     n = 0;
-                    action = null;
                 }
                 int start = ACTIONMATCH.length();
                 int end = line.indexOf("]");
@@ -80,7 +79,9 @@ public class ScriptParser {
                         }
                         // another message
                         else if (line.startsWith("[]")) {
-                            message.newSection();
+                            if (message != null) {
+                                message.newSection();
+                            }
                         }
                         // Other statements
                         else if (line.startsWith(".")) {
