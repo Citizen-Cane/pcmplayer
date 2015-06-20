@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import pcm.controller.Player;
-import teaselib.Host;
-import teaselib.Persistence;
 import teaselib.persistence.Item;
 
 /**
@@ -32,9 +30,8 @@ public class MappedState extends State {
     private final Player player;
     private final Map<Integer, List<Item>> mapping = new HashMap<Integer, List<Item>>();
 
-    public MappedState(Player player, String root, Host renderer,
-            Persistence persistence) {
-        super(root, renderer, persistence);
+    public MappedState(Player player, String root) {
+        super(root, player.teaseLib);
         this.player = player;
     }
 

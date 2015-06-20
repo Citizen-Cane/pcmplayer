@@ -10,8 +10,7 @@ import pcm.model.Action;
 import pcm.model.ActionRange;
 import pcm.model.Script;
 import pcm.model.ScriptExecutionError;
-import teaselib.Host;
-import teaselib.Persistence;
+import teaselib.TeaseLib;
 
 /**
  * Well, the original PCMistress likely used a single (long?) array for storing
@@ -32,11 +31,10 @@ import teaselib.Persistence;
  */
 public class State {
 
+    private final TeaseLib teaseLib;
     private final String root;
-    private Script script = null;
-    private final Host renderer;
-    private final Persistence persistence;
 
+    private Script script = null;
     private Map<Integer, Integer> data = new HashMap<Integer, Integer>();
     private Map<Integer, Date> times = new HashMap<Integer, Date>();
 
@@ -48,10 +46,9 @@ public class State {
 
     private static final String TIMEKEYS = "TimeKeys";
 
-    public State(String root, Host renderer, Persistence persistence) {
+    public State(String root, TeaseLib teaseLib) {
         this.root = root;
-        this.renderer = renderer;
-        this.persistence = persistence;
+        this.teaseLib = teaseLib;
     }
 
     // TODO Mapping between Mine and SS properties,
@@ -139,11 +136,11 @@ public class State {
     }
 
     private String read(String name) {
-        return persistence.get(root + "." + script.name + "." + name);
+        return teaseLib.persistence.get(root + "." + script.name + "." + name);
     }
 
     private void write(String name, Object value) {
-        persistence.set(root + "." + script.name + "." + name,
+        teaseLib.persistence.set(root + "." + script.name + "." + name,
                 value != null ? value.toString() : null);
     }
 
@@ -216,7 +213,7 @@ public class State {
     }
 
     public long getTime() {
-        return renderer.getTime();
+        return teaseLib.getTime();
     }
 
     public void set(Action action) throws ScriptExecutionError {
@@ -249,6 +246,6 @@ public class State {
     }
 
     public int getRandom(int min, int max) {
-        return renderer.getRandom(min, max);
+        return teaseLib.random(min, max);
     }
 }

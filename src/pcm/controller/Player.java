@@ -60,8 +60,7 @@ public abstract class Player extends TeaseScript {
             Script main = scripts.get("Mine");
             // and validate to load all the sub scripts
             validate(main, new ArrayList<ValidationError>());
-            TextToSpeechRecorder recorder = new TextToSpeechRecorder(
-                    teaseLib.resources);
+            TextToSpeechRecorder recorder = new TextToSpeechRecorder(teaseLib);
             Actor actor = new Actor(Actor.Dominant, "en-us");
             for (String scriptName : scripts.names()) {
                 Script script = scripts.get(scriptName);
@@ -86,8 +85,7 @@ public abstract class Player extends TeaseScript {
         super(teaseLib, locale, namespace);
         this.scripts = new ScriptCache(teaseLib.resources, Scripts);
         this.invokedOnAllSet = false;
-        MappedState mappedState = new MappedState(this, namespace,
-                teaseLib.host, teaseLib.persistence);
+        MappedState mappedState = new MappedState(this, namespace);
         this.state = mappedState;
         // Test code for mappings, should end up in script
         // Toy categories - multiple items on host
