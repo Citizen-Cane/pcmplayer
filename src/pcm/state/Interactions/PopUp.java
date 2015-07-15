@@ -41,6 +41,7 @@ public class PopUp implements Interaction {
         visuals.run();
         player.completeMandatory();
         String result = player.reply(choices);
+        player.endAll();
         return items.get(choices.indexOf(result)).range;
     }
 
