@@ -1,9 +1,9 @@
 package pcm.state.visuals;
 
-import java.util.Vector;
-
 import pcm.controller.Player;
 import pcm.state.Visual;
+import teaselib.Actor;
+import teaselib.text.Message;
 
 /**
  * @author someone
@@ -22,26 +22,22 @@ import pcm.state.Visual;
  *         The self bondage text can be transformed into a lecture and be spoken
  *         The corner time text is intended to not be spoken Single line .txt
  *         statements can be transformed into choice texts (that wasn't possible
- *         with good old PCM So an instrcutional text is one that isn't spoken,
+ *         with good old PCM. So an instructional text is one that isn't spoken,
  *         and only to be used in mine-paddle to restate the corner time rules
  */
 public class Txt implements Visual {
-    public final Vector<String> txt = new Vector<String>();
+    public final Message txt;
 
-    public Txt(String text) {
-        txt.add(text);
+    public Txt(Actor actor) {
+        txt = new Message(actor);
     }
 
-    public void add(String text) {
-        txt.add(text);
+    public void add(String line) {
+        txt.add(line);
     }
 
     @Override
     public void render(Player player) {
-        teaselib.text.Message message = new teaselib.text.Message(player.actor);
-        for (String text : txt) {
-            message.add(text);
-        }
-        player.show(message.toString());
+        player.show(txt.toString());
     }
 }

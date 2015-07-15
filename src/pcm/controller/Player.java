@@ -57,15 +57,14 @@ public abstract class Player extends TeaseScript {
                     "Mine Mistress.zip");
             ScriptCache scripts = new ScriptCache(teaseLib.resources, Scripts);
             // Get the main script
-            Script main = scripts.get("Mine");
-            // and validate to load all the sub scripts
-            validate(main, new ArrayList<ValidationError>());
             TextToSpeechRecorder recorder = new TextToSpeechRecorder(teaseLib);
             Actor actor = new Actor(Actor.Dominant, "en-us");
+            Script main = scripts.get(actor, "Mine");
+            // and validate to load all the sub scripts
+            validate(main, new ArrayList<ValidationError>());
             for (String scriptName : scripts.names()) {
-                Script script = scripts.get(scriptName);
-                ScriptScanner scriptScanner = new PCMScriptScanner(script,
-                        actor);
+                Script script = scripts.get(actor, scriptName);
+                ScriptScanner scriptScanner = new PCMScriptScanner(script);
                 recorder.create(scriptScanner);
             }
             recorder.finish();
@@ -111,11 +110,13 @@ public abstract class Player extends TeaseScript {
         // TODO mappedState.addMapping(383, get(Toys.Enema_Bulb));
         mappedState.addMapping(387, get(Toys.Pussy_Clamps));
         mappedState.addMapping(385, get(Toys.Ball_Stretcher));
+        // TODO "Tell me what you've got exactly" -> not ended when dismissing
+        // toys dialog fast, or have to display dialog after speech ended
     }
 
     public void play(String name, ActionRange startRange) {
         try {
-            script = scripts.get(name);
+            script = scripts.get(actor, name);
             if (validateScripts) {
                 validateAll();
             }
@@ -149,7 +150,7 @@ public abstract class Player extends TeaseScript {
         List<ValidationError> validationErrors = new ArrayList<ValidationError>();
         validate(script, validationErrors);
         for (String s : scripts.names()) {
-            Script other = scripts.get(s);
+            Script other = scripts.get(actor, s);
             if (other != script) {
                 validate(other, validationErrors);
             }

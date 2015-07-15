@@ -9,9 +9,13 @@ import java.util.Map;
 import java.util.Stack;
 
 import pcm.controller.ScriptCache;
+import pcm.controller.ScriptParser;
+import teaselib.Actor;
 import teaselib.TeaseLib;
 
 public class Script extends AbstractAction {
+    public final Actor actor;
+
     public final String name;
     public Color backColor;
     public Color textColor;
@@ -29,17 +33,19 @@ public class Script extends AbstractAction {
     private final ScriptCache scriptCache;
     public final Stack<ActionRange> stack;
 
-    public Script(String name, ScriptCache scriptCache, BufferedReader reader)
-            throws ParseError, ValidationError, IOException {
+    public Script(Actor actor, String name, ScriptCache scriptCache,
+            BufferedReader reader) throws ParseError, ValidationError,
+            IOException {
+        this.actor = actor;
         this.name = name;
         this.scriptCache = scriptCache;
         this.stack = scriptCache.stack;
-        ScriptParser parser = new ScriptParser(this, reader);
+        ScriptParser parser = new ScriptParser(reader);
         TeaseLib.log("Parsing script " + name);
         try {
-            parser.parseScript();
+            parser.parse(this);
             Action action = null;
-            while ((action = parser.parseAction()) != null) {
+            while ((action = parser.parseAction(this)) != null) {
                 actions.put(action.number, action);
             }
         } catch (ParseError e) {
@@ -74,7 +80,7 @@ public class Script extends AbstractAction {
 
     public Script load(String name) throws ParseError, ValidationError,
             IOException {
-        return scriptCache.get(name);
+        return scriptCache.get(actor, name);
     }
 
     @Override

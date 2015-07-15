@@ -1,5 +1,6 @@
 package pcm.controller;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.lang.ref.SoftReference;
 import java.util.HashMap;
@@ -12,6 +13,7 @@ import pcm.model.ActionRange;
 import pcm.model.ParseError;
 import pcm.model.Script;
 import pcm.model.ValidationError;
+import teaselib.Actor;
 import teaselib.ResourceLoader;
 import teaselib.TeaseLib;
 
@@ -28,8 +30,8 @@ public class ScriptCache {
         stack = new Stack<ActionRange>();
     }
 
-    public Script get(String name) throws ParseError, ValidationError,
-            IOException {
+    public Script get(Actor actor, String name) throws ParseError,
+            ValidationError, IOException {
         Script script = null;
         String key = name.toLowerCase();
         if (cache.containsKey(key)) {
@@ -38,7 +40,13 @@ public class ScriptCache {
         if (script != null) {
             TeaseLib.log("Using cached script " + name);
         } else {
-            script = new Script(name, this, resourceLoader.script(path + name));
+            final String location = path + name;
+            final BufferedReader scriptReader = resourceLoader.script(location);
+            try {
+                script = new Script(actor, name, this, scriptReader);
+            } finally {
+                scriptReader.close();
+            }
             cache.put(key, new SoftReference<Script>(script));
         }
         return script;

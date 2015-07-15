@@ -14,28 +14,26 @@ import teaselib.text.Message;
 
 public class SpokenMessage implements Visual, Validatable {
 
-    List<List<String>> messages = new Vector<List<String>>();
-    Vector<String> message = null;
+    private final List<Message> messages = new Vector<Message>();
+    private Message message = null;
+    private final Actor actor;
 
-    public SpokenMessage(String text) {
-        this.messages = new Vector<List<String>>();
-        add(text);
+    public SpokenMessage(Actor actor) {
+        this.actor = actor;
     }
 
-    public void add(String text) {
+    public void add(String line) {
         if (message == null) {
-            message = new Vector<String>();
+            message = new Message(actor);
             messages.add(message);
         }
-        // todo parse to message here in order to evaluate the part type only
-        // once
-        Message.Type type = Message.determineType(text);
+        Message.Type type = Message.determineType(line);
         if (type == Message.Type.Image) {
-            message.add(Image.IMAGES + text);
+            message.add(type, Image.IMAGES + line);
         } else if (type == Message.Type.Sound) {
-            message.add(Sound.SOUNDS + text);
+            message.add(type, Sound.SOUNDS + line);
         } else {
-            message.add(text);
+            message.add(type, line);
         }
     }
 
@@ -45,31 +43,18 @@ public class SpokenMessage implements Visual, Validatable {
 
     @Override
     public void render(Player player) {
-        for (List<String> message : messages) {
+        for (Message message : messages) {
             player.say(message);
         }
     }
 
-    public List<List<String>> getParts() {
+    public List<Message> getParts() {
         return messages;
     }
 
     @Override
     public void validate(Script script, Action action,
             List<ValidationError> validationErrors) {
-        // Use any actor, there are no actor specific parts in PCM
-        Actor actor = new Actor(Actor.Dominant, "en-us");
-        for (List<String> text : messages) {
-            Message message = new Message(actor);
-            for (String part : text) {
-                try {
-                    message.add(part);
-                } catch (Exception e) {
-                    validationErrors
-                            .add(new ValidationError(action, e, script));
-                }
-            }
-        }
-
+        // Nothing to do anymore, since all messages have been parsed already
     }
 }

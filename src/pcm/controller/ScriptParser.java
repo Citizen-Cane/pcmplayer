@@ -1,31 +1,34 @@
-package pcm.model;
+package pcm.controller;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 
 import pcm.model.AbstractAction.Statement;
+import pcm.model.Action;
+import pcm.model.ParseError;
+import pcm.model.Script;
+import pcm.model.ScriptLineTokenizer;
+import pcm.model.ValidationError;
 import pcm.state.visuals.SpokenMessage;
 import pcm.state.visuals.Txt;
 
 public class ScriptParser {
 
-    private final BufferedReader reader;
     private String line = null;
     private int l = 0;
     private int n = 0;
     private int previousActionNumber = 0;
 
-    private Script script;
+    private final BufferedReader reader;
 
     private final static String ACTIONMATCH = "[action ";
     private final static String COMMENT = "'";
 
-    public ScriptParser(Script script, BufferedReader reader) {
-        this.script = script;
+    public ScriptParser(BufferedReader reader) {
         this.reader = reader;
     }
 
-    public void parseScript() throws ParseError, IOException {
+    public void parse(Script script) throws ParseError, IOException {
         while ((line = readLine()) != null) {
             if (line.toLowerCase().startsWith(ACTIONMATCH)) {
                 return;
@@ -46,7 +49,7 @@ public class ScriptParser {
         return;
     }
 
-    public Action parseAction() throws ParseError, ValidationError {
+    public Action parseAction(Script script) throws ParseError, ValidationError {
         if (line == null) {
             return null;
         } else {
@@ -97,10 +100,9 @@ public class ScriptParser {
                                     text = text.substring(1);
                                 }
                                 if (txt == null) {
-                                    txt = new Txt(text);
-                                } else {
-                                    txt.add(text);
+                                    txt = new Txt(script.actor);
                                 }
+                                txt.add(text);
                             } else {
                                 action.add(cmd);
                             }
@@ -108,10 +110,9 @@ public class ScriptParser {
                         // spoken Message
                         else {
                             if (message == null) {
-                                message = new SpokenMessage(line);
-                            } else {
-                                message.add(line);
+                                message = new SpokenMessage(script.actor);
                             }
+                            message.add(line);
                         }
                     }
                     // Add message to visuals as the last item, because
