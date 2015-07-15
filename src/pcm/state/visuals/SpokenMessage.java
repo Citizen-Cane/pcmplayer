@@ -29,9 +29,10 @@ public class SpokenMessage implements Visual, Validatable {
         }
         // todo parse to message here in order to evaluate the part type only
         // once
-        if (Message.isImage(text)) {
+        Message.Type type = Message.determineType(text);
+        if (type == Message.Type.Image) {
             message.add(Image.IMAGES + text);
-        } else if (Message.isSound(text)) {
+        } else if (type == Message.Type.Sound) {
             message.add(Sound.SOUNDS + text);
         } else {
             message.add(text);
