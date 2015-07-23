@@ -95,7 +95,7 @@ public abstract class Player extends TeaseScript {
         mappedState.addMapping(350, get(Toys.Buttplugs));
         mappedState.addMapping(370, get(Toys.Spanking_Implements));
         mappedState.addMapping(380, get(Toys.Chastity_Devices));
-        mappedState.addMapping(389, get(Toys.Vibrators));
+        mappedState.addMapping(389, get(Toys.Vibrators, Toys.EStim_Devices));
 
         // Toy simple mappings
         mappedState.addMapping(301, get(Toys.Nipple_clamps));
