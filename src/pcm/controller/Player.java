@@ -26,6 +26,7 @@ import teaselib.TeaseLib;
 import teaselib.TeaseScript;
 import teaselib.image.RandomImages;
 import teaselib.persistence.Toys;
+import teaselib.text.Message;
 import teaselib.texttospeech.ScriptScanner;
 import teaselib.texttospeech.TextToSpeechRecorder;
 
@@ -95,7 +96,7 @@ public abstract class Player extends TeaseScript {
         mappedState.addMapping(350, get(Toys.Buttplugs));
         mappedState.addMapping(370, get(Toys.Spanking_Implements));
         mappedState.addMapping(380, get(Toys.Chastity_Devices));
-        mappedState.addMapping(389, get(Toys.Vibrators));
+        mappedState.addMapping(389, get(Toys.Vibrators, Toys.EStim_Devices));
 
         // Toy simple mappings
         mappedState.addMapping(301, get(Toys.Nipple_clamps));
@@ -191,7 +192,7 @@ public abstract class Player extends TeaseScript {
                 if (range == null) {
                     // Quit
                     action = null;
-                    setImage(NoImage);
+                    setImage(Message.NoImage);
                     show("");
                     break;
                 } else if (range instanceof ActionLoadSbd) {
