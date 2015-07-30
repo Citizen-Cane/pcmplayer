@@ -19,16 +19,16 @@ import pcm.state.State;
 import pcm.state.Validatable;
 import pcm.state.Visual;
 import teaselib.Actor;
-import teaselib.DummyHost;
-import teaselib.DummyPersistence;
-import teaselib.ScriptInterruptedException;
 import teaselib.TeaseLib;
 import teaselib.TeaseScript;
+import teaselib.hosts.DummyHost;
+import teaselib.hosts.DummyPersistence;
 import teaselib.image.RandomImages;
 import teaselib.persistence.Toys;
 import teaselib.text.Message;
 import teaselib.texttospeech.ScriptScanner;
 import teaselib.texttospeech.TextToSpeechRecorder;
+import teaselib.util.ScriptInterruptedException;
 
 public abstract class Player extends TeaseScript {
 
