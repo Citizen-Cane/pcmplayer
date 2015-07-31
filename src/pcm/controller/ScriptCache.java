@@ -14,8 +14,8 @@ import pcm.model.ParseError;
 import pcm.model.Script;
 import pcm.model.ValidationError;
 import teaselib.Actor;
-import teaselib.ResourceLoader;
 import teaselib.TeaseLib;
+import teaselib.core.ResourceLoader;
 
 public class ScriptCache {
 

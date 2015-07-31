@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import pcm.controller.Player;
-import teaselib.persistence.Item;
+import teaselib.util.Item;
 
 /**
  * Adds mapping to host persistence. One use case is the mapping from host to

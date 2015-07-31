@@ -15,7 +15,7 @@ import pcm.model.ValidationError;
 import pcm.state.Interaction;
 import pcm.state.Interaction.NeedsRangeProvider;
 import teaselib.TeaseLib;
-import teaselib.util.ScriptInterruptedException;
+import teaselib.core.ScriptInterruptedException;
 
 public class Break implements Interaction, NeedsRangeProvider {
     private final ActionRange actionRange;

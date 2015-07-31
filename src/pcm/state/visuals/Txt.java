@@ -3,7 +3,7 @@ package pcm.state.visuals;
 import pcm.controller.Player;
 import pcm.state.Visual;
 import teaselib.Actor;
-import teaselib.text.Message;
+import teaselib.Message;
 
 /**
  * @author someone

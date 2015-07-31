@@ -8,7 +8,7 @@ import pcm.model.AbstractAction.Statement;
 import pcm.model.Action;
 import pcm.model.Script;
 import pcm.state.Visual;
-import teaselib.text.Message;
+import teaselib.Message;
 import teaselib.texttospeech.ScriptScanner;
 
 public class PCMScriptScanner implements ScriptScanner {

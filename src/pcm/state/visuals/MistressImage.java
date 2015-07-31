@@ -2,7 +2,7 @@ package pcm.state.visuals;
 
 import pcm.controller.Player;
 import pcm.state.Visual;
-import teaselib.text.Message;
+import teaselib.Message;
 
 public class MistressImage implements Visual {
     public static final MistressImage instance = new MistressImage();

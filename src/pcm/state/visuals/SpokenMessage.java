@@ -10,7 +10,7 @@ import pcm.model.ValidationError;
 import pcm.state.Validatable;
 import pcm.state.Visual;
 import teaselib.Actor;
-import teaselib.text.Message;
+import teaselib.Message;
 
 public class SpokenMessage implements Visual, Validatable {
 

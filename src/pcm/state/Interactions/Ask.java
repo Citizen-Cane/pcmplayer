@@ -21,7 +21,7 @@ import pcm.state.MappedState;
 import pcm.state.State;
 import pcm.state.Visual;
 import teaselib.TeaseLib;
-import teaselib.persistence.Item;
+import teaselib.util.Item;
 
 public class Ask implements Command, Interaction, NeedsRangeProvider {
     private final int start;
