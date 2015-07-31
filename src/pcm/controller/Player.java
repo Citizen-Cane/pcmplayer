@@ -24,10 +24,10 @@ import teaselib.TeaseLib;
 import teaselib.TeaseScript;
 import teaselib.Toys;
 import teaselib.core.ScriptInterruptedException;
+import teaselib.core.texttospeech.ScriptScanner;
+import teaselib.core.texttospeech.TextToSpeechRecorder;
 import teaselib.hosts.DummyHost;
 import teaselib.hosts.DummyPersistence;
-import teaselib.texttospeech.ScriptScanner;
-import teaselib.texttospeech.TextToSpeechRecorder;
 import teaselib.util.RandomImages;
 
 public abstract class Player extends TeaseScript {
