@@ -33,62 +33,46 @@ import teaselib.util.RandomImages;
 
 public abstract class Player extends TeaseScript {
 
-    private static final String Scripts = "scripts/";
-    private static final String Mistress = "mistress/Vana/";
+    public static final String Scripts = "scripts/";
 
     private final ScriptCache scripts;
+    private final MappedState state;
+    private final String mistressPath;
 
     public static boolean validateScripts = false;
     public static boolean debugOutput = false;
 
     Script script = null;
     public ActionRange range = null;
-    private final MappedState state;
     boolean invokedOnAllSet;
 
-    public static void main(String argv[]) {
-        String resourcesBase = "scripts";
-        String assetRoot = "Mine";
-        try {
-            // TODO Init resource in teaselib init, after initializing the logs
-            // TODO Test whether all URI exist, without the IOException would be
-            // inappropriate
-            TeaseLib teaseLib = new TeaseLib(new DummyHost(),
-                    new DummyPersistence());
-            ResourceLoader resources = new ResourceLoader(resourcesBase,
-                    assetRoot);
-            resources.addAssets("Mine Scripts.zip", "Mine Resources.zip",
-                    "Mine Mistress.zip");
-            ScriptCache scripts = new ScriptCache(resources, Scripts);
-            // Get the main script
-            TextToSpeechRecorder recorder = new TextToSpeechRecorder(teaseLib,
-                    resources);
-            Actor actor = new Actor(Actor.Dominant, "en-us");
-            Script main = scripts.get(actor, "Mine");
-            // and validate to load all the sub scripts
-            validate(main, new ArrayList<ValidationError>());
-            for (String scriptName : scripts.names()) {
-                Script script = scripts.get(actor, scriptName);
-                ScriptScanner scriptScanner = new PCMScriptScanner(script);
-                recorder.create(scriptScanner);
-            }
-            recorder.finish();
-        } catch (ParseError e) {
-            TeaseLib.log(argv, e);
-        } catch (ValidationError e) {
-            TeaseLib.log(argv, e);
-        } catch (IOException e) {
-            TeaseLib.log(argv, e);
-        } catch (Throwable t) {
-            TeaseLib.log(argv, t);
+    public static void recordVoices(String basePath, String assetRoot,
+            Actor actor, String[] assets, String startupScript)
+            throws IOException, ValidationError, ParseError {
+        TeaseLib teaseLib = new TeaseLib(new DummyHost(),
+                new DummyPersistence());
+        ResourceLoader resources = new ResourceLoader(basePath, assetRoot);
+        resources.addAssets(assets);
+        ScriptCache scripts = new ScriptCache(resources, Scripts);
+        // Get the main script
+        TextToSpeechRecorder recorder = new TextToSpeechRecorder(teaseLib,
+                resources);
+        Script main = scripts.get(actor, startupScript);
+        // and validate to load all the sub scripts
+        validate(main, new ArrayList<ValidationError>());
+        for (String scriptName : scripts.names()) {
+            Script script = scripts.get(actor, scriptName);
+            ScriptScanner scriptScanner = new PCMScriptScanner(script);
+            recorder.create(scriptScanner);
         }
-        System.exit(0);
+        recorder.finish();
     }
 
-    public Player(TeaseLib teaseLib, ResourceLoader resources, String locale,
-            String namespace) {
-        super(teaseLib, resources, locale, namespace);
+    public Player(TeaseLib teaseLib, ResourceLoader resources, Actor actor,
+            String namespace, String mistressPath) {
+        super(teaseLib, resources, actor, namespace);
         this.scripts = new ScriptCache(resources, Scripts);
+        this.mistressPath = mistressPath;
         this.invokedOnAllSet = false;
         MappedState mappedState = new MappedState(this, namespace);
         this.state = mappedState;
@@ -176,7 +160,7 @@ public abstract class Player extends TeaseScript {
         invokedOnAllSet = false;
         script.execute(state);
         // TODO Search for any mistress instead of using hard-coded path
-        actor.images = new RandomImages(resources, Mistress
+        actor.images = new RandomImages(resources, mistressPath
                 + script.mistressImages);
     }
 
