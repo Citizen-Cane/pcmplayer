@@ -23,6 +23,7 @@ import teaselib.Message;
 import teaselib.TeaseLib;
 import teaselib.TeaseScript;
 import teaselib.Toys;
+import teaselib.core.ResourceLoader;
 import teaselib.core.ScriptInterruptedException;
 import teaselib.core.texttospeech.ScriptScanner;
 import teaselib.core.texttospeech.TextToSpeechRecorder;
@@ -53,12 +54,15 @@ public abstract class Player extends TeaseScript {
             // TODO Test whether all URI exist, without the IOException would be
             // inappropriate
             TeaseLib teaseLib = new TeaseLib(new DummyHost(),
-                    new DummyPersistence(), resourcesBase, assetRoot);
-            teaseLib.addAssets("Mine Scripts.zip", "Mine Resources.zip",
+                    new DummyPersistence());
+            ResourceLoader resources = new ResourceLoader(resourcesBase,
+                    assetRoot);
+            resources.addAssets("Mine Scripts.zip", "Mine Resources.zip",
                     "Mine Mistress.zip");
-            ScriptCache scripts = new ScriptCache(teaseLib.resources, Scripts);
+            ScriptCache scripts = new ScriptCache(resources, Scripts);
             // Get the main script
-            TextToSpeechRecorder recorder = new TextToSpeechRecorder(teaseLib);
+            TextToSpeechRecorder recorder = new TextToSpeechRecorder(teaseLib,
+                    resources);
             Actor actor = new Actor(Actor.Dominant, "en-us");
             Script main = scripts.get(actor, "Mine");
             // and validate to load all the sub scripts
@@ -81,9 +85,10 @@ public abstract class Player extends TeaseScript {
         System.exit(0);
     }
 
-    public Player(TeaseLib teaseLib, String locale, String namespace) {
-        super(teaseLib, locale, namespace);
-        this.scripts = new ScriptCache(teaseLib.resources, Scripts);
+    public Player(TeaseLib teaseLib, ResourceLoader resources, String locale,
+            String namespace) {
+        super(teaseLib, resources, locale, namespace);
+        this.scripts = new ScriptCache(resources, Scripts);
         this.invokedOnAllSet = false;
         MappedState mappedState = new MappedState(this, namespace);
         this.state = mappedState;
@@ -171,7 +176,7 @@ public abstract class Player extends TeaseScript {
         invokedOnAllSet = false;
         script.execute(state);
         // TODO Search for any mistress instead of using hard-coded path
-        actor.images = new RandomImages(teaseLib.resources, Mistress
+        actor.images = new RandomImages(resources, Mistress
                 + script.mistressImages);
     }
 
