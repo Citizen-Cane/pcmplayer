@@ -49,14 +49,12 @@ public abstract class Player extends TeaseScript {
     public static void recordVoices(String basePath, String assetRoot,
             Actor actor, String[] assets, String startupScript)
             throws IOException, ValidationError, ParseError {
-        TeaseLib teaseLib = new TeaseLib(new DummyHost(),
-                new DummyPersistence());
+        TeaseLib.init(new DummyHost(), new DummyPersistence());
         ResourceLoader resources = new ResourceLoader(basePath, assetRoot);
         resources.addAssets(assets);
         ScriptCache scripts = new ScriptCache(resources, Scripts);
         // Get the main script
-        TextToSpeechRecorder recorder = new TextToSpeechRecorder(teaseLib,
-                resources);
+        TextToSpeechRecorder recorder = new TextToSpeechRecorder(resources);
         Script main = scripts.get(actor, startupScript);
         // and validate to load all the sub scripts
         validate(main, new ArrayList<ValidationError>());
