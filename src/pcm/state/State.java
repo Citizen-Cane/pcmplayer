@@ -161,12 +161,13 @@ public class State {
     }
 
     private String read(String name) {
-        return teaseLib.persistence.get(root + "." + script.name + "." + name);
+        String namespace = root + "." + script.name;
+        return teaseLib.getString(namespace, name);
     }
 
     private void write(String name, Object value) {
-        teaseLib.persistence.set(root + "." + script.name + "." + name,
-                value != null ? value.toString() : null);
+        String namespace = root + "." + script.name;
+        teaseLib.set(namespace, name, value != null ? value.toString() : null);
     }
 
     public Integer get(Integer n) {
