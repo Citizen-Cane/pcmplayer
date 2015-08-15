@@ -381,27 +381,29 @@ public abstract class Player extends TeaseScript {
                     actionList.append(number);
                 }
             }
-            if (actionList != null) {
+            if (actionList == null) {
                 TeaseLib.log("Action list is empty");
+            } else {
+                TeaseLib.log(actionList.toString());
             }
             // Normalize all actions into the interval [0...100], the choose one
             // "poss" 100 is used to implement an "else" clause, since PCM
             // script
             // doesn't have one otherwise
             double normalized = 100.0;
-            double weights[] = new double[actions.size()];
+            double accumulatedWeights[] = new double[actions.size()];
             double sum = 0.0;
             // Log weights
             StringBuilder weightList = null;
-            for (int i = 0; i < weights.length; i++) {
+            for (int i = 0; i < accumulatedWeights.length; i++) {
                 Action a = actions.get(i);
                 Integer weight = a.poss;
-                double relativeWeight = normalized / weights.length;
+                double relativeWeight = normalized / accumulatedWeights.length;
                 sum += weight != null ? weight
                 // This would be mathematically correct
                 // if none of the action specified a "poss" value
                         : relativeWeight;
-                weights[i] = sum;
+                accumulatedWeights[i] = sum;
                 String w = String.format("%.2f", relativeWeight);
                 if (weightList == null) {
                     weightList = new StringBuilder("Weight:\t" + w);
@@ -416,20 +418,20 @@ public abstract class Player extends TeaseScript {
                 TeaseLib.log("Weight list is empty");
             }
             // Normalize and build interval
-            for (int i = 0; i < weights.length; i++) {
-                weights[i] *= normalized / sum;
+            for (int i = 0; i < accumulatedWeights.length; i++) {
+                accumulatedWeights[i] *= normalized / sum;
             }
             // Choose a value
             double value = random(0, (int) normalized);
             action = null;
-            for (int i = 0; i < weights.length; i++) {
-                if (value <= weights[i]) {
+            for (int i = 0; i < accumulatedWeights.length; i++) {
+                if (value <= accumulatedWeights[i]) {
                     action = actions.get(i);
                     break;
                 }
             }
             if (action == null) {
-                action = actions.get(weights.length);
+                action = actions.get(accumulatedWeights.length - 1);
             }
             TeaseLib.log("Random = " + value + " -> choosing action "
                     + action.number);
