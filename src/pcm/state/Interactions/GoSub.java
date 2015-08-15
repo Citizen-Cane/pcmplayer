@@ -31,8 +31,9 @@ public class GoSub implements Interaction, Interaction.NeedsRangeProvider {
     public ActionRange getRange(Script script, Action action, Runnable visuals,
             Player player) throws ScriptExecutionError {
         TeaseLib.log("Gosub -> " + range.toString());
-        script.stack.push(rangeProvider.getRange(script, action, null,
-                player));
+        visuals.run();
+        player.completeAll();
+        script.stack.push(rangeProvider.getRange(script, action, null, player));
         return range;
     }
 
