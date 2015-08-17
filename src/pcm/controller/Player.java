@@ -156,6 +156,17 @@ public abstract class Player extends TeaseScript {
         TeaseLib.log("Starting script " + script.name);
         state.restore(script);
         invokedOnAllSet = false;
+        if (script.onClose != null) {
+            final Thread scriptThread = Thread.currentThread();
+            teaseLib.host.setQuitHandler(new TeaseScript(this) {
+                @Override
+                public void run() {
+                    endAll();
+                    scriptThread.interrupt();
+                    // The script continues at the onClose range
+                }
+            });
+        }
         script.execute(state);
         // TODO Search for any mistress instead of using hard-coded path
         actor.images = new RandomImages(resources, mistressPath
@@ -174,7 +185,6 @@ public abstract class Player extends TeaseScript {
                         return;
                     }
                 }
-                // Process action
                 range = execute(action);
                 if (range == null) {
                     // Quit
@@ -187,17 +197,25 @@ public abstract class Player extends TeaseScript {
                     script = loadSbd.script;
                     resetScript();
                     range = loadSbd;
-                    // Jumping into a different script definitely exits the play
-                    // range
+                    // Jumping into a different script
+                    // definitely exits the play range
                     action = getAction();
                 }
+                if (Thread.interrupted()) {
+                    throw new ScriptInterruptedException();
+                }
             } catch (ScriptInterruptedException e) {
-                throw e;
+                if (script.onClose != null) {
+                    range = script.onClose;
+                    // clear interrupted state
+                    Thread.interrupted();
+                    // Continue with onClose range
+                } else {
+                    throw e;
+                }
             } catch (ScriptExecutionError e) {
                 throw e;
-            }
-            // TODO OnClose handler
-            catch (Throwable t) {
+            } catch (Throwable t) {
                 throw new ScriptExecutionError(action,
                         "Error executing script", t, script);
             }
