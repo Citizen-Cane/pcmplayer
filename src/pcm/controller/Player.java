@@ -76,30 +76,28 @@ public abstract class Player extends TeaseScript {
         this.state = mappedState;
         // Test code for mappings, should end up in script
         // Toy categories - multiple items on host
-        mappedState.addMapping(311, get(Toys.Wrist_Restraints));
-        mappedState.addMapping(312, get(Toys.Ankle_Restraints));
-        mappedState.addMapping(325, get(Toys.Collars));
-        mappedState.addMapping(340, get(Toys.Gags));
-        mappedState.addMapping(350, get(Toys.Buttplugs));
-        mappedState.addMapping(370, get(Toys.Spanking_Implements));
-        mappedState.addMapping(380, get(Toys.Chastity_Devices));
-        mappedState.addMapping(389, get(Toys.Vibrators, Toys.EStim_Devices));
+        mappedState.addMapping(311, toys(Toys.Wrist_Restraints));
+        mappedState.addMapping(312, toys(Toys.Ankle_Restraints));
+        mappedState.addMapping(325, toys(Toys.Collars));
+        mappedState.addMapping(340, toys(Toys.Gags));
+        mappedState.addMapping(350, toys(Toys.Buttplugs));
+        mappedState.addMapping(370, toys(Toys.Spanking_Implements));
+        mappedState.addMapping(380, toys(Toys.Chastity_Devices));
+        mappedState.addMapping(389, toys(Toys.Vibrators, Toys.EStim_Devices));
 
         // Toy simple mappings
-        mappedState.addMapping(301, get(Toys.Nipple_clamps));
-        mappedState.addMapping(310, get(Toys.Clothespins));
-        mappedState.addMapping(330, get(Toys.Rope));
-        mappedState.addMapping(334, get(Toys.Chains));
-        mappedState.addMapping(382, get(Toys.Blindfold));
-        mappedState.addMapping(384, get(Toys.Humbler));
-        mappedState.addMapping(388, get(Toys.Anal_Dildo));
+        mappedState.addMapping(301, toy(Toys.Nipple_clamps));
+        mappedState.addMapping(310, toy(Toys.Clothespins));
+        mappedState.addMapping(330, toy(Toys.Rope));
+        mappedState.addMapping(334, toy(Toys.Chains));
+        mappedState.addMapping(382, toy(Toys.Blindfold));
+        mappedState.addMapping(384, toy(Toys.Humbler));
+        mappedState.addMapping(388, toy(Toys.Anal_Dildo));
 
-        mappedState.addMapping(383, get(Toys.Enema_Kit));
+        mappedState.addMapping(383, toy(Toys.Enema_Kit));
         // TODO mappedState.addMapping(383, get(Toys.Enema_Bulb));
-        mappedState.addMapping(387, get(Toys.Pussy_Clamps));
-        mappedState.addMapping(385, get(Toys.Ball_Stretcher));
-        // TODO "Tell me what you've got exactly" -> not ended when dismissing
-        // toys dialog fast, or have to display dialog after speech ended
+        mappedState.addMapping(387, toy(Toys.Pussy_Clamps));
+        mappedState.addMapping(385, toy(Toys.Ball_Stretcher));
     }
 
     public void play(String name, ActionRange startRange) {

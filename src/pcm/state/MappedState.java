@@ -3,13 +3,13 @@
  */
 package pcm.state;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import pcm.controller.Player;
+import teaselib.Toys;
 import teaselib.util.Item;
+import teaselib.util.Items;
 
 /**
  * Adds mapping to host persistence. One use case is the mapping from host to
@@ -27,29 +27,27 @@ import teaselib.util.Item;
  *
  */
 public class MappedState extends State {
-    private final Player player;
-    private final Map<Integer, List<Item>> mapping = new HashMap<Integer, List<Item>>();
+    private final Map<Integer, Items<Toys>> mapping = new HashMap<Integer, Items<Toys>>();
 
     public MappedState(Player player, String root) {
         super(root, player.teaseLib);
-        this.player = player;
     }
 
-    public void addMapping(Integer action, Item item) {
-        List<Item> items = new ArrayList<Item>();
+    public void addMapping(Integer action, Item<Toys> item) {
+        Items<Toys> items = new Items<Toys>();
         items.add(item);
         mapping.put(action, items);
     }
 
-    public void addMapping(Integer action, List<Item> items) {
+    public void addMapping(Integer action, Items<Toys> items) {
         mapping.put(action, items);
     }
 
     @Override
     public Integer get(Integer n) {
         if (mapping.containsKey(n)) {
-            List<Item> items = mapping.get(n);
-            boolean available = player.isAnyAvailable(items);
+            Items<Toys> items = mapping.get(n);
+            boolean available = items.available().size() > 0;
             if (available) {
                 super.set(n);
             } else {
@@ -65,7 +63,7 @@ public class MappedState extends State {
         return mapping.containsKey(n);
     }
 
-    public List<Item> getMappedItems(Integer n) {
+    public Items<Toys> getMappedItems(Integer n) {
         return mapping.get(n);
     }
 
@@ -75,7 +73,7 @@ public class MappedState extends State {
     @Override
     public void set(Integer n) {
         if (hasMapping(n)) {
-            List<Item> items = mapping.get(n);
+            Items<Toys> items = mapping.get(n);
             if (items.size() == 1) {
                 // 1:1 mapping
                 items.get(0).setAvailable(true);
@@ -99,8 +97,8 @@ public class MappedState extends State {
     @Override
     public void unset(Integer n) {
         if (mapping.containsKey(n)) {
-            List<Item> items = mapping.get(n);
-            for (Item item : items) {
+            Items<Toys> items = mapping.get(n);
+            for (Item<Toys> item : items) {
                 item.setAvailable(false);
             }
         }

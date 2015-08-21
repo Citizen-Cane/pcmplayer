@@ -21,7 +21,9 @@ import pcm.state.MappedState;
 import pcm.state.State;
 import pcm.state.Visual;
 import teaselib.TeaseLib;
+import teaselib.Toys;
 import teaselib.util.Item;
+import teaselib.util.Items;
 
 public class Ask implements Command, Interaction, NeedsRangeProvider {
     private final int start;
@@ -81,11 +83,11 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
             if (results.get(i) == true) {
                 // Handle mapped values
                 if (mappedState.hasMapping(n)) {
-                    List<Item> items = mappedState.getMappedItems(n);
+                    Items<Toys> items = mappedState.getMappedItems(n);
                     if (items.size() == 1) {
                         // Just a single item - just set
                         state.set(n);
-                    } else if (player.isAnyAvailable(items)) {
+                    } else if (items.available().size() > 0) {
                         // Nothing to do, already applied
                         // Cache result
                         // mappedState.setOverride(n);
@@ -124,11 +126,11 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
     }
 
     private static boolean checkDetailedItems(Player player, String title,
-            List<Item> items) {
+            Items<Toys> items) {
         // Ask which items of the category have been set
         List<Boolean> itemValues = new ArrayList<Boolean>();
         List<String> itemChoices = new ArrayList<String>();
-        for (Item item : items) {
+        for (Item<Toys> item : items) {
             itemValues.add(item.isAvailable());
             itemChoices.add(item.displayName);
         }
