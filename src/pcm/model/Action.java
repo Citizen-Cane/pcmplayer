@@ -30,6 +30,7 @@ import pcm.state.commands.Unset;
 import pcm.state.conditions.Must;
 import pcm.state.conditions.MustNot;
 import pcm.state.conditions.NumActionsFrom;
+import pcm.state.conditions.NumberOfActionsSet;
 import pcm.state.conditions.TimeFrom;
 import pcm.state.visuals.Delay;
 import pcm.state.visuals.Exec;
@@ -221,6 +222,17 @@ public class Action extends AbstractAction {
             String args[] = cmd.args();
             addCondition(new NumActionsFrom(Integer.parseInt(args[0]),
                     Integer.parseInt(args[1])));
+        } else if (name == Statement.NumberOfActionsSet) {
+            final Condition numberOfActionsSet;
+            String args[] = cmd.args();
+            if (args.length == 3) {
+                numberOfActionsSet = new NumberOfActionsSet(
+                        Integer.parseInt(args[0]), Integer.parseInt(args[1]),
+                        Integer.parseInt(args[2]));
+            } else {
+                throw new IllegalArgumentException();
+            }
+            addCondition(numberOfActionsSet);
         } else if (name == Statement.Repeat) {
             final Command repeat;
             String args[] = cmd.args();

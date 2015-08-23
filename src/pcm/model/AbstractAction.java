@@ -12,31 +12,66 @@ import teaselib.TeaseLib;
 
 public abstract class AbstractAction {
 
-    // / Names of Statements used in PCM sbd scripts
+    // / Names of Statements used in PCM scripts
     public enum Statement {
         // Conditions
-        Must, MustNot, Poss, TimeFrom, NumActionsFrom,
+        Must,
+        MustNot,
+        Poss,
+        TimeFrom,
+        NumActionsFrom,
+        NumberOfActionsSet,
 
         // Commands
-        Set, UnSet, SetTime, ResetRange, SetRange, Repeat, RepeatAdd, RepeatDel, Save,
+        Set,
+        UnSet,
+        SetTime,
+        ResetRange,
+        SetRange,
+        Repeat,
+        RepeatAdd,
+        RepeatDel,
+        Save,
 
         // Next action
-        Range, LoadSbd, Quit,
+        Range,
+        LoadSbd,
+        Quit,
 
         // Script-global
-        Debug, Restore, BackColor, TextColor, OnAllSet, OnClose, SsDir,
+        Debug,
+        Restore,
+        BackColor,
+        TextColor,
+        OnAllSet,
+        OnClose,
+        SsDir,
 
         // Script and action
-        YesText, NoText, ResumeText,
+        YesText,
+        NoText,
+        ResumeText,
 
         // Visual
-        NoImage, Image, Message, Txt, PlayWav, PlayAvi, Say, Exec,
+        NoImage,
+        Image,
+        Message,
+        Txt,
+        PlayWav,
+        PlayAvi,
+        Say,
+        Exec,
 
         // Interaction
-        YesNo, Pause, PopUp, Ask,
+        YesNo,
+        Pause,
+        PopUp,
+        Ask,
 
         // Menus
-        AskTitle, AskCheck, Menu,
+        AskTitle,
+        AskCheck,
+        Menu,
 
         // Obsolete
         Delay, // delay is based on text length,
