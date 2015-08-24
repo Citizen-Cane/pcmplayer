@@ -12,6 +12,7 @@ import pcm.model.Script;
 import pcm.model.ScriptExecutionError;
 import pcm.model.ValidationError;
 import pcm.state.Interaction;
+import teaselib.ScriptFunction;
 
 public class LoadSbd implements Interaction {
     private final String scriptName;
@@ -29,8 +30,8 @@ public class LoadSbd implements Interaction {
     }
 
     @Override
-    public ActionRange getRange(Script script, Action action, Runnable visuals,
-            Player player) throws ScriptExecutionError {
+    public ActionRange getRange(Script script, Action action,
+            ScriptFunction visuals, Player player) throws ScriptExecutionError {
         visuals.run();
         player.completeAll();
         Script loadSbd;

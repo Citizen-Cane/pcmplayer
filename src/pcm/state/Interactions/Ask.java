@@ -20,6 +20,7 @@ import pcm.state.Interaction.NeedsRangeProvider;
 import pcm.state.MappedState;
 import pcm.state.State;
 import pcm.state.Visual;
+import teaselib.ScriptFunction;
 import teaselib.TeaseLib;
 import teaselib.Toys;
 import teaselib.util.Item;
@@ -44,8 +45,8 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
     }
 
     @Override
-    public ActionRange getRange(Script script, Action action, Runnable visuals,
-            Player player) throws ScriptExecutionError {
+    public ActionRange getRange(Script script, Action action,
+            ScriptFunction visuals, Player player) throws ScriptExecutionError {
         List<Boolean> values = new ArrayList<Boolean>();
         List<String> choices = new ArrayList<String>();
         List<Integer> indices = new ArrayList<Integer>();

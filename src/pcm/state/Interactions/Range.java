@@ -8,6 +8,7 @@ import pcm.model.ActionRange;
 import pcm.model.Script;
 import pcm.model.ValidationError;
 import pcm.state.Interaction;
+import teaselib.ScriptFunction;
 import teaselib.TeaseLib;
 
 public class Range implements Interaction {
@@ -26,8 +27,8 @@ public class Range implements Interaction {
     }
 
     @Override
-    public ActionRange getRange(Script script, Action action, Runnable visuals,
-            Player player) {
+    public ActionRange getRange(Script script, Action action,
+            ScriptFunction visuals, Player player) {
         if (visuals != null) {
             visuals.run();
         }

@@ -14,6 +14,7 @@ import pcm.model.ScriptExecutionError;
 import pcm.model.ValidationError;
 import pcm.state.Interaction;
 import pcm.state.Interaction.NeedsRangeProvider;
+import teaselib.ScriptFunction;
 import teaselib.TeaseLib;
 import teaselib.core.ScriptInterruptedException;
 
@@ -43,7 +44,8 @@ public class Break implements Interaction, NeedsRangeProvider {
 
     @Override
     public ActionRange getRange(final Script script, final Action action,
-            Runnable visuals, final Player player) throws ScriptExecutionError {
+            ScriptFunction visuals, final Player player)
+            throws ScriptExecutionError {
         // First run the visuals of this action
         visuals.run();
         List<String> choices = new ArrayList<String>(2);
@@ -54,7 +56,7 @@ public class Break implements Interaction, NeedsRangeProvider {
         }
         String stopText = action.getResponseText(Statement.StopText, script);
         choices.add(stopText);
-        Runnable playRange = new Runnable() {
+        ScriptFunction playRange = new ScriptFunction() {
             @Override
             public void run() {
                 try {

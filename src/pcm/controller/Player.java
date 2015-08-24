@@ -20,6 +20,7 @@ import pcm.state.Validatable;
 import pcm.state.Visual;
 import teaselib.Actor;
 import teaselib.Message;
+import teaselib.ScriptFunction;
 import teaselib.TeaseLib;
 import teaselib.TeaseScript;
 import teaselib.Toys;
@@ -269,7 +270,7 @@ public abstract class Player extends TeaseScript {
         // it
         // when suitable,
         // to prevent text and messages appearing too fast
-        Runnable visuals = new Runnable() {
+        ScriptFunction visuals = new ScriptFunction() {
             @Override
             public void run() {
                 if (action.visuals != null) {

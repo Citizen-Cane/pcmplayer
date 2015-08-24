@@ -12,6 +12,7 @@ import pcm.model.Script;
 import pcm.model.ScriptExecutionError;
 import pcm.model.ValidationError;
 import pcm.state.Interaction;
+import teaselib.ScriptFunction;
 import teaselib.TeaseLib;
 
 public class PopUp implements Interaction {
@@ -24,8 +25,8 @@ public class PopUp implements Interaction {
     }
 
     @Override
-    public ActionRange getRange(Script script, Action action, Runnable visuals,
-            Player player) throws ScriptExecutionError {
+    public ActionRange getRange(Script script, Action action,
+            ScriptFunction visuals, Player player) throws ScriptExecutionError {
         List<MenuItem> items = new ArrayList<MenuItem>();
         List<String> choices = new ArrayList<String>();
         Map<Integer, MenuItem> menuItems = script.menuItems;

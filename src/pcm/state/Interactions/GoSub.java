@@ -10,6 +10,7 @@ import pcm.model.Script;
 import pcm.model.ScriptExecutionError;
 import pcm.model.ValidationError;
 import pcm.state.Interaction;
+import teaselib.ScriptFunction;
 import teaselib.TeaseLib;
 
 /**
@@ -28,8 +29,8 @@ public class GoSub implements Interaction, Interaction.NeedsRangeProvider {
     }
 
     @Override
-    public ActionRange getRange(Script script, Action action, Runnable visuals,
-            Player player) throws ScriptExecutionError {
+    public ActionRange getRange(Script script, Action action,
+            ScriptFunction visuals, Player player) throws ScriptExecutionError {
         TeaseLib.log("Gosub -> " + range.toString());
         visuals.run();
         player.completeAll();

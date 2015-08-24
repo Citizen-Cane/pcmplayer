@@ -12,14 +12,15 @@ import pcm.model.Script;
 import pcm.model.ScriptExecutionError;
 import pcm.model.ValidationError;
 import pcm.state.Interaction;
+import teaselib.ScriptFunction;
 import teaselib.TeaseLib;
 
 public class Pause implements Interaction, Interaction.NeedsRangeProvider {
     private Interaction rangeProvider = null;
 
     @Override
-    public ActionRange getRange(Script script, Action action, Runnable visuals,
-            Player player) throws ScriptExecutionError {
+    public ActionRange getRange(Script script, Action action,
+            ScriptFunction visuals, Player player) throws ScriptExecutionError {
         String resume = action.getResponseText(Statement.ResumeText, script);
         TeaseLib.log("Pause: " + resume);
         List<String> choices = new ArrayList<String>(1);

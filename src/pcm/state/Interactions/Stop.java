@@ -12,6 +12,7 @@ import pcm.model.ScriptExecutionError;
 import pcm.model.ValidationError;
 import pcm.state.Interaction;
 import pcm.state.Interaction.NeedsRangeProvider;
+import teaselib.ScriptFunction;
 import teaselib.TeaseLib;
 
 public class Stop implements Interaction, NeedsRangeProvider {
@@ -24,8 +25,8 @@ public class Stop implements Interaction, NeedsRangeProvider {
     }
 
     @Override
-    public ActionRange getRange(Script script, Action action, Runnable visuals,
-            Player player) throws ScriptExecutionError {
+    public ActionRange getRange(Script script, Action action,
+            ScriptFunction visuals, Player player) throws ScriptExecutionError {
         String stopText = action.getResponseText(Statement.StopText, script);
         TeaseLib.log(getClass().getSimpleName() + " " + toString());
         String result = player.reply(visuals, stopText);

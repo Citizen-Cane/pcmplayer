@@ -8,6 +8,7 @@ import pcm.model.ActionRange;
 import pcm.model.Script;
 import pcm.model.ValidationError;
 import pcm.state.Interaction;
+import teaselib.ScriptFunction;
 import teaselib.TeaseLib;
 
 public class Quit implements Interaction {
@@ -18,8 +19,8 @@ public class Quit implements Interaction {
     public static final Quit instance = new Quit();
 
     @Override
-    public ActionRange getRange(Script script, Action action, Runnable visuals,
-            Player player) {
+    public ActionRange getRange(Script script, Action action,
+            ScriptFunction visuals, Player player) {
         TeaseLib.log(getClass().getSimpleName());
         visuals.run();
         player.completeAll();

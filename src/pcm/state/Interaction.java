@@ -9,6 +9,7 @@ import pcm.model.ParseError;
 import pcm.model.Script;
 import pcm.model.ScriptExecutionError;
 import pcm.model.ValidationError;
+import teaselib.ScriptFunction;
 
 public interface Interaction {
     /**
@@ -29,7 +30,7 @@ public interface Interaction {
      * @return
      * @throws ScriptExecutionError
      */
-    ActionRange getRange(Script script, Action action, Runnable visuals,
+    ActionRange getRange(Script script, Action action, ScriptFunction visuals,
             Player player) throws ScriptExecutionError;
 
     void validate(Script script, Action action,

@@ -11,6 +11,7 @@ import pcm.model.Script;
 import pcm.model.ScriptExecutionError;
 import pcm.model.ValidationError;
 import pcm.state.Interaction;
+import teaselib.ScriptFunction;
 import teaselib.TeaseLib;
 
 public class YesNo implements Interaction {
@@ -27,8 +28,9 @@ public class YesNo implements Interaction {
     }
 
     @Override
-    public ActionRange getRange(Script script, Action action, Runnable visuals,
-            final Player player) throws ScriptExecutionError {
+    public ActionRange getRange(Script script, Action action,
+            ScriptFunction visuals, final Player player)
+            throws ScriptExecutionError {
         String yes = action.getResponseText(Statement.YesText, script);
         String no = action.getResponseText(Statement.NoText, script);
         TeaseLib.log("AskYesNo: '" + yes + "', '" + no + '+');
