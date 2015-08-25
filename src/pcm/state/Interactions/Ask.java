@@ -77,7 +77,6 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
         // Don't wait, display checkboxes while displaying the message
         List<Boolean> results;
         results = player.showItems(title, choices, values, false);
-        player.endAll();
         MappedState mappedState = (MappedState) state;
         for (int i = 0; i < indices.size(); i++) {
             Integer n = indices.get(i);
