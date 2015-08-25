@@ -160,9 +160,10 @@ public abstract class Player extends TeaseScript {
             teaseLib.host.setQuitHandler(new TeaseScript(this) {
                 @Override
                 public void run() {
-                    endAll();
+                    TeaseLib.log("Interrupting script thread '"
+                            + scriptThread.getName() + "'");
                     scriptThread.interrupt();
-                    // The script continues at the onClose range
+                    // The main script continues at the onClose range
                 }
             });
         }
@@ -204,7 +205,19 @@ public abstract class Player extends TeaseScript {
                     throw new ScriptInterruptedException();
                 }
             } catch (ScriptInterruptedException e) {
-                if (script.onClose != null) {
+                // Because script functions in the break range statement are
+                // running in the same player instance as the main script,
+                // we have to check the play range in order to find out if the
+                // onClose handler should be called.
+                // It's kind of a hack, and leaves a small loop hole
+                // (placing the onClose range inside the play range),
+                // but saves us from creating a second player instance
+                boolean callOnCLose = playRange == null
+                        || (playRange.contains(script.onClose.start) && playRange
+                                .contains(script.onClose.end));
+                if (script.onClose != null && callOnCLose) {
+                    // Done automatically in reply(), otherwise we have to do it
+                    endAll();
                     range = script.onClose;
                     // clear interrupted state
                     Thread.interrupted();
@@ -257,19 +270,13 @@ public abstract class Player extends TeaseScript {
          */
 
         // One would think that we have to wait for all visuals to
-        // at
-        // least complete
-        // their mandatory part. But interactions perform
-        // differently,
-        // for instance
-        // class Ask displays its user interface while the visuals
-        // render, to allow
-        // the message to be spoken during checkbox selection.
+        // at least complete their mandatory part.
+        // But interactions perform different, for instance
+        // Ask displays its user interface while the visuals render,
+        // to allow the message to be spoken during checkbox selection.
         // Interactions that eventually call choose(...) do this
-        // implicitly, but all other classes like Range have to call
-        // it
-        // when suitable,
-        // to prevent text and messages appearing too fast
+        // implicitly, but all other classes like Range have to call it
+        // when suitable, to prevent text and messages appearing too fast
         ScriptFunction visuals = new ScriptFunction() {
             @Override
             public void run() {

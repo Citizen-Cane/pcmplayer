@@ -64,10 +64,13 @@ public class Break implements Interaction, NeedsRangeProvider {
                             player);
                     player.play(actionRange);
                 } catch (ScriptInterruptedException e) {
-                    // Expected
+                    // Must be forwarded to script function task
+                    // in order to clean up
+                    throw e;
                 } catch (Throwable t) {
                     TeaseLib.log(this, t);
                 }
+                return;
             }
         };
         String result = player.reply(playRange, choices);
