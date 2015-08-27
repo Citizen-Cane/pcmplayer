@@ -1,5 +1,6 @@
 package pcm.model;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,7 @@ import pcm.state.visuals.MistressImage;
 import pcm.state.visuals.NoImage;
 import pcm.state.visuals.NoMessage;
 import pcm.state.visuals.Sound;
+import pcm.state.visuals.Timeout;
 
 public class Action extends AbstractAction {
     public final int number;
@@ -159,25 +161,27 @@ public class Action extends AbstractAction {
         } else if (name == Statement.Delay || name == Statement.ActionDelay) {
             String args[] = cmd.args();
             if (args.length == 1) {
+                // delay
                 int delay = Integer.parseInt(args[0]);
                 addVisual(Statement.Delay, new Delay(delay));
             } else if (args.length == 2) {
+                // delay range
                 int from = Integer.parseInt(args[0]);
                 int to = Integer.parseInt(args[1]);
                 addVisual(Statement.Delay, new Delay(from, to));
-            } else if (args.length == 4) {
+            } else if (args.length >= 4) {
+                // delay range & stop
                 int from = Integer.parseInt(args[0]);
                 int to = Integer.parseInt(args[1]);
-                addVisual(Statement.Delay, new Delay(from, to));
-                int stop = Integer.parseInt(args[3]);
-                setInteraction(new Stop(new ActionRange(stop)));
-            } else if (args.length == 5) {
-                int from = Integer.parseInt(args[0]);
-                int to = Integer.parseInt(args[1]);
-                addVisual(Statement.Delay, new Delay(from, to));
-                int stopFrom = Integer.parseInt(args[3]);
-                int stopTo = Integer.parseInt(args[4]);
-                setInteraction(new Stop(new ActionRange(stopFrom, stopTo)));
+                if (args[2].toLowerCase().equals("confirm")) {
+                    addVisual(Statement.Delay, new Timeout(from, to));
+                    setInteraction(new Stop(rangesFromArgv(args, 3),
+                            Stop.TimeoutBehavior.Confirm));
+                } else {
+                    addVisual(Statement.Delay, new Delay(from, to));
+                    setInteraction(new Stop(rangesFromArgv(args, 2),
+                            Stop.TimeoutBehavior.Terminate));
+                }
             } else {
                 throw new IllegalArgumentException(cmd.toString());
             }
@@ -345,11 +349,11 @@ public class Action extends AbstractAction {
      *            Start index.
      * @return
      */
-    private static Map<String, ActionRange> rangesFromArgv(String[] args,
+    private static Map<Statement, ActionRange> rangesFromArgv(String[] args,
             int index) {
-        Map<String, ActionRange> ranges = new LinkedHashMap<String, ActionRange>();
+        Map<Statement, ActionRange> ranges = new LinkedHashMap<Statement, ActionRange>();
         while (index < args.length) {
-            String key = args[index++];
+            String keyword = args[index++];
             ActionRange actionRange;
             int start = Integer.parseInt(args[index++]);
             if (index < args.length) {
@@ -366,9 +370,20 @@ public class Action extends AbstractAction {
                 // Single value range
                 actionRange = new ActionRange(start);
             }
+            Statement key = keywordToStatement(keyword);
             ranges.put(key, actionRange);
         }
         return ranges;
+    }
+
+    private static Statement keywordToStatement(String keyword) {
+        Map<String, Statement> keywordToStatement = new HashMap<String, Statement>();
+        keywordToStatement.put("cum", Statement.CumText);
+        keywordToStatement.put("no", Statement.NoText);
+        keywordToStatement.put("stop", Statement.StopText);
+        keywordToStatement.put("yes", Statement.YesText);
+        Statement statement = keywordToStatement.get(keyword.toLowerCase());
+        return statement;
     }
 
     private void setInteraction(Interaction interaction) {
@@ -416,8 +431,6 @@ public class Action extends AbstractAction {
                         script));
             }
         }
-        // TODO no .noimage + .delay 0
-        // TODO Only actiondelay shopuld remain
         if (visuals != null) {
             if (visuals.containsKey(Statement.Txt)
                     && visuals.containsKey(Statement.Message)) {
