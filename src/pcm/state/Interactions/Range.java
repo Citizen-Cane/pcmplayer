@@ -32,7 +32,6 @@ public class Range implements Interaction {
         if (visuals != null) {
             visuals.run();
         }
-        player.completeAll();
         ActionRange actionRange = new ActionRange(start, end);
         TeaseLib.log(actionRange.toString());
         return actionRange;

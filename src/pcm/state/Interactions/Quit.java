@@ -23,7 +23,6 @@ public class Quit implements Interaction {
             ScriptFunction visuals, Player player) {
         TeaseLib.log(getClass().getSimpleName());
         visuals.run();
-        player.completeAll();
         return null;
     }
 

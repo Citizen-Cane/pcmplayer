@@ -19,7 +19,6 @@ public class Return implements Interaction {
         if (visuals != null) {
             visuals.run();
         }
-        player.completeAll();
         ActionRange range = script.stack.pop();
         TeaseLib.log("Return: " + range.toString());
         return range;

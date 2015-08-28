@@ -33,7 +33,6 @@ public class LoadSbd implements Interaction {
     public ActionRange getRange(Script script, Action action,
             ScriptFunction visuals, Player player) throws ScriptExecutionError {
         visuals.run();
-        player.completeAll();
         Script loadSbd;
         try {
             loadSbd = script.load(scriptName);
