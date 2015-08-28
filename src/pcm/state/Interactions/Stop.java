@@ -73,12 +73,16 @@ public class Stop implements Interaction, NeedsRangeProvider {
                     // duration in the script function
                     Timeout timeout = (Timeout) action.visuals
                             .get(Statement.Delay);
+                    // Subtract the elapsed duration of rendering visuals in the
+                    // main thread from the overall delay as defined in the
+                    // Timeout visual
                     long elapsedSeconds = visualRenderDuration.elapsedSeconds();
                     timeoutFunction = player
                             .timeoutWithConfirmation(timeout.duration
                                     - elapsedSeconds);
                 } else {
                     visuals.run();
+                    // Complete visuals and full delay
                     player.completeMandatory();
                     // At this point we're delayed already, since we've added a
                     // delay renderer to the visuals of the action when parsing
