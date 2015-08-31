@@ -121,8 +121,9 @@ public class Stop implements Interaction, NeedsRangeProvider {
         StringBuilder s = new StringBuilder();
         s.append(getClass().getSimpleName() + ": ");
         for (Statement statement : choiceRanges.keySet()) {
+            final ActionRange actionRange = choiceRanges.get(statement);
             s.append(statement.toString() + "="
-                    + choiceRanges.get(statement).toString() + " ");
+                    + actionRange.toString() + " ");
         }
         return s.toString();
     }

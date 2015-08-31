@@ -115,12 +115,18 @@ public abstract class AbstractAction {
 
         ;
         public final static Map<String, Statement> lookup = new HashMap<String, Statement>();
+        public final static Map<String, Statement> KeywordToStatement = new HashMap<String, Statement>();
     }
 
     {
         for (Statement name : EnumSet.allOf(Statement.class)) {
             Statement.lookup.put(name.toString().toLowerCase(), name);
         }
+        Statement.KeywordToStatement.put("cum", Statement.CumText);
+        Statement.KeywordToStatement.put("no", Statement.NoText);
+        Statement.KeywordToStatement.put("resume", Statement.ResumeText);
+        Statement.KeywordToStatement.put("stop", Statement.StopText);
+        Statement.KeywordToStatement.put("yes", Statement.YesText);
     }
 
     public Vector<Command> commands = null;

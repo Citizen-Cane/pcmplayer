@@ -1,6 +1,5 @@
 package pcm.model;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -377,12 +376,8 @@ public class Action extends AbstractAction {
     }
 
     private static Statement keywordToStatement(String keyword) {
-        Map<String, Statement> keywordToStatement = new HashMap<String, Statement>();
-        keywordToStatement.put("cum", Statement.CumText);
-        keywordToStatement.put("no", Statement.NoText);
-        keywordToStatement.put("stop", Statement.StopText);
-        keywordToStatement.put("yes", Statement.YesText);
-        Statement statement = keywordToStatement.get(keyword.toLowerCase());
+        Statement statement = Statement.KeywordToStatement.get(keyword
+                .toLowerCase());
         return statement;
     }
 
