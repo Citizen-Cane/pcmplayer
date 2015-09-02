@@ -40,6 +40,7 @@ import pcm.state.visuals.NoImage;
 import pcm.state.visuals.NoMessage;
 import pcm.state.visuals.Sound;
 import pcm.state.visuals.Timeout;
+import teaselib.core.speechrecognition.SpeechRecognition.TimeoutBehavior;
 
 public class Action extends AbstractAction {
     public final int number;
@@ -172,14 +173,23 @@ public class Action extends AbstractAction {
                 // delay range & stop
                 int from = Integer.parseInt(args[0]);
                 int to = Integer.parseInt(args[1]);
-                if (args[2].toLowerCase().equals("confirm")) {
+                if (args[2].toLowerCase().equals("confirm")
+                        && args[3].toLowerCase().equals("indubiomitius")) {
+                    addVisual(Statement.Delay, new Timeout(from, to));
+                    setInteraction(new Stop(rangesFromArgv(args, 4),
+                            Stop.TimeoutType.Confirm,
+                            TimeoutBehavior.InDubioMitius));
+
+                } else if (args[2].toLowerCase().equals("confirm")) {
                     addVisual(Statement.Delay, new Timeout(from, to));
                     setInteraction(new Stop(rangesFromArgv(args, 3),
-                            Stop.TimeoutBehavior.Confirm));
+                            Stop.TimeoutType.Confirm,
+                            TimeoutBehavior.InDubioProDuriore));
                 } else {
                     addVisual(Statement.Delay, new Delay(from, to));
                     setInteraction(new Stop(rangesFromArgv(args, 2),
-                            Stop.TimeoutBehavior.Terminate));
+                            Stop.TimeoutType.Terminate,
+                            TimeoutBehavior.InDubioProDuriore));
                 }
             } else {
                 throw new IllegalArgumentException(cmd.toString());

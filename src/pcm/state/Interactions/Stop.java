@@ -19,22 +19,25 @@ import teaselib.ScriptFunction;
 import teaselib.TeaseLib;
 import teaselib.TeaseLib.Duration;
 import teaselib.core.ScriptInterruptedException;
+import teaselib.core.speechrecognition.SpeechRecognition.TimeoutBehavior;
 
 public class Stop implements Interaction, NeedsRangeProvider {
 
     private final Map<Statement, ActionRange> choiceRanges;
+    private final TimeoutType timeoutType;
     private final TimeoutBehavior timeoutBehavior;
 
     private Interaction rangeProvider = null;
 
-    public enum TimeoutBehavior {
+    public enum TimeoutType {
         Terminate,
         Confirm
     }
 
     public Stop(Map<Statement, ActionRange> choiceRanges,
-            TimeoutBehavior timeoutBehavior) {
+            TimeoutType timeoutType, TimeoutBehavior timeoutBehavior) {
         this.choiceRanges = choiceRanges;
+        this.timeoutType = timeoutType;
         this.timeoutBehavior = timeoutBehavior;
     }
 
@@ -52,7 +55,7 @@ public class Stop implements Interaction, NeedsRangeProvider {
         }
         // If the reply requires confirmation, then it's treated like a normal
         // reply, and the buttons appear after all visuals have been rendered
-        final boolean treatAsNormalReply = timeoutBehavior == TimeoutBehavior.Confirm;
+        final boolean treatAsNormalReply = timeoutType == TimeoutType.Confirm;
         final Duration visualRenderDuration = player.duration();
         if (treatAsNormalReply) {
             // Pretend to be a normal button and show after completing mandatory
@@ -77,9 +80,8 @@ public class Stop implements Interaction, NeedsRangeProvider {
                     // main thread from the overall delay as defined in the
                     // Timeout visual
                     long elapsedSeconds = visualRenderDuration.elapsedSeconds();
-                    timeoutFunction = player
-                            .timeoutWithConfirmation(timeout.duration
-                                    - elapsedSeconds);
+                    timeoutFunction = player.timeoutWithConfirmation(
+                            timeout.duration - elapsedSeconds, timeoutBehavior);
                 } else {
                     visuals.run();
                     // Complete visuals and full delay
@@ -89,7 +91,7 @@ public class Stop implements Interaction, NeedsRangeProvider {
                     // the script, so we can just finish the script function
                     // with the default timeout script function and complete
                     // speech recognition with the default timeout function
-                    timeoutFunction = player.timeout(0);
+                    timeoutFunction = player.timeout(0, timeoutBehavior);
                 }
                 try {
                     timeoutFunction.run();
@@ -122,8 +124,7 @@ public class Stop implements Interaction, NeedsRangeProvider {
         s.append(getClass().getSimpleName() + ": ");
         for (Statement statement : choiceRanges.keySet()) {
             final ActionRange actionRange = choiceRanges.get(statement);
-            s.append(statement.toString() + "="
-                    + actionRange.toString() + " ");
+            s.append(statement.toString() + "=" + actionRange.toString() + " ");
         }
         return s.toString();
     }
