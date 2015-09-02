@@ -129,6 +129,8 @@ public abstract class Player extends TeaseScript {
                 showError(e);
             } catch (Throwable e) {
                 showError(e, name);
+            } finally {
+                teaseLib.host.setQuitHandler(null);
             }
         }
     }
