@@ -19,9 +19,15 @@ public class Return implements Interaction {
         if (visuals != null) {
             visuals.run();
         }
-        ActionRange range = script.stack.pop();
-        TeaseLib.log("Return: " + range.toString());
-        return range;
+        if (script.stack.size() > 0) {
+            ActionRange range = script.stack.pop();
+            TeaseLib.log("Return: "
+                    + (range != null ? range.toString() : "end of script"));
+            return range;
+        } else {
+            TeaseLib.log("Return: stack empty");
+            return null;
+        }
     }
 
     @Override

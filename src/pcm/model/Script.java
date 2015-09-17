@@ -21,6 +21,7 @@ public class Script extends AbstractAction {
     public Color textColor;
     public ActionRange onAllSet = null;
     public ActionRange onClose = null;
+    public ActionRange onRecognitionRejected = null;
     public String imageDirectory = null;
     public ActionRange startRange = null;
 
@@ -144,6 +145,11 @@ public class Script extends AbstractAction {
         } else if (name == Statement.Debug) {
             // Ignored since debug flags are handled by the the player, not by
             // the scripts
+        } else if (name == Statement.OnRecognitionRejected) {
+            String args[] = cmd.args();
+            onRecognitionRejected = args.length > 1 ? new ActionRange(
+                    Integer.parseInt(args[0]), Integer.parseInt(args[1]))
+                    : new ActionRange(Integer.parseInt(args[0]));
         } else {
             super.add(cmd);
         }

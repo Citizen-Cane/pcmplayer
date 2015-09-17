@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import pcm.model.AbstractAction;
 import pcm.model.Action;
 import pcm.model.ActionLoadSbd;
 import pcm.model.ActionRange;
@@ -31,6 +32,7 @@ import teaselib.core.texttospeech.TextToSpeechRecorder;
 import teaselib.hosts.DummyHost;
 import teaselib.hosts.DummyPersistence;
 import teaselib.util.RandomImages;
+import teaselib.util.SpeechRecognitionRejectedScript;
 
 public abstract class Player extends TeaseScript {
 
@@ -46,6 +48,17 @@ public abstract class Player extends TeaseScript {
     Script script = null;
     public ActionRange range = null;
     boolean invokedOnAllSet;
+    boolean intentionalQuit = false;
+
+    /**
+     * This range can be pushed onto the script range stack to tell the player
+     * to hand over execution from the PCM script engine back to the player.
+     * 
+     * Push it on the stack, and call {@link Player#play(ActionRange)}. The
+     * current script is executed up to the next occurrence of a
+     * {@link AbstractAction.Statement#Return} statement.
+     */
+    public final static ActionRange ReturnToPlayer = new ActionRange(0);
 
     public static void recordVoices(String basePath, String assetRoot,
             Actor actor, String[] assets, String startupScript)
@@ -102,6 +115,37 @@ public abstract class Player extends TeaseScript {
     }
 
     public void play(String name, ActionRange startRange) {
+        SpeechRecognitionRejectedScript srRejectedHandler = actor.speechRecognitionRejectedHandler;
+        actor.speechRecognitionRejectedHandler = new SpeechRecognitionRejectedScript(
+                this) {
+            @Override
+            public boolean canRun() {
+                return Player.this.script.onRecognitionRejected != null
+                        && !intentionalQuit;
+            }
+
+            @Override
+            public void run() {
+                try {
+                    // The play(Range) method must end on return, not continue
+                    // somewhere else
+                    Player.this.scripts.stack.push(ReturnToPlayer);
+                    range = Player.this.script.onRecognitionRejected;
+                    Player.this.play(new ActionRange(0, Integer.MAX_VALUE));
+                    if (range == null) {
+                        // Intentional quit
+                        intentionalQuit = true;
+                        throw new ScriptInterruptedException();
+                        // TODO Interrupting the main script results in the
+                        // onClose handler to be triggered -> bad quit
+                    }
+                } catch (AllActionsSetException e) {
+                    TeaseLib.log(this, e);
+                } catch (ScriptExecutionError e) {
+                    TeaseLib.log(this, e);
+                }
+            }
+        };
         try {
             script = scripts.get(actor, name);
             if (validateScripts) {
@@ -125,12 +169,18 @@ public abstract class Player extends TeaseScript {
                 while (range != null) {
                     play((ActionRange) null);
                 }
+            } catch (ScriptInterruptedException e) {
+                if (!intentionalQuit) {
+                    TeaseLib.log(this, e);
+                }
             } catch (ScriptError e) {
                 showError(e);
             } catch (Throwable e) {
                 showError(e, name);
             } finally {
                 teaseLib.host.setQuitHandler(null);
+                intentionalQuit = false;
+                actor.speechRecognitionRejectedHandler = srRejectedHandler;
             }
         }
     }
@@ -175,6 +225,17 @@ public abstract class Player extends TeaseScript {
                 + script.mistressImages);
     }
 
+    /**
+     * Plays the given range. Returns on {@code .quit}, if
+     * {@link Player#ReturnToPlayer} had been pushed on the stack and a return
+     * statement is executed, or if the the next action is not a member of the
+     * play range.
+     * 
+     * @param playRange
+     *            The range to play.
+     * @throws AllActionsSetException
+     * @throws ScriptExecutionError
+     */
     public void play(ActionRange playRange) throws AllActionsSetException,
             ScriptExecutionError {
         while (true) {
@@ -190,9 +251,13 @@ public abstract class Player extends TeaseScript {
                 range = execute(action);
                 if (range == null) {
                     // Quit
-                    action = null;
                     setImage(Message.NoImage);
                     show("");
+                    break;
+                } else if (range == ReturnToPlayer) {
+                    // do nothing and temporarily suspends playing
+                    // in order to return command to the player
+                    // Used to execute a sub-script from java
                     break;
                 } else if (range instanceof ActionLoadSbd) {
                     ActionLoadSbd loadSbd = (ActionLoadSbd) range;
@@ -214,10 +279,10 @@ public abstract class Player extends TeaseScript {
                 // It's kind of a hack, and leaves a small loop hole
                 // (placing the onClose range inside the play range),
                 // but saves us from creating a second player instance
-                boolean callOnCLose = playRange == null
+                boolean callOnClose = playRange == null
                         || (playRange.contains(script.onClose.start) && playRange
                                 .contains(script.onClose.end));
-                if (script.onClose != null && callOnCLose) {
+                if (script.onClose != null && callOnClose && !intentionalQuit) {
                     // Done automatically in reply(), otherwise we have to do it
                     endAll();
                     range = script.onClose;

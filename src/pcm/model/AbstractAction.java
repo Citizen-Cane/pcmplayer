@@ -113,7 +113,10 @@ public abstract class AbstractAction {
          */
         Return,
 
-        ;
+        /**
+         * Call a handler to comment rejected speech recognitions.
+         */
+        OnRecognitionRejected, ;
         public final static Map<String, Statement> lookup = new HashMap<String, Statement>();
         public final static Map<String, Statement> KeywordToStatement = new HashMap<String, Statement>();
     }
