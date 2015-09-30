@@ -8,7 +8,7 @@ import pcm.model.AbstractAction.Statement;
 
 public class ScriptLineTokenizer {
     public final int lineNumber;
-    private final String line;
+    public final String line;
     private final StringTokenizer tokenizer;
 
     public final Statement statement;

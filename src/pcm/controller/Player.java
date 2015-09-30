@@ -389,7 +389,7 @@ public abstract class Player extends TeaseScript {
             TeaseLib.log("Action " + range.start);
         }
         List<Action> selectable = new LinkedList<Action>();
-        List<Action> poss1 = null;
+        List<Action> poss0 = null;
         List<Action> poss100 = null;
         for (Action action : candidates) {
             boolean getAction = !state.get(new Integer(action.number)).equals(
@@ -411,11 +411,11 @@ public abstract class Player extends TeaseScript {
                 if (getAction) {
                     // poss == 1 and poss == 100 are special cases
                     if (action.poss != null) {
-                        if (action.poss == 1) {
-                            if (poss1 == null) {
-                                poss1 = new LinkedList<Action>();
+                        if (action.poss == 0) {
+                            if (poss0 == null) {
+                                poss0 = new LinkedList<Action>();
                             }
-                            poss1.add(action);
+                            poss0.add(action);
                         } else if (action.poss == 100) {
                             if (poss100 == null) {
                                 poss100 = new LinkedList<Action>();
@@ -430,14 +430,14 @@ public abstract class Player extends TeaseScript {
                 }
             }
         }
-        if (poss1 == null && poss100 == null) {
+        if (poss0 == null && poss100 == null) {
             return selectable;
         } else if (poss100 != null) {
             // poss == 100 overrides
             return poss100;
-        } else if (poss1 != null && selectable.size() == 0) {
+        } else if (poss0 != null && selectable.size() == 0) {
             // poss == 1 is last chance
-            return poss1;
+            return poss0;
         } else {
             return selectable;
         }
@@ -557,7 +557,6 @@ public abstract class Player extends TeaseScript {
         }
     }
 
-    // Failure in script constructor
     private void showError(ScriptError e) {
         TeaseLib.log(this, e);
         showError(createErrorMessage(e));
@@ -596,6 +595,3 @@ public abstract class Player extends TeaseScript {
         reply("Oh Dear");
     }
 }
-
-// http://stackoverflow.com/questions/11012819/how-can-i-get-a-resource-folder-from-inside-my-jar-file
-// http://www.uofr.net/~greg/java/get-resource-listing.html

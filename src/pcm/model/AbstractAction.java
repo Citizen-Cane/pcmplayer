@@ -116,7 +116,15 @@ public abstract class AbstractAction {
         /**
          * Call a handler to comment rejected speech recognitions.
          */
-        OnRecognitionRejected, ;
+        OnRecognitionRejected,
+
+        /**
+         * The action is considered only if all other actions in the range are
+         * set or their conditions are all false
+         */
+        Else,
+
+        ;
         public final static Map<String, Statement> lookup = new HashMap<String, Statement>();
         public final static Map<String, Statement> KeywordToStatement = new HashMap<String, Statement>();
     }

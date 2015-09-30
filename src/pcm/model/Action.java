@@ -192,7 +192,7 @@ public class Action extends AbstractAction {
                             TimeoutBehavior.InDubioProDuriore));
                 }
             } else {
-                throw new IllegalArgumentException(cmd.toString());
+                throw new IllegalArgumentException(cmd.line);
             }
         } else if (name == Statement.Say) {
             // Ignore, because message are spoken per default
@@ -243,7 +243,7 @@ public class Action extends AbstractAction {
                         Integer.parseInt(args[0]), Integer.parseInt(args[1]),
                         Integer.parseInt(args[2]));
             } else {
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException(cmd.line);
             }
             addCondition(numberOfActionsSet);
         } else if (name == Statement.Repeat) {
@@ -252,7 +252,7 @@ public class Action extends AbstractAction {
             if (args.length == 1) {
                 repeat = new Repeat(number, Integer.parseInt(args[0]));
             } else {
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException(cmd.line);
             }
             addCommand(repeat);
         } else if (name == Statement.RepeatAdd) {
@@ -264,7 +264,7 @@ public class Action extends AbstractAction {
                 repeatAdd = new RepeatAdd(Integer.parseInt(args[0]),
                         Integer.parseInt(args[1]), Integer.parseInt(args[2]));
             } else {
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException(cmd.line);
             }
             addCommand(repeatAdd);
         } else if (name == Statement.RepeatDel) {
@@ -276,7 +276,7 @@ public class Action extends AbstractAction {
                 repeatDel = new RepeatDel(Integer.parseInt(args[0]),
                         Integer.parseInt(args[1]), Integer.parseInt(args[2]));
             } else {
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException(cmd.line);
             }
             addCommand(repeatDel);
         } else if (name == Statement.Save) {
@@ -286,6 +286,11 @@ public class Action extends AbstractAction {
         } else if (name == Statement.Poss) {
             String args[] = cmd.args();
             poss = new Integer(args[0]);
+            if (poss < 1 || poss > 100) {
+                throw new IllegalArgumentException(cmd.line);
+            }
+        } else if (name == Statement.Else) {
+            poss = 0;
         }
         // interactions
         else if (name == Statement.Range) {
@@ -430,7 +435,7 @@ public class Action extends AbstractAction {
 
     public void validate(Script script, List<ValidationError> validationErrors) {
         if (poss != null) {
-            if (poss == 0 || poss > 100) {
+            if (poss < 0 || poss > 100) {
                 validationErrors.add(new ValidationError(this,
                         "Invalid value for poss statement (" + poss + ")",
                         script));
