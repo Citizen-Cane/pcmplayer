@@ -78,8 +78,8 @@ public class MappedState extends State {
                 // 1:1 mapping
                 items.get(0).setAvailable(true);
             } else {
-                throw new IllegalStateException(
-                        "Mapped values can only be unset");
+                throw new IllegalStateException(n + "(" + items.toString()
+                        + ")" + ": Multiple-mapped values can only be unset");
             }
         }
         super.set(n);
