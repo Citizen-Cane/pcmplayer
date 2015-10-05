@@ -2,6 +2,7 @@ package pcm.model;
 
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -140,7 +141,7 @@ public abstract class AbstractAction {
         Statement.KeywordToStatement.put("yes", Statement.YesText);
     }
 
-    public Vector<Command> commands = null;
+    public List<Command> commands = null;
     public Map<Statement, String> responses = null;
 
     public void addCommand(Command command) {
