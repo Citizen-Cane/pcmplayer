@@ -456,7 +456,6 @@ public abstract class Player extends TeaseScript {
             action = null;
         } else if (actions.size() == 1) {
             action = actions.get(0);
-            TeaseLib.log("-> choosing action " + action.number);
         } else {
             // Log code
             StringBuilder actionList = null;
