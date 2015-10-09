@@ -373,22 +373,6 @@ public abstract class Player extends TeaseScript {
      */
     public List<Action> range(Script script, ActionRange range) {
         List<Action> candidates = script.actions.getAll(range);
-        // Debug log message
-        // if (range.start < range.end) {
-        // StringBuilder actions = null;
-        // for (Action action : candidates) {
-        // if (actions == null) {
-        // actions = new StringBuilder();
-        // actions.append(action.number);
-        // } else {
-        // actions.append(" ");
-        // actions.append(action.number);
-        // }
-        // }
-        // // TeaseLib.log("-> Range " + range.start + "-" + range.end + ":");
-        // } else {
-        // // TeaseLib.log("Action " + range.start);
-        // }
         List<Action> selectable = new LinkedList<Action>();
         List<Action> poss0 = null;
         List<Action> poss100 = null;
