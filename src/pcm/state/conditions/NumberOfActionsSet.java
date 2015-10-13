@@ -4,6 +4,11 @@ import pcm.model.ActionRange;
 import pcm.state.Condition;
 import pcm.state.State;
 
+/**
+ * The PCM version of "Greater or equal than": triggers if at least a number of
+ * actions are set in a given range.
+ *
+ */
 public class NumberOfActionsSet extends ActionRange implements Condition {
 
     private final int x;
