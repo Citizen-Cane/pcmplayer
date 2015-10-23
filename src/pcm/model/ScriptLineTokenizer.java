@@ -25,7 +25,6 @@ public class ScriptLineTokenizer {
         String token = tokenizer.nextToken().toLowerCase();
         String statementString = token.substring(1);
         statement = parseStatement(statementString);
-
     }
 
     public String[] args() {

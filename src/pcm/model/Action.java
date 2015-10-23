@@ -25,8 +25,11 @@ import pcm.state.commands.Repeat;
 import pcm.state.commands.RepeatAdd;
 import pcm.state.commands.RepeatDel;
 import pcm.state.commands.Save;
+import pcm.state.commands.Set;
 import pcm.state.commands.SetTime;
 import pcm.state.commands.Unset;
+import pcm.state.conditions.IfSet;
+import pcm.state.conditions.IfUnset;
 import pcm.state.conditions.Must;
 import pcm.state.conditions.MustNot;
 import pcm.state.conditions.NumActionsFrom;
@@ -211,7 +214,7 @@ public class Action extends AbstractAction {
             }
             addCondition(mustNot);
         } else if (name == Statement.Set) {
-            pcm.state.commands.Set set = new pcm.state.commands.Set();
+            Set set = new Set();
             for (String arg : cmd.args()) {
                 set.add(new Integer(arg));
             }
@@ -289,6 +292,20 @@ public class Action extends AbstractAction {
             if (poss < 1 || poss > 100) {
                 throw new IllegalArgumentException(cmd.line);
             }
+        } else if (name == Statement.IfSet) {
+            String args[] = cmd.args();
+            int n = new Integer(args[0]);
+            Command conditional = createCommandFrom(cmd.lineNumber,
+                    allArgsFrom(args, 1));
+            Command ifSet = new IfSet(n, conditional);
+            addCommand(ifSet);
+        } else if (name == Statement.IfUnset) {
+            String args[] = cmd.args();
+            int n = new Integer(args[0]);
+            Command conditional = createCommandFrom(cmd.lineNumber,
+                    allArgsFrom(args, 1));
+            Command ifUnset = new IfUnset(n, conditional);
+            addCommand(ifUnset);
         } else if (name == Statement.Else) {
             poss = 0;
         }
@@ -352,6 +369,13 @@ public class Action extends AbstractAction {
         } else {
             super.add(cmd);
         }
+    }
+
+    private static Command createCommandFrom(int lineNumber, String line) {
+        ScriptLineTokenizer cmd = new ScriptLineTokenizer(lineNumber, line);
+        Action action = new Action(0);
+        action.add(cmd);
+        return action.commands.get(0);
     }
 
     /**

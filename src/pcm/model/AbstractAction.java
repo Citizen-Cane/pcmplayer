@@ -125,7 +125,15 @@ public abstract class AbstractAction {
          */
         Else,
 
-        ;
+        /**
+         * Execute a command statement if an action is set
+         */
+        IfSet,
+
+        /**
+         * Execute a command statement if an action is not set
+         */
+        IfUnset, ;
         public final static Map<String, Statement> lookup = new HashMap<String, Statement>();
         public final static Map<String, Statement> KeywordToStatement = new HashMap<String, Statement>();
     }
