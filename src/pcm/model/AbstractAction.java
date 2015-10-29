@@ -133,7 +133,16 @@ public abstract class AbstractAction {
         /**
          * Execute a command statement if an action is not set
          */
-        IfUnset, ;
+        IfUnset,
+
+        /**
+         * Specifies the action that is used for tracking the usage of a gag.
+         * Controls display of prompts, as a gagged slave won't be able to use
+         * speech recognition.
+         */
+        Gag,
+
+        ;
         public final static Map<String, Statement> lookup = new HashMap<String, Statement>();
         public final static Map<String, Statement> KeywordToStatement = new HashMap<String, Statement>();
     }

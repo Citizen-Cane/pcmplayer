@@ -27,6 +27,7 @@ import teaselib.TeaseScript;
 import teaselib.Toys;
 import teaselib.core.ResourceLoader;
 import teaselib.core.ScriptInterruptedException;
+import teaselib.core.speechrecognition.SpeechRecognitionResult.Confidence;
 import teaselib.core.texttospeech.ScriptScanner;
 import teaselib.core.texttospeech.TextToSpeechRecorder;
 import teaselib.hosts.DummyHost;
@@ -510,6 +511,30 @@ public abstract class Player extends TeaseScript {
                     + action.number);
         }
         return action;
+    }
+
+    @Override
+    protected String showChoices(ScriptFunction scriptFunction,
+            List<String> choices, Confidence recognitionConfidence) {
+        final List<String> processedChoices;
+        // Display text according to slave's level of articulateness
+        if (state.get(script.gag).equals(State.SET)) {
+            // Slave is gagged
+            processedChoices = new ArrayList<String>(choices.size());
+            for (String choice : choices) {
+                // The simple solution: replace vocals with consonants
+                choice = choice.replace("a", "m");
+                choice = choice.replace("e", "m");
+                choice = choice.replace("i", "m");
+                choice = choice.replace("o", "m");
+                choice = choice.replace("u", "m");
+                processedChoices.add(choice);
+            }
+        } else {
+            processedChoices = choices;
+        }
+        return super.showChoices(scriptFunction, processedChoices,
+                recognitionConfidence);
     }
 
     public static void validate(Script script,
