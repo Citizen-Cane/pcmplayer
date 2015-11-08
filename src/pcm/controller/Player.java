@@ -516,11 +516,11 @@ public abstract class Player extends TeaseScript {
     @Override
     protected String showChoices(ScriptFunction scriptFunction,
             List<String> choices, Confidence recognitionConfidence) {
-        final List<String> processedChoices;
         // Display text according to slave's level of articulateness
         if (state.get(script.gag).equals(State.SET)) {
             // Slave is gagged
-            processedChoices = new ArrayList<String>(choices.size());
+            final List<String> processedChoices = new ArrayList<String>(
+                    choices.size());
             for (String choice : choices) {
                 // The simple solution: replace vocals with consonants
                 choice = choice.replace("a", "m");
@@ -530,11 +530,20 @@ public abstract class Player extends TeaseScript {
                 choice = choice.replace("u", "m");
                 processedChoices.add(choice);
             }
+            final String processedChoice = super.showChoices(scriptFunction,
+                    processedChoices, recognitionConfidence);
+            // Return the original choice instance
+            int index = processedChoices.indexOf(processedChoice);
+            if (index < 0) {
+                // Timeout
+                return processedChoice;
+            } else {
+                return choices.get(index);
+            }
         } else {
-            processedChoices = choices;
+            return super.showChoices(scriptFunction, choices,
+                    recognitionConfidence);
         }
-        return super.showChoices(scriptFunction, processedChoices,
-                recognitionConfidence);
     }
 
     public static void validate(Script script,
