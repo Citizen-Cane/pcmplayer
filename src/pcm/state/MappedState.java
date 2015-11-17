@@ -29,8 +29,8 @@ import teaselib.util.Items;
 public class MappedState extends State {
     private final Map<Integer, Items<Toys>> mapping = new HashMap<Integer, Items<Toys>>();
 
-    public MappedState(Player player, String root) {
-        super(root, player.teaseLib);
+    public MappedState(Player player) {
+        super(player);
     }
 
     public void addMapping(Integer action, Item<Toys> item) {

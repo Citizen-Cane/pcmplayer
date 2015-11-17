@@ -87,7 +87,7 @@ public abstract class Player extends TeaseScript {
         this.scripts = new ScriptCache(resources, Scripts);
         this.mistressPath = mistressPath;
         this.invokedOnAllSet = false;
-        MappedState mappedState = new MappedState(this, namespace);
+        MappedState mappedState = new MappedState(this);
         this.state = mappedState;
         // Test code for mappings, should end up in script
         // Toy categories - multiple items on host
@@ -365,14 +365,23 @@ public abstract class Player extends TeaseScript {
     }
 
     /**
-     * Get a list of actions that can be chosen according on the state
+     * Build a list of all executable actions, after evaluating conditions.
+     * 
+     * @param range
+     * @return List of available actions.
+     */
+    public List<Action> range(ActionRange range) {
+        return range(script, range);
+    }
+
+    /**
+     * Build a list of all executable actions, after evaluating conditions.
      * 
      * @param script
      * @param range
-     * @param state
-     * @return
+     * @return List of available actions.
      */
-    public List<Action> range(Script script, ActionRange range) {
+    private List<Action> range(Script script, ActionRange range) {
         List<Action> candidates = script.actions.getAll(range);
         List<Action> selectable = new LinkedList<Action>();
         List<Action> poss0 = null;

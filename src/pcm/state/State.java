@@ -8,11 +8,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import pcm.controller.Player;
 import pcm.model.Action;
 import pcm.model.ActionRange;
 import pcm.model.Script;
 import pcm.model.ScriptExecutionError;
-import teaselib.TeaseLib;
 
 /**
  * Well, the original PCMistress likely used a single (long?) array for storing
@@ -36,8 +36,7 @@ import teaselib.TeaseLib;
  */
 public class State {
 
-    private final TeaseLib teaseLib;
-    private final String root;
+    public final Player player;
 
     private Script script = null;
 
@@ -68,9 +67,8 @@ public class State {
 
     private static final String TIMEKEYS = "TimeKeys";
 
-    public State(String root, TeaseLib teaseLib) {
-        this.root = root;
-        this.teaseLib = teaseLib;
+    public State(Player player) {
+        this.player = player;
     }
 
     // TODO Mapping between Mine and SS properties,
@@ -161,13 +159,12 @@ public class State {
     }
 
     private String read(String name) {
-        String namespace = root + "." + script.name;
-        return teaseLib.getString(namespace, name);
+        return player.getString(script.name + "." + name);
     }
 
     private void write(String name, Object value) {
-        String namespace = root + "." + script.name;
-        teaseLib.set(namespace, name, value != null ? value.toString() : null);
+        player.set(script.name + "." + name, value != null ? value.toString()
+                : null);
     }
 
     public Integer get(Integer n) {
@@ -246,7 +243,7 @@ public class State {
     }
 
     public long getTime() {
-        return teaseLib.getTime();
+        return player.teaseLib.getTime();
     }
 
     public void set(Action action) throws ScriptExecutionError {
@@ -293,6 +290,6 @@ public class State {
     }
 
     public int getRandom(int min, int max) {
-        return teaseLib.random(min, max);
+        return player.random(min, max);
     }
 }

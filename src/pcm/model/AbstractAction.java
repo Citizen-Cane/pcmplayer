@@ -21,7 +21,6 @@ public abstract class AbstractAction {
         Poss,
         TimeFrom,
         NumActionsFrom,
-        NumberOfActionsSet,
 
         // Commands
         Set,
@@ -141,6 +140,18 @@ public abstract class AbstractAction {
          * speech recognition.
          */
         Gag,
+
+        /**
+         * Triggers if the specified number of actions in the given range are
+         * set
+         */
+        NumberOfActionsSet,
+
+        /**
+         * Triggers if the given range contains at least {@code n} executable
+         * actions.
+         */
+        NumActionsAvailable,
 
         ;
         public final static Map<String, Statement> lookup = new HashMap<String, Statement>();
