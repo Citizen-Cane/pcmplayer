@@ -193,8 +193,8 @@ public abstract class AbstractAction {
     public ActionRange execute(State state) throws ScriptExecutionError {
         if (commands != null) {
             for (Command command : commands) {
-                TeaseLib.log(command.getClass().getSimpleName() + " "
-                        + command.toString());
+                TeaseLib.instance().log.info(command.getClass().getSimpleName()
+                        + " " + command.toString());
                 command.execute(state);
             }
         }

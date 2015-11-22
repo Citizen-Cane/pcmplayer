@@ -44,7 +44,7 @@ public class Script extends AbstractAction {
         this.scriptCache = scriptCache;
         this.stack = scriptCache.stack;
         ScriptParser parser = new ScriptParser(reader);
-        TeaseLib.log("Parsing script " + name);
+        TeaseLib.instance().log.info("Parsing script " + name);
         try {
             parser.parse(this);
             Action action = null;

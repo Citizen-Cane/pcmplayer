@@ -23,7 +23,8 @@ public abstract class IfClause implements Command {
     @Override
     public void execute(State state) throws ScriptExecutionError {
         if (isTrueFor(state)) {
-            TeaseLib.log(" -> " + command.getClass().getSimpleName() + " "
+            TeaseLib.instance().log.info(" -> "
+                    + command.getClass().getSimpleName() + " "
                     + command.toString());
             command.execute(state);
         }

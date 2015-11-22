@@ -40,7 +40,7 @@ public class ScriptCache {
             script = cache.get(key).get();
         }
         if (script != null) {
-            TeaseLib.logDetail("Using cached script " + name);
+            TeaseLib.instance().log.debug("Using cached script " + name);
         } else {
             final String location = path + name;
             final BufferedReader scriptReader = script(location);

@@ -21,11 +21,11 @@ public class Return implements Interaction {
         }
         if (script.stack.size() > 0) {
             ActionRange range = script.stack.pop();
-            TeaseLib.log("Return: "
+            TeaseLib.instance().log.info("Return: "
                     + (range != null ? range.toString() : "end of script"));
             return range;
         } else {
-            TeaseLib.log("Return: stack empty");
+            TeaseLib.instance().log.info("Return: stack empty");
             return null;
         }
     }

@@ -34,7 +34,7 @@ public class Range implements Interaction {
         }
         ActionRange actionRange = new ActionRange(start, end);
         if (actionRange.start < actionRange.end) {
-            TeaseLib.log(actionRange.toString());
+            TeaseLib.instance().log.info(actionRange.toString());
         }
         return actionRange;
     }

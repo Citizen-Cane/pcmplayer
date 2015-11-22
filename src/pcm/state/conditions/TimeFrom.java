@@ -24,19 +24,21 @@ public class TimeFrom implements Condition {
         if (setTime != null) {
             long elapsedDuration = now - setTime.getTime();
             long requestedDuration = new Duration(timeFrom).getTime();
-            TeaseLib.log("TimeFrom: setTime = " + setTime.toString()
-                    + ", duration = " + timeFrom + "(" + requestedDuration
-                    + ") , now = " + new Date(System.currentTimeMillis())
-                    + ", elapsed = " + elapsedDuration + "ms");
+            TeaseLib.instance().log.info("TimeFrom: setTime = "
+                    + setTime.toString() + ", duration = " + timeFrom + "("
+                    + requestedDuration + ") , now = "
+                    + new Date(System.currentTimeMillis()) + ", elapsed = "
+                    + elapsedDuration + "ms");
             if (elapsedDuration < requestedDuration) {
-                TeaseLib.log("-> early");
+                TeaseLib.instance().log.info("-> early");
                 return false;
             }
         } else {
-            TeaseLib.log("Warning - setTime not called on action " + n);
+            TeaseLib.instance().log
+                    .info("Warning - setTime not called on action " + n);
             return false;
         }
-        TeaseLib.log("-> late");
+        TeaseLib.instance().log.info("-> late");
         return true;
     }
 

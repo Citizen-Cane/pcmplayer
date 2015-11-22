@@ -141,9 +141,9 @@ public abstract class Player extends TeaseScript {
                         // onClose handler to be triggered -> bad quit
                     }
                 } catch (AllActionsSetException e) {
-                    TeaseLib.log(this, e);
+                    teaseLib.log.error(this, e);
                 } catch (ScriptExecutionError e) {
-                    TeaseLib.log(this, e);
+                    teaseLib.log.error(this, e);
                 }
             }
         };
@@ -172,7 +172,7 @@ public abstract class Player extends TeaseScript {
                 }
             } catch (ScriptInterruptedException e) {
                 if (!intentionalQuit) {
-                    TeaseLib.log(this, e);
+                    teaseLib.log.error(this, e);
                 }
             } catch (ScriptError e) {
                 showError(e);
@@ -197,7 +197,7 @@ public abstract class Player extends TeaseScript {
         }
         if (validationErrors.size() > 0) {
             for (ScriptError scriptError : validationErrors) {
-                TeaseLib.log(createErrorMessage(scriptError));
+                teaseLib.log.info(createErrorMessage(scriptError));
             }
             throw new ValidationError("Validation failed, "
                     + validationErrors.size() + " issues", script);
@@ -205,7 +205,7 @@ public abstract class Player extends TeaseScript {
     }
 
     private void resetScript() throws ScriptExecutionError {
-        TeaseLib.log("Starting script " + script.name);
+        teaseLib.log.info("Starting script " + script.name);
         state.restore(script);
         invokedOnAllSet = false;
         if (script.onClose != null) {
@@ -213,7 +213,7 @@ public abstract class Player extends TeaseScript {
             teaseLib.host.setQuitHandler(new TeaseScript(this) {
                 @Override
                 public void run() {
-                    TeaseLib.log("Interrupting script thread '"
+                    teaseLib.log.info("Interrupting script thread '"
                             + scriptThread.getName() + "'");
                     scriptThread.interrupt();
                     // The main script continues at the onClose range
@@ -307,9 +307,9 @@ public abstract class Player extends TeaseScript {
         List<Action> actions = range(script, range);
         action = chooseAction(actions);
         if (action == null) {
-            TeaseLib.log("All actions set");
+            teaseLib.log.info("All actions set");
             if (script.onAllSet != null && invokedOnAllSet == false) {
-                TeaseLib.log("Invoking OnAllSet handler");
+                teaseLib.log.info("Invoking OnAllSet handler");
                 invokedOnAllSet = true;
                 range = script.onAllSet;
                 actions = range(script, range);
@@ -395,7 +395,7 @@ public abstract class Player extends TeaseScript {
                         if (condition.isTrueFor(state)) {
                             continue;
                         } else {
-                            TeaseLib.log("Action " + action.number + ": "
+                            teaseLib.log.info("Action " + action.number + ": "
                                     + condition.getClass().getSimpleName()
                                     + condition.toString());
                             getAction = false;
@@ -451,7 +451,7 @@ public abstract class Player extends TeaseScript {
             action = null;
         } else if (actions.size() == 1) {
             action = actions.get(0);
-            TeaseLib.log("Action " + action.number);
+            teaseLib.log.info("Action " + action.number);
         } else {
             // Log code
             StringBuilder actionList = null;
@@ -465,9 +465,9 @@ public abstract class Player extends TeaseScript {
                 }
             }
             if (actionList == null) {
-                TeaseLib.log("Action list is empty");
+                teaseLib.log.info("Action list is empty");
             } else {
-                TeaseLib.log(actionList.toString());
+                teaseLib.log.info(actionList.toString());
             }
             // Normalize all actions into the interval [0...100], the choose one
             // "poss" 100 is used to implement an "else" clause, since PCM
@@ -496,9 +496,9 @@ public abstract class Player extends TeaseScript {
                 }
             }
             if (weightList != null) {
-                TeaseLib.log(weightList.toString());
+                teaseLib.log.info(weightList.toString());
             } else {
-                TeaseLib.log("Weight list is empty");
+                teaseLib.log.info("Weight list is empty");
             }
             // Normalize and build interval
             for (int i = 0; i < accumulatedWeights.length; i++) {
@@ -516,7 +516,7 @@ public abstract class Player extends TeaseScript {
             if (action == null) {
                 action = actions.get(accumulatedWeights.length - 1);
             }
-            TeaseLib.log("Random = " + value + " -> choosing action "
+            teaseLib.log.info("Random = " + value + " -> choosing action "
                     + action.number);
         }
         return action;
@@ -586,7 +586,7 @@ public abstract class Player extends TeaseScript {
     }
 
     private void showError(ScriptError e) {
-        TeaseLib.log(this, e);
+        teaseLib.log.error(this, e);
         showError(createErrorMessage(e));
     }
 
@@ -605,7 +605,7 @@ public abstract class Player extends TeaseScript {
     }
 
     private void showError(Throwable t, String scriptName) {
-        TeaseLib.log(this, t);
+        teaseLib.log.error(this, t);
         Throwable cause = t.getCause();
         if (cause != null) {
             showError("Script " + scriptName + ", " + t.getMessage() + "\n"
@@ -618,7 +618,7 @@ public abstract class Player extends TeaseScript {
     }
 
     private void showError(String error) {
-        TeaseLib.log(error);
+        teaseLib.log.info(error);
         teaseLib.host.show(null, error);
         reply("Oh Dear");
     }

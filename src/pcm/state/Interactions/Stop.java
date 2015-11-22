@@ -45,7 +45,8 @@ public class Stop implements Interaction, NeedsRangeProvider {
     public ActionRange getRange(Script script, final Action action,
             final ScriptFunction visuals, final Player player)
             throws ScriptExecutionError {
-        TeaseLib.log(getClass().getSimpleName() + " " + toString());
+        TeaseLib.instance().log.info(getClass().getSimpleName() + " "
+                + toString());
         List<String> choices = new ArrayList<String>(choiceRanges.size());
         List<ActionRange> ranges = new ArrayList<ActionRange>(
                 choiceRanges.size());
@@ -106,7 +107,7 @@ public class Stop implements Interaction, NeedsRangeProvider {
         String result = player.reply(displayVisualsAndTimeout, choices);
         if (result != ScriptFunction.Timeout) {
             int index = choices.indexOf(result);
-            TeaseLib.log("-> " + result);
+            TeaseLib.instance().log.info("-> " + result);
             return ranges.get(index);
         } else {
             return rangeProvider.getRange(script, action, null, player);

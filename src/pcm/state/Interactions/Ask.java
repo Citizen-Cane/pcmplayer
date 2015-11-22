@@ -71,7 +71,8 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
                 }
             }
         }
-        TeaseLib.log(getClass().getSimpleName() + " " + choices.toString());
+        TeaseLib.instance().log.info(getClass().getSimpleName() + " "
+                + choices.toString());
         visuals.run();
         player.completeMandatory();
         // Don't wait, display checkboxes while displaying the message

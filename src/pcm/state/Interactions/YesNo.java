@@ -33,16 +33,16 @@ public class YesNo implements Interaction {
             throws ScriptExecutionError {
         String yes = action.getResponseText(Statement.YesText, script);
         String no = action.getResponseText(Statement.NoText, script);
-        TeaseLib.log("AskYesNo: '" + yes + "', '" + no + '+');
+        TeaseLib.instance().log.info("AskYesNo: '" + yes + "', '" + no + '+');
         final List<String> choices = new ArrayList<String>();
         choices.add(yes);
         choices.add(no);
         visuals.run();
         if (player.reply(choices) == yes) {
-            TeaseLib.log("-> Yes");
+            TeaseLib.instance().log.info("-> Yes");
             return new ActionRange(startYes, endYes);
         } else {
-            TeaseLib.log("-> No");
+            TeaseLib.instance().log.info("-> No");
             return new ActionRange(startNo, endNo);
         }
     }

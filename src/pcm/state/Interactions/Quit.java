@@ -21,7 +21,7 @@ public class Quit implements Interaction {
     @Override
     public ActionRange getRange(Script script, Action action,
             ScriptFunction visuals, Player player) {
-        TeaseLib.log(getClass().getSimpleName());
+        TeaseLib.instance().log.info(getClass().getSimpleName());
         visuals.run();
         return null;
     }

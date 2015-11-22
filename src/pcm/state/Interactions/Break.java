@@ -57,7 +57,7 @@ public class Break implements Interaction, NeedsRangeProvider {
                     // in order to clean up
                     throw e;
                 } catch (Throwable t) {
-                    TeaseLib.log(this, t);
+                    TeaseLib.instance().log.error(this, t);
                 }
                 return;
             }

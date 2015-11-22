@@ -38,7 +38,8 @@ public class PopUp implements Interaction {
                 choices.add(menuItem.message);
             }
         }
-        TeaseLib.log(getClass().getSimpleName() + " " + choices.toString());
+        TeaseLib.instance().log.info(getClass().getSimpleName() + " "
+                + choices.toString());
         visuals.run();
         player.completeMandatory();
         String result = player.reply(choices);
