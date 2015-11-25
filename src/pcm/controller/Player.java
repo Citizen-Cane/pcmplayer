@@ -2,8 +2,12 @@ package pcm.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Vector;
 
 import pcm.model.AbstractAction;
 import pcm.model.Action;
@@ -387,13 +391,21 @@ public abstract class Player extends TeaseScript {
         // Get all available, e.g. those not set yet
         List<Action> candidates = script.actions.getUnset(range, state);
         List<Action> selectable = new LinkedList<Action>();
-        List<Action> poss0 = null;
-        List<Action> poss100 = null;
-        // Eval Should/ShouldNot
-        boolean includeOptionalConditions = true;
-        while (true) {
+        // TODO Define ignore ranges in script
+        List<ActionRange> scriptRangePriorities = getTestPriorities();
+        // To sort out all optional conditions in the last step
+        scriptRangePriorities.add(new ActionRange(Integer.MIN_VALUE,
+                Integer.MAX_VALUE));
+        // make hasNext() check work...
+        scriptRangePriorities.add(null);
+        List<ActionRange> rangePriorities = new ArrayList<ActionRange>(
+                scriptRangePriorities.size());
+        Iterator<ActionRange> priorityRange = scriptRangePriorities.iterator();
+        while (priorityRange.hasNext()) {
+            List<Action> poss0 = null;
+            List<Action> poss100 = null;
             for (Action action : candidates) {
-                boolean getAction = evalConditions(action, includeOptionalConditions);
+                boolean getAction = evalConditions(action, rangePriorities);
                 if (getAction) {
                     // poss == 1 and poss == 100 are special cases
                     if (action.poss != null) {
@@ -415,30 +427,48 @@ public abstract class Player extends TeaseScript {
                     }
                 }
             }
-            // Re-evaluate with Should/shouldn't disabled
-            if (selectable.size() == 0 && includeOptionalConditions == true) {
-                includeOptionalConditions = false;
-                continue;
+            if (poss100 != null) {
+                // poss == 100 overrides
+                teaseLib.log.info("choosing poss100 - override");
+                return poss100;
+            } else if (selectable.size() > 0) {
+                // No poss null -> selectable
+                return selectable;
+            } else if (poss0 != null) {
+                // selectable.size() == 0 but actions in else branch
+                teaseLib.log.info("choosing poss0 - fallback");
+                return poss0;
             }
-            break;
+            final ActionRange ignore = priorityRange.next();
+            if (ignore != null) {
+                if (ignore.start > Integer.MIN_VALUE
+                        || ignore.end < Integer.MAX_VALUE) {
+                    teaseLib.log.info("Should/ShouldNot: ignoring "
+                            + ignore.toString());
+                }
+            }
+            rangePriorities.add(ignore);
         }
-        if (poss100 != null) {
-            // poss == 100 overrides
-            return poss100;
-        } else if (poss0 == null) {
-            // No poss null -> selectable
-            return selectable;
-        } else { // selectable.size() == 0)
-            return poss0;
-        }
+        return Collections.emptyList();
     }
 
-    private boolean evalConditions(Action action, boolean includeOptionalConditions) {
+    private static List<ActionRange> getTestPriorities() {
+        List<ActionRange> scriptRangePriorities = new Vector<ActionRange>();
+        scriptRangePriorities.add(new ActionRange(400, 699));
+        scriptRangePriorities.add(new ActionRange(28));
+        scriptRangePriorities.add(new ActionRange(26));
+        scriptRangePriorities.add(new ActionRange(25));
+        scriptRangePriorities.add(new ActionRange(25));
+        scriptRangePriorities.add(new ActionRange(22));
+        scriptRangePriorities.add(new ActionRange(20));
+        scriptRangePriorities.add(new ActionRange(39));
+        return scriptRangePriorities;
+    }
+
+    private boolean evalConditions(Action action, List<ActionRange> ignore) {
         if (action.conditions != null) {
             for (Condition condition : action.conditions) {
-                boolean isOptionalCondition = condition instanceof Should
-                        || condition instanceof ShouldNot;
-                if (isOptionalCondition && !includeOptionalConditions) {
+                if (ignoreOptionalCondition(condition, ignore)) {
                     continue;
                 } else {
                     if (condition.isTrueFor(state)) {
@@ -450,10 +480,27 @@ public abstract class Player extends TeaseScript {
                         return false;
                     }
                 }
-
             }
         }
         return true;
+    }
+
+    public boolean ignoreOptionalCondition(Condition condition,
+            List<ActionRange> ignore) {
+        boolean isOptionalCondition = condition instanceof Should
+                || condition instanceof ShouldNot;
+        if (isOptionalCondition) {
+            @SuppressWarnings("unchecked")
+            Collection<Integer> col = (Collection<Integer>) condition;
+            for (ActionRange actionRange : ignore) {
+                for (int n : col) {
+                    if (actionRange.contains(n)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /**
