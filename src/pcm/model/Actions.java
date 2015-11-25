@@ -6,6 +6,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import pcm.state.State;
+
 /**
  * Enumerate actions. - Find action by index - Enum action range and evaluate
  * conditions in order to choose next action
@@ -28,8 +30,13 @@ public class Actions {
         }
     }
 
+    /**
+     * Get all actions in the given range.
+     * 
+     * @param range
+     * @return
+     */
     public List<Action> getAll(ActionRange range) {
-        // TODO Not exactly performant, but improvements are tricky
         List<Action> actionRange = new ArrayList<Action>();
         for (int i = range.start; i <= range.end; i++) {
             Integer index = new Integer(i);
@@ -38,7 +45,28 @@ public class Actions {
             }
         }
         return actionRange;
+    }
 
+    /**
+     * Get all actions in the given range that are unset, e.g haven't been
+     * executed or set otherwise.
+     * 
+     * @param range
+     * @param state
+     * @return List of actions
+     */
+    public List<Action> getUnset(ActionRange range, State state) {
+        List<Action> actionRange = new ArrayList<Action>();
+        for (int i = range.start; i <= range.end; i++) {
+            Integer index = new Integer(i);
+            if (actions.containsKey(index)) {
+                Action action = actions.get(index);
+                if (!state.get(new Integer(action.number)).equals(State.SET)) {
+                    actionRange.add(actions.get(index));
+                }
+            }
+        }
+        return actionRange;
     }
 
     public void validate(Script script, Action action, ActionRange range,

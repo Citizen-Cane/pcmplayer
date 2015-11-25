@@ -1,6 +1,7 @@
 package pcm.model;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -36,6 +37,12 @@ public class ScriptLineTokenizer {
             args = toStringArray(parsed);
         }
         return args;
+    }
+
+    public void addArgsTo(Collection<Integer> collection) {
+        for (String arg : args()) {
+            collection.add(Integer.parseInt(arg));
+        }
     }
 
     /**

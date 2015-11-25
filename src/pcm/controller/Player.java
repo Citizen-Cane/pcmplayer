@@ -19,6 +19,8 @@ import pcm.state.MappedState;
 import pcm.state.State;
 import pcm.state.Validatable;
 import pcm.state.Visual;
+import pcm.state.conditions.Should;
+import pcm.state.conditions.ShouldNot;
 import teaselib.Actor;
 import teaselib.Message;
 import teaselib.ScriptFunction;
@@ -382,27 +384,16 @@ public abstract class Player extends TeaseScript {
      * @return List of available actions.
      */
     private List<Action> range(Script script, ActionRange range) {
-        List<Action> candidates = script.actions.getAll(range);
+        // Get all available, e.g. those not set yet
+        List<Action> candidates = script.actions.getUnset(range, state);
         List<Action> selectable = new LinkedList<Action>();
         List<Action> poss0 = null;
         List<Action> poss100 = null;
-        for (Action action : candidates) {
-            boolean getAction = !state.get(new Integer(action.number)).equals(
-                    State.SET);
-            if (getAction) {
-                if (action.conditions != null) {
-                    for (Condition condition : action.conditions) {
-                        if (condition.isTrueFor(state)) {
-                            continue;
-                        } else {
-                            teaseLib.log.info("Action " + action.number + ": "
-                                    + condition.getClass().getSimpleName()
-                                    + condition.toString());
-                            getAction = false;
-                            break;
-                        }
-                    }
-                }
+        // Eval Should/ShouldNot
+        boolean includeOptionalConditions = true;
+        while (true) {
+            for (Action action : candidates) {
+                boolean getAction = evalConditions(action, includeOptionalConditions);
                 if (getAction) {
                     // poss == 1 and poss == 100 are special cases
                     if (action.poss != null) {
@@ -424,18 +415,45 @@ public abstract class Player extends TeaseScript {
                     }
                 }
             }
+            // Re-evaluate with Should/shouldn't disabled
+            if (selectable.size() == 0 && includeOptionalConditions == true) {
+                includeOptionalConditions = false;
+                continue;
+            }
+            break;
         }
-        if (poss0 == null && poss100 == null) {
-            return selectable;
-        } else if (poss100 != null) {
+        if (poss100 != null) {
             // poss == 100 overrides
             return poss100;
-        } else if (poss0 != null && selectable.size() == 0) {
-            // poss == 1 is last chance
-            return poss0;
-        } else {
+        } else if (poss0 == null) {
+            // No poss null -> selectable
             return selectable;
+        } else { // selectable.size() == 0)
+            return poss0;
         }
+    }
+
+    private boolean evalConditions(Action action, boolean includeOptionalConditions) {
+        if (action.conditions != null) {
+            for (Condition condition : action.conditions) {
+                boolean isOptionalCondition = condition instanceof Should
+                        || condition instanceof ShouldNot;
+                if (isOptionalCondition && !includeOptionalConditions) {
+                    continue;
+                } else {
+                    if (condition.isTrueFor(state)) {
+                        continue;
+                    } else {
+                        teaseLib.log.info("Action " + action.number + ": "
+                                + condition.getClass().getSimpleName()
+                                + condition.toString());
+                        return false;
+                    }
+                }
+
+            }
+        }
+        return true;
     }
 
     /**

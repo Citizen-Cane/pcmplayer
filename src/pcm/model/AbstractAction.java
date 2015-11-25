@@ -153,6 +153,18 @@ public abstract class AbstractAction {
          */
         NumActionsAvailable,
 
+        /**
+         * Like {@code Must}, but if no action is available, the range is
+         * evaluated again, with the {@code Should} condition disabled.
+         */
+        Should,
+
+        /**
+         * Like {@code Mustnot}, but if no action is available, the range is
+         * evaluated again, with the {@code Shouldnot} condition disabled.
+         */
+        ShouldNot,
+
         ;
         public final static Map<String, Statement> lookup = new HashMap<String, Statement>();
         public final static Map<String, Statement> KeywordToStatement = new HashMap<String, Statement>();

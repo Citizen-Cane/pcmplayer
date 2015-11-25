@@ -35,6 +35,8 @@ import pcm.state.conditions.MustNot;
 import pcm.state.conditions.NumActionsAvailable;
 import pcm.state.conditions.NumActionsFrom;
 import pcm.state.conditions.NumberOfActionsSet;
+import pcm.state.conditions.Should;
+import pcm.state.conditions.ShouldNot;
 import pcm.state.conditions.TimeFrom;
 import pcm.state.visuals.Delay;
 import pcm.state.visuals.Exec;
@@ -204,27 +206,28 @@ public class Action extends AbstractAction {
         // Commands
         else if (name == Statement.Must) {
             Must must = new Must();
-            for (String arg : cmd.args()) {
-                must.add(new Integer(arg));
-            }
+            cmd.addArgsTo(must);
             addCondition(must);
         } else if (name == Statement.MustNot) {
             MustNot mustNot = new MustNot();
-            for (String arg : cmd.args()) {
-                mustNot.add(new Integer(arg));
-            }
+            cmd.addArgsTo(mustNot);
             addCondition(mustNot);
+        } else if (name == Statement.Should) {
+            Should should = new Should();
+            cmd.addArgsTo(should);
+            addCondition(should);
+        } else if (name == Statement.ShouldNot) {
+            ShouldNot shouldNot = new ShouldNot();
+            cmd.addArgsTo(shouldNot);
+            addCondition(shouldNot);
+
         } else if (name == Statement.Set) {
             Set set = new Set();
-            for (String arg : cmd.args()) {
-                set.add(new Integer(arg));
-            }
+            cmd.addArgsTo(set);
             addCommand(set);
         } else if (name == Statement.UnSet) {
             Unset unset = new Unset();
-            for (String arg : cmd.args()) {
-                unset.add(new Integer(arg));
-            }
+            cmd.addArgsTo(unset);
             addCommand(unset);
         } else if (name == Statement.SetTime) {
             String args[] = cmd.args();
