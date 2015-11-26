@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.Vector;
 
 import pcm.controller.ScriptCache;
 import pcm.controller.ScriptParser;
@@ -25,9 +26,10 @@ public class Script extends AbstractAction {
     public String imageDirectory = null;
     public ActionRange startRange = null;
 
-    public Actions actions = new Actions();
-    public Map<Integer, AskItem> askItems = new HashMap<Integer, AskItem>();
-    public Map<Integer, MenuItem> menuItems = new HashMap<Integer, MenuItem>();
+    public final Actions actions = new Actions();
+    public final Map<Integer, AskItem> askItems = new HashMap<Integer, AskItem>();
+    public final Map<Integer, MenuItem> menuItems = new HashMap<Integer, MenuItem>();
+    public List<ActionRange> conditionRanges = null;
 
     public String mistressImages = null;
 
@@ -58,6 +60,7 @@ public class Script extends AbstractAction {
             throw e;
         }
         completeScriptDefaults();
+        completeConditionRanges();
     }
 
     private void completeScriptDefaults() {
@@ -78,6 +81,19 @@ public class Script extends AbstractAction {
             if (!responses.containsKey(Statement.CumText)) {
                 responses.put(Statement.CumText, "I came, Miss");
             }
+        }
+    }
+
+    /**
+     * Allow the evaluation algorithm to just iterate through the collection
+     */
+    private void completeConditionRanges() {
+        if (conditionRanges != null) {
+            // To sort out all optional conditions in the last step
+            conditionRanges.add(new ActionRange(Integer.MIN_VALUE,
+                    Integer.MAX_VALUE));
+            // make hasNext() check work...
+            conditionRanges.add(null);
         }
     }
 
@@ -155,6 +171,18 @@ public class Script extends AbstractAction {
         } else if (name == Statement.Gag) {
             String args[] = cmd.args();
             gag = Integer.parseInt(args[0]);
+        } else if (name == Statement.ConditionRange) {
+            if (conditionRanges == null) {
+                conditionRanges = new Vector<ActionRange>();
+            }
+            String args[] = cmd.args();
+            int start = Integer.parseInt(args[0]);
+            if (args.length > 1) {
+                int end = Integer.parseInt(args[1]);
+                conditionRanges.add(new ActionRange(start, end));
+            } else {
+                conditionRanges.add(new ActionRange(start));
+            }
         } else {
             super.add(cmd);
         }

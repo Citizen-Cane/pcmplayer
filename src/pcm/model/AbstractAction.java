@@ -84,7 +84,7 @@ public abstract class AbstractAction {
         // Add-Ons
 
         /**
-         * Text for the Cum button in brreak statemetn
+         * Text for the "Cum" button in break statemetn
          */
         CumText,
 
@@ -94,7 +94,7 @@ public abstract class AbstractAction {
         StopText,
 
         /**
-         * Displasy break buttons while executing a given range
+         * Displays break buttons while executing a given range
          */
         Break,
 
@@ -155,15 +155,38 @@ public abstract class AbstractAction {
 
         /**
          * Like {@code Must}, but if no action is available, the range is
-         * evaluated again, with the {@code Should} condition disabled.
+         * evaluated again, with the {@code Should} condition being ignored.
+         * 
+         * @see Statement#ConditionRange
          */
         Should,
 
         /**
-         * Like {@code Mustnot}, but if no action is available, the range is
-         * evaluated again, with the {@code Shouldnot} condition disabled.
+         * Like {@code MustNot}, but if no action is available, the range is
+         * evaluated again, with the {@code ShouldNot} condition being ignored.
+         * 
+         * @see Statement#ConditionRange
          */
         ShouldNot,
+
+        /**
+         * Can be added multiple times to a script to define a list of ranges
+         * that are used when relaxing {@link Statement#Should} /
+         * {@link Statement#ShouldNot} conditions.
+         * <p>
+         * Whenever an action contains {@link Statement#Should} /
+         * {@link Statement#ShouldNot}, and evaluating the range does not yield
+         * any executable actions, the evaluation is repeated with relaxable
+         * conditions ignored, starting with the first entry. Entries are added
+         * to the ignore list, and the evaluation is repeated until the
+         * evaluation yields executable actions or all relaxable conditions are
+         * ignored.
+         * <p>
+         * Evaluation takes place in the order defined in the script,conditions
+         * in the first condition range are ignored first. Therefore, the most
+         * important condition ranges must be defined last.
+         */
+        ConditionRange,
 
         ;
         public final static Map<String, Statement> lookup = new HashMap<String, Statement>();
