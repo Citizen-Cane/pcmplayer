@@ -1,0 +1,22 @@
+' pcm test cases
+
+
+.range 9999
+
+
+' testOutOfActions
+
+[action 1000]
+.must 9
+.range 9999
+
+[action 1001]
+.mustnot 9
+.range 9999
+
+
+' proper exit for all test cases
+[action 9999]
+.noimage
+.quit
+
