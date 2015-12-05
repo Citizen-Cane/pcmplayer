@@ -15,6 +15,39 @@
 .range 9999
 
 
+' testRepeatAdd
+
+[action 1010]
+.repeatadd 1011 2 2
+.range 9999
+
+[action 1011]
+.must 1010
+.range 9999
+
+
+' testRepeatDel
+
+[action 1020]
+.repeatdel 1021 1 1
+.repeatdel 1022 4 4
+.repeatadd 1023 3 3
+.range 9999
+
+[action 1021]
+.must 1020
+.range 9999
+
+[action 1022]
+.must 1020
+.range 9999
+
+[action 1023]
+.must 1020
+.repeatdel 1023 1 1
+.range 9999
+
+
 ' proper exit for all test cases
 [action 9999]
 .noimage

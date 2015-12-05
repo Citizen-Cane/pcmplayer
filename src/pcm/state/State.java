@@ -229,15 +229,19 @@ public class State {
     }
 
     public void repeatAdd(Integer n, int m) {
-        Integer v = data.containsKey(n) ? data.get(n) - m : -m;
-        data.put(n, v.equals(SET) ? SET : v);
+        Integer v = data.containsKey(n) ? data.get(n) : UNSET;
+        final Integer w = v.equals(SET) ? -m : v - m;
+        player.teaseLib.log.info("Increasing " + n + " from " + v + " to " + w);
+        data.put(n, w);
         actions.remove(n);
         times.remove(n);
     }
 
     public void repeatDel(Integer n, int m) {
-        int v = data.containsKey(n) ? data.get(n) + m : 0;
-        data.put(n, v < SET ? new Integer(v) : SET);
+        int v = data.containsKey(n) ? data.get(n) : UNSET;
+        final Integer w = v + m < SET ? new Integer(v) + m : SET;
+        player.teaseLib.log.info("Decreasing " + n + " from " + v + " to " + w);
+        data.put(n, w);
         actions.remove(n);
         times.remove(n);
     }
