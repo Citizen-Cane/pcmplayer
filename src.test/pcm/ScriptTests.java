@@ -25,7 +25,7 @@ import teaselib.hosts.DummyPersistence;
 public class ScriptTests {
 
     Player player = new Player(TeaseLib.init(new DummyHost(),
-            new DummyPersistence()), new ResourceLoader("bin/pcm",
+            new DummyPersistence()), new ResourceLoader("bin.test/pcm",
             "test-resources"), new Actor(Actor.Dominant, "en-us"), "PCM-Test",
             null) {
 
