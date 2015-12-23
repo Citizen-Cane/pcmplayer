@@ -72,17 +72,13 @@ public class Stop implements Interaction, NeedsRangeProvider {
             public void run() {
                 final ScriptFunction timeoutFunction;
                 if (treatAsNormalReply) {
-                    // Visuals are rendered in the main loop, and timeout
-                    // doesn't render a delay, allowing us to wait the timeout
-                    // duration in the script function
+                    // Visuals are rendered in the main loop, and the timeout
+                    // visual doesn't render a delay, allowing us to query and
+                    // wait the timeout duration in the script function
                     Timeout timeout = (Timeout) action.visuals
                             .get(Statement.Delay);
-                    // Subtract the elapsed duration of rendering visuals in the
-                    // main thread from the overall delay as defined in the
-                    // Timeout visual
-                    long elapsedSeconds = visualRenderDuration.elapsedSeconds();
                     timeoutFunction = player.timeoutWithConfirmation(
-                            timeout.duration - elapsedSeconds, timeoutBehavior);
+                            timeout.duration, timeoutBehavior);
                 } else {
                     visuals.run();
                     // Complete visuals and full delay
