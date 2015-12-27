@@ -119,9 +119,11 @@ public class ScriptParser {
                     // rendering the message triggers rendering of all other
                     // visuals
                     if (message != null) {
+                        message.end();
                         action.addVisual(Statement.Message, message);
                     }
                     if (txt != null) {
+                        txt.end();
                         action.addVisual(Statement.Txt, txt);
                     }
                     action.finalizeParsing(script);

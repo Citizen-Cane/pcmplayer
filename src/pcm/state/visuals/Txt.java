@@ -36,6 +36,10 @@ public class Txt implements Visual {
         txt.add(line);
     }
 
+    public void end() {
+        txt.joinSentences().readAloud();
+    }
+
     @Override
     public void render(Player player) {
         player.show(txt.toString());

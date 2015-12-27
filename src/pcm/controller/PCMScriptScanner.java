@@ -34,7 +34,7 @@ public class PCMScriptScanner implements ScriptScanner {
                     Visual visual = visuals.get(Statement.Message);
                     if (visual instanceof pcm.state.visuals.SpokenMessage) {
                         pcm.state.visuals.SpokenMessage spokenMessage = (pcm.state.visuals.SpokenMessage) visual;
-                        for (Message message : spokenMessage.getParts()) {
+                        for (Message message : spokenMessage.getMessages()) {
                             r.add(message);
                         }
                     } else {

@@ -39,7 +39,7 @@ public class ScriptTests {
      */
     @Before
     public void setUpBefore() throws Exception {
-        player.loadScript("test");
+        player.loadScript("ScriptTests");
     }
 
     @Test

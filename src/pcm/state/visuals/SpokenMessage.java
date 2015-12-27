@@ -41,6 +41,12 @@ public class SpokenMessage implements Visual, Validatable {
         message = null;
     }
 
+    public void end() {
+        for (Message message : messages) {
+            message.joinSentences().readAloud();
+        }
+    }
+
     @Override
     public void render(Player player) {
         for (Message message : messages) {
@@ -48,7 +54,7 @@ public class SpokenMessage implements Visual, Validatable {
         }
     }
 
-    public List<Message> getParts() {
+    public List<Message> getMessages() {
         return messages;
     }
 
