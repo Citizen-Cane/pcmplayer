@@ -17,7 +17,6 @@ import pcm.state.Interaction.NeedsRangeProvider;
 import pcm.state.visuals.Timeout;
 import teaselib.ScriptFunction;
 import teaselib.TeaseLib;
-import teaselib.TeaseLib.Duration;
 import teaselib.core.ScriptInterruptedException;
 import teaselib.core.speechrecognition.SpeechRecognition.TimeoutBehavior;
 
@@ -57,7 +56,6 @@ public class Stop implements Interaction, NeedsRangeProvider {
         // If the reply requires confirmation, then it's treated like a normal
         // reply, and the buttons appear after all visuals have been rendered
         final boolean treatAsNormalReply = timeoutType == TimeoutType.Confirm;
-        final Duration visualRenderDuration = player.duration();
         if (treatAsNormalReply) {
             // Pretend to be a normal button and show after completing mandatory
             // visuals
