@@ -239,15 +239,15 @@ public abstract class AbstractAction {
     public void add(ScriptLineTokenizer cmd) {
         Statement name = cmd.statement;
         if (name == Statement.YesText) {
-            addResponse(name, cmd.asText());
+            addResponse(name, cmd.allAsText());
         } else if (name == Statement.NoText) {
-            addResponse(name, cmd.asText());
+            addResponse(name, cmd.allAsText());
         } else if (name == Statement.ResumeText) {
-            addResponse(name, cmd.asText());
+            addResponse(name, cmd.allAsText());
         } else if (name == Statement.StopText) {
-            addResponse(name, cmd.asText());
+            addResponse(name, cmd.allAsText());
         } else if (name == Statement.CumText) {
-            addResponse(name, cmd.asText());
+            addResponse(name, cmd.allAsText());
         } else if (name == Statement.ResetRange) {
             String args[] = cmd.args();
             addCommand(new ResetRange(Integer.parseInt(args[0]),
@@ -258,17 +258,4 @@ public abstract class AbstractAction {
         }
     }
 
-    public String allArgsFrom(String[] args) {
-        return allArgsFrom(args, 0);
-    }
-
-    public String allArgsFrom(String[] args, int n) {
-        StringBuilder s = new StringBuilder();
-        s.append(args[n]);
-        for (int i = n + 1; i < args.length; i++) {
-            s.append(" ");
-            s.append(args[i]);
-        }
-        return s.toString();
-    }
 }

@@ -311,14 +311,14 @@ public class Action extends AbstractAction {
             String args[] = cmd.args();
             int n = new Integer(args[0]);
             Command conditional = createCommandFrom(cmd.lineNumber,
-                    allArgsFrom(args, 1));
+                    cmd.argsFrom(1));
             Command ifSet = new IfSet(n, conditional);
             addCommand(ifSet);
         } else if (name == Statement.IfUnset) {
             String args[] = cmd.args();
             int n = new Integer(args[0]);
             Command conditional = createCommandFrom(cmd.lineNumber,
-                    allArgsFrom(args, 1));
+                    cmd.argsFrom(1));
             Command ifUnset = new IfUnset(n, conditional);
             addCommand(ifUnset);
         } else if (name == Statement.Else) {
@@ -335,7 +335,7 @@ public class Action extends AbstractAction {
                 setInteraction(new Range(start));
             }
         } else if (name == Statement.Pause) {
-            String resumeText = cmd.asText();
+            String resumeText = cmd.allAsText();
             if (!resumeText.isEmpty()) {
                 addResponse(Statement.ResumeText, resumeText);
             }

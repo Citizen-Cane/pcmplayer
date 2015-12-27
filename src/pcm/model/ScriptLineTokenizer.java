@@ -13,7 +13,8 @@ public class ScriptLineTokenizer {
     private final StringTokenizer tokenizer;
 
     public final Statement statement;
-    private String args[];
+
+    private String argv[];
 
     public ScriptLineTokenizer(int lineNumber, String line) {
         this.lineNumber = lineNumber;
@@ -29,14 +30,14 @@ public class ScriptLineTokenizer {
     }
 
     public String[] args() {
-        if (args == null) {
+        if (argv == null) {
             Vector<String> parsed = new Vector<String>();
             while (tokenizer.hasMoreTokens()) {
                 parsed.add(tokenizer.nextToken());
             }
-            args = toStringArray(parsed);
+            argv = toStringArray(parsed);
         }
-        return args;
+        return argv;
     }
 
     public void addArgsTo(Collection<Integer> collection) {
@@ -45,18 +46,48 @@ public class ScriptLineTokenizer {
         }
     }
 
+    public String allArgs() {
+        return argsFrom(0);
+    }
+
+    public String argsFrom(int n) {
+        StringBuilder s = new StringBuilder();
+        String[] args = args();
+        s.append(args[n]);
+        for (int i = n + 1; i < args.length; i++) {
+            s.append(" ");
+            s.append(args[i]);
+        }
+        return s.toString();
+    }
+
     /**
-     * Returns all arguments. Won't cut off anything.
+     * Return all, including the comment
      * 
      * @return The whole line
      */
-    public String asText() {
+    public String allAsText() {
         int s = statement.toString().length();
         if (line.length() > s + 1) {
             return line.substring(s + 2);
         } else {
             return "";
         }
+    }
+
+    /**
+     * Return all, including the comment, starting from argument n
+     * 
+     * @param n
+     * @return
+     */
+    public String allAsTextFrom(int n) {
+        int index = statement.toString().length() + 2;
+        String[] args = args();
+        for (int i = 0; i < n; i++) {
+            index += args[i].length() + 1;
+        }
+        return line.substring(index);
     }
 
     /**
@@ -69,7 +100,7 @@ public class ScriptLineTokenizer {
     public String asFilename() {
         final int indexOfCommentStart = line.indexOf("'");
         if (indexOfCommentStart < 0) {
-            return asText();
+            return allAsText();
         } else {
             return line.substring(statement.toString().length() + 1,
                     indexOfCommentStart - 1).trim();

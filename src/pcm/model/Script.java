@@ -117,31 +117,29 @@ public class Script extends AbstractAction {
             backColor = new Color(Integer.parseInt(args[0]),
                     Integer.parseInt(args[1]), Integer.parseInt(args[2]));
         } else if (name == Statement.SsDir) {
-            String args[] = cmd.args();
-            imageDirectory = allArgsFrom(args).replace('\\', '/');
+            imageDirectory = cmd.allArgs().replace('\\', '/');
             mistressImages = imageDirectory;
         } else if (name == Statement.AskTitle) {
             String args[] = cmd.args();
             AskItem askItem = new AskItem(Integer.parseInt(args[0]),
-                    allArgsFrom(args, 1));
+                    cmd.allAsTextFrom(1));
             askItems.put(askItem.n, askItem);
         } else if (name == Statement.AskCheck) {
             String args[] = cmd.args();
             AskItem askItem = new AskItem(Integer.parseInt(args[0]),
-                    Integer.parseInt(args[1]), AskItem.ALWAYS, allArgsFrom(
-                            args, 2));
+                    Integer.parseInt(args[1]), AskItem.ALWAYS, cmd.allAsTextFrom(2));
             askItems.put(askItem.n, askItem);
         } else if (name == Statement.AskCheck2) {
             String args[] = cmd.args();
             AskItem askItem = new AskItem(Integer.parseInt(args[0]),
                     Integer.parseInt(args[1]), Integer.parseInt(args[2]),
-                    allArgsFrom(args, 3));
+                    cmd.allAsTextFrom(3));
             askItems.put(askItem.n, askItem);
         } else if (name == Statement.Menu) {
             String args[] = cmd.args();
             MenuItem menuItem = new MenuItem(Integer.parseInt(args[0]),
                     new ActionRange(Integer.parseInt(args[1]),
-                            Integer.parseInt(args[2])), allArgsFrom(args, 3));
+                            Integer.parseInt(args[2])), cmd.allAsTextFrom(3));
             menuItems.put(menuItem.n, menuItem);
         } else if (name == Statement.OnAllSet) {
             String args[] = cmd.args();
