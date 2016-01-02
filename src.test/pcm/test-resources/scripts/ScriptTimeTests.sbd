@@ -1,0 +1,58 @@
+' pcm test cases
+
+
+.range 9999
+
+
+' testTimeFromTo
+
+
+[action 1000]
+.settime 9
+.range 9999
+
+[action 1001]
+.timefrom 9 00:00"00
+.range 9999
+
+[action 1002]
+.timefrom 9 00:01"00
+.range 9999
+
+[action 1003]
+.timeto 9 00:01"00
+.range 9999
+
+[action 1004]
+.timeto 9 00:00"00
+.range 9999
+
+
+' testTimeOffset
+
+[action 1010]
+.settime 9 +00:01"00
+.range 9999
+
+[action 1011]
+.timefrom 9 -00:01"00
+.range 9999
+
+[action 1012]
+.timefrom 9 -00:00"00
+.range 9999
+
+[action 1013]
+.timeto 9 00:00"00
+.range 9999
+
+[action 1014]
+.timeto 9 -00:01"00
+.range 9999
+
+
+' proper exit for all test cases
+[action 9999]
+.noimage
+.quit
+

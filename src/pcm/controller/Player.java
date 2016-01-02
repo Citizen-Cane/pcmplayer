@@ -367,7 +367,7 @@ public abstract class Player extends TeaseScript {
      * @param range
      * @return List of available actions.
      */
-    private List<Action> range(Script script, ActionRange range) {
+    public List<Action> range(Script script, ActionRange range) {
         // Get all available, e.g. those not set yet
         List<Action> candidates = script.actions.getUnset(range, state);
         List<Action> selectable = new LinkedList<Action>();

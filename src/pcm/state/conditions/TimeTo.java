@@ -7,14 +7,14 @@ import pcm.state.Condition;
 import pcm.state.State;
 import teaselib.TeaseLib;
 
-public class TimeFrom implements Condition {
+public class TimeTo implements Condition {
 
     final int n;
-    final String timeFrom;
+    final String timeTo;
 
-    public TimeFrom(int n, String timeFrom) {
+    public TimeTo(int n, String timeTo) {
         this.n = n;
-        this.timeFrom = timeFrom;
+        this.timeTo = timeTo;
     }
 
     @Override
@@ -23,14 +23,14 @@ public class TimeFrom implements Condition {
         Date setTime = state.getTime(n);
         if (setTime != null) {
             long elapsedDuration = now - setTime.getTime();
-            long requestedDuration = new Duration(timeFrom).getTime();
+            long requestedDuration = new Duration(timeTo).getTime();
             TeaseLib.instance().log.info(getClass().getSimpleName()
                     + ": setTime = " + setTime.toString() + ", duration = "
-                    + timeFrom + "(" + requestedDuration + ") , now = "
+                    + timeTo + "(" + requestedDuration + ") , now = "
                     + new Date(System.currentTimeMillis()) + ", elapsed = "
                     + elapsedDuration + "ms");
-            if (elapsedDuration < requestedDuration) {
-                TeaseLib.instance().log.info("-> early");
+            if (elapsedDuration >= requestedDuration) {
+                TeaseLib.instance().log.info("-> late");
                 return false;
             }
         } else {
@@ -38,12 +38,12 @@ public class TimeFrom implements Condition {
                     .info("Warning - setTime not called on action " + n);
             return false;
         }
-        TeaseLib.instance().log.info("-> late");
+        TeaseLib.instance().log.info("-> early");
         return true;
     }
 
     @Override
     public String toString() {
-        return n + " " + timeFrom;
+        return n + " " + timeTo;
     }
 }

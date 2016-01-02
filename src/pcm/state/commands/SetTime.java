@@ -2,26 +2,43 @@ package pcm.state.commands;
 
 import java.util.Date;
 
+import pcm.model.Duration;
 import pcm.state.Command;
 import pcm.state.State;
 
 public class SetTime implements Command {
 
-	final int n;
+    final int n;
+    final String offset;
 
-	public SetTime(int n)
-	{
-		this.n = n;
-	}
+    final static String None = "00:00\"00";
 
-	@Override
-	public void execute(State state) {
-		long time = state.getTime() * 1000;
-		state.setTime(n, new Date(time));
-	}
+    public SetTime(int n) {
+        this.n = n;
+        this.offset = None;
+    }
 
-	@Override
-	public String toString() {
-		return Integer.toString(n); 
-	}
+    public SetTime(int n, String offset) {
+        this.n = n;
+        this.offset = offset;
+    }
+
+    @Override
+    public void execute(State state) {
+        long now = state.getTimeMillis();
+        long offset = new Duration(this.offset).getTime();
+        Date date = new Date(now + offset);
+        state.player.teaseLib.log.info("Setting time "
+                + n
+                + " to "
+                + new Date(now).toString()
+                + (this.offset != None ? " + " + this.offset + " = "
+                        + (now + offset) : ""));
+        state.setTime(n, date);
+    }
+
+    @Override
+    public String toString() {
+        return Integer.toString(n);
+    }
 }

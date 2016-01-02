@@ -9,6 +9,7 @@ import java.util.Vector;
 import pcm.state.Command;
 import pcm.state.State;
 import pcm.state.commands.ResetRange;
+import pcm.state.conditions.TimeFrom;
 import teaselib.TeaseLib;
 
 public abstract class AbstractAction {
@@ -187,6 +188,12 @@ public abstract class AbstractAction {
          * important condition ranges must be defined last.
          */
         ConditionRange,
+
+        /**
+         * Inverse of {@link TimeFrom}. Triggers if the duration in the second
+         * argument hasn't been reached yet.
+         */
+        TimeTo,
 
         ;
         public final static Map<String, Statement> lookup = new HashMap<String, Statement>();

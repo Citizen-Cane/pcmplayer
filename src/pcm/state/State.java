@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.concurrent.TimeUnit;
 
 import pcm.controller.Player;
 import pcm.model.Action;
@@ -246,8 +247,13 @@ public class State {
         times.remove(n);
     }
 
-    public long getTime() {
-        return player.teaseLib.getTime();
+    /**
+     * Milliseconds since midnight 1.1.1970 UTC
+     * 
+     * @return
+     */
+    public long getTimeMillis() {
+        return player.teaseLib.getTime(TimeUnit.MILLISECONDS);
     }
 
     public void set(Action action) throws ScriptExecutionError {

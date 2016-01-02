@@ -38,6 +38,7 @@ import pcm.state.conditions.NumberOfActionsSet;
 import pcm.state.conditions.Should;
 import pcm.state.conditions.ShouldNot;
 import pcm.state.conditions.TimeFrom;
+import pcm.state.conditions.TimeTo;
 import pcm.state.visuals.Delay;
 import pcm.state.visuals.Exec;
 import pcm.state.visuals.Image;
@@ -231,13 +232,20 @@ public class Action extends AbstractAction {
             addCommand(unset);
         } else if (name == Statement.SetTime) {
             String args[] = cmd.args();
-            addCommand(new SetTime(Integer.parseInt(args[0])));
+            if (args.length == 1) {
+                addCommand(new SetTime(Integer.parseInt(args[0])));
+            } else {
+                addCommand(new SetTime(Integer.parseInt(args[0]), args[1]));
+            }
         } else if (name == Statement.SetRange) {
             throw new IllegalStateException(
                     "Validate functionality of SetRange in PCMistress first");
         } else if (name == Statement.TimeFrom) {
             String args[] = cmd.args();
             addCondition(new TimeFrom(Integer.parseInt(args[0]), args[1]));
+        } else if (name == Statement.TimeTo) {
+            String args[] = cmd.args();
+            addCondition(new TimeTo(Integer.parseInt(args[0]), args[1]));
         } else if (name == Statement.NumActionsFrom) {
             String args[] = cmd.args();
             addCondition(new NumActionsFrom(Integer.parseInt(args[0]),

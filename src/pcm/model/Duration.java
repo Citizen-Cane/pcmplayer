@@ -1,7 +1,7 @@
 package pcm.model;
 
 public class Duration {
-    final long time;
+    private final long time;
 
     public Duration(String duration) {
         time = parse(duration);
@@ -31,10 +31,17 @@ public class Duration {
      * @return
      */
     private static long parse(String duration) {
+        long sign = 1;
+        if (duration.startsWith("-")) {
+            sign = -1;
+            duration = duration.substring(1);
+        } else if (duration.startsWith("+")) {
+            duration = duration.substring(1);
+        }
         long hours = Integer.parseInt(duration.substring(0, 2));
         long minutes = Integer.parseInt(duration.substring(3, 5));
         long seconds = Integer.parseInt(duration.substring(6, 8));
-        return (3600 * hours + 60 * minutes + seconds) * 1000;
+        return sign * (3600 * hours + 60 * minutes + seconds) * 1000;
     }
 
 }
