@@ -26,7 +26,7 @@ public class SetTime implements Command {
     @Override
     public void execute(State state) {
         long now = state.getTimeMillis();
-        long offset = new Duration(this.offset).getTime();
+        long offset = new Duration(this.offset).getTimeSpanMillis();
         Date date = new Date(now + offset);
         state.player.teaseLib.log.info("Setting time "
                 + n

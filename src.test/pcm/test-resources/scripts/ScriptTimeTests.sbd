@@ -28,7 +28,7 @@
 .range 9999
 
 
-' testTimeOffset
+' testTimeFromToOffset
 
 [action 1010]
 .settime 9 +00:01"00

@@ -12,14 +12,8 @@ public class Duration {
      * 
      * @return The duration in milli seconds
      */
-    public long getTime() {
+    public long getTimeSpanMillis() {
         return time;
-    }
-
-    static public boolean validate(String duration) {
-        // Fixed format hh:mm"ss
-        return (duration.length() == 8 && duration.charAt(2) == ':' && duration
-                .charAt(5) == '"');
     }
 
     /**
@@ -38,10 +32,21 @@ public class Duration {
         } else if (duration.startsWith("+")) {
             duration = duration.substring(1);
         }
-        long hours = Integer.parseInt(duration.substring(0, 2));
-        long minutes = Integer.parseInt(duration.substring(3, 5));
-        long seconds = Integer.parseInt(duration.substring(6, 8));
+        final long hours;
+        final long minutes;
+        final long seconds;
+        int doubleColonPos = duration.indexOf(':', 0);
+        int doubleQuotePos = duration.indexOf('"', 0);
+        if (doubleQuotePos >= 3) {
+            hours = Integer.parseInt(duration.substring(0, doubleColonPos));
+            minutes = Integer.parseInt(duration.substring(doubleColonPos + 1,
+                    doubleQuotePos));
+            seconds = Integer.parseInt(duration.substring(doubleQuotePos + 1));
+        } else {
+            hours = Integer.parseInt(duration.substring(0, doubleColonPos));
+            minutes = Integer.parseInt(duration.substring(doubleColonPos + 1));
+            seconds = 0;
+        }
         return sign * (3600 * hours + 60 * minutes + seconds) * 1000;
     }
-
 }
