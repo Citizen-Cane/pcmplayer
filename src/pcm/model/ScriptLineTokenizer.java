@@ -85,7 +85,8 @@ public class ScriptLineTokenizer {
         int index = statement.toString().length() + 2;
         String[] args = args();
         for (int i = 0; i < n; i++) {
-            index += args[i].length() + 1;
+            String arg = args[i];
+            index = line.indexOf(arg) + arg.length() + 1;
         }
         return line.substring(index);
     }
