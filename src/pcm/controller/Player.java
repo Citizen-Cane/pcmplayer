@@ -95,8 +95,8 @@ public abstract class Player extends TeaseScript {
     }
 
     public void play(String name, ActionRange startRange) {
-        SpeechRecognitionRejectedScript srRejectedHandler = actor.speechRecognitionRejectedHandler;
-        actor.speechRecognitionRejectedHandler = new SpeechRecognitionRejectedScript(
+        SpeechRecognitionRejectedScript srRejectedHandler = actor.speechRecognitionRejectedScript;
+        actor.speechRecognitionRejectedScript = new SpeechRecognitionRejectedScript(
                 this) {
             @Override
             public boolean canRun() {
@@ -156,7 +156,7 @@ public abstract class Player extends TeaseScript {
             } finally {
                 teaseLib.host.setQuitHandler(null);
                 intentionalQuit = false;
-                actor.speechRecognitionRejectedHandler = srRejectedHandler;
+                actor.speechRecognitionRejectedScript = srRejectedHandler;
             }
         }
     }
