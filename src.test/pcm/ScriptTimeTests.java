@@ -3,7 +3,8 @@
  */
 package pcm;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -19,6 +20,7 @@ import pcm.state.conditions.TimeCondition;
 import teaselib.Actor;
 import teaselib.TeaseLib;
 import teaselib.core.ResourceLoader;
+import teaselib.core.texttospeech.Voice;
 import teaselib.hosts.DummyHost;
 import teaselib.hosts.DummyPersistence;
 
@@ -28,9 +30,10 @@ import teaselib.hosts.DummyPersistence;
  */
 public class ScriptTimeTests {
 
-    Player player = new Player(TeaseLib.init(new DummyHost(),
-            new DummyPersistence()), new ResourceLoader("bin.test/pcm",
-            "test-resources"), new Actor(Actor.Dominant, "en-us"), "PCM-Test",
+    Player player = new Player(
+            TeaseLib.init(new DummyHost(), new DummyPersistence()),
+            new ResourceLoader("bin.test/pcm", "test-resources"),
+            new Actor(Actor.Dominant, Voice.Gender.Female, "en-us"), "PCM-Test",
             null) {
 
         @Override
@@ -47,8 +50,8 @@ public class ScriptTimeTests {
     }
 
     private boolean containsAction(int n) {
-        return player.range(new ActionRange(n)).contains(
-                player.script.actions.get(n));
+        return player.range(new ActionRange(n))
+                .contains(player.script.actions.get(n));
     }
 
     @Test
@@ -59,16 +62,18 @@ public class ScriptTimeTests {
         assertEquals(0, new Duration("00:00\"00").getTimeSpanMillis());
         assertEquals(+1000, new Duration("+00:00\"01").getTimeSpanMillis());
         assertEquals(-1000, new Duration("-00:00\"01").getTimeSpanMillis());
-        assertEquals(+1000 * 30, new Duration("+00:00\"30").getTimeSpanMillis());
-        assertEquals(-1000 * 30, new Duration("-00:00\"30").getTimeSpanMillis());
+        assertEquals(+1000 * 30,
+                new Duration("+00:00\"30").getTimeSpanMillis());
+        assertEquals(-1000 * 30,
+                new Duration("-00:00\"30").getTimeSpanMillis());
         assertEquals(+1000 * 60 * 15,
                 new Duration("+00:15\"00").getTimeSpanMillis());
         assertEquals(-1000 * 60 * 15,
                 new Duration("-00:15\"00").getTimeSpanMillis());
-        assertEquals(+1000 * 60 * 30 + 1000 * 60 * 60, new Duration(
-                "+01:30\"00").getTimeSpanMillis());
-        assertEquals(-1000 * 60 * 30 - 1000 * 60 * 60, new Duration(
-                "-01:30\"00").getTimeSpanMillis());
+        assertEquals(+1000 * 60 * 30 + 1000 * 60 * 60,
+                new Duration("+01:30\"00").getTimeSpanMillis());
+        assertEquals(-1000 * 60 * 30 - 1000 * 60 * 60,
+                new Duration("-01:30\"00").getTimeSpanMillis());
 
         assertEquals(0, new Duration("00:00").getTimeSpanMillis());
         assertEquals(+1000 * 60 * 15,
@@ -86,17 +91,14 @@ public class ScriptTimeTests {
         assertEquals("00:00\"00", TimeCondition.toString(0));
         assertEquals("00:00\"01", TimeCondition.toString(1000));
         assertEquals("00:00\"59", TimeCondition.toString(1000 * 59));
-        assertEquals("00:01\"30", TimeCondition.toString(1000 * 60 + 1000 * 30));
+        assertEquals("00:01\"30",
+                TimeCondition.toString(1000 * 60 + 1000 * 30));
         assertEquals("00:29\"45",
                 TimeCondition.toString(29 * 1000 * 60 + 1000 * 45));
-        assertEquals(
-                "02:42\"05",
-                TimeCondition.toString(2 * 60 * 60 * 1000 + 42 * 1000 * 60
-                        + 1000 * 5));
-        assertEquals(
-                "13:39\"05",
-                TimeCondition.toString(13 * 60 * 60 * 1000 + 39 * 1000 * 60
-                        + 1000 * 5));
+        assertEquals("02:42\"05", TimeCondition
+                .toString(2 * 60 * 60 * 1000 + 42 * 1000 * 60 + 1000 * 5));
+        assertEquals("13:39\"05", TimeCondition
+                .toString(13 * 60 * 60 * 1000 + 39 * 1000 * 60 + 1000 * 5));
 
         assertEquals("00:01\"00", TimeCondition.toString(1000 * 60));
         assertEquals("00:29\"00", TimeCondition.toString(29 * 1000 * 60));

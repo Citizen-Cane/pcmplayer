@@ -3,7 +3,8 @@
  */
 package pcm;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +16,7 @@ import pcm.state.State;
 import teaselib.Actor;
 import teaselib.TeaseLib;
 import teaselib.core.ResourceLoader;
+import teaselib.core.texttospeech.Voice;
 import teaselib.hosts.DummyHost;
 import teaselib.hosts.DummyPersistence;
 
@@ -24,9 +26,10 @@ import teaselib.hosts.DummyPersistence;
  */
 public class ScriptTests {
 
-    Player player = new Player(TeaseLib.init(new DummyHost(),
-            new DummyPersistence()), new ResourceLoader("bin.test/pcm",
-            "test-resources"), new Actor(Actor.Dominant, "en-us"), "PCM-Test",
+    Player player = new Player(
+            TeaseLib.init(new DummyHost(), new DummyPersistence()),
+            new ResourceLoader("bin.test/pcm", "test-resources"),
+            new Actor(Actor.Dominant, Voice.Gender.Female, "en-us"), "PCM-Test",
             null) {
 
         @Override
