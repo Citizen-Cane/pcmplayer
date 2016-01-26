@@ -86,7 +86,7 @@ public class ScriptLineTokenizer {
         String[] args = args();
         for (int i = 0; i < n; i++) {
             String arg = args[i];
-            index = line.indexOf(arg) + arg.length() + 1;
+            index = line.indexOf(arg, index) + arg.length() + 1;
         }
         return line.substring(index);
     }
@@ -113,7 +113,8 @@ public class ScriptLineTokenizer {
         if (Statement.lookup.containsKey(key)) {
             return Statement.lookup.get(key);
         } else {
-            throw new IllegalArgumentException("Unknown statement " + statement);
+            throw new IllegalArgumentException(
+                    "Unknown statement " + statement);
         }
     }
 
