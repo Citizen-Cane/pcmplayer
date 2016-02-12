@@ -81,8 +81,7 @@ public class Action extends AbstractAction {
                     .containsKey(Statement.Message);
             final boolean hasTxt = visuals.containsKey(Statement.Txt);
             if (hasMessageStatement && hasTxt)
-                throw new ValidationError(
-                        this,
+                throw new ValidationError(this,
                         "Spoken messages and .txt are exclusive because PCMPlayer/TeaseLib supports only one text area",
                         script);
             final boolean hasMessage = hasMessageStatement || hasTxt;
@@ -121,8 +120,7 @@ public class Action extends AbstractAction {
                     // In the original PCMistress program,
                     // such images wouldn't be rendered at all,
                     // or just pop up for a fraction of a second
-                    throw new ValidationError(
-                            this,
+                    throw new ValidationError(this,
                             "Without a message, a Delay statement is needed to display the image",
                             script);
                 }
@@ -358,8 +356,9 @@ public class Action extends AbstractAction {
             String arg0 = args[0];
             int endIndex = arg0.lastIndexOf('.');
             String script = endIndex < 0 ? arg0 : arg0.substring(0, endIndex);
-            setInteraction(args.length > 2 ? new LoadSbd(script,
-                    Integer.parseInt(args[1]), Integer.parseInt(args[2]))
+            setInteraction(args.length > 2
+                    ? new LoadSbd(script, Integer.parseInt(args[1]),
+                            Integer.parseInt(args[2]))
                     : new LoadSbd(script, Integer.parseInt(args[1])));
         } else if (name == Statement.PopUp) {
             String args[] = cmd.args();
@@ -376,8 +375,10 @@ public class Action extends AbstractAction {
             setInteraction(Quit.instance);
         } else if (name == Statement.Break) {
             String args[] = cmd.args();
-            setInteraction(new Break(new ActionRange(Integer.parseInt(args[0]),
-                    Integer.parseInt(args[1])), rangesFromArgv(args, 2)));
+            setInteraction(new Break(
+                    new ActionRange(Integer.parseInt(args[0]),
+                            Integer.parseInt(args[1])),
+                    rangesFromArgv(args, 2)));
         } else if (name == Statement.GoSub) {
             String args[] = cmd.args();
             int start = Integer.parseInt(args[0]);
@@ -438,8 +439,8 @@ public class Action extends AbstractAction {
     }
 
     private static Statement keywordToStatement(String keyword) {
-        Statement statement = Statement.KeywordToStatement.get(keyword
-                .toLowerCase());
+        Statement statement = Statement.KeywordToStatement
+                .get(keyword.toLowerCase());
         return statement;
     }
 
@@ -460,8 +461,7 @@ public class Action extends AbstractAction {
                     // Only actions that need a range provide can be injected
                     // before an existing interaction
                     throw new IllegalArgumentException(interaction.getClass()
-                            .getSimpleName()
-                            + ": Interaction already set to "
+                            .getSimpleName() + ": Interaction already set to "
                             + this.interaction.getClass().getSimpleName());
                 }
             }
@@ -480,7 +480,8 @@ public class Action extends AbstractAction {
         return script.getResponseText(name);
     }
 
-    public void validate(Script script, List<ValidationError> validationErrors) {
+    public void validate(Script script,
+            List<ValidationError> validationErrors) {
         if (poss != null) {
             if (poss < 0 || poss > 100) {
                 validationErrors.add(new ValidationError(this,
@@ -499,11 +500,9 @@ public class Action extends AbstractAction {
                     && visuals.containsKey(Statement.NoImage)) {
                 Delay delay = (Delay) visuals.get(Statement.Delay);
                 if (delay.to == 0) {
-                    validationErrors
-                            .add(new ValidationError(
-                                    this,
-                                    "Delay 0 + NoImage is deprecated and should be removed",
-                                    script));
+                    validationErrors.add(new ValidationError(this,
+                            "Delay 0 + NoImage is deprecated and should be removed",
+                            script));
                 }
             } else if (visuals.containsKey(Statement.Delay)) {
                 Delay delay = (Delay) visuals.get(Statement.Delay);
@@ -523,8 +522,8 @@ public class Action extends AbstractAction {
                 validationErrors.add(new ValidationError(this, e, script));
             }
         } else {
-            validationErrors.add(new ValidationError(this, "No interaction",
-                    script));
+            validationErrors
+                    .add(new ValidationError(this, "No interaction", script));
         }
     }
 

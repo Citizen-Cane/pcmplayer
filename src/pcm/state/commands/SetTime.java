@@ -25,15 +25,29 @@ public class SetTime implements Command {
 
     @Override
     public void execute(State state) {
-        long now = state.getTimeMillis();
-        long offset = new Duration(this.offset).getTimeSpanMillis();
-        Date date = new Date(now + offset);
-        state.player.teaseLib.log.info("Setting time "
-                + n
-                + " to "
-                + new Date(now).toString()
-                + (this.offset != None ? " + " + this.offset + " = "
-                        + (now + offset) : ""));
+        final Date date;
+        if (offset.toLowerCase().startsWith("inf")) {
+            date = new Date(Integer.MAX_VALUE);
+            state.player.teaseLib.log
+                    .info("Setting time " + n + " to " + offset);
+        } else if (offset.toLowerCase().startsWith("+inf")) {
+            date = new Date(Integer.MIN_VALUE);
+            state.player.teaseLib.log
+                    .info("Setting time " + n + " to " + offset);
+        } else if (offset.toLowerCase().startsWith("-inf")) {
+            date = new Date(Integer.MIN_VALUE);
+            state.player.teaseLib.log
+                    .info("Setting time " + n + " to " + offset);
+        } else {
+            long now = state.getTimeMillis();
+            long offset = new Duration(this.offset).getTimeSpanMillis();
+            date = new Date(now + offset);
+            state.player.teaseLib.log.info("Setting time " + n + " to "
+                    + new Date(now).toString()
+                    + (this.offset != None
+                            ? " + " + this.offset + " = " + (now + offset)
+                            : ""));
+        }
         state.setTime(n, date);
     }
 
