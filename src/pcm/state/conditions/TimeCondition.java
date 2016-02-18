@@ -17,48 +17,49 @@ import teaselib.TeaseLib;
 public abstract class TimeCondition implements Condition {
 
     protected final int n;
-    protected final long timeSpanMillis;
+    protected final long durationMillis;
 
-    public TimeCondition(int n, String timeSpan) {
+    public TimeCondition(int n, String duration) {
         super();
         this.n = n;
-        this.timeSpanMillis = new Duration(timeSpan).getTimeSpanMillis();
+        this.durationMillis = new Duration(duration).getTimeSpanMillis();
     }
 
-    protected abstract boolean predicate(long elapsedTimeSpan);
+    protected abstract boolean predicate(long elapsedMillis);
 
     @Override
     public boolean isTrueFor(State state) {
         long now = state.getTimeMillis();
         Date setTime = state.getTime(n);
         if (setTime != null) {
-            long elapsedTimeSpan = now - setTime.getTime();
-            boolean result = predicate(elapsedTimeSpan);
-            log(setTime, elapsedTimeSpan, result);
+            final long elapsedMillis;
+            elapsedMillis = now - setTime.getTime();
+            boolean result = predicate(elapsedMillis);
+            log(setTime, elapsedMillis, result);
             return result;
         } else {
             throw new RuntimeException("setTime not called on action " + n);
         }
     }
 
-    protected void log(Date setTime, long elapsedTimeSpan, boolean result) {
-        TeaseLib.instance().log.info(getClass().getSimpleName()
-                + ": setTime = " + setTime.toString() + ", duration = "
-                + toString(timeSpanMillis) + "(" + timeSpanMillis
-                + ") , now = " + new Date(System.currentTimeMillis())
-                + ", elapsed = " + elapsedTimeSpan + "ms -> " + result);
+    protected void log(Date setTime, long elapsedMillis, boolean result) {
+        TeaseLib.instance().log.info(getClass().getSimpleName() + ": setTime = "
+                + setTime.toString() + ", duration = "
+                + toString(durationMillis) + "(" + durationMillis + ") , now = "
+                + new Date(System.currentTimeMillis()) + ", elapsed = "
+                + elapsedMillis + "ms -> " + result);
     }
 
     @Override
     public String toString() {
-        return " " + n + " " + toString(timeSpanMillis);
+        return " " + n + " " + toString(durationMillis);
     }
 
-    public static String toString(long timeSpanMillis) {
-        long h = Math.floorDiv(timeSpanMillis, 60 * 60 * 1000);
-        long m = Math.floorDiv(timeSpanMillis - h * 60 * 60 * 1000, 60 * 1000);
-        long s = Math.floorDiv(timeSpanMillis - h * 60 * 60 * 1000 - m * 60
-                * 1000, 1000);
+    public static String toString(long durationMillis) {
+        long h = Math.floorDiv(durationMillis, 60 * 60 * 1000);
+        long m = Math.floorDiv(durationMillis - h * 60 * 60 * 1000, 60 * 1000);
+        long s = Math.floorDiv(
+                durationMillis - h * 60 * 60 * 1000 - m * 60 * 1000, 1000);
         return String.format("%02d:%02d\"%02d", h, m, s);
     }
 }

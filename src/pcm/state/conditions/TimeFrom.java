@@ -7,7 +7,7 @@ public class TimeFrom extends TimeCondition {
     }
 
     @Override
-    protected boolean predicate(long elapsedTimeSpan) {
-        return elapsedTimeSpan > timeSpanMillis;
+    protected boolean predicate(long elapsedMillis) {
+        return elapsedMillis > durationMillis;
     }
 }

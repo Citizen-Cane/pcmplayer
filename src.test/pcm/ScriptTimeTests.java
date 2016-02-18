@@ -114,11 +114,12 @@ public class ScriptTimeTests {
         player.range = r;
         player.play(r);
         assertEquals(State.SET, player.state.get(1000));
-        player.teaseLib.sleep(1, TimeUnit.SECONDS);
+        player.teaseLib.sleep(2, TimeUnit.SECONDS);
         assertTrue(containsAction(1001));
         assertTrue(!containsAction(1002));
         assertTrue(containsAction(1003));
         assertTrue(!containsAction(1004));
+        assertTrue(!containsAction(1005));
     }
 
     @Test
@@ -127,11 +128,37 @@ public class ScriptTimeTests {
         player.range = r;
         player.play(r);
         assertEquals(State.SET, player.state.get(1010));
-        player.teaseLib.sleep(500, TimeUnit.MILLISECONDS);
+        player.teaseLib.sleep(2, TimeUnit.SECONDS);
         assertTrue(containsAction(1011));
         assertTrue(!containsAction(1012));
-        assertTrue(containsAction(1013));
-        assertTrue(!containsAction(1014));
+        assertTrue(!containsAction(1013));
+        assertTrue(containsAction(1014));
+
+        assertTrue(!containsAction(1015));
+        assertTrue(containsAction(1016));
+        assertTrue(!containsAction(1017));
+    }
+
+    @Test
+    public void testInfinityPlus() throws Exception {
+        ActionRange r = new ActionRange(1020);
+        player.range = r;
+        player.play(r);
+        assertEquals(State.SET, player.state.get(1020));
+        assertTrue(!containsAction(1021));
+        assertTrue(containsAction(1022));
+    }
+
+    @Test
+    public void testInfinityMinus() throws Exception {
+        ActionRange r = new ActionRange(1025);
+        player.range = r;
+        player.play(r);
+        assertEquals(State.SET, player.state.get(1025));
+        assertTrue(containsAction(1026));
+        assertTrue(containsAction(1027));
+        assertTrue(!containsAction(1028));
+        assertTrue(!containsAction(1029));
     }
 
 }

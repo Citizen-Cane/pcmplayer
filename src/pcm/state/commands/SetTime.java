@@ -27,15 +27,17 @@ public class SetTime implements Command {
     public void execute(State state) {
         final Date date;
         if (offset.toLowerCase().startsWith("inf")) {
-            date = new Date(Integer.MAX_VALUE);
+            date = new Date(Long.MAX_VALUE);
             state.player.teaseLib.log
                     .info("Setting time " + n + " to " + offset);
         } else if (offset.toLowerCase().startsWith("+inf")) {
-            date = new Date(Integer.MIN_VALUE);
+            date = new Date(Long.MAX_VALUE);
             state.player.teaseLib.log
                     .info("Setting time " + n + " to " + offset);
         } else if (offset.toLowerCase().startsWith("-inf")) {
-            date = new Date(Integer.MIN_VALUE);
+            // Values must actually be positive,
+            // and Long.MIN_VALUE would lead to an overflow later on
+            date = new Date(0);
             state.player.teaseLib.log
                     .info("Setting time " + n + " to " + offset);
         } else {

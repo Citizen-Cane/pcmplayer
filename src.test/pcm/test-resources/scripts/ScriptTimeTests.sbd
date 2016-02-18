@@ -6,48 +6,127 @@
 
 ' testTimeFromTo
 
-
+' settime, then wait 2 seconds
 [action 1000]
 .settime 9
 .range 9999
 
+' one second since .settime -> true
 [action 1001]
-.timefrom 9 00:00"00
+.timefrom 9 00:00"01
 .range 9999
 
+' less than one minute since .settime -> false
 [action 1002]
 .timefrom 9 00:01"00
 .range 9999
 
+' less than one minute has passed after .settime -> true
 [action 1003]
 .timeto 9 00:01"00
 .range 9999
 
+' more than one second has passed after .settime -> false 
 [action 1004]
-.timeto 9 00:00"00
+.timeto 9 00:00"01
+.range 9999
+
+' no time left since .settime -> false 
+[action 1005]
+.timeto 9 -00:00"01
 .range 9999
 
 
 ' testTimeFromToOffset
 
+' timeto "before" values are negative
+' -> time left
+
+' timeto "after" values are positive
+' -> less than the given duration has passed
+
+' one minute after now
 [action 1010]
 .settime 9 +00:01"00
 .range 9999
 
+' settime - 58s -> true
 [action 1011]
-.timefrom 9 -00:01"00
+.timefrom 9 -00:00"59
 .range 9999
 
+' settime - 58s -> false
 [action 1012]
-.timefrom 9 -00:00"00
+.timefrom 9 -00:00"57
 .range 9999
 
+' 30 seconds after now + one minute -> false
 [action 1013]
-.timeto 9 00:00"00
+.timefrom 9 00:00"30
 .range 9999
 
+' now + 1m - 1m30s = now - 30s -> true
 [action 1014]
-.timeto 9 -00:01"00
+.timefrom 9 -00:01"30
+.range 9999
+
+' now + one minute not reached yet -> false
+[action 1015]
+.timefrom 9 00:00"00
+.range 9999
+
+' 30 seconds left to now + one minute -> true 
+[action 1016]
+.timeto 9 -00:00"30
+.range 9999
+
+' 90 seconds left to now + one minute -> false
+[action 1017]
+.timeto 9 -00:01"30
+.range 9999
+
+
+' testInfinityPlus
+
+[action 1020]
+.settime 9 +INF
+.range 9999
+
+' always false
+[action 1021]
+.timefrom 9 99:99"99
+.range 9999
+
+' a lot of time left
+[action 1022]
+.timeto 9 -99:99"99
+.range 9999
+
+
+' testInfinityMinus
+
+[action 1025]
+.settime 9 -INF
+.range 9999
+
+' always true
+[action 1026]
+.timefrom 9 -99:99"99
+.range 9999
+
+' always true
+[action 1027]
+.timefrom 9 99:99"99
+.range 9999
+
+' always false
+[action 1028]
+.timeto 9 -99:99"99
+.range 9999
+
+' always false
+[action 1029]
+.timeto 9 99:99"99
 .range 9999
 
 
