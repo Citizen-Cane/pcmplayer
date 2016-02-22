@@ -53,7 +53,7 @@ public class State {
      * Instead, at script start the save range is restored, followed by
      * additional .resetrange commands.
      */
-    private Map<Integer, Integer> data = new HashMap<Integer, Integer>();
+    private Map<Integer, Long> data = new HashMap<Integer, Long>();
 
     /**
      * Action may also contain a time stamp.
@@ -63,8 +63,8 @@ public class State {
     private int step = 0;
     private Map<Integer, Integer> action2StepMap = new HashMap<Integer, Integer>();
 
-    public static final Integer SET = new Integer(1);
-    public static final Integer UNSET = new Integer(0);
+    public static final Long SET = new Long(1);
+    public static final Long UNSET = new Long(0);
 
     private static final String TIMEKEYS = "TimeKeys";
 
@@ -103,7 +103,7 @@ public class State {
                             data.remove(i);
                         }
                     } else {
-                        Integer v = new Integer(value);
+                        Long v = new Long(value);
                         if (v.equals(SET)) {
                             data.put(i, SET);
                         }
@@ -132,7 +132,7 @@ public class State {
         write("save.end", range.end);
         // Data values
         for (Integer i : range) {
-            Integer value = get(i);
+            Long value = get(i);
             final boolean valueUnset = value.equals(UNSET);
             write(i.toString(), valueUnset ? null : value);
         }
@@ -164,11 +164,11 @@ public class State {
     }
 
     private void write(String name, Object value) {
-        player.set(script.name + "." + name, value != null ? value.toString()
-                : null);
+        player.set(script.name + "." + name,
+                value != null ? value.toString() : null);
     }
 
-    public Integer get(Integer n) {
+    public Long get(Integer n) {
         if (data.containsKey(n)) {
             return data.get(n);
         } else if (actions.contains(n)) {
@@ -230,8 +230,8 @@ public class State {
     }
 
     public void repeatAdd(Integer n, int m) {
-        Integer v = data.containsKey(n) ? data.get(n) : UNSET;
-        final Integer w = v.equals(SET) ? -m : v - m;
+        Long v = data.containsKey(n) ? data.get(n) : UNSET;
+        Long w = v.equals(SET) ? -m : v - m;
         player.teaseLib.log.info("Increasing " + n + " from " + v + " to " + w);
         data.put(n, w);
         actions.remove(n);
@@ -239,8 +239,8 @@ public class State {
     }
 
     public void repeatDel(Integer n, int m) {
-        int v = data.containsKey(n) ? data.get(n) : UNSET;
-        final Integer w = v + m < SET ? new Integer(v) + m : SET;
+        long v = data.containsKey(n) ? data.get(n) : UNSET;
+        Long w = v + m < SET ? new Long(v) + m : SET;
         player.teaseLib.log.info("Decreasing " + n + " from " + v + " to " + w);
         data.put(n, w);
         actions.remove(n);
@@ -258,7 +258,7 @@ public class State {
 
     public void set(Action action) throws ScriptExecutionError {
         Integer n = action.number;
-        final Integer value = get(n);
+        final Long value = get(n);
         if (value.equals(SET)) {
             throw new ScriptExecutionError("Action already set");
         } else if (value.equals(UNSET)) {
