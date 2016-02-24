@@ -95,8 +95,8 @@ public class State {
                 int e = Integer.parseInt(end);
                 if (e < 0)
                     return;
-                for (Integer i = s; i <= e; i++) {
-                    String value = read(i.toString());
+                for (int i = s; i <= e; i++) {
+                    String value = read(Integer.toString(i));
                     // Avoid storing UNSET values from data
                     if (value == null) {
                         if (data.containsKey(i)) {
@@ -106,11 +106,10 @@ public class State {
                         Long v = new Long(value);
                         if (v.equals(SET)) {
                             data.put(i, SET);
-                        }
-                        if (v.equals(UNSET)) {
+                        } else if (v.equals(UNSET)) {
                             data.remove(i);
                         } else {
-                            data.put(i, SET);
+                            data.put(i, v);
                         }
                     }
                 }
@@ -131,10 +130,9 @@ public class State {
         write("save.start", range.start);
         write("save.end", range.end);
         // Data values
-        for (Integer i : range) {
+        for (int i : range) {
             Long value = get(i);
-            final boolean valueUnset = value.equals(UNSET);
-            write(i.toString(), valueUnset ? null : value);
+            write(Integer.toString(i), value.equals(UNSET) ? null : value);
         }
         // time values
         StringBuilder keys = null;
