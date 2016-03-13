@@ -1,9 +1,6 @@
 package pcm.state.visuals;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 
 import pcm.controller.Player;
@@ -17,9 +14,6 @@ import teaselib.Message;
 
 public class SpokenMessage implements Visual, Validatable {
 
-    private final static Set<Message.Type> audioTypes = new HashSet<Message.Type>(
-            Arrays.asList(Message.Type.Sound, Message.Type.BackgroundSound,
-                    Message.Type.Speech));
     private final List<Message> messages = new Vector<Message>();
     private Message message = null;
     private final Actor actor;
@@ -28,16 +22,16 @@ public class SpokenMessage implements Visual, Validatable {
         this.actor = actor;
     }
 
-    public void add(String line) {
+    public void add(String line, String resourcePath) {
         if (message == null) {
             message = new Message(actor);
             messages.add(message);
         }
         Message.Type type = Message.determineType(line);
         if (type == Message.Type.Image) {
-            message.add(type, Image.IMAGES + line);
-        } else if (audioTypes.contains(type)) {
-            message.add(type, Sound.SOUNDS + line);
+            message.add(type, resourcePath + Image.IMAGES + line);
+        } else if (Message.Type.AudioTypes.contains(type)) {
+            message.add(type, resourcePath + Sound.SOUNDS + line);
         } else {
             message.add(type, line);
         }

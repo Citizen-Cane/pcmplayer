@@ -14,6 +14,6 @@ public class Sound implements Visual {
 
     @Override
     public void render(Player player) {
-        player.setBackgroundSound(SOUNDS + path);
+        player.setBackgroundSound(player.getResourceFolder() + SOUNDS + path);
     }
 }

@@ -28,13 +28,14 @@ public class ScriptTests {
 
     Player player = new Player(
             TeaseLib.init(new DummyHost(), new DummyPersistence()),
-            new ResourceLoader("bin.test/pcm", "test-resources"),
+            new ResourceLoader(ScriptTests.class),
             new Actor(Actor.Dominant, Voice.Gender.Female, "en-us"), "PCM-Test",
             null) {
 
         @Override
         public void run() {
         }
+
     };
 
     /**
@@ -42,7 +43,7 @@ public class ScriptTests {
      */
     @Before
     public void setUpBefore() throws Exception {
-        player.loadScript("ScriptTests");
+        player.loadScript("test-resources" + "/" + "ScriptTests");
     }
 
     @Test

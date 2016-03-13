@@ -1,12 +1,16 @@
 package pcm.controller;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import pcm.model.AbstractAction;
 import pcm.model.Action;
@@ -65,15 +69,18 @@ public abstract class Player extends TeaseScript {
      */
     public final static ActionRange ReturnToPlayer = new ActionRange(0);
 
-    public static void recordVoices(String basePath, String assetRoot,
-            Actor actor, String[] assets, String startupScript)
-            throws IOException, ValidationError, ParseError {
+    public static void recordVoices(Class<?> scriptClass, Actor actor,
+            String[] assets, String startupScript)
+                    throws IOException, ValidationError, ParseError {
         TeaseLib.init(new DummyHost(), new DummyPersistence());
-        ResourceLoader resources = new ResourceLoader(basePath, assetRoot);
+        ResourceLoader resources = new ResourceLoader(scriptClass);
         resources.addAssets(assets);
-        ScriptCache scripts = new ScriptCache(resources, Scripts);
+        ScriptCache scripts = new ScriptCache(resources,
+                scriptClass.getSimpleName() + "/");
+        // TODO initialize recorder with an actual speech resources path
+        TextToSpeechRecorder recorder = new TextToSpeechRecorder(resources,
+                scriptClass.getSimpleName());
         // Get the main script
-        TextToSpeechRecorder recorder = new TextToSpeechRecorder(resources);
         Script main = scripts.get(actor, startupScript);
         // and validate to load all the sub scripts
         validate(main, new ArrayList<ValidationError>());
@@ -88,13 +95,65 @@ public abstract class Player extends TeaseScript {
     public Player(TeaseLib teaseLib, ResourceLoader resources, Actor actor,
             String namespace, String mistressPath) {
         super(teaseLib, resources, actor, namespace);
-        this.scripts = new ScriptCache(resources, Scripts);
+        this.scripts = new ScriptCache(resources, "/" + namespace + "/");
         this.mistressPath = mistressPath;
         this.invokedOnAllSet = false;
         this.state = new MappedState(this);
     }
 
-    public void play(String name, ActionRange startRange) {
+    public String getResourceFolder() {
+        return "/" + getClass().getSimpleName() + "/";
+    }
+
+    public void play(String script) {
+        String resourcePath = getClass().getSimpleName() + "/" + "debug.txt";
+        try {
+            InputStream debugStream = resources.getResource(resourcePath);
+            if (debugStream != null) {
+                Player.debugOutput = true;
+                Player.validateScripts = true;
+                BufferedReader debugReader = new BufferedReader(
+                        new InputStreamReader(debugStream));
+                try {
+                    String line;
+                    while ((line = debugReader.readLine()) != null) {
+                        line = line.trim();
+                        int comment = line.indexOf("//");
+                        if (comment == 0) {
+                            continue;
+                        } else if (comment > 0) {
+                            line = line.substring(0, comment - 1);
+                        }
+                        if (!line.isEmpty()) {
+                            script = line;
+                            break;
+                        }
+                    }
+                } finally {
+                    debugReader.close();
+                }
+            }
+        } catch (Exception e) {
+            teaseLib.log.error(resourcePath, e);
+        }
+        StringTokenizer argv = new StringTokenizer(script, " ");
+        String scriptName = argv.nextToken();
+        final ActionRange range;
+        if (argv.hasMoreElements()) {
+            int start = Integer.parseInt(argv.nextToken());
+            if (argv.hasMoreElements()) {
+                int end = Integer.parseInt(argv.nextToken());
+                range = new ActionRange(start, end);
+            } else {
+                range = new ActionRange(start);
+            }
+        } else {
+            range = null;
+        }
+        play(scriptName, range);
+    }
+
+    protected void play(String name, ActionRange startRange) {
         SpeechRecognitionRejectedScript srRejectedHandler = actor.speechRecognitionRejectedScript;
         actor.speechRecognitionRejectedScript = new SpeechRecognitionRejectedScript(
                 this) {
@@ -185,8 +244,9 @@ public abstract class Player extends TeaseScript {
             for (ScriptError scriptError : validationErrors) {
                 teaseLib.log.info(createErrorMessage(scriptError));
             }
-            throw new ValidationError("Validation failed, "
-                    + validationErrors.size() + " issues", script);
+            throw new ValidationError(
+                    "Validation failed, " + validationErrors.size() + " issues",
+                    script);
         }
     }
 
@@ -208,8 +268,8 @@ public abstract class Player extends TeaseScript {
         }
         script.execute(state);
         // TODO Search for any mistress instead of using hard-coded path
-        actor.images = new RandomImages(resources, mistressPath
-                + script.mistressImages);
+        actor.images = new RandomImages(resources,
+                mistressPath + script.mistressImages);
     }
 
     /**
@@ -223,8 +283,8 @@ public abstract class Player extends TeaseScript {
      * @throws AllActionsSetException
      * @throws ScriptExecutionError
      */
-    public void play(ActionRange playRange) throws AllActionsSetException,
-            ScriptExecutionError {
+    public void play(ActionRange playRange)
+            throws AllActionsSetException, ScriptExecutionError {
         while (true) {
             // Choose action
             Action action = getAction();
@@ -267,8 +327,8 @@ public abstract class Player extends TeaseScript {
                 // (placing the onClose range inside the play range),
                 // but saves us from creating a second player instance
                 boolean callOnClose = playRange == null
-                        || (playRange.contains(script.onClose.start) && playRange
-                                .contains(script.onClose.end));
+                        || (playRange.contains(script.onClose.start)
+                                && playRange.contains(script.onClose.end));
                 if (script.onClose != null && callOnClose && !intentionalQuit) {
                     // Done automatically in reply(), otherwise we have to do it
                     endAll();
@@ -282,8 +342,8 @@ public abstract class Player extends TeaseScript {
             } catch (ScriptExecutionError e) {
                 throw e;
             } catch (Throwable t) {
-                throw new ScriptExecutionError(action,
-                        "Error executing script", t, script);
+                throw new ScriptExecutionError(action, "Error executing script",
+                        t, script);
             }
         }
     }
@@ -311,7 +371,8 @@ public abstract class Player extends TeaseScript {
         return action;
     }
 
-    public ActionRange execute(final Action action) throws ScriptExecutionError {
+    public ActionRange execute(final Action action)
+            throws ScriptExecutionError {
         // Mark this action as executed
         state.set(action);
         // Perform commands
@@ -341,8 +402,8 @@ public abstract class Player extends TeaseScript {
                 }
             }
         };
-        ActionRange range = action.interaction.getRange(script, action,
-                visuals, this);
+        ActionRange range = action.interaction.getRange(script, action, visuals,
+                this);
         return range;
     }
 
@@ -525,8 +586,8 @@ public abstract class Player extends TeaseScript {
                 Integer weight = a.poss;
                 double relativeWeight = normalized / accumulatedWeights.length;
                 sum += weight != null ? weight
-                // This would be mathematically correct
-                // if none of the action specified a "poss" value
+                        // This would be mathematically correct
+                        // if none of the action specified a "poss" value
                         : relativeWeight;
                 accumulatedWeights[i] = sum;
                 String w = String.format("%.2f", relativeWeight);

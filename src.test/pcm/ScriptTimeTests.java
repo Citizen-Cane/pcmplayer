@@ -32,7 +32,7 @@ public class ScriptTimeTests {
 
     Player player = new Player(
             TeaseLib.init(new DummyHost(), new DummyPersistence()),
-            new ResourceLoader("bin.test/pcm", "test-resources"),
+            new ResourceLoader(ScriptTimeTests.class),
             new Actor(Actor.Dominant, Voice.Gender.Female, "en-us"), "PCM-Test",
             null) {
 
@@ -46,7 +46,7 @@ public class ScriptTimeTests {
      */
     @Before
     public void setUpBefore() throws Exception {
-        player.loadScript("ScriptTimeTests");
+        player.loadScript("test-resources" + "/" + "ScriptTimeTests");
     }
 
     private boolean containsAction(int n) {

@@ -20,12 +20,13 @@ public class ScriptParser {
     private int previousActionNumber = 0;
 
     private final BufferedReader reader;
-
+    private final String resourcePath;
     private final static String ACTIONMATCH = "[action ";
     private final static String COMMENT = "'";
 
-    public ScriptParser(BufferedReader reader) {
+    public ScriptParser(BufferedReader reader, String resourcePath) {
         this.reader = reader;
+        this.resourcePath = resourcePath;
     }
 
     public void parse(Script script) throws ParseError, IOException {
@@ -49,7 +50,8 @@ public class ScriptParser {
         return;
     }
 
-    public Action parseAction(Script script) throws ParseError, ValidationError {
+    public Action parseAction(Script script)
+            throws ParseError, ValidationError {
         if (line == null) {
             return null;
         } else {
@@ -90,11 +92,11 @@ public class ScriptParser {
                         else if (line.startsWith(".")) {
                             // .txt messages must be executed last,
                             // so this has to be added last
-                            ScriptLineTokenizer cmd = new ScriptLineTokenizer(
-                                    l, line);
+                            ScriptLineTokenizer cmd = new ScriptLineTokenizer(l,
+                                    line);
                             if (cmd.statement == Statement.Txt) {
-                                String text = line.substring(Statement.Txt
-                                        .toString().length() + 1);
+                                String text = line.substring(
+                                        Statement.Txt.toString().length() + 1);
                                 // Trim one leading space
                                 if (!text.isEmpty()) {
                                     text = text.substring(1);
@@ -112,7 +114,7 @@ public class ScriptParser {
                             if (message == null) {
                                 message = new SpokenMessage(script.actor);
                             }
-                            message.add(line);
+                            message.add(line, resourcePath);
                         }
                     }
                     // Add message to visuals as the last item, because

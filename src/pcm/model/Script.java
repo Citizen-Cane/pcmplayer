@@ -1,7 +1,6 @@
 package pcm.model;
 
 import java.awt.Color;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -39,13 +38,12 @@ public class Script extends AbstractAction {
     public final Stack<ActionRange> stack;
 
     public Script(Actor actor, String name, ScriptCache scriptCache,
-            BufferedReader reader) throws ParseError, ValidationError,
-            IOException {
+            ScriptParser parser)
+                    throws ParseError, ValidationError, IOException {
         this.actor = actor;
         this.name = name;
         this.scriptCache = scriptCache;
         this.stack = scriptCache.stack;
-        ScriptParser parser = new ScriptParser(reader);
         TeaseLib.instance().log.info("Parsing script " + name);
         try {
             parser.parse(this);
@@ -90,15 +88,15 @@ public class Script extends AbstractAction {
     private void completeConditionRanges() {
         if (conditionRanges != null) {
             // To sort out all optional conditions in the last step
-            conditionRanges.add(new ActionRange(Integer.MIN_VALUE,
-                    Integer.MAX_VALUE));
+            conditionRanges
+                    .add(new ActionRange(Integer.MIN_VALUE, Integer.MAX_VALUE));
             // make hasNext() check work...
             conditionRanges.add(null);
         }
     }
 
-    public Script load(String name) throws ParseError, ValidationError,
-            IOException {
+    public Script load(String name)
+            throws ParseError, ValidationError, IOException {
         return scriptCache.get(actor, name);
     }
 
@@ -127,7 +125,8 @@ public class Script extends AbstractAction {
         } else if (name == Statement.AskCheck) {
             String args[] = cmd.args();
             AskItem askItem = new AskItem(Integer.parseInt(args[0]),
-                    Integer.parseInt(args[1]), AskItem.ALWAYS, cmd.allAsTextFrom(2));
+                    Integer.parseInt(args[1]), AskItem.ALWAYS,
+                    cmd.allAsTextFrom(2));
             askItems.put(askItem.n, askItem);
         } else if (name == Statement.AskCheck2) {
             String args[] = cmd.args();
@@ -139,22 +138,26 @@ public class Script extends AbstractAction {
             String args[] = cmd.args();
             MenuItem menuItem = new MenuItem(Integer.parseInt(args[0]),
                     new ActionRange(Integer.parseInt(args[1]),
-                            Integer.parseInt(args[2])), cmd.allAsTextFrom(3));
+                            Integer.parseInt(args[2])),
+                    cmd.allAsTextFrom(3));
             menuItems.put(menuItem.n, menuItem);
         } else if (name == Statement.OnAllSet) {
             String args[] = cmd.args();
-            onAllSet = args.length > 1 ? new ActionRange(
-                    Integer.parseInt(args[0]), Integer.parseInt(args[1]))
+            onAllSet = args.length > 1
+                    ? new ActionRange(Integer.parseInt(args[0]),
+                            Integer.parseInt(args[1]))
                     : new ActionRange(Integer.parseInt(args[0]));
         } else if (name == Statement.OnClose) {
             String args[] = cmd.args();
-            onClose = args.length > 1 ? new ActionRange(
-                    Integer.parseInt(args[0]), Integer.parseInt(args[1]))
+            onClose = args.length > 1
+                    ? new ActionRange(Integer.parseInt(args[0]),
+                            Integer.parseInt(args[1]))
                     : new ActionRange(Integer.parseInt(args[0]));
         } else if (name == Statement.Range) {
             String args[] = cmd.args();
-            startRange = args.length > 1 ? new ActionRange(
-                    Integer.parseInt(args[0]), Integer.parseInt(args[1]))
+            startRange = args.length > 1
+                    ? new ActionRange(Integer.parseInt(args[0]),
+                            Integer.parseInt(args[1]))
                     : new ActionRange(Integer.parseInt(args[0]));
         } else if (name == Statement.Message) {
             throw new IllegalStateException(name.toString());
@@ -163,8 +166,9 @@ public class Script extends AbstractAction {
             // the scripts
         } else if (name == Statement.OnRecognitionRejected) {
             String args[] = cmd.args();
-            onRecognitionRejected = args.length > 1 ? new ActionRange(
-                    Integer.parseInt(args[0]), Integer.parseInt(args[1]))
+            onRecognitionRejected = args.length > 1
+                    ? new ActionRange(Integer.parseInt(args[0]),
+                            Integer.parseInt(args[1]))
                     : new ActionRange(Integer.parseInt(args[0]));
         } else if (name == Statement.Gag) {
             String args[] = cmd.args();
@@ -197,8 +201,8 @@ public class Script extends AbstractAction {
 
     public void validate(List<ValidationError> validationErrors) {
         if (startRange == null) {
-            validationErrors.add(new ValidationError("Missing start range",
-                    this));
+            validationErrors
+                    .add(new ValidationError("Missing start range", this));
         } else if (!startRange.validate()) {
             validationErrors
                     .add(new ValidationError("Wrong start range", this));

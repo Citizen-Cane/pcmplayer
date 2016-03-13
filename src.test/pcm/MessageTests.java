@@ -29,7 +29,7 @@ public class MessageTests {
 
     Player player = new Player(
             TeaseLib.init(new DummyHost(), new DummyPersistence()),
-            new ResourceLoader("bin.test/pcm", "test-resources"),
+            new ResourceLoader(this.getClass()),
             new Actor(Actor.Dominant, Voice.Gender.Female, "en-us"), "PCM-Test",
             null) {
 

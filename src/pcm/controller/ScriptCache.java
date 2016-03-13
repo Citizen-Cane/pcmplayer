@@ -23,17 +23,20 @@ public class ScriptCache {
 
     Map<String, SoftReference<Script>> cache = new HashMap<String, SoftReference<Script>>();
     ResourceLoader resourceLoader;
-    final String path;
+    final String resourcePath;
+    final String scriptPath;
+
     public final Stack<ActionRange> stack;
 
-    public ScriptCache(ResourceLoader resourceLoader, String path) {
+    public ScriptCache(ResourceLoader resourceLoader, String resourcePath) {
         this.resourceLoader = resourceLoader;
-        this.path = path;
+        this.resourcePath = resourcePath;
+        this.scriptPath = resourcePath + Player.Scripts;
         stack = new Stack<ActionRange>();
     }
 
-    public Script get(Actor actor, String name) throws ParseError,
-            ValidationError, IOException {
+    public Script get(Actor actor, String name)
+            throws ParseError, ValidationError, IOException {
         Script script = null;
         String key = name.toLowerCase();
         if (cache.containsKey(key)) {
@@ -42,10 +45,11 @@ public class ScriptCache {
         if (script != null) {
             TeaseLib.instance().log.debug("Using cached script " + name);
         } else {
-            final String location = path + name;
+            final String location = scriptPath + name;
             final BufferedReader scriptReader = script(location);
             try {
-                script = new Script(actor, name, this, scriptReader);
+                script = new Script(actor, name, this,
+                        new ScriptParser(scriptReader, resourcePath));
             } finally {
                 scriptReader.close();
             }
