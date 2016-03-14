@@ -29,8 +29,21 @@ public class Stop implements Interaction, NeedsRangeProvider {
     private Interaction rangeProvider = null;
 
     public enum TimeoutType {
+        /**
+         * Show buttons right at the start (in contrast to normal replies.
+         * Dismiss prompts when the duration is over.
+         */
         Terminate,
-        Confirm
+        /**
+         * Show prompts as if this was a normal button, and wait for input
+         * according to the timeout behavior.
+         */
+        Confirm,
+        /**
+         * Show prompts as in normal replies, but dismiss buttons when the
+         * duration is over.
+         */
+        AutoConfirm
     }
 
     public Stop(Map<Statement, ActionRange> choiceRanges,
@@ -43,9 +56,9 @@ public class Stop implements Interaction, NeedsRangeProvider {
     @Override
     public ActionRange getRange(Script script, final Action action,
             final ScriptFunction visuals, final Player player)
-            throws ScriptExecutionError {
-        TeaseLib.instance().log.info(getClass().getSimpleName() + " "
-                + toString());
+                    throws ScriptExecutionError {
+        TeaseLib.instance().log
+                .info(getClass().getSimpleName() + " " + toString());
         List<String> choices = new ArrayList<String>(choiceRanges.size());
         List<ActionRange> ranges = new ArrayList<ActionRange>(
                 choiceRanges.size());
@@ -55,8 +68,8 @@ public class Stop implements Interaction, NeedsRangeProvider {
         }
         // If the reply requires confirmation, then it's treated like a normal
         // reply, and the buttons appear after all visuals have been rendered
-        final boolean treatAsNormalReply = timeoutType == TimeoutType.Confirm;
-        if (treatAsNormalReply) {
+        final boolean normalPrompt = timeoutType != TimeoutType.Terminate;
+        if (normalPrompt) {
             // Pretend to be a normal button and show after completing mandatory
             // visuals
             visuals.run();
@@ -69,14 +82,19 @@ public class Stop implements Interaction, NeedsRangeProvider {
             @Override
             public void run() {
                 final ScriptFunction timeoutFunction;
-                if (treatAsNormalReply) {
+                if (normalPrompt) {
                     // Visuals are rendered in the main loop, and the timeout
                     // visual doesn't render a delay, allowing us to query and
                     // wait the timeout duration in the script function
                     Timeout timeout = (Timeout) action.visuals
                             .get(Statement.Delay);
-                    timeoutFunction = player.timeoutWithConfirmation(
-                            timeout.duration, timeoutBehavior);
+                    if (timeoutType == TimeoutType.AutoConfirm) {
+                        timeoutFunction = player.timeoutWithAutoConfirmation(
+                                timeout.duration, timeoutBehavior);
+                    } else {
+                        timeoutFunction = player.timeoutWithConfirmation(
+                                timeout.duration, timeoutBehavior);
+                    }
                 } else {
                     visuals.run();
                     // Complete visuals and full delay
@@ -128,8 +146,8 @@ public class Stop implements Interaction, NeedsRangeProvider {
     public void validate(Script script, Action action,
             List<ValidationError> validationErrors) throws ParseError {
         for (Statement statement : choiceRanges.keySet()) {
-            script.actions.validate(script, action,
-                    choiceRanges.get(statement), validationErrors);
+            script.actions.validate(script, action, choiceRanges.get(statement),
+                    validationErrors);
         }
     }
 }

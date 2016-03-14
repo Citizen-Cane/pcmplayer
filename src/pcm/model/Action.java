@@ -20,6 +20,7 @@ import pcm.state.Interactions.Quit;
 import pcm.state.Interactions.Range;
 import pcm.state.Interactions.Return;
 import pcm.state.Interactions.Stop;
+import pcm.state.Interactions.Stop.TimeoutType;
 import pcm.state.Interactions.YesNo;
 import pcm.state.commands.Repeat;
 import pcm.state.commands.RepeatAdd;
@@ -178,23 +179,42 @@ public class Action extends AbstractAction {
                 // delay range & stop
                 int from = Integer.parseInt(args[0]);
                 int to = Integer.parseInt(args[1]);
-                if (args[2].toLowerCase().equals("confirm")
-                        && args[3].toLowerCase().equals("indubiomitius")) {
+                // Type
+                TimeoutType timeoutType = null;
+                final String arg2 = args[2].toLowerCase();
+                if (arg2.equals("confirm")) {
+                    timeoutType = Stop.TimeoutType.Confirm;
+                } else if (arg2.equals("autoconfirm")) {
+                    timeoutType = Stop.TimeoutType.AutoConfirm;
+                } else if (arg2.equals("terminate")) {
+                    timeoutType = TimeoutType.Terminate;
+                }
+                // Behavior
+                TimeoutBehavior timeoutBehavior = null;
+                final String arg3 = args[3].toLowerCase();
+                if (arg3.equals("indubiomitius")) {
+                    timeoutBehavior = TimeoutBehavior.InDubioMitius;
+                } else if (arg3.equals("indubioproduriore")) {
+                    timeoutBehavior = TimeoutBehavior.InDubioProDuriore;
+                } else if (arg3.equals("indubiocontrareum")) {
+                    timeoutBehavior = TimeoutBehavior.InDubioContraReum;
+                }
+                // Build the statement
+                if (timeoutType != null && timeoutBehavior != null) {
                     addVisual(Statement.Delay, new Timeout(from, to));
                     setInteraction(new Stop(rangesFromArgv(args, 4),
-                            Stop.TimeoutType.Confirm,
-                            TimeoutBehavior.InDubioMitius));
-
-                } else if (args[2].toLowerCase().equals("confirm")) {
+                            timeoutType, timeoutBehavior));
+                } else if (timeoutType != null && timeoutBehavior == null) {
                     addVisual(Statement.Delay, new Timeout(from, to));
                     setInteraction(new Stop(rangesFromArgv(args, 3),
-                            Stop.TimeoutType.Confirm,
-                            TimeoutBehavior.InDubioProDuriore));
-                } else {
+                            timeoutType, TimeoutBehavior.InDubioProDuriore));
+                } else if (timeoutType == null && timeoutBehavior == null) {
                     addVisual(Statement.Delay, new Delay(from, to));
                     setInteraction(new Stop(rangesFromArgv(args, 2),
                             Stop.TimeoutType.Terminate,
                             TimeoutBehavior.InDubioProDuriore));
+                } else {
+                    throw new IllegalArgumentException(cmd.line);
                 }
             } else {
                 throw new IllegalArgumentException(cmd.line);
