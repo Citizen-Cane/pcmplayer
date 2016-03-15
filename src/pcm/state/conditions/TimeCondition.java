@@ -43,11 +43,11 @@ public abstract class TimeCondition implements Condition {
     }
 
     protected void log(Date setTime, long elapsedMillis, boolean result) {
-        TeaseLib.instance().log.info(getClass().getSimpleName() + ": setTime = "
-                + setTime.toString() + ", duration = "
+        TeaseLib.instance().log.info(getClass().getSimpleName() + " " + n
+                + ": setTime = " + setTime.toString() + ", duration = "
                 + toString(durationMillis) + "(" + durationMillis + ") , now = "
                 + new Date(System.currentTimeMillis()) + ", elapsed = "
-                + elapsedMillis + "ms -> " + result);
+                + new Date(elapsedMillis) + " -> " + result);
     }
 
     @Override

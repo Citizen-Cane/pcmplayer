@@ -26,29 +26,27 @@ public class SetTime implements Command {
     @Override
     public void execute(State state) {
         final Date date;
-        if (offset.toLowerCase().startsWith("inf")) {
+        if (offset.toLowerCase().startsWith("inf")
+                || offset.toLowerCase().startsWith("+inf")) {
             date = new Date(Long.MAX_VALUE);
             state.player.teaseLib.log
-                    .info("Setting time " + n + " to " + offset);
-        } else if (offset.toLowerCase().startsWith("+inf")) {
-            date = new Date(Long.MAX_VALUE);
-            state.player.teaseLib.log
-                    .info("Setting time " + n + " to " + offset);
+                    .info("Setting time " + n + " to +INF (" + offset + ")");
         } else if (offset.toLowerCase().startsWith("-inf")) {
             // Values must actually be positive,
             // and Long.MIN_VALUE would lead to an overflow later on
             date = new Date(0);
             state.player.teaseLib.log
-                    .info("Setting time " + n + " to " + offset);
+                    .info("Setting time " + n + " to -INF (" + offset + ")");
         } else {
             long now = state.getTimeMillis();
             long offset = new Duration(this.offset).getTimeSpanMillis();
             date = new Date(now + offset);
-            state.player.teaseLib.log.info("Setting time " + n + " to "
-                    + new Date(now).toString()
-                    + (this.offset != None
-                            ? " + " + this.offset + " = " + (now + offset)
-                            : ""));
+            state.player.teaseLib.log
+                    .info("Setting time " + n + " to "
+                            + new Date(now)
+                                    .toString()
+                            + (this.offset != None ? " + " + this.offset + " = "
+                                    + new Date(now + offset) : ""));
         }
         state.setTime(n, date);
     }

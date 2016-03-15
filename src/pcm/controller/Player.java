@@ -477,7 +477,7 @@ public abstract class Player extends TeaseScript {
                 return selectable;
             } else if (poss0 != null) {
                 // selectable.size() == 0 but actions in else branch
-                teaseLib.log.info("choosing poss0 - fallback");
+                teaseLib.log.info("else");
                 return poss0;
             }
             if (relaxedConditions != null && conditionsRanges != null) {
