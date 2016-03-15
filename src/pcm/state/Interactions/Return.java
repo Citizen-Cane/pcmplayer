@@ -2,10 +2,12 @@ package pcm.state.Interactions;
 
 import java.util.List;
 
+import pcm.controller.AllActionsSetException;
 import pcm.controller.Player;
 import pcm.model.Action;
 import pcm.model.ActionRange;
 import pcm.model.Script;
+import pcm.model.ScriptExecutionError;
 import pcm.model.ValidationError;
 import pcm.state.Interaction;
 import teaselib.ScriptFunction;
@@ -15,7 +17,7 @@ public class Return implements Interaction {
 
     @Override
     public ActionRange getRange(Script script, Action action,
-            ScriptFunction visuals, Player player) {
+            ScriptFunction visuals, Player player) throws ScriptExecutionError {
         if (visuals != null) {
             visuals.run();
         }
@@ -26,7 +28,7 @@ public class Return implements Interaction {
             return range;
         } else {
             TeaseLib.instance().log.info("Return: stack empty");
-            return null;
+            throw new AllActionsSetException(action, script);
         }
     }
 
