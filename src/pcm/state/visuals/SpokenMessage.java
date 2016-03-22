@@ -27,13 +27,15 @@ public class SpokenMessage implements Visual, Validatable {
             message = new Message(actor);
             messages.add(message);
         }
-        Message.Type type = Message.determineType(line);
-        if (type == Message.Type.Image) {
-            message.add(type, resourcePath + Image.IMAGES + line);
-        } else if (Message.Type.AudioTypes.contains(type)) {
-            message.add(type, resourcePath + Sound.SOUNDS + line);
+        Message.Part part = new Message.Part(line);
+        if (part.type == Message.Type.Image) {
+            message.add(part.type, resourcePath + Image.IMAGES + part.value);
+        } else if (Message.Type.AudioTypes.contains(part.type)) {
+            message.add(part.type, resourcePath + Sound.SOUNDS + part.value);
+        } else if (part.type == Message.Type.DesktopItem) {
+            message.add(part.type, resourcePath + part.value);
         } else {
-            message.add(type, line);
+            message.add(part);
         }
     }
 
