@@ -3,8 +3,7 @@
  */
 package pcm;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -29,7 +28,7 @@ public class ScriptTests {
     Player player = new Player(
             TeaseLib.init(new DummyHost(), new DummyPersistence()),
             new ResourceLoader(ScriptTests.class),
-            new Actor(Actor.Dominant, Voice.Gender.Female, "en-us"), "PCM-Test",
+            new Actor(Actor.Dominant, Voice.Gender.Female, "en-us"), "pcm",
             null) {
 
         @Override
@@ -43,7 +42,7 @@ public class ScriptTests {
      */
     @Before
     public void setUpBefore() throws Exception {
-        player.loadScript("test-resources" + "/" + "ScriptTests");
+        player.loadScript("ScriptTests");
     }
 
     @Test

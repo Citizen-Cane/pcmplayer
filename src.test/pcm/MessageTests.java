@@ -3,7 +3,7 @@
  */
 package pcm;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +30,7 @@ public class MessageTests {
     Player player = new Player(
             TeaseLib.init(new DummyHost(), new DummyPersistence()),
             new ResourceLoader(this.getClass()),
-            new Actor(Actor.Dominant, Voice.Gender.Female, "en-us"), "PCM-Test",
+            new Actor(Actor.Dominant, Voice.Gender.Female, "en-us"), "pcm",
             null) {
 
         @Override
@@ -73,31 +73,45 @@ public class MessageTests {
     public void testReadAloudMultipleLines() {
         Message message = getMessageOfAction(1001);
         // Leading and trailing white space before is okay
-        assertEquals(7, message.getParts().size());
+        assertEquals(11, message.getParts().size());
         assertEquals(Message.Type.Mood, message.getParts().get(0).type);
         assertEquals(Mood.Reading, message.getParts().get(0).value);
         assertEquals(Message.Type.Text, message.getParts().get(1).type);
-        assertEquals(Message.Type.Text, message.getParts().get(2).type);
+        assertEquals(Message.Type.Mood, message.getParts().get(2).type);
+        assertEquals(Mood.Reading, message.getParts().get(2).value);
         assertEquals(Message.Type.Text, message.getParts().get(3).type);
-        assertEquals(Message.Type.Text, message.getParts().get(4).type);
+        assertEquals(Message.Type.Mood, message.getParts().get(4).type);
+        assertEquals(Mood.Reading, message.getParts().get(4).value);
         assertEquals(Message.Type.Text, message.getParts().get(5).type);
         assertEquals(Message.Type.Mood, message.getParts().get(6).type);
-        assertEquals(Mood.Neutral, message.getParts().get(6).value);
+        assertEquals(Mood.Reading, message.getParts().get(6).value);
+        assertEquals(Message.Type.Text, message.getParts().get(7).type);
+        assertEquals(Message.Type.Mood, message.getParts().get(8).type);
+        assertEquals(Mood.Reading, message.getParts().get(8).value);
+        assertEquals(Message.Type.Text, message.getParts().get(9).type);
+        assertEquals(Message.Type.Mood, message.getParts().get(10).type);
+        assertEquals(Mood.Neutral, message.getParts().get(10).value);
     }
 
     @Test
     public void testReadAloundAndConcatenateParts() {
         Message message = getMessageOfAction(1002);
         // Leading and trailing white space before is okay
-        assertEquals(6, message.getParts().size());
+        assertEquals(9, message.getParts().size());
         assertEquals(Message.Type.Mood, message.getParts().get(0).type);
         assertEquals(Mood.Reading, message.getParts().get(0).value);
         assertEquals(Message.Type.Text, message.getParts().get(1).type);
-        assertEquals(Message.Type.Text, message.getParts().get(2).type);
+        assertEquals(Message.Type.Mood, message.getParts().get(2).type);
+        assertEquals(Mood.Reading, message.getParts().get(2).value);
         assertEquals(Message.Type.Text, message.getParts().get(3).type);
-        assertEquals(Message.Type.Text, message.getParts().get(4).type);
-        assertEquals(Message.Type.Mood, message.getParts().get(5).type);
-        assertEquals(Mood.Neutral, message.getParts().get(5).value);
+        assertEquals(Message.Type.Mood, message.getParts().get(4).type);
+        assertEquals(Mood.Reading, message.getParts().get(4).value);
+        assertEquals(Message.Type.Text, message.getParts().get(5).type);
+        assertEquals(Message.Type.Mood, message.getParts().get(6).type);
+        assertEquals(Mood.Reading, message.getParts().get(6).value);
+        assertEquals(Message.Type.Text, message.getParts().get(7).type);
+        assertEquals(Message.Type.Mood, message.getParts().get(8).type);
+        assertEquals(Mood.Neutral, message.getParts().get(8).value);
     }
 
     @Test

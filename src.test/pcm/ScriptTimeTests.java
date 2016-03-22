@@ -3,8 +3,7 @@
  */
 package pcm;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -33,7 +32,7 @@ public class ScriptTimeTests {
     Player player = new Player(
             TeaseLib.init(new DummyHost(), new DummyPersistence()),
             new ResourceLoader(ScriptTimeTests.class),
-            new Actor(Actor.Dominant, Voice.Gender.Female, "en-us"), "PCM-Test",
+            new Actor(Actor.Dominant, Voice.Gender.Female, "en-us"), "pcm",
             null) {
 
         @Override
@@ -46,7 +45,7 @@ public class ScriptTimeTests {
      */
     @Before
     public void setUpBefore() throws Exception {
-        player.loadScript("test-resources" + "/" + "ScriptTimeTests");
+        player.loadScript("ScriptTimeTests");
     }
 
     private boolean containsAction(int n) {
