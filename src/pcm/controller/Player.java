@@ -269,7 +269,7 @@ public abstract class Player extends TeaseScript {
         script.execute(state);
         // TODO Search for any mistress instead of using hard-coded path
         actor.images = new RandomImages(
-                imageResources(mistressPath + script.mistressImages));
+                resources(mistressPath + script.mistressImages));
     }
 
     /**
@@ -722,7 +722,7 @@ public abstract class Player extends TeaseScript {
 
     private void showError(String error) {
         teaseLib.log.info(error);
-        teaseLib.host.show(null, error);
+        show(error);
         reply("Oh Dear");
     }
 }

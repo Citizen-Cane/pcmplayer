@@ -116,7 +116,7 @@ public class Script extends AbstractAction {
                     Integer.parseInt(args[1]), Integer.parseInt(args[2]));
         } else if (name == Statement.SsDir) {
             imageDirectory = cmd.allArgs().replace('\\', '/');
-            mistressImages = imageDirectory;
+            mistressImages = imageDirectory + "/*.jpg";
         } else if (name == Statement.AskTitle) {
             String args[] = cmd.args();
             AskItem askItem = new AskItem(Integer.parseInt(args[0]),
