@@ -85,7 +85,16 @@ public class ScriptParser {
                         // another message
                         else if (line.startsWith("[]")) {
                             if (message != null) {
-                                message.newSection();
+                                message.completeSection();
+                                message.startNewSection();
+                            }
+                        }
+                        // inline reply
+                        else if (line.startsWith("[") && line.endsWith("]")) {
+                            if (message != null) {
+                                message.completeSection(
+                                        line.substring(1, line.length() - 1));
+                                message.startNewSection();
                             }
                         }
                         // Other statements
@@ -121,7 +130,7 @@ public class ScriptParser {
                     // rendering the message triggers rendering of all other
                     // visuals
                     if (message != null) {
-                        message.end();
+                        message.completeMessage();
                         action.addVisual(Statement.Message, message);
                     }
                     if (txt != null) {
