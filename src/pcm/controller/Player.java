@@ -71,7 +71,7 @@ public abstract class Player extends TeaseScript {
 
     public static void recordVoices(Class<?> scriptClass, Actor actor,
             String[] assets, String startupScript)
-                    throws IOException, ValidationError, ParseError {
+            throws IOException, ValidationError, ParseError {
         TeaseLib.init(new DummyHost(), new DummyPersistence());
         ResourceLoader resources = new ResourceLoader(scriptClass);
         resources.addAssets(assets);
@@ -629,7 +629,8 @@ public abstract class Player extends TeaseScript {
     protected String showChoices(ScriptFunction scriptFunction,
             List<String> choices, Confidence recognitionConfidence) {
         // Display text according to slave's level of articulateness
-        if (state.get(script.gag).equals(State.SET)) {
+        Long gag = script != null ? state.get(script.gag) : State.UNSET;
+        if (gag.equals(State.SET)) {
             // Slave is gagged
             final List<String> processedChoices = new ArrayList<String>(
                     choices.size());
