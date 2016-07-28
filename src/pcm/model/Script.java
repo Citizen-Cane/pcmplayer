@@ -39,7 +39,7 @@ public class Script extends AbstractAction {
 
     public Script(Actor actor, String name, ScriptCache scriptCache,
             ScriptParser parser)
-                    throws ParseError, ValidationError, IOException {
+            throws ParseError, ValidationError, IOException {
         this.actor = actor;
         this.name = name;
         this.scriptCache = scriptCache;
@@ -64,21 +64,7 @@ public class Script extends AbstractAction {
     private void completeScriptDefaults() {
         if (responses == null) {
             responses = new HashMap<Statement, String>();
-            if (!responses.containsKey(Statement.YesText)) {
-                responses.put(Statement.YesText, "Yes, Miss");
-            }
-            if (!responses.containsKey(Statement.NoText)) {
-                responses.put(Statement.NoText, "No, Miss");
-            }
-            if (!responses.containsKey(Statement.ResumeText)) {
-                responses.put(Statement.ResumeText, "Ready, Miss");
-            }
-            if (!responses.containsKey(Statement.StopText)) {
-                responses.put(Statement.StopText, "Please stop, Miss");
-            }
-            if (!responses.containsKey(Statement.CumText)) {
-                responses.put(Statement.CumText, "I came, Miss");
-            }
+            // No defaults since hard-coded messages can't be translated
         }
     }
 

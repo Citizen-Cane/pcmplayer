@@ -9,6 +9,7 @@ import pcm.state.Command;
 import pcm.state.Condition;
 import pcm.state.Interaction;
 import pcm.state.Interaction.NeedsRangeProvider;
+import pcm.state.Validatable;
 import pcm.state.Visual;
 import pcm.state.Interactions.Ask;
 import pcm.state.Interactions.Break;
@@ -510,6 +511,14 @@ public class Action extends AbstractAction {
             }
         }
         if (visuals != null) {
+            // Validate each visual
+            for (Visual visual : visuals.values()) {
+                if (visual instanceof Validatable) {
+                    ((Validatable) visual).validate(script, this,
+                            validationErrors);
+                }
+            }
+            // Check common scripting mistakes
             if (visuals.containsKey(Statement.Txt)
                     && visuals.containsKey(Statement.Message)) {
                 validationErrors.add(new ValidationError(this,

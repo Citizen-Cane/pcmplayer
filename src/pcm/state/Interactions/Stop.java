@@ -56,7 +56,7 @@ public class Stop implements Interaction, NeedsRangeProvider {
     @Override
     public ActionRange getRange(Script script, final Action action,
             final ScriptFunction visuals, final Player player)
-                    throws ScriptExecutionError {
+            throws ScriptExecutionError {
         TeaseLib.instance().log
                 .info(getClass().getSimpleName() + " " + toString());
         List<String> choices = new ArrayList<String>(choiceRanges.size());
@@ -145,6 +145,13 @@ public class Stop implements Interaction, NeedsRangeProvider {
     @Override
     public void validate(Script script, Action action,
             List<ValidationError> validationErrors) throws ParseError {
+        try {
+            for (Statement key : choiceRanges.keySet()) {
+                action.getResponseText(key, script);
+            }
+        } catch (ScriptExecutionError e) {
+            validationErrors.add(new ValidationError(action, e, script));
+        }
         for (Statement statement : choiceRanges.keySet()) {
             script.actions.validate(script, action, choiceRanges.get(statement),
                     validationErrors);

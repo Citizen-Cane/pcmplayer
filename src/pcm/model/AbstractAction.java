@@ -224,10 +224,9 @@ public abstract class AbstractAction {
     void addResponse(Statement statement, String response) {
         if (responses == null) {
             responses = new HashMap<Statement, String>();
-        }
-        if (responses.containsKey(statement)) {
-            throw new IllegalArgumentException("Duplicate "
-                    + statement.toString());
+        } else if (responses.containsKey(statement)) {
+            throw new IllegalArgumentException(
+                    "Duplicate default prompt: " + statement.toString());
         }
         responses.put(statement, response);
     }
@@ -260,8 +259,8 @@ public abstract class AbstractAction {
             addCommand(new ResetRange(Integer.parseInt(args[0]),
                     Integer.parseInt(args[1])));
         } else {
-            throw new UnsupportedOperationException("Statement ."
-                    + name.toString() + " not implemented");
+            throw new UnsupportedOperationException(
+                    "Statement ." + name.toString() + " not implemented");
         }
     }
 

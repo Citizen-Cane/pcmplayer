@@ -90,10 +90,17 @@ public class Break implements Interaction, NeedsRangeProvider {
     @Override
     public void validate(Script script, Action action,
             List<ValidationError> validationErrors) throws ParseError {
+        try {
+            for (Statement key : choiceRanges.keySet()) {
+                action.getResponseText(key, script);
+            }
+        } catch (ScriptExecutionError e) {
+            validationErrors.add(new ValidationError(action, e, script));
+        }
         script.actions.validate(script, action, actionRange, validationErrors);
         for (Statement statement : choiceRanges.keySet()) {
-            script.actions.validate(script, action,
-                    choiceRanges.get(statement), validationErrors);
+            script.actions.validate(script, action, choiceRanges.get(statement),
+                    validationErrors);
         }
     }
 }

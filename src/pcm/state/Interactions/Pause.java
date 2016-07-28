@@ -47,6 +47,11 @@ public class Pause implements Interaction, Interaction.NeedsRangeProvider {
     @Override
     public void validate(Script script, Action action,
             List<ValidationError> validationErrors) throws ParseError {
+        try {
+            action.getResponseText(Statement.ResumeText, script);
+        } catch (ScriptExecutionError e) {
+            validationErrors.add(new ValidationError(action, e, script));
+        }
         if (rangeProvider != null) {
             rangeProvider.validate(script, action, validationErrors);
         }

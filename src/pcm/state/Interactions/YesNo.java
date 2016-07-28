@@ -50,9 +50,15 @@ public class YesNo implements Interaction {
     @Override
     public void validate(Script script, Action action,
             List<ValidationError> validationErrors) {
-        script.actions.validate(script, action, new ActionRange(startYes,
-                endYes), validationErrors);
+        try {
+            action.getResponseText(Statement.YesText, script);
+            action.getResponseText(Statement.NoText, script);
+        } catch (ScriptExecutionError e) {
+            validationErrors.add(new ValidationError(action, e, script));
+        }
         script.actions.validate(script, action,
-                new ActionRange(startNo, endNo), validationErrors);
+                new ActionRange(startYes, endYes), validationErrors);
+        script.actions.validate(script, action, new ActionRange(startNo, endNo),
+                validationErrors);
     }
 }
