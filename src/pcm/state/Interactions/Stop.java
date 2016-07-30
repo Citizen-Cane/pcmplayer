@@ -4,23 +4,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import pcm.controller.Player;
 import pcm.model.AbstractAction.Statement;
 import pcm.model.Action;
 import pcm.model.ActionRange;
-import pcm.model.ParseError;
 import pcm.model.Script;
-import pcm.model.ScriptExecutionError;
-import pcm.model.ValidationError;
+import pcm.model.ScriptExecutionException;
+import pcm.model.ScriptParsingException;
+import pcm.model.ValidationIssue;
 import pcm.state.Interaction;
 import pcm.state.Interaction.NeedsRangeProvider;
 import pcm.state.visuals.Timeout;
 import teaselib.ScriptFunction;
-import teaselib.TeaseLib;
 import teaselib.core.ScriptInterruptedException;
 import teaselib.core.speechrecognition.SpeechRecognition.TimeoutBehavior;
 
 public class Stop implements Interaction, NeedsRangeProvider {
+    private static final Logger logger = LoggerFactory.getLogger(Stop.class);
 
     private final Map<Statement, ActionRange> choiceRanges;
     private final TimeoutType timeoutType;
@@ -56,9 +59,8 @@ public class Stop implements Interaction, NeedsRangeProvider {
     @Override
     public ActionRange getRange(Script script, final Action action,
             final ScriptFunction visuals, final Player player)
-            throws ScriptExecutionError {
-        TeaseLib.instance().log
-                .info(getClass().getSimpleName() + " " + toString());
+            throws ScriptExecutionException {
+        logger.info(getClass().getSimpleName() + " " + toString());
         List<String> choices = new ArrayList<String>(choiceRanges.size());
         List<ActionRange> ranges = new ArrayList<ActionRange>(
                 choiceRanges.size());
@@ -119,7 +121,7 @@ public class Stop implements Interaction, NeedsRangeProvider {
         String result = player.reply(displayVisualsAndTimeout, choices);
         if (result != ScriptFunction.Timeout) {
             int index = choices.indexOf(result);
-            TeaseLib.instance().log.info("-> " + result);
+            logger.info("-> " + result);
             return ranges.get(index);
         } else {
             return rangeProvider.getRange(script, action, null, player);
@@ -144,13 +146,14 @@ public class Stop implements Interaction, NeedsRangeProvider {
 
     @Override
     public void validate(Script script, Action action,
-            List<ValidationError> validationErrors) throws ParseError {
+            List<ValidationIssue> validationErrors)
+            throws ScriptParsingException {
         try {
             for (Statement key : choiceRanges.keySet()) {
                 action.getResponseText(key, script);
             }
-        } catch (ScriptExecutionError e) {
-            validationErrors.add(new ValidationError(action, e, script));
+        } catch (ScriptExecutionException e) {
+            validationErrors.add(new ValidationIssue(action, e, script));
         }
         for (Statement statement : choiceRanges.keySet()) {
             script.actions.validate(script, action, choiceRanges.get(statement),

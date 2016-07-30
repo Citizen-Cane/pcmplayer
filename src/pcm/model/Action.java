@@ -64,7 +64,7 @@ public class Action extends AbstractAction {
         this.number = n;
     }
 
-    public void finalizeParsing(Script script) throws ValidationError {
+    public void finalizeParsing(Script script) throws ValidationIssue {
         if (visuals != null) {
             // Get delay
             final Visual visual;
@@ -83,7 +83,7 @@ public class Action extends AbstractAction {
                     .containsKey(Statement.Message);
             final boolean hasTxt = visuals.containsKey(Statement.Txt);
             if (hasMessageStatement && hasTxt)
-                throw new ValidationError(this,
+                throw new ValidationIssue(this,
                         "Spoken messages and .txt are exclusive because PCMPlayer/TeaseLib supports only one text area",
                         script);
             final boolean hasMessage = hasMessageStatement || hasTxt;
@@ -122,7 +122,7 @@ public class Action extends AbstractAction {
                     // In the original PCMistress program,
                     // such images wouldn't be rendered at all,
                     // or just pop up for a fraction of a second
-                    throw new ValidationError(this,
+                    throw new ValidationIssue(this,
                             "Without a message, a Delay statement is needed to display the image",
                             script);
                 }
@@ -492,7 +492,7 @@ public class Action extends AbstractAction {
     }
 
     public String getResponseText(Statement name, Script script)
-            throws ScriptExecutionError {
+            throws ScriptExecutionException {
         if (responses != null) {
             if (responses.containsKey(name)) {
                 return responses.get(name);
@@ -502,10 +502,10 @@ public class Action extends AbstractAction {
     }
 
     public void validate(Script script,
-            List<ValidationError> validationErrors) {
+            List<ValidationIssue> validationErrors) {
         if (poss != null) {
             if (poss < 0 || poss > 100) {
-                validationErrors.add(new ValidationError(this,
+                validationErrors.add(new ValidationIssue(this,
                         "Invalid value for poss statement (" + poss + ")",
                         script));
             }
@@ -521,7 +521,7 @@ public class Action extends AbstractAction {
             // Check common scripting mistakes
             if (visuals.containsKey(Statement.Txt)
                     && visuals.containsKey(Statement.Message)) {
-                validationErrors.add(new ValidationError(this,
+                validationErrors.add(new ValidationIssue(this,
                         "Both .txt and message is supported", script));
             }
             // delay 0 & noimage
@@ -529,14 +529,14 @@ public class Action extends AbstractAction {
                     && visuals.containsKey(Statement.NoImage)) {
                 Delay delay = (Delay) visuals.get(Statement.Delay);
                 if (delay.to == 0) {
-                    validationErrors.add(new ValidationError(this,
+                    validationErrors.add(new ValidationIssue(this,
                             "Delay 0 + NoImage is deprecated and should be removed",
                             script));
                 }
             } else if (visuals.containsKey(Statement.Delay)) {
                 Delay delay = (Delay) visuals.get(Statement.Delay);
                 if (delay.to == 0) {
-                    validationErrors.add(new ValidationError(this,
+                    validationErrors.add(new ValidationIssue(this,
                             "Delay 0 is deprecated and should be removed",
                             script));
                 }
@@ -545,14 +545,14 @@ public class Action extends AbstractAction {
         if (interaction != null) {
             try {
                 interaction.validate(script, this, validationErrors);
-            } catch (ParseError e) {
-                validationErrors.add(new ValidationError(this, e));
+            } catch (ScriptParsingException e) {
+                validationErrors.add(new ValidationIssue(this, e));
             } catch (Exception e) {
-                validationErrors.add(new ValidationError(this, e, script));
+                validationErrors.add(new ValidationIssue(this, e, script));
             }
         } else {
             validationErrors
-                    .add(new ValidationError(this, "No interaction", script));
+                    .add(new ValidationIssue(this, "No interaction", script));
         }
     }
 

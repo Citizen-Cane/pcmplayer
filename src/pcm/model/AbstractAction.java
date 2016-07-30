@@ -6,13 +6,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import pcm.state.Command;
 import pcm.state.State;
 import pcm.state.commands.ResetRange;
 import pcm.state.conditions.TimeFrom;
-import teaselib.TeaseLib;
 
 public abstract class AbstractAction {
+    private static final Logger logger = LoggerFactory.getLogger(Logger.class);
 
     // / Names of Statements used in PCM scripts
     public enum Statement {
@@ -231,11 +234,11 @@ public abstract class AbstractAction {
         responses.put(statement, response);
     }
 
-    public ActionRange execute(State state) throws ScriptExecutionError {
+    public ActionRange execute(State state) throws ScriptExecutionException {
         if (commands != null) {
             for (Command command : commands) {
-                TeaseLib.instance().log.info(command.getClass().getSimpleName()
-                        + " " + command.toString());
+                logger.info(command.getClass().getSimpleName() + " "
+                        + command.toString());
                 command.execute(state);
             }
         }

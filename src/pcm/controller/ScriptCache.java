@@ -11,15 +11,19 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import pcm.model.ActionRange;
-import pcm.model.ParseError;
 import pcm.model.Script;
-import pcm.model.ValidationError;
+import pcm.model.ScriptParsingException;
+import pcm.model.ValidationIssue;
 import teaselib.Actor;
-import teaselib.TeaseLib;
 import teaselib.core.ResourceLoader;
 
 public class ScriptCache {
+    private static final Logger logger = LoggerFactory
+            .getLogger(ScriptCache.class);
 
     Map<String, SoftReference<Script>> cache = new HashMap<String, SoftReference<Script>>();
     ResourceLoader resourceLoader;
@@ -36,14 +40,14 @@ public class ScriptCache {
     }
 
     public Script get(Actor actor, String name)
-            throws ParseError, ValidationError, IOException {
+            throws ScriptParsingException, ValidationIssue, IOException {
         Script script = null;
         String key = name.toLowerCase();
         if (cache.containsKey(key)) {
             script = cache.get(key).get();
         }
         if (script != null) {
-            TeaseLib.instance().log.debug("Using cached script " + name);
+            logger.debug("Using cached script " + name);
         } else {
             final String location = scriptPath + name;
             final BufferedReader scriptReader = script(location);

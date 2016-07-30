@@ -3,18 +3,22 @@ package pcm.state.Interactions;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import pcm.controller.Player;
 import pcm.model.AbstractAction.Statement;
 import pcm.model.Action;
 import pcm.model.ActionRange;
 import pcm.model.Script;
-import pcm.model.ScriptExecutionError;
-import pcm.model.ValidationError;
+import pcm.model.ScriptExecutionException;
+import pcm.model.ValidationIssue;
 import pcm.state.Interaction;
 import teaselib.ScriptFunction;
-import teaselib.TeaseLib;
 
 public class YesNo implements Interaction {
+    private static final Logger logger = LoggerFactory.getLogger(YesNo.class);
+
     private final int startYes;
     private final int endYes;
     private final int startNo;
@@ -30,31 +34,31 @@ public class YesNo implements Interaction {
     @Override
     public ActionRange getRange(Script script, Action action,
             ScriptFunction visuals, final Player player)
-            throws ScriptExecutionError {
+            throws ScriptExecutionException {
         String yes = action.getResponseText(Statement.YesText, script);
         String no = action.getResponseText(Statement.NoText, script);
-        TeaseLib.instance().log.info("AskYesNo: '" + yes + "', '" + no + '+');
+        logger.info("AskYesNo: '" + yes + "', '" + no + '+');
         final List<String> choices = new ArrayList<String>();
         choices.add(yes);
         choices.add(no);
         visuals.run();
         if (player.reply(choices) == yes) {
-            TeaseLib.instance().log.info("-> Yes");
+            logger.info("-> Yes");
             return new ActionRange(startYes, endYes);
         } else {
-            TeaseLib.instance().log.info("-> No");
+            logger.info("-> No");
             return new ActionRange(startNo, endNo);
         }
     }
 
     @Override
     public void validate(Script script, Action action,
-            List<ValidationError> validationErrors) {
+            List<ValidationIssue> validationErrors) {
         try {
             action.getResponseText(Statement.YesText, script);
             action.getResponseText(Statement.NoText, script);
-        } catch (ScriptExecutionError e) {
-            validationErrors.add(new ValidationError(action, e, script));
+        } catch (ScriptExecutionException e) {
+            validationErrors.add(new ValidationIssue(action, e, script));
         }
         script.actions.validate(script, action,
                 new ActionRange(startYes, endYes), validationErrors);

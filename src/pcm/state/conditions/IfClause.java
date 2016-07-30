@@ -3,16 +3,21 @@
  */
 package pcm.state.conditions;
 
-import pcm.model.ScriptExecutionError;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import pcm.model.ScriptExecutionException;
 import pcm.state.Command;
 import pcm.state.State;
-import teaselib.TeaseLib;
 
 /**
  * @author someone
  *
  */
 public abstract class IfClause implements Command {
+    private static final Logger logger = LoggerFactory
+            .getLogger(IfClause.class);
+
     final Command command;
 
     public IfClause(Command command) {
@@ -21,10 +26,9 @@ public abstract class IfClause implements Command {
     }
 
     @Override
-    public void execute(State state) throws ScriptExecutionError {
+    public void execute(State state) throws ScriptExecutionException {
         if (isTrueFor(state)) {
-            TeaseLib.instance().log.info(" -> "
-                    + command.getClass().getSimpleName() + " "
+            logger.info(" -> " + command.getClass().getSimpleName() + " "
                     + command.toString());
             command.execute(state);
         }

@@ -7,7 +7,7 @@ import java.util.Vector;
 import pcm.controller.Player;
 import pcm.model.Action;
 import pcm.model.Script;
-import pcm.model.ValidationError;
+import pcm.model.ValidationIssue;
 import pcm.state.Validatable;
 import pcm.state.Visual;
 import teaselib.Actor;
@@ -92,7 +92,7 @@ public class SpokenMessage implements Visual, Validatable {
 
     @Override
     public void validate(Script script, Action action,
-            List<ValidationError> validationErrors) {
+            List<ValidationIssue> validationErrors) {
         // Nothing to do anymore, since all messages have been parsed already
     }
 }

@@ -5,16 +5,20 @@ package pcm.state.conditions;
 
 import java.util.Date;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import pcm.model.Duration;
 import pcm.state.Condition;
 import pcm.state.State;
-import teaselib.TeaseLib;
 
 /**
  * @author someone
  *
  */
 public abstract class TimeCondition implements Condition {
+    private static final Logger logger = LoggerFactory
+            .getLogger(TimeCondition.class);
 
     protected final int n;
     protected final long durationMillis;
@@ -43,8 +47,8 @@ public abstract class TimeCondition implements Condition {
     }
 
     protected void log(Date setTime, long elapsedMillis, boolean result) {
-        TeaseLib.instance().log.info(getClass().getSimpleName() + " " + n
-                + ": setTime = " + setTime.toString() + ", duration = "
+        logger.info(getClass().getSimpleName() + " " + n + ": setTime = "
+                + setTime.toString() + ", duration = "
                 + toString(durationMillis) + "(" + durationMillis + ") , now = "
                 + new Date(System.currentTimeMillis()) + ", elapsed = "
                 + new Date(elapsedMillis) + " -> " + result);

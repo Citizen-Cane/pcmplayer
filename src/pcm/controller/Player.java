@@ -12,15 +12,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import pcm.model.AbstractAction;
 import pcm.model.Action;
 import pcm.model.ActionLoadSbd;
 import pcm.model.ActionRange;
-import pcm.model.ParseError;
 import pcm.model.Script;
-import pcm.model.ScriptError;
-import pcm.model.ScriptExecutionError;
-import pcm.model.ValidationError;
+import pcm.model.ScriptException;
+import pcm.model.ScriptExecutionException;
+import pcm.model.ScriptParsingException;
+import pcm.model.ValidationIssue;
 import pcm.state.Condition;
 import pcm.state.MappedState;
 import pcm.state.State;
@@ -43,6 +46,7 @@ import teaselib.util.RandomImages;
 import teaselib.util.SpeechRecognitionRejectedScript;
 
 public abstract class Player extends TeaseScript {
+    private static final Logger logger = LoggerFactory.getLogger(Player.class);
 
     public static final String Scripts = "scripts/";
 
@@ -70,7 +74,7 @@ public abstract class Player extends TeaseScript {
 
     public static void recordVoices(Class<?> scriptClass, Actor actor,
             String[] assets, String startupScript)
-            throws IOException, ValidationError, ParseError {
+            throws IOException, ValidationIssue, ScriptParsingException {
         TeaseLib.init(new DummyHost(), new DummyPersistence());
         ResourceLoader resources = new ResourceLoader(scriptClass);
         resources.addAssets(assets);
@@ -82,7 +86,7 @@ public abstract class Player extends TeaseScript {
         // Get the main script
         Script main = scripts.get(actor, startupScript);
         // and validate to load all the sub scripts
-        validate(main, new ArrayList<ValidationError>());
+        validate(main, new ArrayList<ValidationIssue>());
         for (String scriptName : scripts.names()) {
             Script script = scripts.get(actor, scriptName);
             ScriptScanner scriptScanner = new PCMScriptScanner(script);
@@ -133,7 +137,7 @@ public abstract class Player extends TeaseScript {
                 }
             }
         } catch (Exception e) {
-            teaseLib.log.error(resourcePath, e);
+            logger.error(resourcePath, e);
         }
         StringTokenizer argv = new StringTokenizer(script, " ");
         String scriptName = argv.nextToken();
@@ -178,15 +182,15 @@ public abstract class Player extends TeaseScript {
                         // onClose handler to be triggered -> bad quit
                     }
                 } catch (AllActionsSetException e) {
-                    teaseLib.log.error(this, e);
-                } catch (ScriptExecutionError e) {
-                    teaseLib.log.error(this, e);
+                    logger.error(e.getMessage(), e);
+                } catch (ScriptExecutionException e) {
+                    logger.error(e.getMessage(), e);
                 }
             }
         };
         try {
             loadScript(name);
-        } catch (ScriptError e) {
+        } catch (ScriptException e) {
             showError(e);
             return;
         } catch (Throwable t) {
@@ -205,9 +209,9 @@ public abstract class Player extends TeaseScript {
                 }
             } catch (ScriptInterruptedException e) {
                 if (!intentionalQuit) {
-                    teaseLib.log.error(this, e);
+                    logger.error(e.getMessage(), e);
                 }
-            } catch (ScriptError e) {
+            } catch (ScriptException e) {
                 showError(e);
             } catch (Throwable e) {
                 showError(e, name);
@@ -219,8 +223,8 @@ public abstract class Player extends TeaseScript {
         }
     }
 
-    public void loadScript(String name) throws ParseError, ValidationError,
-            IOException, ScriptExecutionError {
+    public void loadScript(String name) throws ScriptParsingException,
+            ValidationIssue, IOException, ScriptExecutionException {
         script = scripts.get(actor, name);
         if (validateScripts) {
             validateAll();
@@ -230,8 +234,9 @@ public abstract class Player extends TeaseScript {
         }
     }
 
-    private void validateAll() throws ParseError, ValidationError, IOException {
-        List<ValidationError> validationErrors = new ArrayList<ValidationError>();
+    private void validateAll()
+            throws ScriptParsingException, ValidationIssue, IOException {
+        List<ValidationIssue> validationErrors = new ArrayList<ValidationIssue>();
         validate(script, validationErrors);
         for (String s : scripts.names()) {
             Script other = scripts.get(actor, s);
@@ -240,17 +245,17 @@ public abstract class Player extends TeaseScript {
             }
         }
         if (validationErrors.size() > 0) {
-            for (ScriptError scriptError : validationErrors) {
-                teaseLib.log.info(createErrorMessage(scriptError));
+            for (ScriptException scriptError : validationErrors) {
+                logger.info(createErrorMessage(scriptError));
             }
-            throw new ValidationError(
+            throw new ValidationIssue(
                     "Validation failed, " + validationErrors.size() + " issues",
                     script);
         }
     }
 
-    private void resetScript() throws ScriptExecutionError {
-        teaseLib.log.info("Starting script " + script.name);
+    private void resetScript() throws ScriptExecutionException {
+        logger.info("Starting script " + script.name);
         state.restore(script);
         invokedOnAllSet = false;
         if (script.onClose != null) {
@@ -258,7 +263,7 @@ public abstract class Player extends TeaseScript {
             teaseLib.host.setQuitHandler(new TeaseScript(this) {
                 @Override
                 public void run() {
-                    teaseLib.log.info("Interrupting script thread '"
+                    logger.info("Interrupting script thread '"
                             + scriptThread.getName() + "'");
                     scriptThread.interrupt();
                     // The main script continues at the onClose range
@@ -280,10 +285,10 @@ public abstract class Player extends TeaseScript {
      * @param playRange
      *            The range to play.
      * @throws AllActionsSetException
-     * @throws ScriptExecutionError
+     * @throws ScriptExecutionException
      */
     public void play(ActionRange playRange)
-            throws AllActionsSetException, ScriptExecutionError {
+            throws AllActionsSetException, ScriptExecutionException {
         while (true) {
             // Choose action
             Action action = getAction();
@@ -338,11 +343,11 @@ public abstract class Player extends TeaseScript {
                 } else {
                     throw e;
                 }
-            } catch (ScriptExecutionError e) {
+            } catch (ScriptExecutionException e) {
                 throw e;
             } catch (Throwable t) {
-                throw new ScriptExecutionError(action, "Error executing script",
-                        t, script);
+                throw new ScriptExecutionException(action,
+                        "Error executing script", t, script);
             }
         }
     }
@@ -352,9 +357,9 @@ public abstract class Player extends TeaseScript {
         List<Action> actions = range(script, range);
         action = chooseAction(actions);
         if (action == null) {
-            teaseLib.log.info("All actions set");
+            logger.info("All actions set");
             if (script.onAllSet != null && invokedOnAllSet == false) {
-                teaseLib.log.info("Invoking OnAllSet handler");
+                logger.info("Invoking OnAllSet handler");
                 invokedOnAllSet = true;
                 range = script.onAllSet;
                 actions = range(script, range);
@@ -371,7 +376,7 @@ public abstract class Player extends TeaseScript {
     }
 
     public ActionRange execute(final Action action)
-            throws ScriptExecutionError {
+            throws ScriptExecutionException {
         // Mark this action as executed
         state.set(action);
         // Perform commands
@@ -469,14 +474,14 @@ public abstract class Player extends TeaseScript {
             }
             if (poss100 != null) {
                 // poss == 100 overrides
-                teaseLib.log.info("choosing poss100 - override");
+                logger.info("choosing poss100 - override");
                 return poss100;
             } else if (selectable.size() > 0) {
                 // No poss null -> selectable
                 return selectable;
             } else if (poss0 != null) {
                 // selectable.size() == 0 but actions in else branch
-                teaseLib.log.info("else");
+                logger.info("else");
                 return poss0;
             }
             if (relaxedConditions != null && conditionsRanges != null) {
@@ -484,7 +489,7 @@ public abstract class Player extends TeaseScript {
                 if (ignore != null) {
                     if (ignore.start > Integer.MIN_VALUE
                             || ignore.end < Integer.MAX_VALUE) {
-                        teaseLib.log.info("Should/ShouldNot: ignoring "
+                        logger.info("Should/ShouldNot: ignoring "
                                 + ignore.toString());
                     }
                 }
@@ -511,7 +516,7 @@ public abstract class Player extends TeaseScript {
                     if (condition.isTrueFor(state)) {
                         continue;
                     } else {
-                        teaseLib.log.info("Action " + action.number + ": "
+                        logger.info("Action " + action.number + ": "
                                 + condition.getClass().getSimpleName()
                                 + condition.toString());
                         return false;
@@ -553,7 +558,7 @@ public abstract class Player extends TeaseScript {
             action = null;
         } else if (actions.size() == 1) {
             action = actions.get(0);
-            teaseLib.log.info("Action " + action.number);
+            logger.info("Action " + action.number);
         } else {
             // Log code
             StringBuilder actionList = null;
@@ -567,9 +572,9 @@ public abstract class Player extends TeaseScript {
                 }
             }
             if (actionList == null) {
-                teaseLib.log.info("Action list is empty");
+                logger.info("Action list is empty");
             } else {
-                teaseLib.log.info(actionList.toString());
+                logger.info(actionList.toString());
             }
             // Normalize all actions into the interval [0...100], the choose one
             // "poss" 100 is used to implement an "else" clause, since PCM
@@ -598,9 +603,9 @@ public abstract class Player extends TeaseScript {
                 }
             }
             if (weightList != null) {
-                teaseLib.log.info(weightList.toString());
+                logger.info(weightList.toString());
             } else {
-                teaseLib.log.info("Weight list is empty");
+                logger.info("Weight list is empty");
             }
             // Normalize and build interval
             for (int i = 0; i < accumulatedWeights.length; i++) {
@@ -618,7 +623,7 @@ public abstract class Player extends TeaseScript {
             if (action == null) {
                 action = actions.get(accumulatedWeights.length - 1);
             }
-            teaseLib.log.info("Random = " + value + " -> choosing action "
+            logger.info("Random = " + value + " -> choosing action "
                     + action.number);
         }
         return action;
@@ -659,7 +664,7 @@ public abstract class Player extends TeaseScript {
     }
 
     public static void validate(Script script,
-            List<ValidationError> validationErrors) {
+            List<ValidationIssue> validationErrors) {
         script.validate(validationErrors);
         for (Action action : script.actions.values()) {
             // if (action.image != null && !action.image.isEmpty())
@@ -673,19 +678,19 @@ public abstract class Player extends TeaseScript {
             // }
             action.validate(script, validationErrors);
         }
-        for (ScriptError scriptError : validationErrors) {
+        for (ScriptException scriptError : validationErrors) {
             if (scriptError.script == null) {
                 scriptError.script = script;
             }
         }
     }
 
-    private void showError(ScriptError e) {
-        teaseLib.log.error(this, e);
+    private void showError(ScriptException e) {
+        logger.error(e.getMessage(), e);
         showError(createErrorMessage(e));
     }
 
-    private String createErrorMessage(ScriptError e) {
+    private String createErrorMessage(ScriptException e) {
         Throwable cause = e.getCause();
         String scriptName = e.script != null ? e.script.name : script.name;
         final String message;
@@ -700,7 +705,7 @@ public abstract class Player extends TeaseScript {
     }
 
     private void showError(Throwable t, String scriptName) {
-        teaseLib.log.error(this, t);
+        logger.error(t.getMessage(), t);
         Throwable cause = t.getCause();
         if (cause != null) {
             showError("Script " + scriptName + ", " + t.getMessage() + "\n"
@@ -713,7 +718,7 @@ public abstract class Player extends TeaseScript {
     }
 
     private void showError(String error) {
-        teaseLib.log.info(error);
+        logger.info(error);
         show(error);
         reply("Oh Dear");
     }

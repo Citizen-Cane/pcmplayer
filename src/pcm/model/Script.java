@@ -8,12 +8,16 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.Vector;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import pcm.controller.ScriptCache;
 import pcm.controller.ScriptParser;
 import teaselib.Actor;
-import teaselib.TeaseLib;
 
 public class Script extends AbstractAction {
+    private static final Logger logger = LoggerFactory.getLogger(Script.class);
+
     public final Actor actor;
 
     public final String name;
@@ -39,19 +43,19 @@ public class Script extends AbstractAction {
 
     public Script(Actor actor, String name, ScriptCache scriptCache,
             ScriptParser parser)
-            throws ParseError, ValidationError, IOException {
+            throws ScriptParsingException, ValidationIssue, IOException {
         this.actor = actor;
         this.name = name;
         this.scriptCache = scriptCache;
         this.stack = scriptCache.stack;
-        TeaseLib.instance().log.info("Parsing script " + name);
+        logger.info("Parsing script " + name);
         try {
             parser.parse(this);
             Action action = null;
             while ((action = parser.parseAction(this)) != null) {
                 actions.put(action.number, action);
             }
-        } catch (ParseError e) {
+        } catch (ScriptParsingException e) {
             if (e.script == null) {
                 e.script = this;
             }
@@ -82,7 +86,7 @@ public class Script extends AbstractAction {
     }
 
     public Script load(String name)
-            throws ParseError, ValidationError, IOException {
+            throws ScriptParsingException, ValidationIssue, IOException {
         return scriptCache.get(actor, name);
     }
 
@@ -176,22 +180,23 @@ public class Script extends AbstractAction {
         }
     }
 
-    public String getResponseText(Statement name) throws ScriptExecutionError {
+    public String getResponseText(Statement name)
+            throws ScriptExecutionException {
         if (responses.containsKey(name)) {
             return responses.get(name);
         } else {
-            throw new ScriptExecutionError("Default text missing for " + name,
-                    this);
+            throw new ScriptExecutionException(
+                    "Default text missing for " + name, this);
         }
     }
 
-    public void validate(List<ValidationError> validationErrors) {
+    public void validate(List<ValidationIssue> validationErrors) {
         if (startRange == null) {
             validationErrors
-                    .add(new ValidationError("Missing start range", this));
+                    .add(new ValidationIssue("Missing start range", this));
         } else if (!startRange.validate()) {
             validationErrors
-                    .add(new ValidationError("Wrong start range", this));
+                    .add(new ValidationIssue("Wrong start range", this));
         }
         // TeaseLib.resources().exists(imageDirectory);
         // if (!new File(root + ).exists)

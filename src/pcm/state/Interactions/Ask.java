@@ -5,15 +5,18 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import pcm.controller.Player;
 import pcm.model.AbstractAction.Statement;
 import pcm.model.Action;
 import pcm.model.ActionRange;
 import pcm.model.AskItem;
-import pcm.model.ParseError;
 import pcm.model.Script;
-import pcm.model.ScriptExecutionError;
-import pcm.model.ValidationError;
+import pcm.model.ScriptExecutionException;
+import pcm.model.ScriptParsingException;
+import pcm.model.ValidationIssue;
 import pcm.state.Command;
 import pcm.state.Interaction;
 import pcm.state.Interaction.NeedsRangeProvider;
@@ -21,12 +24,13 @@ import pcm.state.MappedState;
 import pcm.state.State;
 import pcm.state.Visual;
 import teaselib.ScriptFunction;
-import teaselib.TeaseLib;
 import teaselib.Toys;
 import teaselib.util.Item;
 import teaselib.util.Items;
 
 public class Ask implements Command, Interaction, NeedsRangeProvider {
+    private static final Logger logger = LoggerFactory.getLogger(Ask.class);
+
     private final int start;
     private final int end;
 
@@ -46,7 +50,8 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
 
     @Override
     public ActionRange getRange(Script script, Action action,
-            ScriptFunction visuals, Player player) throws ScriptExecutionError {
+            ScriptFunction visuals, Player player)
+            throws ScriptExecutionException {
         List<Boolean> values = new ArrayList<Boolean>();
         List<String> choices = new ArrayList<String>();
         List<Integer> indices = new ArrayList<Integer>();
@@ -62,8 +67,8 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
                     int condition = askItem.condition;
                     if (condition == AskItem.ALWAYS
                             || state.get(condition).equals(State.SET)) {
-                        Boolean value = state.get(askItem.action) == State.SET ? Boolean.TRUE
-                                : Boolean.FALSE;
+                        Boolean value = state.get(askItem.action) == State.SET
+                                ? Boolean.TRUE : Boolean.FALSE;
                         values.add(value);
                         choices.add(askItem.title);
                         indices.add(new Integer(askItem.action));
@@ -71,8 +76,7 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
                 }
             }
         }
-        TeaseLib.instance().log.info(getClass().getSimpleName() + " "
-                + choices.toString());
+        logger.info(getClass().getSimpleName() + " " + choices.toString());
         visuals.run();
         player.completeMandatory();
         // Don't wait, display checkboxes while displaying the message
@@ -96,7 +100,7 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
                         // Render message for selecting the mapped items
                         Action action2 = script.actions.get(n);
                         if (action2 == null) {
-                            throw new ScriptExecutionError(
+                            throw new ScriptExecutionException(
                                     "Missing mapping action for " + n, script);
                         }
                         LinkedHashMap<Statement, Visual> visuals2 = action2.visuals;
@@ -155,7 +159,8 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
 
     @Override
     public void validate(Script script, Action action,
-            List<ValidationError> validationErrors) throws ParseError {
+            List<ValidationIssue> validationErrors)
+            throws ScriptParsingException {
         if (rangeProvider != null) {
             rangeProvider.validate(script, action, validationErrors);
         }

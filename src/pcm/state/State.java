@@ -9,11 +9,14 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import pcm.controller.Player;
 import pcm.model.Action;
 import pcm.model.ActionRange;
 import pcm.model.Script;
-import pcm.model.ScriptExecutionError;
+import pcm.model.ScriptExecutionException;
 
 /**
  * Well, the original PCMistress likely used a single (long?) array for storing
@@ -36,6 +39,7 @@ import pcm.model.ScriptExecutionError;
  *
  */
 public class State {
+    private static final Logger logger = LoggerFactory.getLogger(State.class);
 
     public final Player player;
 
@@ -230,7 +234,7 @@ public class State {
     public void repeatAdd(Integer n, int m) {
         Long v = data.containsKey(n) ? data.get(n) : UNSET;
         Long w = v.equals(SET) ? -m : v - m;
-        player.teaseLib.log.info("Increasing " + n + " from " + v + " to " + w);
+        logger.info("Increasing " + n + " from " + v + " to " + w);
         data.put(n, w);
         actions.remove(n);
         times.remove(n);
@@ -239,7 +243,7 @@ public class State {
     public void repeatDel(Integer n, int m) {
         long v = data.containsKey(n) ? data.get(n) : UNSET;
         Long w = v + m < SET ? new Long(v) + m : SET;
-        player.teaseLib.log.info("Decreasing " + n + " from " + v + " to " + w);
+        logger.info("Decreasing " + n + " from " + v + " to " + w);
         data.put(n, w);
         actions.remove(n);
         times.remove(n);
@@ -254,11 +258,11 @@ public class State {
         return player.teaseLib.getTime(TimeUnit.MILLISECONDS);
     }
 
-    public void set(Action action) throws ScriptExecutionError {
+    public void set(Action action) throws ScriptExecutionException {
         Integer n = action.number;
         final Long value = get(n);
         if (value.equals(SET)) {
-            throw new ScriptExecutionError("Action already set");
+            throw new ScriptExecutionException("Action already set");
         } else if (value.equals(UNSET)) {
             // advance from UNSET to SET
             // Action sets are not saved, and unlike data sets cleared on
