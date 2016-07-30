@@ -3,7 +3,7 @@
  */
 package pcm.state.conditions;
 
-import pcm.model.ScriptExecutionError;
+import pcm.model.ScriptExecutionException;
 import pcm.state.Command;
 import pcm.state.State;
 import teaselib.TeaseLib;
@@ -21,7 +21,7 @@ public abstract class IfClause implements Command {
     }
 
     @Override
-    public void execute(State state) throws ScriptExecutionError {
+    public void execute(State state) throws ScriptExecutionException {
         if (isTrueFor(state)) {
             TeaseLib.instance().log.info(" -> "
                     + command.getClass().getSimpleName() + " "

@@ -231,7 +231,7 @@ public abstract class AbstractAction {
         responses.put(statement, response);
     }
 
-    public ActionRange execute(State state) throws ScriptExecutionError {
+    public ActionRange execute(State state) throws ScriptExecutionException {
         if (commands != null) {
             for (Command command : commands) {
                 TeaseLib.instance().log.info(command.getClass().getSimpleName()

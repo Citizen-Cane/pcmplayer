@@ -10,10 +10,10 @@ import pcm.model.AbstractAction.Statement;
 import pcm.model.Action;
 import pcm.model.ActionRange;
 import pcm.model.AskItem;
-import pcm.model.ParseError;
+import pcm.model.ScriptParsingException;
 import pcm.model.Script;
-import pcm.model.ScriptExecutionError;
-import pcm.model.ValidationError;
+import pcm.model.ScriptExecutionException;
+import pcm.model.ValidationIssue;
 import pcm.state.Command;
 import pcm.state.Interaction;
 import pcm.state.Interaction.NeedsRangeProvider;
@@ -46,7 +46,7 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
 
     @Override
     public ActionRange getRange(Script script, Action action,
-            ScriptFunction visuals, Player player) throws ScriptExecutionError {
+            ScriptFunction visuals, Player player) throws ScriptExecutionException {
         List<Boolean> values = new ArrayList<Boolean>();
         List<String> choices = new ArrayList<String>();
         List<Integer> indices = new ArrayList<Integer>();
@@ -96,7 +96,7 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
                         // Render message for selecting the mapped items
                         Action action2 = script.actions.get(n);
                         if (action2 == null) {
-                            throw new ScriptExecutionError(
+                            throw new ScriptExecutionException(
                                     "Missing mapping action for " + n, script);
                         }
                         LinkedHashMap<Statement, Visual> visuals2 = action2.visuals;
@@ -155,7 +155,7 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
 
     @Override
     public void validate(Script script, Action action,
-            List<ValidationError> validationErrors) throws ParseError {
+            List<ValidationIssue> validationErrors) throws ScriptParsingException {
         if (rangeProvider != null) {
             rangeProvider.validate(script, action, validationErrors);
         }

@@ -8,10 +8,10 @@ import pcm.controller.Player;
 import pcm.model.AbstractAction.Statement;
 import pcm.model.Action;
 import pcm.model.ActionRange;
-import pcm.model.ParseError;
+import pcm.model.ScriptParsingException;
 import pcm.model.Script;
-import pcm.model.ScriptExecutionError;
-import pcm.model.ValidationError;
+import pcm.model.ScriptExecutionException;
+import pcm.model.ValidationIssue;
 import pcm.state.Interaction;
 import pcm.state.Interaction.NeedsRangeProvider;
 import pcm.state.visuals.Timeout;
@@ -56,7 +56,7 @@ public class Stop implements Interaction, NeedsRangeProvider {
     @Override
     public ActionRange getRange(Script script, final Action action,
             final ScriptFunction visuals, final Player player)
-            throws ScriptExecutionError {
+            throws ScriptExecutionException {
         TeaseLib.instance().log
                 .info(getClass().getSimpleName() + " " + toString());
         List<String> choices = new ArrayList<String>(choiceRanges.size());
@@ -144,13 +144,13 @@ public class Stop implements Interaction, NeedsRangeProvider {
 
     @Override
     public void validate(Script script, Action action,
-            List<ValidationError> validationErrors) throws ParseError {
+            List<ValidationIssue> validationErrors) throws ScriptParsingException {
         try {
             for (Statement key : choiceRanges.keySet()) {
                 action.getResponseText(key, script);
             }
-        } catch (ScriptExecutionError e) {
-            validationErrors.add(new ValidationError(action, e, script));
+        } catch (ScriptExecutionException e) {
+            validationErrors.add(new ValidationIssue(action, e, script));
         }
         for (Statement statement : choiceRanges.keySet()) {
             script.actions.validate(script, action, choiceRanges.get(statement),

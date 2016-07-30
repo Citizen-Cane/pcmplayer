@@ -39,7 +39,7 @@ public class Script extends AbstractAction {
 
     public Script(Actor actor, String name, ScriptCache scriptCache,
             ScriptParser parser)
-            throws ParseError, ValidationError, IOException {
+            throws ScriptParsingException, ValidationIssue, IOException {
         this.actor = actor;
         this.name = name;
         this.scriptCache = scriptCache;
@@ -51,7 +51,7 @@ public class Script extends AbstractAction {
             while ((action = parser.parseAction(this)) != null) {
                 actions.put(action.number, action);
             }
-        } catch (ParseError e) {
+        } catch (ScriptParsingException e) {
             if (e.script == null) {
                 e.script = this;
             }
@@ -82,7 +82,7 @@ public class Script extends AbstractAction {
     }
 
     public Script load(String name)
-            throws ParseError, ValidationError, IOException {
+            throws ScriptParsingException, ValidationIssue, IOException {
         return scriptCache.get(actor, name);
     }
 
@@ -176,22 +176,22 @@ public class Script extends AbstractAction {
         }
     }
 
-    public String getResponseText(Statement name) throws ScriptExecutionError {
+    public String getResponseText(Statement name) throws ScriptExecutionException {
         if (responses.containsKey(name)) {
             return responses.get(name);
         } else {
-            throw new ScriptExecutionError("Default text missing for " + name,
+            throw new ScriptExecutionException("Default text missing for " + name,
                     this);
         }
     }
 
-    public void validate(List<ValidationError> validationErrors) {
+    public void validate(List<ValidationIssue> validationErrors) {
         if (startRange == null) {
             validationErrors
-                    .add(new ValidationError("Missing start range", this));
+                    .add(new ValidationIssue("Missing start range", this));
         } else if (!startRange.validate()) {
             validationErrors
-                    .add(new ValidationError("Wrong start range", this));
+                    .add(new ValidationIssue("Wrong start range", this));
         }
         // TeaseLib.resources().exists(imageDirectory);
         // if (!new File(root + ).exists)

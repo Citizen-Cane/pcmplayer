@@ -12,9 +12,9 @@ import java.util.Set;
 import java.util.Stack;
 
 import pcm.model.ActionRange;
-import pcm.model.ParseError;
+import pcm.model.ScriptParsingException;
 import pcm.model.Script;
-import pcm.model.ValidationError;
+import pcm.model.ValidationIssue;
 import teaselib.Actor;
 import teaselib.TeaseLib;
 import teaselib.core.ResourceLoader;
@@ -36,7 +36,7 @@ public class ScriptCache {
     }
 
     public Script get(Actor actor, String name)
-            throws ParseError, ValidationError, IOException {
+            throws ScriptParsingException, ValidationIssue, IOException {
         Script script = null;
         String key = name.toLowerCase();
         if (cache.containsKey(key)) {

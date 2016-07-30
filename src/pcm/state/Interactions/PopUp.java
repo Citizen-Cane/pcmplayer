@@ -9,8 +9,8 @@ import pcm.model.Action;
 import pcm.model.ActionRange;
 import pcm.model.MenuItem;
 import pcm.model.Script;
-import pcm.model.ScriptExecutionError;
-import pcm.model.ValidationError;
+import pcm.model.ScriptExecutionException;
+import pcm.model.ValidationIssue;
 import pcm.state.Interaction;
 import teaselib.ScriptFunction;
 import teaselib.TeaseLib;
@@ -26,7 +26,7 @@ public class PopUp implements Interaction {
 
     @Override
     public ActionRange getRange(Script script, Action action,
-            ScriptFunction visuals, Player player) throws ScriptExecutionError {
+            ScriptFunction visuals, Player player) throws ScriptExecutionException {
         List<MenuItem> items = new ArrayList<MenuItem>();
         List<String> choices = new ArrayList<String>();
         Map<Integer, MenuItem> menuItems = script.menuItems;
@@ -48,6 +48,6 @@ public class PopUp implements Interaction {
 
     @Override
     public void validate(Script script, Action action,
-            List<ValidationError> validationErrors) {
+            List<ValidationIssue> validationErrors) {
     }
 }

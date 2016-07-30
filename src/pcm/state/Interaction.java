@@ -5,10 +5,10 @@ import java.util.List;
 import pcm.controller.Player;
 import pcm.model.Action;
 import pcm.model.ActionRange;
-import pcm.model.ParseError;
+import pcm.model.ScriptParsingException;
 import pcm.model.Script;
-import pcm.model.ScriptExecutionError;
-import pcm.model.ValidationError;
+import pcm.model.ScriptExecutionException;
+import pcm.model.ValidationIssue;
 import teaselib.ScriptFunction;
 
 public interface Interaction {
@@ -28,13 +28,13 @@ public interface Interaction {
      *            The TeaseScript instance for rendering the interaction
      * 
      * @return
-     * @throws ScriptExecutionError
+     * @throws ScriptExecutionException
      */
     ActionRange getRange(Script script, Action action, ScriptFunction visuals,
-            Player player) throws ScriptExecutionError;
+            Player player) throws ScriptExecutionException;
 
     void validate(Script script, Action action,
-            List<ValidationError> validationErrors) throws ParseError;
+            List<ValidationIssue> validationErrors) throws ScriptParsingException;
 
     public interface NeedsRangeProvider {
         public void setRangeProvider(Interaction rangeProvider);

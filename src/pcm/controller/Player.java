@@ -16,11 +16,11 @@ import pcm.model.AbstractAction;
 import pcm.model.Action;
 import pcm.model.ActionLoadSbd;
 import pcm.model.ActionRange;
-import pcm.model.ParseError;
+import pcm.model.ScriptParsingException;
 import pcm.model.Script;
-import pcm.model.ScriptError;
-import pcm.model.ScriptExecutionError;
-import pcm.model.ValidationError;
+import pcm.model.ScriptException;
+import pcm.model.ScriptExecutionException;
+import pcm.model.ValidationIssue;
 import pcm.state.Condition;
 import pcm.state.MappedState;
 import pcm.state.State;
@@ -70,7 +70,7 @@ public abstract class Player extends TeaseScript {
 
     public static void recordVoices(Class<?> scriptClass, Actor actor,
             String[] assets, String startupScript)
-            throws IOException, ValidationError, ParseError {
+            throws IOException, ValidationIssue, ScriptParsingException {
         TeaseLib.init(new DummyHost(), new DummyPersistence());
         ResourceLoader resources = new ResourceLoader(scriptClass);
         resources.addAssets(assets);
@@ -82,7 +82,7 @@ public abstract class Player extends TeaseScript {
         // Get the main script
         Script main = scripts.get(actor, startupScript);
         // and validate to load all the sub scripts
-        validate(main, new ArrayList<ValidationError>());
+        validate(main, new ArrayList<ValidationIssue>());
         for (String scriptName : scripts.names()) {
             Script script = scripts.get(actor, scriptName);
             ScriptScanner scriptScanner = new PCMScriptScanner(script);
@@ -179,14 +179,14 @@ public abstract class Player extends TeaseScript {
                     }
                 } catch (AllActionsSetException e) {
                     teaseLib.log.error(this, e);
-                } catch (ScriptExecutionError e) {
+                } catch (ScriptExecutionException e) {
                     teaseLib.log.error(this, e);
                 }
             }
         };
         try {
             loadScript(name);
-        } catch (ScriptError e) {
+        } catch (ScriptException e) {
             showError(e);
             return;
         } catch (Throwable t) {
@@ -207,7 +207,7 @@ public abstract class Player extends TeaseScript {
                 if (!intentionalQuit) {
                     teaseLib.log.error(this, e);
                 }
-            } catch (ScriptError e) {
+            } catch (ScriptException e) {
                 showError(e);
             } catch (Throwable e) {
                 showError(e, name);
@@ -219,8 +219,8 @@ public abstract class Player extends TeaseScript {
         }
     }
 
-    public void loadScript(String name) throws ParseError, ValidationError,
-            IOException, ScriptExecutionError {
+    public void loadScript(String name) throws ScriptParsingException, ValidationIssue,
+            IOException, ScriptExecutionException {
         script = scripts.get(actor, name);
         if (validateScripts) {
             validateAll();
@@ -230,8 +230,8 @@ public abstract class Player extends TeaseScript {
         }
     }
 
-    private void validateAll() throws ParseError, ValidationError, IOException {
-        List<ValidationError> validationErrors = new ArrayList<ValidationError>();
+    private void validateAll() throws ScriptParsingException, ValidationIssue, IOException {
+        List<ValidationIssue> validationErrors = new ArrayList<ValidationIssue>();
         validate(script, validationErrors);
         for (String s : scripts.names()) {
             Script other = scripts.get(actor, s);
@@ -240,16 +240,16 @@ public abstract class Player extends TeaseScript {
             }
         }
         if (validationErrors.size() > 0) {
-            for (ScriptError scriptError : validationErrors) {
+            for (ScriptException scriptError : validationErrors) {
                 teaseLib.log.info(createErrorMessage(scriptError));
             }
-            throw new ValidationError(
+            throw new ValidationIssue(
                     "Validation failed, " + validationErrors.size() + " issues",
                     script);
         }
     }
 
-    private void resetScript() throws ScriptExecutionError {
+    private void resetScript() throws ScriptExecutionException {
         teaseLib.log.info("Starting script " + script.name);
         state.restore(script);
         invokedOnAllSet = false;
@@ -280,10 +280,10 @@ public abstract class Player extends TeaseScript {
      * @param playRange
      *            The range to play.
      * @throws AllActionsSetException
-     * @throws ScriptExecutionError
+     * @throws ScriptExecutionException
      */
     public void play(ActionRange playRange)
-            throws AllActionsSetException, ScriptExecutionError {
+            throws AllActionsSetException, ScriptExecutionException {
         while (true) {
             // Choose action
             Action action = getAction();
@@ -338,10 +338,10 @@ public abstract class Player extends TeaseScript {
                 } else {
                     throw e;
                 }
-            } catch (ScriptExecutionError e) {
+            } catch (ScriptExecutionException e) {
                 throw e;
             } catch (Throwable t) {
-                throw new ScriptExecutionError(action, "Error executing script",
+                throw new ScriptExecutionException(action, "Error executing script",
                         t, script);
             }
         }
@@ -371,7 +371,7 @@ public abstract class Player extends TeaseScript {
     }
 
     public ActionRange execute(final Action action)
-            throws ScriptExecutionError {
+            throws ScriptExecutionException {
         // Mark this action as executed
         state.set(action);
         // Perform commands
@@ -659,7 +659,7 @@ public abstract class Player extends TeaseScript {
     }
 
     public static void validate(Script script,
-            List<ValidationError> validationErrors) {
+            List<ValidationIssue> validationErrors) {
         script.validate(validationErrors);
         for (Action action : script.actions.values()) {
             // if (action.image != null && !action.image.isEmpty())
@@ -673,19 +673,19 @@ public abstract class Player extends TeaseScript {
             // }
             action.validate(script, validationErrors);
         }
-        for (ScriptError scriptError : validationErrors) {
+        for (ScriptException scriptError : validationErrors) {
             if (scriptError.script == null) {
                 scriptError.script = script;
             }
         }
     }
 
-    private void showError(ScriptError e) {
+    private void showError(ScriptException e) {
         teaseLib.log.error(this, e);
         showError(createErrorMessage(e));
     }
 
-    private String createErrorMessage(ScriptError e) {
+    private String createErrorMessage(ScriptException e) {
         Throwable cause = e.getCause();
         String scriptName = e.script != null ? e.script.name : script.name;
         final String message;

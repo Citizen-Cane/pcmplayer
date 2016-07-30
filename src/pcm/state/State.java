@@ -13,7 +13,7 @@ import pcm.controller.Player;
 import pcm.model.Action;
 import pcm.model.ActionRange;
 import pcm.model.Script;
-import pcm.model.ScriptExecutionError;
+import pcm.model.ScriptExecutionException;
 
 /**
  * Well, the original PCMistress likely used a single (long?) array for storing
@@ -254,11 +254,11 @@ public class State {
         return player.teaseLib.getTime(TimeUnit.MILLISECONDS);
     }
 
-    public void set(Action action) throws ScriptExecutionError {
+    public void set(Action action) throws ScriptExecutionException {
         Integer n = action.number;
         final Long value = get(n);
         if (value.equals(SET)) {
-            throw new ScriptExecutionError("Action already set");
+            throw new ScriptExecutionException("Action already set");
         } else if (value.equals(UNSET)) {
             // advance from UNSET to SET
             // Action sets are not saved, and unlike data sets cleared on

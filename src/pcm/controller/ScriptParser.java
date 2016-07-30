@@ -5,10 +5,10 @@ import java.io.IOException;
 
 import pcm.model.AbstractAction.Statement;
 import pcm.model.Action;
-import pcm.model.ParseError;
+import pcm.model.ScriptParsingException;
 import pcm.model.Script;
 import pcm.model.ScriptLineTokenizer;
-import pcm.model.ValidationError;
+import pcm.model.ValidationIssue;
 import pcm.state.visuals.SpokenMessage;
 import pcm.state.visuals.Txt;
 
@@ -29,7 +29,7 @@ public class ScriptParser {
         this.resourcePath = resourcePath;
     }
 
-    public void parse(Script script) throws ParseError, IOException {
+    public void parse(Script script) throws ScriptParsingException, IOException {
         while ((line = readLine()) != null) {
             if (line.toLowerCase().startsWith(ACTIONMATCH)) {
                 return;
@@ -38,12 +38,12 @@ public class ScriptParser {
                     ScriptLineTokenizer cmd = new ScriptLineTokenizer(l, line);
                     script.add(cmd);
                 } catch (UnsupportedOperationException e) {
-                    throw new ParseError(l, n, line, e.getMessage(), script);
+                    throw new ScriptParsingException(l, n, line, e.getMessage(), script);
                 } catch (Throwable t) {
-                    throw new ParseError(l, n, line, t, script);
+                    throw new ScriptParsingException(l, n, line, t, script);
                 }
             } else {
-                throw new ParseError(l, n, line, "Unexpected script input",
+                throw new ScriptParsingException(l, n, line, "Unexpected script input",
                         script);
             }
         }
@@ -51,7 +51,7 @@ public class ScriptParser {
     }
 
     public Action parseAction(Script script)
-            throws ParseError, ValidationError {
+            throws ScriptParsingException, ValidationIssue {
         if (line == null) {
             return null;
         } else {
@@ -64,12 +64,12 @@ public class ScriptParser {
                 int start = ACTIONMATCH.length();
                 int end = line.indexOf("]");
                 if (end < start) {
-                    throw new ParseError(l, 0, line, "Invalid action number",
+                    throw new ScriptParsingException(l, 0, line, "Invalid action number",
                             script);
                 }
                 n = Integer.parseInt(line.substring(start, end));
                 if (n <= previousActionNumber) {
-                    throw new ParseError(l, n, line,
+                    throw new ScriptParsingException(l, n, line,
                             "Action must be defined in increasing order",
                             script);
                 } else {
@@ -139,19 +139,19 @@ public class ScriptParser {
                     }
                     action.finalizeParsing(script);
                 }
-            } catch (ParseError e) {
+            } catch (ScriptParsingException e) {
                 if (e.script == null) {
                     e.script = script;
                 }
                 throw e;
-            } catch (ValidationError e) {
+            } catch (ValidationIssue e) {
                 if (e.script == null) {
                     e.script = script;
                 }
                 throw e;
             } catch (Throwable t) {
                 // TODO Collect these in list
-                throw new ParseError(l, n, line, t, script);
+                throw new ScriptParsingException(l, n, line, t, script);
             }
             return action;
         }

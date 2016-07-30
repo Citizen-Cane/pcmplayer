@@ -1,24 +1,24 @@
 package pcm.model;
 
-public class ScriptError extends Exception {
+public class ScriptException extends Exception {
     private static final long serialVersionUID = 1L;
     public Script script = null;
 
-    public ScriptError() {
+    public ScriptException() {
         super();
     }
 
-    public ScriptError(String message, Throwable cause, Script script) {
+    public ScriptException(String message, Throwable cause, Script script) {
         super(message, cause);
         this.script = script;
     }
 
-    public ScriptError(String message, ScriptError cause) {
+    public ScriptException(String message, ScriptException cause) {
         super(message, cause);
         this.script = cause.script;
     }
 
-    ScriptError(String message, Script script) {
+    ScriptException(String message, Script script) {
         super(message);
         this.script = script;
     }

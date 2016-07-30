@@ -5,10 +5,10 @@ import java.util.List;
 import pcm.controller.Player;
 import pcm.model.Action;
 import pcm.model.ActionRange;
-import pcm.model.ParseError;
+import pcm.model.ScriptParsingException;
 import pcm.model.Script;
-import pcm.model.ScriptExecutionError;
-import pcm.model.ValidationError;
+import pcm.model.ScriptExecutionException;
+import pcm.model.ValidationIssue;
 import pcm.state.Interaction;
 import teaselib.ScriptFunction;
 import teaselib.TeaseLib;
@@ -30,7 +30,7 @@ public class GoSub implements Interaction, Interaction.NeedsRangeProvider {
 
     @Override
     public ActionRange getRange(Script script, Action action,
-            ScriptFunction visuals, Player player) throws ScriptExecutionError {
+            ScriptFunction visuals, Player player) throws ScriptExecutionException {
         TeaseLib.instance().log.info("Gosub -> " + range.toString());
         visuals.run();
         script.stack.push(rangeProvider.getRange(script, action, null, player));
@@ -53,7 +53,7 @@ public class GoSub implements Interaction, Interaction.NeedsRangeProvider {
 
     @Override
     public void validate(Script script, Action action,
-            List<ValidationError> validationErrors) throws ParseError {
+            List<ValidationIssue> validationErrors) throws ScriptParsingException {
         range.validate();
         if (rangeProvider != null) {
             rangeProvider.validate(script, action, validationErrors);

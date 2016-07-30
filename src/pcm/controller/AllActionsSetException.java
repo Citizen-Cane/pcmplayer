@@ -2,9 +2,9 @@ package pcm.controller;
 
 import pcm.model.Action;
 import pcm.model.Script;
-import pcm.model.ScriptExecutionError;
+import pcm.model.ScriptExecutionException;
 
-public class AllActionsSetException extends ScriptExecutionError {
+public class AllActionsSetException extends ScriptExecutionException {
 
     private static final long serialVersionUID = 1L;
 
