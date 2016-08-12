@@ -139,7 +139,7 @@ public abstract class Player extends TeaseScript {
         } catch (Exception e) {
             logger.error(resourcePath, e);
         }
-        StringTokenizer argv = new StringTokenizer(script, " ");
+        StringTokenizer argv = new StringTokenizer(script, " \t");
         String scriptName = argv.nextToken();
         final ActionRange range;
         if (argv.hasMoreElements()) {
