@@ -719,7 +719,11 @@ public abstract class Player extends TeaseScript {
 
     private void showError(String error) {
         logger.info(error);
-        show(error);
-        reply("Oh Dear");
+        try {
+            show(error);
+            reply("Oh Dear");
+        } catch (ScriptInterruptedException e) {
+            // Ignore
+        }
     }
 }
