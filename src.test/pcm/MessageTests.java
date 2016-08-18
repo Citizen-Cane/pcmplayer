@@ -30,8 +30,7 @@ public class MessageTests {
     Player player = new Player(
             TeaseLib.init(new DummyHost(), new DummyPersistence()),
             new ResourceLoader(this.getClass()),
-            new Actor(Actor.Dominant, Voice.Gender.Female, "en-us"), "pcm",
-            null) {
+            new Actor("Test", Voice.Gender.Female, "en-us"), "pcm", null) {
 
         @Override
         public void run() {

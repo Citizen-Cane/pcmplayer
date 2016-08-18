@@ -28,7 +28,7 @@ public class ScriptTests {
     Player player = new Player(
             TeaseLib.init(new DummyHost(), new DummyPersistence()),
             new ResourceLoader(ScriptTests.class),
-            new Actor(Actor.Dominant, Voice.Gender.Female, "en-us"), "pcm",
+            new Actor(Actor.Key.Dominant, Voice.Gender.Female, "en-us"), "pcm",
             null) {
 
         @Override
