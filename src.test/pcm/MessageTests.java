@@ -28,7 +28,7 @@ import teaselib.hosts.DummyPersistence;
 public class MessageTests {
 
     Player player = new Player(
-            TeaseLib.init(new DummyHost(), new DummyPersistence()),
+            new TeaseLib(new DummyHost(), new DummyPersistence()),
             new ResourceLoader(this.getClass()),
             new Actor("Test", Voice.Gender.Female, "en-us"), "pcm", null) {
 

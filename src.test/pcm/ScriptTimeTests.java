@@ -30,7 +30,7 @@ import teaselib.hosts.DummyPersistence;
 public class ScriptTimeTests {
 
     Player player = new Player(
-            TeaseLib.init(new DummyHost(), new DummyPersistence()),
+            new TeaseLib(new DummyHost(), new DummyPersistence()),
             new ResourceLoader(ScriptTimeTests.class),
             new Actor("Test", Voice.Gender.Female, "en-us"), "pcm", null) {
 

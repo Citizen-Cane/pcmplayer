@@ -26,7 +26,7 @@ import teaselib.hosts.DummyPersistence;
 public class ScriptTests {
 
     Player player = new Player(
-            TeaseLib.init(new DummyHost(), new DummyPersistence()),
+            new TeaseLib(new DummyHost(), new DummyPersistence()),
             new ResourceLoader(ScriptTests.class),
             new Actor(Actor.Key.Dominant, Voice.Gender.Female, "en-us"), "pcm",
             null) {
@@ -34,7 +34,6 @@ public class ScriptTests {
         @Override
         public void run() {
         }
-
     };
 
     /**

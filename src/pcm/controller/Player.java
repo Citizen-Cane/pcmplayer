@@ -40,8 +40,6 @@ import teaselib.core.ScriptInterruptedException;
 import teaselib.core.speechrecognition.SpeechRecognitionResult.Confidence;
 import teaselib.core.texttospeech.ScriptScanner;
 import teaselib.core.texttospeech.TextToSpeechRecorder;
-import teaselib.hosts.DummyHost;
-import teaselib.hosts.DummyPersistence;
 import teaselib.util.RandomImages;
 import teaselib.util.SpeechRecognitionRejectedScript;
 
@@ -75,7 +73,6 @@ public abstract class Player extends TeaseScript {
     public static void recordVoices(Class<?> scriptClass, Actor actor,
             String[] assets, String startupScript)
             throws IOException, ValidationIssue, ScriptParsingException {
-        TeaseLib.init(new DummyHost(), new DummyPersistence());
         ResourceLoader resources = new ResourceLoader(scriptClass);
         resources.addAssets(assets);
         ScriptCache scripts = new ScriptCache(resources,
