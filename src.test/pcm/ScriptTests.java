@@ -28,8 +28,8 @@ public class ScriptTests {
     Player player = new Player(
             new TeaseLib(new DummyHost(), new DummyPersistence()),
             new ResourceLoader(ScriptTests.class),
-            new Actor(Actor.Key.Dominant, Voice.Gender.Female, "en-us"), "pcm",
-            null) {
+            new Actor(Actor.Key.DominantFemale, Voice.Gender.Female, "en-us"),
+            "pcm", null) {
 
         @Override
         public void run() {
