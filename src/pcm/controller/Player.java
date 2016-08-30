@@ -31,6 +31,7 @@ import pcm.state.Visual;
 import pcm.state.conditions.Should;
 import pcm.state.conditions.ShouldNot;
 import teaselib.Actor;
+import teaselib.Images;
 import teaselib.Message;
 import teaselib.ScriptFunction;
 import teaselib.TeaseScript;
@@ -268,9 +269,12 @@ public abstract class Player extends TeaseScript {
             });
         }
         script.execute(state);
-        // TODO Search for any mistress instead of using hard-coded path
-        actor.images = new RandomImages(
-                resources(mistressPath + script.mistressImages));
+        boolean haveImages = mistressPath != null
+                && script.mistressImages != null;
+        actor.images = haveImages
+                ? new RandomImages(
+                        resources(mistressPath + script.mistressImages))
+                : Images.None;
     }
 
     /**
