@@ -3,7 +3,9 @@
  */
 package pcm;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+
+import java.util.Locale;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +32,7 @@ public class MessageTests {
     Player player = new Player(
             new TeaseLib(new DummyHost(), new DummyPersistence()),
             new ResourceLoader(this.getClass()),
-            new Actor("Test", Voice.Gender.Female, "en-us"), "pcm", null) {
+            new Actor("Test", Voice.Gender.Female, Locale.US), "pcm", null) {
 
         @Override
         public void run() {

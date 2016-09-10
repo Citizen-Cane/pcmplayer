@@ -3,7 +3,10 @@
  */
 package pcm;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Locale;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +31,7 @@ public class ScriptTests {
     Player player = new Player(
             new TeaseLib(new DummyHost(), new DummyPersistence()),
             new ResourceLoader(ScriptTests.class),
-            new Actor(Actor.Key.DominantFemale, Voice.Gender.Female, "en-us"),
+            new Actor(Actor.Key.DominantFemale, Voice.Gender.Female, Locale.US),
             "pcm", null) {
 
         @Override
