@@ -87,8 +87,8 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
             Integer n = indices.get(i);
             if (results.get(i) == true) {
                 // Handle mapped values
-                if (mappedState.hasMapping(n)) {
-                    Items<Toys> items = mappedState.getMappedItems(n);
+                if (mappedState.hasToyMapping(n)) {
+                    Items<Toys> items = mappedState.getMappedToys(n);
                     if (items.size() == 1) {
                         // Just a single item - just set
                         state.set(n);
