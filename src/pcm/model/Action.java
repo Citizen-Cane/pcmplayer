@@ -222,16 +222,28 @@ public class Action extends AbstractAction {
                 throw new IllegalArgumentException(cmd.line);
             }
         } else if (name == Statement.KeyRelease) {
-            final Visual keyRelease;
+            Visual keyRelease = null;
             String args[] = cmd.args();
-            if (args.length == 1) {
-                keyRelease = new KeyRelease(args[0]);
-            } else if (args.length == 2) {
-                keyRelease = new KeyRelease(args[0], Integer.parseInt(args[1]));
-            } else {
-                throw new IllegalArgumentException(cmd.line);
+            String command = args[0];
+            for (String string : KeyRelease.Commands) {
+                if (string.equalsIgnoreCase(command)) {
+                    if (args.length == 1) {
+                        keyRelease = new KeyRelease(command);
+                        break;
+                    } else if (args.length == 2) {
+                        keyRelease = new KeyRelease(command,
+                                Integer.parseInt(args[1]));
+                        break;
+                    } else {
+                        throw new IllegalArgumentException(cmd.line);
+                    }
+                }
             }
-            addVisual(name, keyRelease);
+            if (keyRelease == null) {
+                throw new IllegalArgumentException(cmd.line);
+            } else {
+                addVisual(name, keyRelease);
+            }
         } else if (name == Statement.Say) {
             // Ignore, because message are spoken per default
         }

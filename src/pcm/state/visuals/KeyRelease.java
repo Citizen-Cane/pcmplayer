@@ -17,6 +17,8 @@ public class KeyRelease implements Visual {
     public static final String Sleep = "sleep";
     public static final String Release = "release";
 
+    public static final String[] Commands = { Prepare, Start, Sleep, Release };
+
     final String command;
     final int durationMinutes;
 
