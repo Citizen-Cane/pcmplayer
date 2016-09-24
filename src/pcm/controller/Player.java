@@ -38,6 +38,7 @@ import teaselib.TeaseScript;
 import teaselib.core.ResourceLoader;
 import teaselib.core.ScriptInterruptedException;
 import teaselib.core.TeaseLib;
+import teaselib.core.devices.remote.KeyRelease;
 import teaselib.core.speechrecognition.SpeechRecognitionResult.Confidence;
 import teaselib.core.texttospeech.ScriptScanner;
 import teaselib.core.texttospeech.TextToSpeechRecorder;
@@ -60,6 +61,9 @@ public abstract class Player extends TeaseScript {
     private final String mistressPath;
     private boolean invokedOnAllSet = false;
     private boolean intentionalQuit = false;
+
+    public KeyRelease keyRelease = null;
+    public int keyReleaseActuator = -1;
 
     /**
      * This range can be pushed onto the script range stack to tell the player

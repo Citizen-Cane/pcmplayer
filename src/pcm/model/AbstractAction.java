@@ -198,7 +198,20 @@ public abstract class AbstractAction {
          */
         TimeTo,
 
+        /**
+         * Control key release devices. This statement does nothing if the
+         * device isn't present, so it can safely be scattered all over the
+         * script when tying the slave up.
+         * <p>
+         * Just prepare the device when telling the slave to tie himself up.
+         * Then start the device, enter sleep as appropriate, release the key at
+         * the end of the script or wait until the device releases the key
+         * automatically.
+         */
+        KeyRelease
+
         ;
+
         public final static Map<String, Statement> lookup = new HashMap<String, Statement>();
         public final static Map<String, Statement> KeywordToStatement = new HashMap<String, Statement>();
     }
