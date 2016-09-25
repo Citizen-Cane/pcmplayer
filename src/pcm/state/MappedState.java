@@ -3,8 +3,10 @@
  */
 package pcm.state;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import pcm.controller.Player;
 import teaselib.Toys;
@@ -29,7 +31,7 @@ import teaselib.util.Items;
 public class MappedState extends State {
     private final Map<Integer, Items<Toys>> toyMapping = new HashMap<Integer, Items<Toys>>();
     private final Map<Integer, teaselib.State> stateMapping = new HashMap<Integer, teaselib.State>();
-    private final Map<Integer, teaselib.State> stateExpiredMapping = new HashMap<Integer, teaselib.State>();
+    private final Map<Integer, teaselib.State> stateTimeMapping = new HashMap<Integer, teaselib.State>();
 
     public MappedState(Player player) {
         super(player);
@@ -49,8 +51,8 @@ public class MappedState extends State {
         stateMapping.put(action, state);
     }
 
-    public void addStateExpiredMapping(Integer action, teaselib.State state) {
-        stateExpiredMapping.put(action, state);
+    public void addStateTimeMapping(Integer action, teaselib.State state) {
+        stateTimeMapping.put(action, state);
     }
 
     @Override
@@ -65,14 +67,6 @@ public class MappedState extends State {
             }
         } else if (hasStateMapping(n)) {
             if (stateMapping.get(n).applied()) {
-                super.set(n);
-                return SET;
-            } else {
-                super.unset(n);
-                return UNSET;
-            }
-        } else if (hasStateExpiredMapping(n)) {
-            if (stateExpiredMapping.get(n).expired()) {
                 super.set(n);
                 return SET;
             } else {
@@ -96,8 +90,8 @@ public class MappedState extends State {
         return stateMapping.containsKey(n);
     }
 
-    private boolean hasStateExpiredMapping(Integer n) {
-        return stateExpiredMapping.containsKey(n);
+    private boolean hasStateTimeMapping(Integer n) {
+        return stateTimeMapping.containsKey(n);
     }
 
     /*
@@ -116,10 +110,6 @@ public class MappedState extends State {
             }
         } else if (hasStateMapping(n)) {
             stateMapping.get(n).apply();
-        } else if (hasStateExpiredMapping(n)) {
-            throw new IllegalStateException(
-                    n + "(" + stateExpiredMapping.get(n).toString() + ")"
-                            + ": Expiration time is read-only");
         }
         super.set(n);
     }
@@ -142,13 +132,30 @@ public class MappedState extends State {
             }
         } else if (hasStateMapping(n)) {
             stateMapping.get(n).remove();
-        } else if (hasStateExpiredMapping(n)) {
-            // TODO Called via ResetRange - no need to reset mappings,
-            // but then .resetrange is correct from PCM view
-            // throw new IllegalStateException(
-            // n + "(" + stateExpiredMapping.get(n).toString() + ")"
-            // + ": Expiration time is read-only");
         }
         super.unset(n);
+    }
+
+    @Override
+    public Date getTime(Integer n) {
+        if (hasStateTimeMapping(n)) {
+            teaselib.State state = stateTimeMapping.get(n);
+            long time = (state.getDuration().startSeconds + state.expected()) * 1000;
+            Date date = new Date(time);
+            return date;
+        } else {
+            return super.getTime(n);
+        }
+    }
+
+    @Override
+    public void setTime(Integer n, Date date) {
+        if (hasStateTimeMapping(n)) {
+            teaselib.State state = stateTimeMapping.get(n);
+            long now = System.currentTimeMillis();
+            long duration = date.getTime() - now;
+            state.apply(duration, TimeUnit.MILLISECONDS);
+        }
+        super.setTime(n, date);
     }
 }
