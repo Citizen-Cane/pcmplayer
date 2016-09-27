@@ -62,6 +62,9 @@ public abstract class Player extends TeaseScript {
     private boolean invokedOnAllSet = false;
     private boolean intentionalQuit = false;
 
+    // TODO Enable key-release in both main and sub-scripts
+    // TODO if started in main already, commands in sub script should be ignored
+    // TODO if started in main, the key shouldn't be released in the sub script
     public KeyRelease keyRelease = null;
     public int keyReleaseActuator = -1;
 
