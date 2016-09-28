@@ -59,6 +59,8 @@ public class State {
      */
     private Map<Integer, Long> data = new HashMap<Integer, Long>();
 
+    private Map<Integer, Long> dataOverwrites = new HashMap<Integer, Long>();
+
     /**
      * Action may also contain a time stamp.
      */
@@ -135,7 +137,7 @@ public class State {
         write("save.end", range.end);
         // Data values
         for (int i : range) {
-            Long value = get(i);
+            Long value = getInternal(i);
             write(Integer.toString(i), value.equals(UNSET) ? null : value);
         }
         // time values
@@ -171,6 +173,14 @@ public class State {
     }
 
     public Long get(Integer n) {
+        if (dataOverwrites.containsKey(n)) {
+            return dataOverwrites.get(n);
+        } else {
+            return getInternal(n);
+        }
+    }
+
+    private Long getInternal(Integer n) {
         if (data.containsKey(n)) {
             return data.get(n);
         } else if (actions.contains(n)) {
@@ -181,6 +191,14 @@ public class State {
     }
 
     public void set(Integer n) {
+        if (dataOverwrites.containsKey(n)) {
+            return;
+        } else {
+            setInternal(n);
+        }
+    }
+
+    private void setInternal(Integer n) {
         data.put(n, SET);
         actions.remove(n);
         times.remove(n);
@@ -212,6 +230,14 @@ public class State {
     }
 
     public void unset(Integer n) {
+        if (dataOverwrites.containsKey(n)) {
+            return;
+        } else {
+            unsetInternal(n);
+        }
+    }
+
+    private void unsetInternal(Integer n) {
         actions.remove(n);
         data.remove(n);
         times.remove(n);
@@ -303,5 +329,22 @@ public class State {
 
     public int getRandom(int min, int max) {
         return player.random(min, max);
+    }
+
+    /**
+     * Preset an action to a defined value. Applies to {@link State#get},
+     * {@link State#set} and {@link State#unset}. The original value is always
+     * preserved, Overridden values are not saved back.
+     * <p>
+     * TODO Overrides apply to all scripts, so use it on common state only in
+     * order to avoid side effects.
+     * 
+     * @param n
+     *            The action number
+     * @param value
+     *            {@link State#SET}, {@link State#UNSET} or any other value.
+     */
+    public void overwrite(Integer n, Long value) {
+        dataOverwrites.put(n, value);
     }
 }

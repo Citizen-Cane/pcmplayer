@@ -6,6 +6,7 @@ package pcm.state;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 import pcm.controller.Player;
@@ -37,7 +38,7 @@ public class MappedState extends State {
         super(player);
     }
 
-    public void addMapping(Integer action, Item<Toys> item) {
+    public void addToyMapping(Integer action, Item<Toys> item) {
         Items<Toys> items = new Items<Toys>();
         items.add(item);
         toyMapping.put(action, items);
@@ -140,7 +141,8 @@ public class MappedState extends State {
     public Date getTime(Integer n) {
         if (hasStateTimeMapping(n)) {
             teaselib.State state = stateTimeMapping.get(n);
-            long time = (state.getDuration().startSeconds + state.expected()) * 1000;
+            long time = (state.getDuration().startSeconds + state.expected())
+                    * 1000;
             Date date = new Date(time);
             return date;
         } else {
@@ -157,5 +159,32 @@ public class MappedState extends State {
             state.apply(duration, TimeUnit.MILLISECONDS);
         }
         super.setTime(n, date);
+    }
+
+    @Override
+    public void overwrite(Integer n, Long value) {
+        toyMapping.remove(n);
+        stateMapping.remove(n);
+        stateTimeMapping.remove(n);
+        super.overwrite(n, value);
+    }
+
+    public void overwrite(Toys toy, boolean available) {
+        Entry<Integer, Items<Toys>> entry = getEntry(toy);
+        if (entry != null) {
+            overwrite(entry.getKey(), available ? SET : UNSET);
+        }
+    }
+
+    private Entry<Integer, Items<Toys>> getEntry(Toys toy) {
+        for (Entry<Integer, Items<Toys>> entry : toyMapping.entrySet()) {
+            Items<Toys> toys = entry.getValue();
+            for (Item<Toys> item : toys) {
+                if (item.item == toy) {
+                    return entry;
+                }
+            }
+        }
+        return null;
     }
 }
