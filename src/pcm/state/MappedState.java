@@ -61,12 +61,14 @@ public class MappedState extends State {
     }
 
     private ScriptMapping getScriptMapping(String name) {
-        ScriptMapping mapping = scriptMappings.get(name);
-        if (mapping == null) {
-            mapping = new ScriptMapping();
-            scriptMappings.put(name, mapping);
+        ScriptMapping existing = scriptMappings.get(name);
+        if (existing == null) {
+            ScriptMapping newMapping = new ScriptMapping();
+            scriptMappings.put(name, newMapping);
+            return newMapping;
+        } else {
+            return existing;
         }
-        return mapping;
     }
 
     public void addToyMapping(String scriptName, Integer action,

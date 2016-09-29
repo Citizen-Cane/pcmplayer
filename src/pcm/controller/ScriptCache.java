@@ -42,9 +42,8 @@ public class ScriptCache {
     public Script get(Actor actor, String name)
             throws ScriptParsingException, ValidationIssue, IOException {
         Script script = null;
-        String key = name.toLowerCase();
-        if (cache.containsKey(key)) {
-            script = cache.get(key).get();
+        if (cache.containsKey(name)) {
+            script = cache.get(name).get();
         }
         if (script != null) {
             logger.debug("Using cached script " + name);
@@ -57,7 +56,7 @@ public class ScriptCache {
             } finally {
                 scriptReader.close();
             }
-            cache.put(key, new SoftReference<Script>(script));
+            cache.put(name, new SoftReference<Script>(script));
         }
         return script;
     }
