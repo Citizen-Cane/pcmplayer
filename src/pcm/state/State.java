@@ -43,7 +43,7 @@ public class State {
 
     public final Player player;
 
-    private Script script = null;
+    protected Script script = null;
 
     /**
      * Actions are set separately, they're reset each time a script is loaded.

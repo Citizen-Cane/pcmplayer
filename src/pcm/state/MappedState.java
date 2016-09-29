@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 import pcm.controller.Player;
+import pcm.model.Script;
 import teaselib.Toys;
 import teaselib.util.Item;
 import teaselib.util.Items;
@@ -30,36 +31,70 @@ import teaselib.util.Items;
  *
  */
 public class MappedState extends State {
-    private final Map<Integer, Items<Toys>> toyMapping = new HashMap<Integer, Items<Toys>>();
-    private final Map<Integer, teaselib.State> stateMapping = new HashMap<Integer, teaselib.State>();
-    private final Map<Integer, teaselib.State> stateTimeMapping = new HashMap<Integer, teaselib.State>();
+    public static final String Global = "";
+
+    private static class ScriptMapping {
+        final Map<Integer, Items<Toys>> toyMapping = new HashMap<Integer, Items<Toys>>();
+        final Map<Integer, teaselib.State> stateMapping = new HashMap<Integer, teaselib.State>();
+        final Map<Integer, teaselib.State> stateTimeMapping = new HashMap<Integer, teaselib.State>();
+
+        public void putAll(ScriptMapping globalMapping) {
+            toyMapping.putAll(globalMapping.toyMapping);
+            stateMapping.putAll(globalMapping.stateMapping);
+            stateTimeMapping.putAll(globalMapping.stateTimeMapping);
+        }
+    }
+
+    Map<String, ScriptMapping> scriptMappings = new HashMap<String, ScriptMapping>();
+    ScriptMapping scriptMapping = null;
 
     public MappedState(Player player) {
         super(player);
     }
 
-    public void addToyMapping(Integer action, Item<Toys> item) {
+    @Override
+    public void restore(Script script) {
+        scriptMapping = getScriptMapping(script.name);
+        ScriptMapping globalMapping = getScriptMapping(Global);
+        scriptMapping.putAll(globalMapping);
+        super.restore(script);
+    }
+
+    private ScriptMapping getScriptMapping(String name) {
+        ScriptMapping mapping = scriptMappings.get(name);
+        if (mapping == null) {
+            mapping = new ScriptMapping();
+            scriptMappings.put(name, mapping);
+        }
+        return mapping;
+    }
+
+    public void addToyMapping(String scriptName, Integer action,
+            Item<Toys> item) {
         Items<Toys> items = new Items<Toys>();
         items.add(item);
-        toyMapping.put(action, items);
+        getScriptMapping(scriptName).toyMapping.put(action, items);
     }
 
-    public void addToyMapping(Integer action, Items<Toys> items) {
-        toyMapping.put(action, items);
+    public void addToyMapping(String scriptName, Integer action,
+            Items<Toys> items) {
+        getScriptMapping(scriptName).toyMapping.put(action, items);
     }
 
-    public void addStateMapping(Integer action, teaselib.State state) {
-        stateMapping.put(action, state);
+    public void addStateMapping(String scriptName, Integer action,
+            teaselib.State state) {
+        getScriptMapping(scriptName).stateMapping.put(action, state);
     }
 
-    public void addStateTimeMapping(Integer action, teaselib.State state) {
-        stateTimeMapping.put(action, state);
+    public void addStateTimeMapping(String scriptName, Integer action,
+            teaselib.State state) {
+        getScriptMapping(scriptName).stateTimeMapping.put(action, state);
     }
 
     @Override
     public Long get(Integer n) {
         if (hasToyMapping(n)) {
-            if (toyMapping.get(n).available().size() > 0) {
+            if (scriptMapping.toyMapping.get(n).available().size() > 0) {
                 super.set(n);
                 return SET;
             } else {
@@ -67,7 +102,7 @@ public class MappedState extends State {
                 return UNSET;
             }
         } else if (hasStateMapping(n)) {
-            if (stateMapping.get(n).applied()) {
+            if (scriptMapping.stateMapping.get(n).applied()) {
                 super.set(n);
                 return SET;
             } else {
@@ -80,19 +115,19 @@ public class MappedState extends State {
     }
 
     public boolean hasToyMapping(Integer n) {
-        return toyMapping.containsKey(n);
+        return scriptMapping.toyMapping.containsKey(n);
     }
 
     public Items<Toys> getMappedToys(Integer n) {
-        return toyMapping.get(n);
+        return scriptMapping.toyMapping.get(n);
     }
 
     private boolean hasStateMapping(Integer n) {
-        return stateMapping.containsKey(n);
+        return scriptMapping.stateMapping.containsKey(n);
     }
 
     private boolean hasStateTimeMapping(Integer n) {
-        return stateTimeMapping.containsKey(n);
+        return scriptMapping.stateTimeMapping.containsKey(n);
     }
 
     /*
@@ -101,7 +136,7 @@ public class MappedState extends State {
     @Override
     public void set(Integer n) {
         if (hasToyMapping(n)) {
-            Items<Toys> items = toyMapping.get(n);
+            Items<Toys> items = scriptMapping.toyMapping.get(n);
             if (items.size() == 1) {
                 // 1:1 mapping
                 items.get(0).setAvailable(true);
@@ -110,7 +145,7 @@ public class MappedState extends State {
                         + ": Multiple-mapped values can only be unset");
             }
         } else if (hasStateMapping(n)) {
-            stateMapping.get(n).apply();
+            scriptMapping.stateMapping.get(n).apply();
         }
         super.set(n);
     }
@@ -127,12 +162,12 @@ public class MappedState extends State {
     @Override
     public void unset(Integer n) {
         if (hasToyMapping(n)) {
-            Items<Toys> items = toyMapping.get(n);
+            Items<Toys> items = scriptMapping.toyMapping.get(n);
             for (Item<Toys> item : items) {
                 item.setAvailable(false);
             }
         } else if (hasStateMapping(n)) {
-            stateMapping.get(n).remove();
+            scriptMapping.stateMapping.get(n).remove();
         }
         super.unset(n);
     }
@@ -140,7 +175,7 @@ public class MappedState extends State {
     @Override
     public Date getTime(Integer n) {
         if (hasStateTimeMapping(n)) {
-            teaselib.State state = stateTimeMapping.get(n);
+            teaselib.State state = scriptMapping.stateTimeMapping.get(n);
             long time = (state.getDuration().startSeconds + state.expected())
                     * 1000;
             Date date = new Date(time);
@@ -153,7 +188,7 @@ public class MappedState extends State {
     @Override
     public void setTime(Integer n, Date date) {
         if (hasStateTimeMapping(n)) {
-            teaselib.State state = stateTimeMapping.get(n);
+            teaselib.State state = scriptMapping.stateTimeMapping.get(n);
             long now = System.currentTimeMillis();
             long duration = date.getTime() - now;
             state.apply(duration, TimeUnit.MILLISECONDS);
@@ -163,9 +198,9 @@ public class MappedState extends State {
 
     @Override
     public void overwrite(Integer n, Long value) {
-        toyMapping.remove(n);
-        stateMapping.remove(n);
-        stateTimeMapping.remove(n);
+        scriptMapping.toyMapping.remove(n);
+        scriptMapping.stateMapping.remove(n);
+        scriptMapping.stateTimeMapping.remove(n);
         super.overwrite(n, value);
     }
 
@@ -177,7 +212,8 @@ public class MappedState extends State {
     }
 
     private Entry<Integer, Items<Toys>> getEntry(Toys toy) {
-        for (Entry<Integer, Items<Toys>> entry : toyMapping.entrySet()) {
+        for (Entry<Integer, Items<Toys>> entry : scriptMapping.toyMapping
+                .entrySet()) {
             Items<Toys> toys = entry.getValue();
             for (Item<Toys> item : toys) {
                 if (item.item == toy) {
