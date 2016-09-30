@@ -15,7 +15,6 @@ import pcm.model.ScriptExecutionException;
 import pcm.model.ScriptParsingException;
 import pcm.model.ValidationIssue;
 import pcm.state.Interaction;
-import teaselib.ScriptFunction;
 
 public class Pause implements Interaction, Interaction.NeedsRangeProvider {
     private static final Logger logger = LoggerFactory.getLogger(Pause.class);
@@ -23,16 +22,15 @@ public class Pause implements Interaction, Interaction.NeedsRangeProvider {
     private Interaction rangeProvider = null;
 
     @Override
-    public ActionRange getRange(Script script, Action action,
-            ScriptFunction visuals, Player player)
-            throws ScriptExecutionException {
+    public ActionRange getRange(Script script, Action action, Runnable visuals,
+            Player player) throws ScriptExecutionException {
         String resume = action.getResponseText(Statement.ResumeText, script);
         logger.info("Pause: " + resume);
         List<String> choices = new ArrayList<String>(1);
         choices.add(resume);
         visuals.run();
         player.reply(choices);
-        return rangeProvider.getRange(script, action, null, player);
+        return rangeProvider.getRange(script, action, NoVisuals, player);
     }
 
     @Override

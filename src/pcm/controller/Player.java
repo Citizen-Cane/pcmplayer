@@ -404,7 +404,7 @@ public abstract class Player extends TeaseScript {
         // Interactions that eventually call choose(...) do this
         // implicitly, but all other classes like Range have to call it
         // when suitable, to prevent text and messages appearing too fast
-        ScriptFunction visuals = new ScriptFunction() {
+        Runnable visuals = new Runnable() {
             @Override
             public void run() {
                 if (action.visuals != null) {
@@ -414,9 +414,7 @@ public abstract class Player extends TeaseScript {
                 }
             }
         };
-        ActionRange range = action.interaction.getRange(script, action, visuals,
-                this);
-        return range;
+        return action.interaction.getRange(script, action, visuals, this);
     }
 
     public void render(Visual visual) {

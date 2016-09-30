@@ -13,18 +13,14 @@ import pcm.model.Script;
 import pcm.model.ScriptExecutionException;
 import pcm.model.ValidationIssue;
 import pcm.state.Interaction;
-import teaselib.ScriptFunction;
 
 public class Return implements Interaction {
     private static final Logger logger = LoggerFactory.getLogger(Return.class);
 
     @Override
-    public ActionRange getRange(Script script, Action action,
-            ScriptFunction visuals, Player player)
-            throws ScriptExecutionException {
-        if (visuals != null) {
-            visuals.run();
-        }
+    public ActionRange getRange(Script script, Action action, Runnable visuals,
+            Player player) throws ScriptExecutionException {
+        visuals.run();
         if (script.stack.size() > 0) {
             ActionRange range = script.stack.pop();
             logger.info("Return: "

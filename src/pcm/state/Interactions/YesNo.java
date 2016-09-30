@@ -14,7 +14,6 @@ import pcm.model.Script;
 import pcm.model.ScriptExecutionException;
 import pcm.model.ValidationIssue;
 import pcm.state.Interaction;
-import teaselib.ScriptFunction;
 
 public class YesNo implements Interaction {
     private static final Logger logger = LoggerFactory.getLogger(YesNo.class);
@@ -33,7 +32,7 @@ public class YesNo implements Interaction {
 
     @Override
     public ActionRange getRange(Script script, Action action,
-            ScriptFunction visuals, final Player player)
+            Runnable visuals, final Player player)
             throws ScriptExecutionException {
         String yes = action.getResponseText(Statement.YesText, script);
         String no = action.getResponseText(Statement.NoText, script);

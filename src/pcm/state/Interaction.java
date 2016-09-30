@@ -5,13 +5,18 @@ import java.util.List;
 import pcm.controller.Player;
 import pcm.model.Action;
 import pcm.model.ActionRange;
-import pcm.model.ScriptParsingException;
 import pcm.model.Script;
 import pcm.model.ScriptExecutionException;
+import pcm.model.ScriptParsingException;
 import pcm.model.ValidationIssue;
-import teaselib.ScriptFunction;
 
 public interface Interaction {
+    static final Runnable NoVisuals = new Runnable() {
+        @Override
+        public void run() {
+        }
+    };
+
     /**
      * Return a range to be executed next.
      * 
@@ -30,11 +35,12 @@ public interface Interaction {
      * @return
      * @throws ScriptExecutionException
      */
-    ActionRange getRange(Script script, Action action, ScriptFunction visuals,
+    ActionRange getRange(Script script, Action action, Runnable visuals,
             Player player) throws ScriptExecutionException;
 
     void validate(Script script, Action action,
-            List<ValidationIssue> validationErrors) throws ScriptParsingException;
+            List<ValidationIssue> validationErrors)
+            throws ScriptParsingException;
 
     public interface NeedsRangeProvider {
         public void setRangeProvider(Interaction rangeProvider);

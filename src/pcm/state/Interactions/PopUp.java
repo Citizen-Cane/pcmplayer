@@ -15,7 +15,6 @@ import pcm.model.Script;
 import pcm.model.ScriptExecutionException;
 import pcm.model.ValidationIssue;
 import pcm.state.Interaction;
-import teaselib.ScriptFunction;
 
 public class PopUp implements Interaction {
     private static final Logger logger = LoggerFactory.getLogger(PopUp.class);
@@ -30,7 +29,7 @@ public class PopUp implements Interaction {
 
     @Override
     public ActionRange getRange(Script script, Action action,
-            ScriptFunction visuals, Player player)
+            Runnable visuals, Player player)
             throws ScriptExecutionException {
         List<MenuItem> items = new ArrayList<MenuItem>();
         List<String> choices = new ArrayList<String>();

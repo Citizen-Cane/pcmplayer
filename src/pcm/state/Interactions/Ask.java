@@ -23,7 +23,6 @@ import pcm.state.Interaction.NeedsRangeProvider;
 import pcm.state.MappedState;
 import pcm.state.State;
 import pcm.state.Visual;
-import teaselib.ScriptFunction;
 import teaselib.Toys;
 import teaselib.util.Item;
 import teaselib.util.Items;
@@ -49,9 +48,8 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
     }
 
     @Override
-    public ActionRange getRange(Script script, Action action,
-            ScriptFunction visuals, Player player)
-            throws ScriptExecutionException {
+    public ActionRange getRange(Script script, Action action, Runnable visuals,
+            Player player) throws ScriptExecutionException {
         List<Boolean> values = new ArrayList<Boolean>();
         List<String> choices = new ArrayList<String>();
         List<Integer> indices = new ArrayList<Integer>();
@@ -127,7 +125,7 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
                 state.unset(n);
             }
         }
-        return rangeProvider.getRange(script, action, null, player);
+        return rangeProvider.getRange(script, action, NoVisuals, player);
     }
 
     private static boolean checkDetailedItems(Player player, String title,

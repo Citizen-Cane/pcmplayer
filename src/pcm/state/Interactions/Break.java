@@ -37,7 +37,7 @@ public class Break implements Interaction, NeedsRangeProvider {
 
     @Override
     public ActionRange getRange(final Script script, final Action action,
-            ScriptFunction visuals, final Player player)
+            Runnable visuals, final Player player)
             throws ScriptExecutionException {
         // First run the visuals of this action
         visuals.run();
@@ -52,8 +52,8 @@ public class Break implements Interaction, NeedsRangeProvider {
             @Override
             public void run() {
                 try {
-                    player.range = rangeProvider.getRange(script, action, null,
-                            player);
+                    player.range = rangeProvider.getRange(script, action,
+                            NoVisuals, player);
                     player.play(actionRange);
                     SpeechRecognition.completeSpeechRecognitionInProgress();
                 } catch (ScriptInterruptedException e) {

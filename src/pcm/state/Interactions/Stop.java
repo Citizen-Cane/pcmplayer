@@ -58,7 +58,7 @@ public class Stop implements Interaction, NeedsRangeProvider {
 
     @Override
     public ActionRange getRange(Script script, final Action action,
-            final ScriptFunction visuals, final Player player)
+            final Runnable visuals, final Player player)
             throws ScriptExecutionException {
         logger.info(getClass().getSimpleName() + " " + toString());
         List<String> choices = new ArrayList<String>(choiceRanges.size());
@@ -124,7 +124,7 @@ public class Stop implements Interaction, NeedsRangeProvider {
             logger.info("-> " + result);
             return ranges.get(index);
         } else {
-            return rangeProvider.getRange(script, action, null, player);
+            return rangeProvider.getRange(script, action, NoVisuals, player);
         }
     }
 

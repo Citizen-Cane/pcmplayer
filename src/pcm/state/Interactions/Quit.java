@@ -11,7 +11,6 @@ import pcm.model.ActionRange;
 import pcm.model.Script;
 import pcm.model.ValidationIssue;
 import pcm.state.Interaction;
-import teaselib.ScriptFunction;
 
 public class Quit implements Interaction {
     private static final Logger logger = LoggerFactory.getLogger(Quit.class);
@@ -23,7 +22,7 @@ public class Quit implements Interaction {
 
     @Override
     public ActionRange getRange(Script script, Action action,
-            ScriptFunction visuals, Player player) {
+            Runnable visuals, Player player) {
         logger.info(getClass().getSimpleName());
         visuals.run();
         return null;
