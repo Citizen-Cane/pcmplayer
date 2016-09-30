@@ -200,9 +200,10 @@ public class MappedState extends State {
 
     @Override
     public void overwrite(Integer n, Long value) {
-        scriptMapping.toyMapping.remove(n);
-        scriptMapping.stateMapping.remove(n);
-        scriptMapping.stateTimeMapping.remove(n);
+        ScriptMapping mapping = getScriptMapping(Global);
+        mapping.toyMapping.remove(n);
+        mapping.stateMapping.remove(n);
+        mapping.stateTimeMapping.remove(n);
         super.overwrite(n, value);
     }
 
@@ -214,8 +215,8 @@ public class MappedState extends State {
     }
 
     private Entry<Integer, Items<Toys>> getEntry(Toys toy) {
-        for (Entry<Integer, Items<Toys>> entry : scriptMapping.toyMapping
-                .entrySet()) {
+        for (Entry<Integer, Items<Toys>> entry : getScriptMapping(
+                Global).toyMapping.entrySet()) {
             Items<Toys> toys = entry.getValue();
             for (Item<Toys> item : toys) {
                 if (item.item == toy) {
