@@ -39,6 +39,7 @@ import teaselib.core.ResourceLoader;
 import teaselib.core.ScriptInterruptedException;
 import teaselib.core.TeaseLib;
 import teaselib.core.devices.remote.KeyRelease;
+import teaselib.core.media.MediaRenderer;
 import teaselib.core.speechrecognition.SpeechRecognitionResult.Confidence;
 import teaselib.core.texttospeech.ScriptScanner;
 import teaselib.core.texttospeech.TextToSpeechRecorder;
@@ -633,6 +634,10 @@ public abstract class Player extends TeaseScript {
                     + action.number);
         }
         return action;
+    }
+
+    public void render(MediaRenderer mediaRenderer) {
+        queueRenderer(mediaRenderer);
     }
 
     @Override
