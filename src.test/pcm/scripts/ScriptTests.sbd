@@ -3,7 +3,6 @@
 
 .range 9999
 
-
 ' testOutOfActions
 
 [action 1000]
@@ -45,6 +44,24 @@
 [action 1023]
 .must 1020
 .repeatdel 1023 1 1
+.range 9999
+
+
+' testShouldnotWithDefaultConditionRange
+
+[action 1030]
+.set 8
+.set 9
+.range 9999
+
+[action 1031]
+.must 8
+.mustnot 9
+.range 9999
+
+[action 1032]
+.must 8
+.shouldnot 9
 .range 9999
 
 

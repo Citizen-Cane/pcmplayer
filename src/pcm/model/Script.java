@@ -2,6 +2,7 @@ package pcm.model;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +42,13 @@ public class Script extends AbstractAction {
     private final ScriptCache scriptCache;
     public final Stack<ActionRange> stack;
 
+    /**
+     * The condition range used when the script doesn't define its own list of
+     * condition ranges.
+     */
+    private final static ActionRange DefaultConditionRange = new ActionRange(
+            Integer.MIN_VALUE, Integer.MAX_VALUE);
+
     public Script(Actor actor, String name, ScriptCache scriptCache,
             ScriptParser parser)
             throws ScriptParsingException, ValidationIssue, IOException {
@@ -78,10 +86,9 @@ public class Script extends AbstractAction {
     private void completeConditionRanges() {
         if (conditionRanges != null) {
             // To sort out all optional conditions in the last step
-            conditionRanges
-                    .add(new ActionRange(Integer.MIN_VALUE, Integer.MAX_VALUE));
-            // make hasNext() check work...
-            conditionRanges.add(null);
+            conditionRanges.add(DefaultConditionRange);
+        } else {
+            conditionRanges = Collections.singletonList(DefaultConditionRange);
         }
     }
 

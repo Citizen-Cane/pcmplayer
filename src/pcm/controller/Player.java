@@ -443,16 +443,11 @@ public abstract class Player extends TeaseScript {
         // Get all available, e.g. those not set yet
         List<Action> candidates = script.actions.getUnset(range, state);
         List<Action> selectable = new LinkedList<Action>();
-        final List<ActionRange> relaxedConditions;
-        final Iterator<ActionRange> conditionsRanges;
-        if (script.conditionRanges != null) {
-            relaxedConditions = new ArrayList<ActionRange>(
-                    script.conditionRanges.size());
-            conditionsRanges = script.conditionRanges.iterator();
-        } else {
-            relaxedConditions = null;
-            conditionsRanges = null;
-        }
+        List<ActionRange> relaxedConditions;
+        Iterator<ActionRange> conditionsRanges;
+        relaxedConditions = new ArrayList<ActionRange>(
+                script.conditionRanges.size());
+        conditionsRanges = script.conditionRanges.iterator();
         while (true) {
             List<Action> poss0 = null;
             List<Action> poss100 = null;
@@ -490,9 +485,8 @@ public abstract class Player extends TeaseScript {
                 // selectable.size() == 0 but actions in else branch
                 logger.info("else");
                 return poss0;
-            }
-            if (relaxedConditions != null && conditionsRanges != null) {
-                final ActionRange ignore = conditionsRanges.next();
+            } else if (conditionsRanges.hasNext()) {
+                ActionRange ignore = conditionsRanges.next();
                 if (ignore != null) {
                     if (ignore.start > Integer.MIN_VALUE
                             || ignore.end < Integer.MAX_VALUE) {
@@ -501,16 +495,11 @@ public abstract class Player extends TeaseScript {
                     }
                 }
                 relaxedConditions.add(ignore);
-                if (conditionsRanges.hasNext()) {
-                    continue;
-                } else {
-                    break;
-                }
+                continue;
+            } else {
+                return Collections.emptyList();
             }
-            // Done
-            break;
         }
-        return Collections.emptyList();
     }
 
     private boolean evalConditions(Action action,

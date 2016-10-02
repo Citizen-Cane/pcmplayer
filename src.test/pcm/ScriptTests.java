@@ -107,4 +107,19 @@ public class ScriptTests {
         player.play(r);
         assertEquals(State.SET, player.state.get(1023));
     }
+
+    @Test
+    public void testShouldnotWithDefaultConditionRange() throws Exception {
+        ActionRange r = new ActionRange(1030, 1030);
+        assertEquals(State.UNSET, player.state.get(1030));
+        player.range = r;
+        player.play(r);
+        assertEquals(State.SET, player.state.get(1030));
+
+        r = new ActionRange(1031, 1032);
+        player.range = r;
+        player.play(r);
+
+        assertEquals(State.SET, player.state.get(1032));
+    }
 }
