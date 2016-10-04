@@ -85,7 +85,8 @@ public abstract class Player extends TeaseScript {
     public static void recordVoices(Class<?> scriptClass, Actor actor,
             String[] assets, String startupScript)
             throws IOException, ValidationIssue, ScriptParsingException {
-        ResourceLoader resources = new ResourceLoader(scriptClass);
+        ResourceLoader resources = new ResourceLoader(scriptClass,
+                ResourceLoader.ResourcesInProjectFolder);
         resources.addAssets(assets);
         ScriptCache scripts = new ScriptCache(resources,
                 scriptClass.getSimpleName() + "/");
