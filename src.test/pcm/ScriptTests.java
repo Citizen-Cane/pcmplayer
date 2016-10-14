@@ -30,7 +30,8 @@ public class ScriptTests {
 
     Player player = new Player(
             new TeaseLib(new DummyHost(), new DummyPersistence()),
-            new ResourceLoader(ScriptTests.class),
+            new ResourceLoader(ScriptTests.class,
+                    ResourceLoader.ResourcesInProjectFolder),
             new Actor(Actor.Key.DominantFemale, Voice.Gender.Female, Locale.US),
             "pcm", null) {
 
