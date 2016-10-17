@@ -7,12 +7,9 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.StringTokenizer;
 
 import org.slf4j.Logger;
@@ -59,6 +56,12 @@ public abstract class Player extends TeaseScript {
 
     public Script script = null;
     public final MappedState state;
+    private final ProbabilityModel probabilityModel = new ProbabilityModelBasedOnPossBucketSum() {
+        @Override
+        public double random(double from, double to) {
+            return Player.this.random(from, to);
+        }
+    };
     public ActionRange range = null;
 
     private final ScriptCache scripts;
@@ -553,184 +556,14 @@ public abstract class Player extends TeaseScript {
      * @return
      */
     public Action chooseAction(List<Action> actions) {
-        Action action;
         if (actions.size() == 0) {
-            action = null;
+            return null;
         } else if (actions.size() == 1) {
-            action = actions.get(0);
+            Action action = actions.get(0);
             logger.info("Action " + action.number);
+            return action;
         } else {
-            action = chooseActionBasedOnPossValue(actions);
-        }
-        return action;
-    }
-
-    private Action chooseActionBasedOnPossValue(List<Action> actions) {
-        Action action;
-        // Log code
-        logActions(actions);
-        // Normalize all actions into the interval [0...100], then choose one
-        // poss 100 is used as an override
-        // "poss" 0 is used to implement an "else" clause,
-        // since PCM script doesn't have one otherwise
-        double[] accumulatedWeights = buildAccumulatedWeightsListPossBuckets(
-                actions);
-        // Choose a value
-        action = chooseActionAccordingToAcccumulatedWeights(actions,
-                accumulatedWeights);
-        return action;
-    }
-
-    @SuppressWarnings("unused")
-    private static double[] buildAccumulatedWeightsListPossSumWrongAssumption(
-            List<Action> actions) {
-        double accumulatedWeights[] = new double[actions.size()];
-        double sum = 0.0;
-        double normalized = 100.0;
-        StringBuilder weightList = null;
-        for (int i = 0; i < accumulatedWeights.length; i++) {
-            Action a = actions.get(i);
-            Integer weight = a.poss;
-            double relativeWeight = normalized / accumulatedWeights.length;
-            sum += weight != null ? weight
-                    // This would be mathematically correct
-                    // if none of the actions specified a "poss" value
-                    : relativeWeight;
-            accumulatedWeights[i] = sum;
-            String w = String.format("%.2f", relativeWeight);
-            if (weightList == null) {
-                weightList = new StringBuilder("Weight:\t" + w);
-            } else {
-                weightList.append("\t");
-                weightList.append(w);
-            }
-        }
-        // Log weights
-        if (weightList != null) {
-            logger.info(weightList.toString());
-        } else {
-            logger.info("Weight list is empty");
-        }
-        // Normalize and build interval
-        for (int i = 0; i < accumulatedWeights.length; i++) {
-            accumulatedWeights[i] *= normalized / sum;
-        }
-
-        return accumulatedWeights;
-    }
-
-    private static double[] buildAccumulatedWeightsListPossBuckets(
-            List<Action> actions) {
-        double accumulatedWeights[] = new double[actions.size()];
-        double sum = 0.0;
-        // From the Quick Pins game in mine-nipt one can assume that
-        // - all weighted actions account for their weight
-        // - all unweighted actions get a weight 100 - sum(set(weighted))
-        // where the set contains each value just once
-        // -> all actions with poss n should together weight exactly n
-        // so a single action of weight n counts as n/occurence(n)
-        // and m unweighted actions as 100-sum(set(n))/m
-        Map<Integer, Double> weightMap = new HashMap<Integer, Double>();
-        for (Action action : actions) {
-            if (weightMap.containsKey(action.poss)) {
-                weightMap.put(action.poss, weightMap.get(action.poss) + 1.0);
-            } else {
-                weightMap.put(action.poss, 1.0);
-            }
-        }
-        double unweighted = 100.0;
-        if (weightMap.containsKey(null)) {
-            for (Entry<Integer, Double> entry : weightMap.entrySet()) {
-                if (entry.getKey() != null) {
-                    unweighted -= entry.getKey();
-                }
-            }
-        } else {
-            unweighted = 0.0;
-        }
-
-        // The weight map
-        // p1*n1 + p2*n2 + ...
-
-        // What we want
-        // 100 = w1*n1 + w2*n2 + ...
-
-        // i=1
-        // 100 = w1*n1 => w1 = 100/n1
-
-        // expand all of the weight map to 100
-        int weightSum = 0;
-        for (Entry<Integer, Double> entry2 : weightMap.entrySet()) {
-            Integer key = entry2.getKey();
-            if (key != null) {
-                weightSum += key;
-            } else {
-                weightSum += unweighted;
-            }
-        }
-
-        StringBuilder weightList = null;
-        for (int i = 0; i < accumulatedWeights.length; i++) {
-            Action a = actions.get(i);
-            Double occurences = weightMap.get(a.poss);
-            double d = (a.poss != null ? ((double) a.poss) : unweighted)
-                    / occurences * 100.0 / weightSum;
-            sum += d;
-            accumulatedWeights[i] = sum;
-            String w = String.format("%.2f", d);
-            if (weightList == null) {
-                weightList = new StringBuilder("Weight:\t" + w);
-            } else {
-                weightList.append("\t");
-                weightList.append(w);
-            }
-        }
-        // Log weights
-        if (weightList != null) {
-            logger.info(weightList.toString());
-        } else {
-            logger.info("Weight list is empty");
-        }
-        if (Math.abs(sum - 100.0) > 0.000001)
-            throw new IllegalStateException("Poss weighting calculation error");
-        return accumulatedWeights;
-    }
-
-    private Action chooseActionAccordingToAcccumulatedWeights(
-            List<Action> actions, double[] accumulatedWeights) {
-        Action action;
-        double normalized = 100.0;
-        double value = random(0, (int) normalized);
-        action = null;
-        for (int i = 0; i < accumulatedWeights.length; i++) {
-            if (value <= accumulatedWeights[i]) {
-                action = actions.get(i);
-                break;
-            }
-        }
-        if (action == null) {
-            throw new IllegalStateException("Poss weighting calculation error");
-        }
-        logger.info(
-                "Random = " + value + " -> choosing action " + action.number);
-        return action;
-    }
-
-    private static void logActions(List<Action> actions) {
-        StringBuilder actionList = null;
-        for (Action a : actions) {
-            int number = a.number;
-            if (actionList == null) {
-                actionList = new StringBuilder("Action:\t" + number);
-            } else {
-                actionList.append("\t");
-                actionList.append(number);
-            }
-        }
-        if (actionList == null) {
-            logger.info("Action list is empty");
-        } else {
-            logger.info(actionList.toString());
+            return probabilityModel.chooseActionBasedOnPossValue(actions);
         }
     }
 
