@@ -44,7 +44,7 @@ import pcm.state.conditions.TimeTo;
 import pcm.state.visuals.Delay;
 import pcm.state.visuals.Exec;
 import pcm.state.visuals.Image;
-import pcm.state.visuals.KeyRelease;
+import pcm.state.visuals.KeyReleaseHandler;
 import pcm.state.visuals.MistressImage;
 import pcm.state.visuals.NoImage;
 import pcm.state.visuals.NoMessage;
@@ -225,13 +225,13 @@ public class Action extends AbstractAction {
             Visual keyRelease = null;
             String args[] = cmd.args();
             String command = args[0];
-            for (String string : KeyRelease.Commands) {
+            for (String string : KeyReleaseHandler.Commands) {
                 if (string.equalsIgnoreCase(command)) {
                     if (args.length == 1) {
-                        keyRelease = new KeyRelease(command);
+                        keyRelease = new KeyReleaseHandler(command);
                         break;
                     } else if (args.length == 2) {
-                        keyRelease = new KeyRelease(command,
+                        keyRelease = new KeyReleaseHandler(command,
                                 Integer.parseInt(args[1]));
                         break;
                     } else {
