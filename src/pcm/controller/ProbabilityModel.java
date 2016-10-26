@@ -19,6 +19,7 @@ public abstract class ProbabilityModel {
 
     public Action chooseActionBasedOnPossValue(List<Action> actions) {
         accumulatedWeights = new double[actions.size()];
+        relativeWeights = new StringBuilder("     Weight:");
         logActions(actions);
         buildAccumulatedWeights(actions);
         logger.info(relativeWeights.toString());
@@ -31,7 +32,7 @@ public abstract class ProbabilityModel {
         for (Action a : actions) {
             int number = a.number;
             if (actionList == null) {
-                actionList = new StringBuilder("Action:\t" + number);
+                actionList = new StringBuilder("     Action:\t" + number);
             } else {
                 actionList.append("\t");
                 actionList.append(number);
@@ -68,12 +69,8 @@ public abstract class ProbabilityModel {
 
     protected void addPossValueForLogging(int possValue) {
         String v = Integer.toString(possValue);
-        if (relativeWeights == null) {
-            relativeWeights = new StringBuilder("Weight:\t" + v);
-        } else {
-            relativeWeights.append("\t");
-            relativeWeights.append(v);
-        }
+        relativeWeights.append("\t");
+        relativeWeights.append(v);
     }
 
     public void logAccumulatedWeights() {
@@ -81,7 +78,7 @@ public abstract class ProbabilityModel {
         for (int i = 0; i < accumulatedWeights.length; i++) {
             String w = String.format("%.2f", accumulatedWeights[i]);
             if (weightList == null) {
-                weightList = new StringBuilder("Accumulated Weight:\t" + w);
+                weightList = new StringBuilder("Accumulated:\t" + w);
             } else {
                 weightList.append("\t");
                 weightList.append(w);
