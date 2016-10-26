@@ -28,15 +28,16 @@ public abstract class ProbabilityModelBasedOnPossBucketSum
         Map<Integer, Integer> weightMap = buildWeightBucketMap(actions);
         int unweighted = calculateUnweightedValue(weightMap);
         int weightSum = calculateSumOfAllWeightedActions(weightMap, unweighted);
-        double sum = calculateAccumulatedWeights(actions, unweighted,
-                weightSum);
+        int sum = calculateAccumulatedWeights(actions, unweighted, weightSum);
         if (sum != weightSum)
-            throw new IllegalStateException("Poss weighting calculation error");
+            throw new IllegalStateException(
+                    "Poss weighting calculation error: sum " + sum + " != "
+                            + "sum of all weighted actions " + weightSum);
     }
 
-    private double calculateAccumulatedWeights(List<Action> actions,
+    private int calculateAccumulatedWeights(List<Action> actions,
             int unweighted, int weightSum) {
-        double sum = 0.0;
+        int sum = 0;
         for (int i = 0; i < accumulatedWeights.length; i++) {
             Action a = actions.get(i);
             int d = a.poss != null ? a.poss : unweighted;
