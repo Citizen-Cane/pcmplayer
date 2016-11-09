@@ -117,18 +117,30 @@ public class MappedState extends State {
     }
 
     public boolean hasToyMapping(Integer n) {
+        if (scriptMapping == null) {
+            return false;
+        }
         return scriptMapping.toyMapping.containsKey(n);
     }
 
     public Items<Toys> getMappedToys(Integer n) {
+        if (scriptMapping == null) {
+            return new Items<Toys>();
+        }
         return scriptMapping.toyMapping.get(n);
     }
 
     private boolean hasStateMapping(Integer n) {
+        if (scriptMapping == null) {
+            return false;
+        }
         return scriptMapping.stateMapping.containsKey(n);
     }
 
     private boolean hasStateTimeMapping(Integer n) {
+        if (scriptMapping == null) {
+            return false;
+        }
         return scriptMapping.stateTimeMapping.containsKey(n);
     }
 
