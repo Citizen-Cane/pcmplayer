@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import pcm.model.ActionRange;
 import pcm.model.Script;
 import pcm.model.ScriptParsingException;
+import pcm.model.Symbols;
 import pcm.model.ValidationIssue;
 import teaselib.Actor;
 import teaselib.core.ResourceLoader;
@@ -25,16 +26,19 @@ public class ScriptCache {
     private static final Logger logger = LoggerFactory
             .getLogger(ScriptCache.class);
 
-    Map<String, SoftReference<Script>> cache = new HashMap<String, SoftReference<Script>>();
-    ResourceLoader resourceLoader;
-    final String resourcePath;
-    final String scriptPath;
+    private final Symbols staticSymbols;
+    private final Map<String, SoftReference<Script>> cache = new HashMap<String, SoftReference<Script>>();
+    private final ResourceLoader resourceLoader;
+    private final String resourcePath;
+    private final String scriptPath;
 
     public final Stack<ActionRange> stack;
 
-    public ScriptCache(ResourceLoader resourceLoader, String resourcePath) {
+    public ScriptCache(ResourceLoader resourceLoader, String resourcePath,
+            Symbols staticSymbols) {
         this.resourceLoader = resourceLoader;
         this.resourcePath = resourcePath;
+        this.staticSymbols = staticSymbols;
         this.scriptPath = resourcePath + Player.Scripts;
         stack = new Stack<ActionRange>();
     }
@@ -51,8 +55,8 @@ public class ScriptCache {
             final String location = scriptPath + name;
             final BufferedReader scriptReader = script(location);
             try {
-                script = new Script(actor, name, this,
-                        new ScriptParser(scriptReader, resourcePath));
+                script = new Script(actor, name, this, new ScriptParser(
+                        scriptReader, resourcePath, staticSymbols));
             } finally {
                 scriptReader.close();
             }

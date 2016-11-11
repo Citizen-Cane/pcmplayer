@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.StringTokenizer;
 
 import org.slf4j.Logger;
@@ -23,6 +24,7 @@ import pcm.model.Script;
 import pcm.model.ScriptException;
 import pcm.model.ScriptExecutionException;
 import pcm.model.ScriptParsingException;
+import pcm.model.Symbols;
 import pcm.model.ValidationIssue;
 import pcm.state.Condition;
 import pcm.state.MappedState;
@@ -34,6 +36,7 @@ import teaselib.Actor;
 import teaselib.Images;
 import teaselib.Message;
 import teaselib.ScriptFunction;
+import teaselib.Sexuality;
 import teaselib.TeaseScript;
 import teaselib.core.ResourceLoader;
 import teaselib.core.ScriptInterruptedException;
@@ -91,30 +94,54 @@ public abstract class Player extends TeaseScript {
         ResourceLoader resources = new ResourceLoader(scriptClass,
                 ResourceLoader.ResourcesInProjectFolder);
         resources.addAssets(assets);
-        ScriptCache scripts = new ScriptCache(resources,
-                scriptClass.getSimpleName() + "/");
         // TODO initialize recorder with an actual speech resources path
         TextToSpeechRecorder recorder = new TextToSpeechRecorder(resources,
                 scriptClass.getSimpleName());
-        // Get the main script
-        Script main = scripts.get(actor, startupScript);
-        // and validate to load all the sub scripts
-        validate(main, new ArrayList<ValidationIssue>());
-        for (String scriptName : scripts.names()) {
-            Script script = scripts.get(actor, scriptName);
-            ScriptScanner scriptScanner = new PCMScriptScanner(script);
-            recorder.create(scriptScanner);
+        Symbols dominantSubmissiveRelations = Symbols
+                .getDominantSubmissiveRelations();
+        for (Entry<String, String> entry : dominantSubmissiveRelations
+                .entrySet()) {
+            Symbols dominantSubmissiveRelation = new Symbols();
+            dominantSubmissiveRelation.put(entry.getKey(), entry.getValue());
+            ScriptCache scripts = new ScriptCache(resources,
+                    scriptClass.getSimpleName() + "/",
+                    dominantSubmissiveRelation);
+            // Get the main script
+            Script main = scripts.get(actor, startupScript);
+            // and validate to load all the sub scripts
+            validate(main, new ArrayList<ValidationIssue>());
+            for (String scriptName : scripts.names()) {
+                Script script = scripts.get(actor, scriptName);
+                ScriptScanner scriptScanner = new PCMScriptScanner(script);
+                recorder.create(scriptScanner);
+            }
+            recorder.finish();
         }
-        recorder.finish();
     }
 
     public Player(TeaseLib teaseLib, ResourceLoader resources, Actor actor,
             String namespace, String mistressPath) {
         super(teaseLib, resources, actor, namespace);
-        this.scripts = new ScriptCache(resources, "/" + namespace + "/");
+        this.scripts = new ScriptCache(resources, "/" + namespace + "/",
+                createDominantSubmissiveSymbols());
         this.mistressPath = mistressPath;
         this.invokedOnAllSet = false;
         this.state = new MappedState(this);
+    }
+
+    private Symbols createDominantSubmissiveSymbols() {
+        Symbols staticSymbols = new Symbols();
+        if (persistentEnum(Sexuality.Sex.Male)
+                .value() == Sexuality.Sex.Female) {
+            staticSymbols.put("Ff", "true");
+        } else {
+            if (persistentBoolean(Sexuality.Gender.Feminine).value()) {
+                staticSymbols.put("Ftv", "true");
+            } else {
+                staticSymbols.put("Fm", "true");
+            }
+        }
+        return null;
     }
 
     public String getResourceFolder() {

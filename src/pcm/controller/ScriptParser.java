@@ -5,14 +5,16 @@ import java.io.IOException;
 
 import pcm.model.AbstractAction.Statement;
 import pcm.model.Action;
-import pcm.model.ScriptParsingException;
 import pcm.model.Script;
 import pcm.model.ScriptLineTokenizer;
+import pcm.model.ScriptParsingException;
+import pcm.model.Symbols;
 import pcm.model.ValidationIssue;
 import pcm.state.visuals.SpokenMessage;
 import pcm.state.visuals.Txt;
 
 public class ScriptParser {
+    private final Symbols staticSymbols;
 
     private String line = null;
     private int l = 0;
@@ -24,12 +26,15 @@ public class ScriptParser {
     private final static String ACTIONMATCH = "[action ";
     private final static String COMMENT = "'";
 
-    public ScriptParser(BufferedReader reader, String resourcePath) {
+    public ScriptParser(BufferedReader reader, String resourcePath,
+            Symbols staticSymbols) {
         this.reader = reader;
         this.resourcePath = resourcePath;
+        this.staticSymbols = staticSymbols;
     }
 
-    public void parse(Script script) throws ScriptParsingException, IOException {
+    public void parse(Script script)
+            throws ScriptParsingException, IOException {
         while ((line = readLine()) != null) {
             if (line.toLowerCase().startsWith(ACTIONMATCH)) {
                 return;
@@ -38,13 +43,14 @@ public class ScriptParser {
                     ScriptLineTokenizer cmd = new ScriptLineTokenizer(l, line);
                     script.add(cmd);
                 } catch (UnsupportedOperationException e) {
-                    throw new ScriptParsingException(l, n, line, e.getMessage(), script);
+                    throw new ScriptParsingException(l, n, line, e.getMessage(),
+                            script);
                 } catch (Throwable t) {
                     throw new ScriptParsingException(l, n, line, t, script);
                 }
             } else {
-                throw new ScriptParsingException(l, n, line, "Unexpected script input",
-                        script);
+                throw new ScriptParsingException(l, n, line,
+                        "Unexpected script input", script);
             }
         }
         return;
@@ -64,8 +70,8 @@ public class ScriptParser {
                 int start = ACTIONMATCH.length();
                 int end = line.indexOf("]");
                 if (end < start) {
-                    throw new ScriptParsingException(l, 0, line, "Invalid action number",
-                            script);
+                    throw new ScriptParsingException(l, 0, line,
+                            "Invalid action number", script);
                 }
                 n = Integer.parseInt(line.substring(start, end));
                 if (n <= previousActionNumber) {
