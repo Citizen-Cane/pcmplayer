@@ -73,16 +73,22 @@ public class Actions {
             List<ValidationIssue> validationErrors) {
         List<Action> actions = getAll(range);
         if (actions.isEmpty()) {
-            validationErrors.add(new ValidationIssue(action, "Range "
-                    + range.start + "-" + range.end + " is empty", script));
+            validationErrors.add(new ValidationIssue(action,
+                    "Range " + range.start + "-" + range.end + " is empty",
+                    script));
         } else if (actions.get(0).number != range.start) {
-            validationErrors.add(new ValidationIssue(action, "Range "
-                    + range.start + "-" + range.end + " must start at "
-                    + range.start, script));
+            validationErrors.add(new ValidationIssue(action,
+                    "Range " + range.start + "-" + range.end + " must start at "
+                            + range.start,
+                    script));
         }
     }
 
     public Collection<Action> values() {
         return actions.values();
+    }
+
+    public int size() {
+        return actions.size();
     }
 }

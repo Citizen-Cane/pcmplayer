@@ -141,7 +141,7 @@ public abstract class Player extends TeaseScript {
                 staticSymbols.put("Fm", "true");
             }
         }
-        return null;
+        return staticSymbols;
     }
 
     public String getResourceFolder() {

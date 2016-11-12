@@ -2,6 +2,7 @@ package pcm.controller;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.Stack;
 
 import pcm.model.AbstractAction.Statement;
 import pcm.model.Action;
@@ -14,17 +15,21 @@ import pcm.state.visuals.SpokenMessage;
 import pcm.state.visuals.Txt;
 
 public class ScriptParser {
+    private final static String ACTIONMATCH = "[action ";
+    private final static String COMMENT = "'";
+    private static final String DEFINE_IF = "#if";
+    private static final String DEFINE_ELSE = "#else";
+    private static final String DEFINE_ENDIF = "#endif";
+
     private final Symbols staticSymbols;
+    private final Stack<String[]> preprocessorScope = new Stack<String[]>();
+    private final BufferedReader reader;
+    private final String resourcePath;
 
     private String line = null;
     private int l = 0;
     private int n = 0;
     private int previousActionNumber = 0;
-
-    private final BufferedReader reader;
-    private final String resourcePath;
-    private final static String ACTIONMATCH = "[action ";
-    private final static String COMMENT = "'";
 
     public ScriptParser(BufferedReader reader, String resourcePath,
             Symbols staticSymbols) {
@@ -165,13 +170,57 @@ public class ScriptParser {
 
     private String readLine() throws IOException {
         String readLine;
-        while ((readLine = reader.readLine()) != null) {
+        readline: while ((readLine = reader.readLine()) != null) {
             l++;
             readLine = readLine.trim();
             if (readLine.isEmpty() || readLine.startsWith(COMMENT)) {
                 continue;
+            } else if (readLine.startsWith("#")) {
+                String[] args = readLine.replace("\t", " ").split(" ");
+                String command = args[0].toLowerCase();
+                if (DEFINE_IF.equals(command)) {
+                    preprocessorScope.push(args);
+                    for (int i = 1; i < args.length; i++) {
+                        if (staticSymbols.containsKey(args[i])) {
+                            continue readline;
+                        }
+                    }
+                    readLine = consumeScope();
+                    args = readLine.replace("\t", " ").split(" ");
+                    command = args[0].toLowerCase();
+                    if (DEFINE_ELSE.equals(command)) {
+                        continue;
+                    } else if (DEFINE_ENDIF.equals(command)) {
+                        preprocessorScope.pop();
+                    }
+                } else if (DEFINE_ELSE.equals(command)) {
+                    readLine = consumeScope();
+                } else if (DEFINE_ENDIF.equals(command)) {
+                    preprocessorScope.pop();
+                }
             } else {
                 break;
+            }
+        }
+        return readLine;
+    }
+
+    private String consumeScope() throws IOException {
+        String readLine;
+        int n = 1;
+        while ((readLine = reader.readLine()) != null && n > 0) {
+            String[] args = readLine.replace("\t", " ").split(" ");
+            String command = args[0].toLowerCase();
+            if (DEFINE_IF.equalsIgnoreCase(command)) {
+                n++;
+            } else if (DEFINE_ENDIF.equalsIgnoreCase(command)) {
+                if (--n == 0) {
+                    break;
+                }
+            } else if (DEFINE_ELSE.equalsIgnoreCase(command)) {
+                if (--n == 0) {
+                    break;
+                }
             }
         }
         return readLine;

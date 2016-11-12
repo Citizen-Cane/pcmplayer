@@ -1,0 +1,53 @@
+' pcm test cases
+
+
+.range 9999
+
+' testConditionalParsing_If_Else
+
+' sample from Mine introduction
+' First time, not submitted -> introduction
+[Action 900]
+.mustnot 100            ' Haven't run before and made it to cum-question
+.mustnot 101            ' Haven't submitted
+.mustnot 102            ' No bad quit (impossible at this point)
+.mustnot 501            ' No impatience (impossible at this point)
+#if Ff
+	Hello, you foolish girl.
+	.set 2
+#else
+	Hello, you foolish boy.
+	.set 3
+#endif
+I understand that you're looking for a Mistress!
+.range 9999             ' ...to the submission sequence!
+
+
+
+' testConditionalParsing
+
+' sample from Mine introduction
+' First time, not submitted -> introduction
+[Action 901]
+.mustnot 100            ' Haven't run before and made it to cum-question
+.mustnot 101            ' Haven't submitted
+.mustnot 102            ' No bad quit (impossible at this point)
+.mustnot 501            ' No impatience (impossible at this point)
+#if Ftv
+	Hello, you foolish slut.
+	.set 1
+#if Ff
+	Hello, you foolish girl.
+	.set 2
+#else
+	Hello, you foolish boy.
+	.set 3
+#endif
+I understand that you're looking for a Mistress!
+.range 9999             ' ...to the submission sequence!
+
+' proper exit for all test cases
+[action 9999]
+.noimage
+.quit
+
