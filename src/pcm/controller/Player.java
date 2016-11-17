@@ -231,10 +231,10 @@ public abstract class Player extends TeaseScript {
         try {
             loadScript(name);
         } catch (ScriptException e) {
-            showError(e);
+            reportError(e);
             return;
         } catch (Throwable t) {
-            showError(t, name);
+            reportError(t, name);
             return;
         }
         if (script != null) {
@@ -252,9 +252,9 @@ public abstract class Player extends TeaseScript {
                     logger.error(e.getMessage(), e);
                 }
             } catch (ScriptException e) {
-                showError(e);
+                reportError(e);
             } catch (Throwable e) {
-                showError(e, name);
+                reportError(e, name);
             } finally {
                 teaseLib.host.setQuitHandler(null);
                 intentionalQuit = false;
@@ -286,7 +286,7 @@ public abstract class Player extends TeaseScript {
         }
         if (validationErrors.size() > 0) {
             for (ScriptException scriptError : validationErrors) {
-                logger.info(createErrorMessage(scriptError));
+                logger.info(errorMessage(scriptError));
             }
             throw new ValidationIssue(
                     "Validation failed, " + validationErrors.size() + " issues",
@@ -654,42 +654,36 @@ public abstract class Player extends TeaseScript {
         }
     }
 
-    private void showError(ScriptException e) {
-        logger.error(e.getMessage(), e);
-        showError(createErrorMessage(e));
+    private void reportError(ScriptException e) {
+        showError(e, errorMessage(e));
     }
 
-    private String createErrorMessage(ScriptException e) {
-        Throwable cause = e.getCause();
+    private void reportError(Throwable t, String scriptName) {
+        showError(t, errorMessage(t, scriptName));
+    }
+
+    private String errorMessage(ScriptException e) {
         String scriptName = e.script != null ? e.script.name : script.name;
-        final String message;
+        return errorMessage(e, scriptName);
+    }
+
+    private static String errorMessage(Throwable t, String scriptName) {
+        Throwable cause = t.getCause();
         if (cause != null) {
-            message = "Script " + scriptName + ": " + e.getMessage() + "\n"
+            return "Script " + scriptName + ": " + t.getMessage() + "\n"
                     + cause.getClass().getSimpleName() + ": "
                     + cause.getMessage();
         } else {
-            message = "Script " + scriptName + ": " + e.getMessage();
+            return "Script " + scriptName + ", " + t.getClass().getName() + ": "
+                    + t.getMessage();
         }
-        return message;
     }
 
-    private void showError(Throwable t, String scriptName) {
+    private void showError(Throwable t, String formattedMessage) {
         logger.error(t.getMessage(), t);
-        Throwable cause = t.getCause();
-        if (cause != null) {
-            showError("Script " + scriptName + ", " + t.getMessage() + "\n"
-                    + cause.getClass().getSimpleName() + ": "
-                    + cause.getMessage());
-        } else {
-            showError("Script " + scriptName + ", " + t.getClass().getName()
-                    + ": " + t.getMessage());
-        }
-    }
-
-    private void showError(String error) {
-        logger.info(error);
+        logger.info(formattedMessage);
         try {
-            show(error);
+            show(formattedMessage);
             reply("Oh Dear");
         } catch (ScriptInterruptedException e) {
             // Ignore
