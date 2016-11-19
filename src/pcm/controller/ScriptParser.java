@@ -18,6 +18,7 @@ public class ScriptParser {
     private final static String ACTIONMATCH = "[action ";
     private final static String COMMENT = "'";
     private static final String DEFINE_IF = "#if";
+    private static final String DEFINE_ELSEIF = "#elseif";
     private static final String DEFINE_ELSE = "#else";
     private static final String DEFINE_ENDIF = "#endif";
 
@@ -170,7 +171,7 @@ public class ScriptParser {
 
     private String readLine() throws IOException {
         String readLine;
-        readline: while ((readLine = reader.readLine()) != null) {
+        parseScope: while ((readLine = reader.readLine()) != null) {
             l++;
             readLine = readLine.trim();
             if (readLine.isEmpty() || readLine.startsWith(COMMENT)) {
@@ -180,19 +181,17 @@ public class ScriptParser {
                 String command = args[0].toLowerCase();
                 if (DEFINE_IF.equals(command)) {
                     preprocessorScope.push(args);
-                    for (int i = 1; i < args.length; i++) {
-                        if (staticSymbols.containsKey(args[i])) {
-                            continue readline;
+                    if (parseConditionalBlock(args)) {
+                        continue parseScope;
+                    } else {
+                        if (continueWithNextBLock()) {
+                            continue;
+                        } else {
+                            preprocessorScope.pop();
                         }
                     }
+                } else if (DEFINE_ELSEIF.equals(command)) {
                     readLine = consumeScope();
-                    args = readLine.replace("\t", " ").split(" ");
-                    command = args[0].toLowerCase();
-                    if (DEFINE_ELSE.equals(command)) {
-                        continue;
-                    } else if (DEFINE_ENDIF.equals(command)) {
-                        preprocessorScope.pop();
-                    }
                 } else if (DEFINE_ELSE.equals(command)) {
                     readLine = consumeScope();
                 } else if (DEFINE_ENDIF.equals(command)) {
@@ -205,21 +204,60 @@ public class ScriptParser {
         return readLine;
     }
 
-    private String consumeScope() throws IOException {
+    private boolean parseConditionalBlock(String[] args) {
+        boolean parseConditionalBlock = false;
+        for (int i = 1; i < args.length; i++) {
+            if (staticSymbols.containsKey(args[i])) {
+                parseConditionalBlock = true;
+            }
+        }
+        return parseConditionalBlock;
+    }
+
+    private boolean continueWithNextBLock() throws IOException {
+        String readLine = consumeScope(DEFINE_ELSEIF, DEFINE_ELSE);
+        String[] args = readLine.replace("\t", " ").split(" ");
+        String command = args[0].toLowerCase();
+        final boolean continueWithNextBLock;
+        if (DEFINE_ELSEIF.equals(command)) {
+            // check condition before continuing
+            if (parseConditionalBlock(args)) {
+                continueWithNextBLock = true;
+            } else {
+                continueWithNextBLock = continueWithNextBLock();
+            }
+        } else if (DEFINE_ELSE.equals(command)) {
+            continueWithNextBLock = true;
+        } else if (DEFINE_ENDIF.equals(command)) {
+            continueWithNextBLock = false;
+        } else {
+            continueWithNextBLock = false;
+        }
+        return continueWithNextBLock;
+    }
+
+    private String consumeScope(String... until) throws IOException {
         String readLine;
-        int n = 1;
-        while ((readLine = reader.readLine()) != null && n > 0) {
+        int scope = 1;
+        consumeScope: while ((readLine = reader.readLine()) != null
+                && scope > 0) {
             String[] args = readLine.replace("\t", " ").split(" ");
             String command = args[0].toLowerCase();
             if (DEFINE_IF.equalsIgnoreCase(command)) {
-                n++;
-            } else if (DEFINE_ENDIF.equalsIgnoreCase(command)) {
-                if (--n == 0) {
-                    break;
-                }
-            } else if (DEFINE_ELSE.equalsIgnoreCase(command)) {
-                if (--n == 0) {
-                    break;
+                scope++;
+            } else {
+                if (DEFINE_ENDIF.equalsIgnoreCase(command)) {
+                    if (--scope == 1) {
+                        break;
+                    }
+                } else {
+                    for (String string : until) {
+                        if (string.equalsIgnoreCase(command)) {
+                            if (scope == 1) {
+                                break consumeScope;
+                            }
+                        }
+                    }
                 }
             }
         }

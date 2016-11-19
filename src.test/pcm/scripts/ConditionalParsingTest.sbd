@@ -14,7 +14,7 @@
 .mustnot 501            ' No impatience (impossible at this point)
 #if Ff
 	Hello, you foolish girl.
-	.set 2
+	.set 1
 #else
 	Hello, you foolish boy.
 	.set 3
@@ -24,7 +24,7 @@ I understand that you're looking for a Mistress!
 
 
 
-' testConditionalParsing
+' testConditionalParsing_if_elseif_else
 
 ' sample from Mine introduction
 ' First time, not submitted -> introduction
@@ -33,11 +33,11 @@ I understand that you're looking for a Mistress!
 .mustnot 101            ' Haven't submitted
 .mustnot 102            ' No bad quit (impossible at this point)
 .mustnot 501            ' No impatience (impossible at this point)
-#if Ftv
-	Hello, you foolish slut.
-	.set 1
 #if Ff
 	Hello, you foolish girl.
+	.set 1
+#elseif Ftv
+	Hello, you foolish slut.
 	.set 2
 #else
 	Hello, you foolish boy.

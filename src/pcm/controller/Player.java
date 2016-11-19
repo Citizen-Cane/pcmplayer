@@ -37,6 +37,7 @@ import teaselib.Images;
 import teaselib.Message;
 import teaselib.ScriptFunction;
 import teaselib.Sexuality;
+import teaselib.Sexuality.Gender;
 import teaselib.TeaseScript;
 import teaselib.core.ResourceLoader;
 import teaselib.core.ScriptInterruptedException;
@@ -46,6 +47,7 @@ import teaselib.core.media.MediaRenderer;
 import teaselib.core.speechrecognition.SpeechRecognitionResult.Confidence;
 import teaselib.core.texttospeech.ScriptScanner;
 import teaselib.core.texttospeech.TextToSpeechRecorder;
+import teaselib.core.texttospeech.Voice;
 import teaselib.util.RandomImages;
 import teaselib.util.SpeechRecognitionRejectedScript;
 
@@ -130,18 +132,27 @@ public abstract class Player extends TeaseScript {
     }
 
     private Symbols createDominantSubmissiveSymbols() {
-        Symbols staticSymbols = new Symbols();
+        StringBuilder dominantSubmissiveSymbol = new StringBuilder();
+        if (actor.gender == Voice.Gender.Male) {
+            dominantSubmissiveSymbol.append("M");
+        } else {
+            dominantSubmissiveSymbol.append("F");
+        }
         if (persistentEnum(Sexuality.Sex.Male)
                 .value() == Sexuality.Sex.Female) {
-            staticSymbols.put("Ff", "true");
+            dominantSubmissiveSymbol.append("f");
         } else {
-            if (persistentBoolean(Sexuality.Gender.Feminine).value()) {
-                staticSymbols.put("Ftv", "true");
+            if (persistentEnum(Sexuality.Gender.Masculine)
+                    .value() == Gender.Feminine) {
+                dominantSubmissiveSymbol.append("tv");
             } else {
-                staticSymbols.put("Fm", "true");
+                dominantSubmissiveSymbol.append("m");
             }
         }
+        Symbols staticSymbols = new Symbols();
+        staticSymbols.put(dominantSubmissiveSymbol.toString(), "true");
         return staticSymbols;
+
     }
 
     public String getResourceFolder() {
@@ -636,15 +647,6 @@ public abstract class Player extends TeaseScript {
             List<ValidationIssue> validationErrors) {
         script.validate(validationErrors);
         for (Action action : script.actions.values()) {
-            // if (action.image != null && !action.image.isEmpty())
-            // {
-            // try {
-            // String path = IMAGES + action.image;
-            // resources.image(path);
-            // } catch (IOException e) {
-            // throw new ValidationError("", e);
-            // }
-            // }
             action.validate(script, validationErrors);
         }
         for (ScriptException scriptError : validationErrors) {
@@ -679,11 +681,11 @@ public abstract class Player extends TeaseScript {
         }
     }
 
-    private void showError(Throwable t, String formattedMessage) {
+    private void showError(Throwable t, String error) {
         logger.error(t.getMessage(), t);
-        logger.info(formattedMessage);
+        logger.info(error);
         try {
-            show(formattedMessage);
+            show(error);
             reply("Oh Dear");
         } catch (ScriptInterruptedException e) {
             // Ignore

@@ -2,7 +2,6 @@ package pcm.util;
 
 import java.util.Locale;
 
-import pcm.ConditionalParsingTest;
 import pcm.controller.AllActionsSetException;
 import pcm.controller.Player;
 import pcm.model.ActionRange;
@@ -15,11 +14,20 @@ import teaselib.hosts.DummyHost;
 import teaselib.hosts.DummyPersistence;
 
 public class TestUtils {
+    public static TeaseLib teaseLib() {
+        TeaseLib teaseLib = new TeaseLib(new DummyHost(),
+                new DummyPersistence());
+        return teaseLib;
+    }
 
-    public static Player createPlayer() {
-        Player player = new Player(
-                new TeaseLib(new DummyHost(), new DummyPersistence()),
-                new ResourceLoader(ConditionalParsingTest.class,
+    public static Player createPlayer(Class<?> scriptClass) {
+        TeaseLib teaseLib = teaseLib();
+        return createPlayer(teaseLib, scriptClass);
+    }
+
+    public static Player createPlayer(TeaseLib teaseLib, Class<?> scriptClass) {
+        Player player = new Player(teaseLib,
+                new ResourceLoader(scriptClass,
                         ResourceLoader.ResourcesInProjectFolder),
                 new Actor(Actor.Key.DominantFemale, Voice.Gender.Female,
                         Locale.US),
