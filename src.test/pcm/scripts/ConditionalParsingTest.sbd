@@ -12,7 +12,7 @@
 .mustnot 101            ' Haven't submitted
 .mustnot 102            ' No bad quit (impossible at this point)
 .mustnot 501            ' No impatience (impossible at this point)
-#if Ff
+#if Ff Mf
 	Hello, you foolish girl.
 	.set 1
 #else
@@ -33,10 +33,10 @@ I understand that you're looking for a Mistress!
 .mustnot 101            ' Haven't submitted
 .mustnot 102            ' No bad quit (impossible at this point)
 .mustnot 501            ' No impatience (impossible at this point)
-#if Ff
+#if Ff Mf
 	Hello, you foolish girl.
 	.set 1
-#elseif Ftv
+#elseif Ftv Mtv
 	Hello, you foolish slut.
 	.set 2
 #else

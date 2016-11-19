@@ -9,7 +9,7 @@ import pcm.model.ScriptExecutionException;
 import teaselib.Actor;
 import teaselib.core.ResourceLoader;
 import teaselib.core.TeaseLib;
-import teaselib.core.texttospeech.Voice;
+import teaselib.core.texttospeech.Voice.Gender;
 import teaselib.hosts.DummyHost;
 import teaselib.hosts.DummyPersistence;
 
@@ -26,13 +26,16 @@ public class TestUtils {
     }
 
     public static Player createPlayer(TeaseLib teaseLib, Class<?> scriptClass) {
+        return createPlayer(teaseLib, scriptClass,
+                teaseLib.getDominant(Gender.Female, Locale.US));
+    }
+
+    public static Player createPlayer(TeaseLib teaseLib, Class<?> scriptClass,
+            Actor dominant) {
         Player player = new Player(teaseLib,
                 new ResourceLoader(scriptClass,
                         ResourceLoader.ResourcesInProjectFolder),
-                new Actor(Actor.Key.DominantFemale, Voice.Gender.Female,
-                        Locale.US),
-                "pcm", null) {
-
+                dominant, "pcm", null) {
             @Override
             public void run() {
             }
