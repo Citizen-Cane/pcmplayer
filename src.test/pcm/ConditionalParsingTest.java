@@ -23,7 +23,7 @@ import teaselib.core.TeaseLib;
 import teaselib.core.texttospeech.Voice.Gender;
 
 /**
- * @author someone
+ * @author Citizen-Cane
  *
  */
 public class ConditionalParsingTest {
@@ -49,7 +49,6 @@ public class ConditionalParsingTest {
                 Sexuality.Sex.class).set(sex);
         teaseLib.new PersistentEnum<Sexuality.Gender>(TeaseLib.DefaultDomain,
                 Sexuality.Gender.class).set(gender);
-        // TODO set
         return createPlayer(teaseLib,
                 teaseLib.getDominant(Gender.Male, Locale.US));
     }
@@ -72,7 +71,6 @@ public class ConditionalParsingTest {
                 player.persistentEnum(Sexuality.Sex.class).value());
         assertEquals(Sexuality.Gender.Feminine,
                 player.persistentEnum(Sexuality.Gender.class).value());
-        // todo player.get(Sexuality.Sex) to hide creation of persistent object
         ActionRange r = new ActionRange(900);
         TestUtils.play(player, r, r);
 
@@ -224,5 +222,4 @@ public class ConditionalParsingTest {
         assertEquals("#elseif parsed -", State.UNSET, player.state.get(2));
         assertEquals("#else not parsed -", State.SET, player.state.get(3));
     }
-
 }
