@@ -138,11 +138,11 @@ public abstract class Player extends TeaseScript {
         } else {
             dominantSubmissiveSymbol.append("F");
         }
-        if (persistentEnum(Sexuality.Sex.Male)
+        if (persistentEnum(Sexuality.Sex.class)
                 .value() == Sexuality.Sex.Female) {
             dominantSubmissiveSymbol.append("f");
         } else {
-            if (persistentEnum(Sexuality.Gender.Masculine)
+            if (persistentEnum(Sexuality.Gender.class)
                     .value() == Gender.Feminine) {
                 dominantSubmissiveSymbol.append("tv");
             } else {

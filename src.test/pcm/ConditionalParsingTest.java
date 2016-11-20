@@ -31,10 +31,10 @@ public class ConditionalParsingTest {
     public Player createMistress(Sexuality.Sex sex, Sexuality.Gender gender)
             throws Exception {
         TeaseLib teaseLib = TestUtils.teaseLib();
-        teaseLib.new PersistentEnum<Enum<?>>(TeaseLib.DefaultDomain,
-                Sexuality.Sex.Male).set(sex);
-        teaseLib.new PersistentEnum<Enum<?>>(TeaseLib.DefaultDomain,
-                Sexuality.Gender.Masculine).set(gender);
+        teaseLib.new PersistentEnum<Sexuality.Sex>(TeaseLib.DefaultDomain,
+                Sexuality.Sex.class).set(sex);
+        teaseLib.new PersistentEnum<Sexuality.Gender>(TeaseLib.DefaultDomain,
+                Sexuality.Gender.class).set(gender);
         // TODO persistent enum needs class & default value,
         // otherwise The code looks strange
         // TODO set
@@ -45,12 +45,10 @@ public class ConditionalParsingTest {
     public Player createMaster(Sexuality.Sex sex, Sexuality.Gender gender)
             throws Exception {
         TeaseLib teaseLib = TestUtils.teaseLib();
-        teaseLib.new PersistentEnum<Enum<?>>(TeaseLib.DefaultDomain,
-                Sexuality.Sex.Male).set(sex);
-        teaseLib.new PersistentEnum<Enum<?>>(TeaseLib.DefaultDomain,
-                Sexuality.Gender.Masculine).set(gender);
-        // TODO persistent enum needs class & default value,
-        // otherwise The code looks strange
+        teaseLib.new PersistentEnum<Sexuality.Sex>(TeaseLib.DefaultDomain,
+                Sexuality.Sex.class).set(sex);
+        teaseLib.new PersistentEnum<Sexuality.Gender>(TeaseLib.DefaultDomain,
+                Sexuality.Gender.class).set(gender);
         // TODO set
         return createPlayer(teaseLib,
                 teaseLib.getDominant(Gender.Male, Locale.US));
@@ -71,9 +69,9 @@ public class ConditionalParsingTest {
         Player player = createMistress(Sexuality.Sex.Female,
                 Sexuality.Gender.Feminine);
         assertEquals(Sexuality.Sex.Female,
-                player.persistentEnum(Sexuality.Sex.Male).value());
+                player.persistentEnum(Sexuality.Sex.class).value());
         assertEquals(Sexuality.Gender.Feminine,
-                player.persistentEnum(Sexuality.Gender.Masculine).value());
+                player.persistentEnum(Sexuality.Gender.class).value());
         // todo player.get(Sexuality.Sex) to hide creation of persistent object
         ActionRange r = new ActionRange(900);
         TestUtils.play(player, r, r);
@@ -152,9 +150,9 @@ public class ConditionalParsingTest {
         Player player = createMaster(Sexuality.Sex.Female,
                 Sexuality.Gender.Feminine);
         assertEquals(Sexuality.Sex.Female,
-                player.persistentEnum(Sexuality.Sex.Male).value());
+                player.persistentEnum(Sexuality.Sex.class).value());
         assertEquals(Sexuality.Gender.Feminine,
-                player.persistentEnum(Sexuality.Gender.Masculine).value());
+                player.persistentEnum(Sexuality.Gender.class).value());
         // todo player.get(Sexuality.Sex) to hide creation of persistent object
         ActionRange r = new ActionRange(900);
         TestUtils.play(player, r, r);
