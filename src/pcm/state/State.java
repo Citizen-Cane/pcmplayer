@@ -78,11 +78,6 @@ public class State {
         this.player = player;
     }
 
-    // TODO Mapping between Mine and SS properties,
-    // probably a mapping between integers and human-readable names,
-    // and if I ever get another host, names could be the same,
-    // or they're injected by the groovy script
-
     public void restore(Script script) {
         this.script = script;
         step = 0;
@@ -102,33 +97,50 @@ public class State {
                 if (e < 0)
                     return;
                 for (int i = s; i <= e; i++) {
-                    String value = read(Integer.toString(i));
-                    // Avoid storing UNSET values from data
-                    if (value == null) {
-                        if (data.containsKey(i)) {
-                            data.remove(i);
-                        }
-                    } else {
-                        Long v = new Long(value);
-                        if (v.equals(SET)) {
-                            data.put(i, SET);
-                        } else if (v.equals(UNSET)) {
-                            data.remove(i);
-                        } else {
-                            data.put(i, v);
-                        }
-                    }
+                    restoreValue(i);
                 }
                 String timeKeys = read(TIMEKEYS);
                 if (timeKeys != null) {
                     for (StringTokenizer keys = new StringTokenizer(timeKeys,
                             " "); keys.hasMoreTokens();) {
                         String key = keys.nextToken();
-                        long value = Long.parseLong(read(key));
-                        times.put(new Integer(key), new Date(value * 1000));
+                        String value = read(key);
+                        if (value == null) {
+                            throw new NumberFormatException("Missing state "
+                                    + key
+                                    + " - Don't you dare to hack into my memories!");
+                        }
+                        long timeValue = Long.parseLong(value);
+                        times.put(new Integer(key), new Date(timeValue * 1000));
                     }
                 }
             }
+        }
+    }
+
+    private void restoreValue(int i) {
+        String value = read(Integer.toString(i));
+        if (value == null) {
+            restoreUNSET(i);
+        } else {
+            restoreValue(i, value);
+        }
+    }
+
+    private void restoreUNSET(int i) {
+        if (data.containsKey(i)) {
+            data.remove(i);
+        }
+    }
+
+    private void restoreValue(int i, String value) {
+        Long v = new Long(value);
+        if (v.equals(SET)) {
+            data.put(i, SET);
+        } else if (v.equals(UNSET)) {
+            data.remove(i);
+        } else {
+            data.put(i, v);
         }
     }
 
