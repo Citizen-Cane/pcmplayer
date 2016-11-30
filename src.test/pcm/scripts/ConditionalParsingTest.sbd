@@ -19,6 +19,7 @@
 	Hello, you foolish boy.
 	.set 3
 #endif
+.set 4
 I understand that you're looking for a Mistress!
 .range 9999             ' ...to the submission sequence!
 
@@ -43,6 +44,7 @@ I understand that you're looking for a Mistress!
 	Hello, you foolish boy.
 	.set 3
 #endif
+.set 4
 I understand that you're looking for a Mistress!
 .range 9999             ' ...to the submission sequence!
 
