@@ -32,9 +32,7 @@ public class TestUtils {
 
     public static Player createPlayer(TeaseLib teaseLib, Class<?> scriptClass,
             Actor dominant) {
-        Player player = new Player(teaseLib,
-                new ResourceLoader(scriptClass,
-                        ResourceLoader.ResourcesInProjectFolder),
+        Player player = new Player(teaseLib, new ResourceLoader(scriptClass),
                 dominant, "pcm", null) {
             @Override
             public void run() {

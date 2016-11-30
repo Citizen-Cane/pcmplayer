@@ -31,8 +31,7 @@ public class MessageTests {
 
     Player player = new Player(
             new TeaseLib(new DummyHost(), new DummyPersistence()),
-            new ResourceLoader(this.getClass(),
-                    ResourceLoader.ResourcesInProjectFolder),
+            new ResourceLoader(this.getClass()),
             new Actor("Test", Voice.Gender.Female, Locale.US), "pcm", null) {
 
         @Override
