@@ -247,8 +247,8 @@ public class ScriptParser {
                 scope++;
             } else {
                 if (DEFINE_ENDIF.equalsIgnoreCase(command)) {
-                    if (--scope == 1) {
-                        break;
+                    if (--scope == 0) {
+                        break consumeScope;
                     }
                 } else {
                     for (String string : until) {
