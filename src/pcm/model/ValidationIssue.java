@@ -12,15 +12,15 @@ public class ValidationIssue extends ScriptException {
                 e.script);
     }
 
-    public ValidationIssue(String reason, Throwable e, Script script) {
-        super(reason, e, script);
+    public ValidationIssue(Action action, Exception e) {
+        super("Action " + action.number + ": " + e.getMessage(), e.getCause());
     }
 
     public ValidationIssue(String reason, Script script) {
         super(reason, script);
     }
 
-    public ValidationIssue(Action action, Throwable e, Script script) {
+    public ValidationIssue(Action action, Exception e, Script script) {
         super("Action " + action.number + ": ", e, script);
     }
 }

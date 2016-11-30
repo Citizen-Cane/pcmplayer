@@ -1,5 +1,6 @@
 package pcm.model;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import pcm.state.Condition;
 import pcm.state.Interaction;
 import pcm.state.Interaction.NeedsRangeProvider;
 import pcm.state.Validatable;
+import pcm.state.ValidatableResources;
 import pcm.state.Visual;
 import pcm.state.Interactions.Ask;
 import pcm.state.Interactions.Break;
@@ -578,6 +580,19 @@ public class Action extends AbstractAction {
             validationErrors
                     .add(new ValidationIssue(this, "No interaction", script));
         }
+    }
+
+    public List<String> validateResources() {
+        List<String> resources = new ArrayList<String>();
+        if (visuals != null) {
+            for (Visual visual : visuals.values()) {
+                if (visual instanceof ValidatableResources) {
+                    resources.addAll(
+                            ((ValidatableResources) visual).resources());
+                }
+            }
+        }
+        return resources;
     }
 
     @Override

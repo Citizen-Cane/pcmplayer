@@ -29,17 +29,15 @@ public class ScriptCache {
     private final Symbols staticSymbols;
     private final Map<String, SoftReference<Script>> cache = new HashMap<String, SoftReference<Script>>();
     private final ResourceLoader resourceLoader;
-    private final String resourcePath;
-    private final String scriptPath;
+    private final String path;
 
     public final Stack<ActionRange> stack;
 
-    public ScriptCache(ResourceLoader resourceLoader, String resourcePath,
+    public ScriptCache(ResourceLoader resourceLoader, String path,
             Symbols staticSymbols) {
         this.resourceLoader = resourceLoader;
-        this.resourcePath = resourcePath;
         this.staticSymbols = staticSymbols;
-        this.scriptPath = resourcePath + Player.Scripts;
+        this.path = path;
         stack = new Stack<ActionRange>();
     }
 
@@ -52,11 +50,11 @@ public class ScriptCache {
         if (script != null) {
             logger.debug("Using cached script " + name);
         } else {
-            final String location = scriptPath + name;
-            final BufferedReader scriptReader = script(location);
+            String location = path + name;
+            BufferedReader scriptReader = script(location);
             try {
-                script = new Script(actor, name, this, new ScriptParser(
-                        scriptReader, resourcePath, staticSymbols));
+                script = new Script(actor, name, this,
+                        new ScriptParser(scriptReader, staticSymbols));
             } finally {
                 scriptReader.close();
             }
@@ -72,8 +70,10 @@ public class ScriptCache {
     }
 
     public Set<String> names() {
-        // Avoid concurrent modification exception when adding scripts while
-        // iterating names
+        return avoidConcurrentModificationException();
+    }
+
+    private HashSet<String> avoidConcurrentModificationException() {
         return new HashSet<String>(cache.keySet());
     }
 }

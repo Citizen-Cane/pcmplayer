@@ -25,17 +25,14 @@ public class ScriptParser {
     private final Symbols staticSymbols;
     private final Stack<String[]> preprocessorScope = new Stack<String[]>();
     private final BufferedReader reader;
-    private final String resourcePath;
 
     private String line = null;
     private int l = 0;
     private int n = 0;
     private int previousActionNumber = 0;
 
-    public ScriptParser(BufferedReader reader, String resourcePath,
-            Symbols staticSymbols) {
+    public ScriptParser(BufferedReader reader, Symbols staticSymbols) {
         this.reader = reader;
-        this.resourcePath = resourcePath;
         this.staticSymbols = staticSymbols;
     }
 
@@ -135,7 +132,7 @@ public class ScriptParser {
                             if (message == null) {
                                 message = new SpokenMessage(script.actor);
                             }
-                            message.add(line, resourcePath);
+                            message.add(line);
                         }
                     }
                     // Add message to visuals as the last item, because

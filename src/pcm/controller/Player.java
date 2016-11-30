@@ -54,7 +54,7 @@ import teaselib.util.SpeechRecognitionRejectedScript;
 public abstract class Player extends TeaseScript {
     private static final Logger logger = LoggerFactory.getLogger(Player.class);
 
-    public static final String Scripts = "scripts/";
+    public static final String ScriptFolder = "scripts/";
 
     public static boolean validateScripts = false;
     public static boolean debugOutput = false;
@@ -105,12 +105,12 @@ public abstract class Player extends TeaseScript {
                 .entrySet()) {
             Symbols dominantSubmissiveRelation = new Symbols();
             dominantSubmissiveRelation.put(entry.getKey(), entry.getValue());
-            ScriptCache scripts = new ScriptCache(resources,
-                    scriptClass.getSimpleName() + "/",
+            ScriptCache scripts = new ScriptCache(resources, Player.ScriptFolder,
                     dominantSubmissiveRelation);
             // Get the main script
             Script main = scripts.get(actor, startupScript);
             // and validate to load all the sub scripts
+            // TODO load scripts explicitly
             validate(main, new ArrayList<ValidationIssue>());
             for (String scriptName : scripts.names()) {
                 Script script = scripts.get(actor, scriptName);
@@ -124,7 +124,7 @@ public abstract class Player extends TeaseScript {
     public Player(TeaseLib teaseLib, ResourceLoader resources, Actor actor,
             String namespace, String mistressPath) {
         super(teaseLib, resources, actor, namespace);
-        this.scripts = new ScriptCache(resources, "/" + namespace + "/",
+        this.scripts = new ScriptCache(resources, Player.ScriptFolder,
                 createDominantSubmissiveSymbols());
         this.mistressPath = mistressPath;
         this.invokedOnAllSet = false;
@@ -153,10 +153,6 @@ public abstract class Player extends TeaseScript {
         staticSymbols.put(dominantSubmissiveSymbol.toString(), "true");
         return staticSymbols;
 
-    }
-
-    public String getResourceFolder() {
-        return "/" + getClass().getSimpleName() + "/";
     }
 
     public void play(String script) {
@@ -289,10 +285,12 @@ public abstract class Player extends TeaseScript {
             throws ScriptParsingException, ValidationIssue, IOException {
         List<ValidationIssue> validationErrors = new ArrayList<ValidationIssue>();
         validate(script, validationErrors);
+        validateResources(script, resources, validationErrors);
         for (String s : scripts.names()) {
-            Script other = scripts.get(actor, s);
-            if (other != script) {
-                validate(other, validationErrors);
+            Script subScript = scripts.get(actor, s);
+            if (subScript != script) {
+                validate(subScript, validationErrors);
+                validateResources(subScript, resources, validationErrors);
             }
         }
         if (validationErrors.size() > 0) {
@@ -652,6 +650,35 @@ public abstract class Player extends TeaseScript {
         for (ScriptException scriptError : validationErrors) {
             if (scriptError.script == null) {
                 scriptError.script = script;
+            }
+        }
+    }
+
+    public static void validateResources(Script script,
+            ResourceLoader resourceLoader,
+            List<ValidationIssue> validationIssues) {
+        for (Action action : script.actions.values()) {
+            testResources(action, resourceLoader, validationIssues);
+        }
+        for (ScriptException scriptError : validationIssues) {
+            if (scriptError.script == null) {
+                scriptError.script = script;
+            }
+        }
+    }
+
+    private static void testResources(Action action,
+            ResourceLoader resourceLoader,
+            List<ValidationIssue> validationIssues) {
+        for (String resource : action.validateResources()) {
+            InputStream stream = null;
+            try {
+                stream = resourceLoader.getResource(resource);
+                if (stream != null) {
+                    stream.close();
+                }
+            } catch (IOException e) {
+                validationIssues.add(new ValidationIssue(action, e));
             }
         }
     }

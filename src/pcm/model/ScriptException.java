@@ -13,9 +13,9 @@ public class ScriptException extends Exception {
         this.script = script;
     }
 
-    public ScriptException(String message, ScriptException cause) {
+    public ScriptException(String message, Throwable cause) {
         super(message, cause);
-        this.script = cause.script;
+        this.script = null;
     }
 
     ScriptException(String message, Script script) {

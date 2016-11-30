@@ -205,8 +205,5 @@ public class Script extends AbstractAction {
             validationErrors
                     .add(new ValidationIssue("Wrong start range", this));
         }
-        // TeaseLib.resources().exists(imageDirectory);
-        // if (!new File(root + ).exists)
     }
-
 }
