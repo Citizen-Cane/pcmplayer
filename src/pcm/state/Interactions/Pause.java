@@ -14,12 +14,9 @@ import pcm.model.Script;
 import pcm.model.ScriptExecutionException;
 import pcm.model.ScriptParsingException;
 import pcm.model.ValidationIssue;
-import pcm.state.Interaction;
 
-public class Pause implements Interaction, Interaction.NeedsRangeProvider {
+public class Pause extends AbstractInteractionWithRangeProvider {
     private static final Logger logger = LoggerFactory.getLogger(Pause.class);
-
-    private Interaction rangeProvider = null;
 
     @Override
     public ActionRange getRange(Script script, Action action, Runnable visuals,
@@ -29,22 +26,8 @@ public class Pause implements Interaction, Interaction.NeedsRangeProvider {
         List<String> choices = new ArrayList<String>(1);
         choices.add(resume);
         visuals.run();
-        player.reply(choices);
+        player.reply(getConfidence(action), choices);
         return rangeProvider.getRange(script, action, NoVisuals, player);
-    }
-
-    @Override
-    public void setRangeProvider(Interaction rangeProvider) {
-        if (this.rangeProvider != null) {
-            if (this.rangeProvider instanceof NeedsRangeProvider) {
-                ((NeedsRangeProvider) this.rangeProvider)
-                        .setRangeProvider(rangeProvider);
-            } else {
-                throw new IllegalStateException(rangeProvider.toString());
-            }
-        } else {
-            this.rangeProvider = rangeProvider;
-        }
     }
 
     @Override

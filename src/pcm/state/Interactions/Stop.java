@@ -15,21 +15,17 @@ import pcm.model.Script;
 import pcm.model.ScriptExecutionException;
 import pcm.model.ScriptParsingException;
 import pcm.model.ValidationIssue;
-import pcm.state.Interaction;
-import pcm.state.Interaction.NeedsRangeProvider;
 import pcm.state.visuals.Timeout;
 import teaselib.ScriptFunction;
 import teaselib.core.ScriptInterruptedException;
 import teaselib.core.speechrecognition.SpeechRecognition.TimeoutBehavior;
 
-public class Stop implements Interaction, NeedsRangeProvider {
+public class Stop extends AbstractInteractionWithRangeProvider {
     private static final Logger logger = LoggerFactory.getLogger(Stop.class);
 
     private final Map<Statement, ActionRange> choiceRanges;
     private final TimeoutType timeoutType;
     private final TimeoutBehavior timeoutBehavior;
-
-    private Interaction rangeProvider = null;
 
     public enum TimeoutType {
         /**
@@ -118,7 +114,8 @@ public class Stop implements Interaction, NeedsRangeProvider {
             }
 
         };
-        String result = player.reply(displayVisualsAndTimeout, choices);
+        String result = player.reply(displayVisualsAndTimeout,
+                getConfidence(action).higher(), choices);
         if (result != ScriptFunction.Timeout) {
             int index = choices.indexOf(result);
             logger.info("-> " + result);
@@ -126,11 +123,6 @@ public class Stop implements Interaction, NeedsRangeProvider {
         } else {
             return rangeProvider.getRange(script, action, NoVisuals, player);
         }
-    }
-
-    @Override
-    public void setRangeProvider(Interaction rangeProvider) {
-        this.rangeProvider = rangeProvider;
     }
 
     @Override

@@ -13,9 +13,8 @@ import pcm.model.ActionRange;
 import pcm.model.Script;
 import pcm.model.ScriptExecutionException;
 import pcm.model.ValidationIssue;
-import pcm.state.Interaction;
 
-public class YesNo implements Interaction {
+public class YesNo extends AbstractInteraction {
     private static final Logger logger = LoggerFactory.getLogger(YesNo.class);
 
     private final int startYes;
@@ -31,9 +30,8 @@ public class YesNo implements Interaction {
     }
 
     @Override
-    public ActionRange getRange(Script script, Action action,
-            Runnable visuals, final Player player)
-            throws ScriptExecutionException {
+    public ActionRange getRange(Script script, Action action, Runnable visuals,
+            final Player player) throws ScriptExecutionException {
         String yes = action.getResponseText(Statement.YesText, script);
         String no = action.getResponseText(Statement.NoText, script);
         logger.info("AskYesNo: '" + yes + "', '" + no + '+');
@@ -41,7 +39,7 @@ public class YesNo implements Interaction {
         choices.add(yes);
         choices.add(no);
         visuals.run();
-        if (player.reply(choices) == yes) {
+        if (player.reply(getConfidence(action), choices) == yes) {
             logger.info("-> Yes");
             return new ActionRange(startYes, endYes);
         } else {

@@ -15,19 +15,15 @@ import pcm.model.Script;
 import pcm.model.ScriptExecutionException;
 import pcm.model.ScriptParsingException;
 import pcm.model.ValidationIssue;
-import pcm.state.Interaction;
-import pcm.state.Interaction.NeedsRangeProvider;
 import teaselib.ScriptFunction;
 import teaselib.core.ScriptInterruptedException;
 import teaselib.core.speechrecognition.SpeechRecognition;
 
-public class Break implements Interaction, NeedsRangeProvider {
+public class Break extends AbstractInteractionWithRangeProvider {
     private static final Logger logger = LoggerFactory.getLogger(Break.class);
 
     private final ActionRange actionRange;
     private final Map<Statement, ActionRange> choiceRanges;
-
-    private Interaction rangeProvider = null;
 
     public Break(ActionRange actionRange,
             Map<Statement, ActionRange> choiceRanges) {
@@ -66,18 +62,13 @@ public class Break implements Interaction, NeedsRangeProvider {
                 return;
             }
         };
-        String result = player.reply(playRange, choices);
+        String result = player.reply(playRange, getConfidence(action).higher(), choices);
         if (result != ScriptFunction.Timeout) {
             int index = choices.indexOf(result);
             return ranges.get(index);
         } else {
             return player.range;
         }
-    }
-
-    @Override
-    public void setRangeProvider(Interaction rangeProvider) {
-        this.rangeProvider = rangeProvider;
     }
 
     @Override

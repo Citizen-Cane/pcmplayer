@@ -609,7 +609,7 @@ public abstract class Player extends TeaseScript {
 
     @Override
     protected String showChoices(ScriptFunction scriptFunction,
-            List<String> choices, Confidence recognitionConfidence) {
+            Confidence recognitionConfidence, List<String> choices) {
         // Display text according to slave's level of articulateness
         Long gag = script != null ? state.get(script.gag) : State.UNSET;
         if (gag.equals(State.SET)) {
@@ -626,7 +626,7 @@ public abstract class Player extends TeaseScript {
                 processedChoices.add(choice);
             }
             final String processedChoice = super.showChoices(scriptFunction,
-                    processedChoices, recognitionConfidence);
+                    recognitionConfidence, processedChoices);
             // Return the original choice instance
             int index = processedChoices.indexOf(processedChoice);
             if (index < 0) {
@@ -636,8 +636,8 @@ public abstract class Player extends TeaseScript {
                 return choices.get(index);
             }
         } else {
-            return super.showChoices(scriptFunction, choices,
-                    recognitionConfidence);
+            return super.showChoices(scriptFunction, recognitionConfidence,
+                    choices);
         }
     }
 

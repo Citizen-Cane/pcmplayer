@@ -43,6 +43,7 @@ import pcm.state.conditions.Should;
 import pcm.state.conditions.ShouldNot;
 import pcm.state.conditions.TimeFrom;
 import pcm.state.conditions.TimeTo;
+import pcm.state.visuals.Args;
 import pcm.state.visuals.Delay;
 import pcm.state.visuals.Exec;
 import pcm.state.visuals.Image;
@@ -437,6 +438,10 @@ public class Action extends AbstractAction {
             }
         } else if (name == Statement.Return) {
             setInteraction(new Return());
+        }
+        // Modifiers
+        else if (name == Statement.relaxedSpeechRecognitionConfidence) {
+            addVisual(name, Args.None);
         } else {
             super.add(cmd);
         }

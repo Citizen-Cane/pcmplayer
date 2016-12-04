@@ -12,7 +12,6 @@ import pcm.model.Script;
 import pcm.model.ScriptExecutionException;
 import pcm.model.ScriptParsingException;
 import pcm.model.ValidationIssue;
-import pcm.state.Interaction;
 
 /**
  * @author someone
@@ -21,10 +20,9 @@ import pcm.state.Interaction;
  *         the visuals of the action.
  * 
  */
-public class GoSub implements Interaction, Interaction.NeedsRangeProvider {
+public class GoSub extends AbstractInteractionWithRangeProvider {
     private static final Logger logger = LoggerFactory.getLogger(GoSub.class);
 
-    private Interaction rangeProvider = null;
     final private ActionRange range;
 
     public GoSub(ActionRange range) {
@@ -39,20 +37,6 @@ public class GoSub implements Interaction, Interaction.NeedsRangeProvider {
         script.stack.push(
                 rangeProvider.getRange(script, action, NoVisuals, player));
         return range;
-    }
-
-    @Override
-    public void setRangeProvider(Interaction rangeProvider) {
-        if (this.rangeProvider != null) {
-            if (this.rangeProvider instanceof NeedsRangeProvider) {
-                ((NeedsRangeProvider) this.rangeProvider)
-                        .setRangeProvider(rangeProvider);
-            } else {
-                throw new IllegalStateException(rangeProvider.toString());
-            }
-        } else {
-            this.rangeProvider = rangeProvider;
-        }
     }
 
     @Override
