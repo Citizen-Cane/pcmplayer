@@ -90,25 +90,22 @@ public abstract class Player extends TeaseScript {
      */
     public final static ActionRange ReturnToPlayer = new ActionRange(0);
 
-    public static void recordVoices(Class<?> scriptClass, Actor actor,
-            String[] assets, String startupScript)
+    public static void recordVoices(Actor actor, String mainScript,
+            Class<?> scriptClass, String resourcesRoot, String[] assets)
             throws IOException, ValidationIssue, ScriptParsingException {
         ResourceLoader resources = new ResourceLoader(scriptClass,
-                ResourceLoader.ResourcesInProjectFolder);
-        resources.addAssets(assets);
-        // TODO initialize recorder with an actual speech resources path
-        TextToSpeechRecorder recorder = new TextToSpeechRecorder(resources,
-                scriptClass.getSimpleName());
+                resourcesRoot, assets);
+        TextToSpeechRecorder recorder = new TextToSpeechRecorder(resources);
         Symbols dominantSubmissiveRelations = Symbols
                 .getDominantSubmissiveRelations();
         for (Entry<String, String> entry : dominantSubmissiveRelations
                 .entrySet()) {
             Symbols dominantSubmissiveRelation = new Symbols();
             dominantSubmissiveRelation.put(entry.getKey(), entry.getValue());
-            ScriptCache scripts = new ScriptCache(resources, Player.ScriptFolder,
-                    dominantSubmissiveRelation);
+            ScriptCache scripts = new ScriptCache(resources,
+                    Player.ScriptFolder, dominantSubmissiveRelation);
             // Get the main script
-            Script main = scripts.get(actor, startupScript);
+            Script main = scripts.get(actor, mainScript);
             // and validate to load all the sub scripts
             // TODO load scripts explicitly
             validate(main, new ArrayList<ValidationIssue>());
