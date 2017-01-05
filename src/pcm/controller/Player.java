@@ -1,6 +1,7 @@
 package pcm.controller;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -90,11 +91,11 @@ public abstract class Player extends TeaseScript {
      */
     public final static ActionRange ReturnToPlayer = new ActionRange(0);
 
-    public static void recordVoices(Actor actor, String mainScript,
-            Class<?> scriptClass, String resourcesRoot, String[] assets)
+    public static void recordVoices(Actor actor, String mainScript, File path,
+            String resourcesRoot, String[] assets)
             throws IOException, ValidationIssue, ScriptParsingException {
-        ResourceLoader resources = new ResourceLoader(scriptClass,
-                resourcesRoot, assets);
+        ResourceLoader resources = new ResourceLoader(path, resourcesRoot);
+        resources.addAssets(assets);
         TextToSpeechRecorder recorder = new TextToSpeechRecorder(resources);
         Symbols dominantSubmissiveRelations = Symbols
                 .getDominantSubmissiveRelations();
