@@ -51,6 +51,7 @@ import teaselib.core.texttospeech.TextToSpeechRecorder;
 import teaselib.core.texttospeech.Voice;
 import teaselib.util.RandomImages;
 import teaselib.util.SpeechRecognitionRejectedScript;
+import teaselib.util.TextVariables;
 
 public abstract class Player extends TeaseScript {
     private static final Logger logger = LoggerFactory.getLogger(Player.class);
@@ -96,7 +97,8 @@ public abstract class Player extends TeaseScript {
             throws IOException, ValidationIssue, ScriptParsingException {
         ResourceLoader resources = new ResourceLoader(path, resourcesRoot);
         resources.addAssets(assets);
-        TextToSpeechRecorder recorder = new TextToSpeechRecorder(resources);
+        TextToSpeechRecorder recorder = new TextToSpeechRecorder(path,
+                resourcesRoot, resources, new TextVariables());
         Symbols dominantSubmissiveRelations = Symbols
                 .getDominantSubmissiveRelations();
         for (Entry<String, String> entry : dominantSubmissiveRelations
@@ -110,13 +112,14 @@ public abstract class Player extends TeaseScript {
             // and validate to load all the sub scripts
             // TODO load scripts explicitly
             validate(main, new ArrayList<ValidationIssue>());
+            recorder.preparePass(entry);
             for (String scriptName : scripts.names()) {
                 Script script = scripts.get(actor, scriptName);
                 ScriptScanner scriptScanner = new PCMScriptScanner(script);
                 recorder.create(scriptScanner);
             }
-            recorder.finish();
         }
+        recorder.finish();
     }
 
     public Player(TeaseLib teaseLib, ResourceLoader resources, Actor actor,
