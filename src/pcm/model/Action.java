@@ -549,6 +549,19 @@ public class Action extends AbstractAction {
                             validationErrors);
                 }
             }
+            // empty message but image - image will not be displayed
+            if (!visuals.containsKey(Statement.Message)
+                    && !visuals.containsKey(Statement.Txt)) {
+                Statement[] requiredMessage = { Statement.Image,
+                        Statement.Delay };
+                for (Statement statement : requiredMessage) {
+                    if (visuals.containsKey(statement)) {
+                        validationErrors.add(new ValidationIssue(this,
+                                "Message without .txt or speech part won't render images or other media",
+                                script));
+                    }
+                }
+            }
             // Check common scripting mistakes
             if (visuals.containsKey(Statement.Txt)
                     && visuals.containsKey(Statement.Message)) {
@@ -573,7 +586,9 @@ public class Action extends AbstractAction {
                 }
             }
         }
-        if (interaction != null) {
+        if (interaction != null)
+
+        {
             try {
                 interaction.validate(script, this, validationErrors);
             } catch (ScriptParsingException e) {
