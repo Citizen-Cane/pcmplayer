@@ -1,0 +1,79 @@
+' pcm test cases
+
+
+.range 9999
+
+' testPoss
+
+[action 1000]
+.poss 10
+.range 9999
+
+[action 1001]
+.poss 20
+.range 9999
+
+[action 1002]
+.poss 30
+.range 9999
+
+[action 1003]
+.range 9999
+
+
+' testStandardPoss
+
+[action 1010]
+.poss 100
+.range 9999
+
+[action 1011]
+.poss 20
+.range 9999
+
+[action 1012]
+.poss 30
+.range 9999
+
+[action 1013]
+.range 9999
+
+
+' testStandardPoss
+
+[action 1020]
+.must 0
+.poss 100
+.range 9999
+
+[action 1021]
+.must 1
+.poss 10
+.range 9999
+
+[action 1022]
+.must 2
+.poss 15
+.range 9999
+
+[action 1023]
+.must 3
+.poss 25
+.range 9999
+
+[action 1024]
+.must 4
+.else
+.range 9999
+
+[action 1025]
+.must 5
+.else
+.range 9999
+
+
+' proper exit for all test cases
+[action 9999]
+.noimage
+.quit
+

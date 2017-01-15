@@ -1,11 +1,14 @@
 package pcm.util;
 
+import java.io.IOException;
 import java.util.Locale;
 
 import pcm.controller.AllActionsSetException;
 import pcm.controller.Player;
 import pcm.model.ActionRange;
 import pcm.model.ScriptExecutionException;
+import pcm.model.ScriptParsingException;
+import pcm.model.ValidationIssue;
 import teaselib.Actor;
 import teaselib.core.ResourceLoader;
 import teaselib.core.TeaseLib;
@@ -38,6 +41,15 @@ public class TestUtils {
             public void run() {
             }
         };
+        return player;
+    }
+
+    public static Player createPlayer(Class<?> scriptClass, String script)
+            throws ScriptParsingException, ScriptExecutionException,
+            IOException, ValidationIssue {
+        TeaseLib teaseLib = teaseLib();
+        Player player = createPlayer(teaseLib, scriptClass);
+        player.loadScript(script);
         return player;
     }
 

@@ -40,7 +40,7 @@ public abstract class ProbabilityModelBasedOnPossBucketSum
         int sum = 0;
         for (int i = 0; i < accumulatedWeights.length; i++) {
             Action a = actions.get(i);
-            int d = a.poss != null ? a.poss : unweighted;
+            int d = getElseCorrectedPoss(a) != null ? getElseCorrectedPoss(a) : unweighted;
             sum += d;
             accumulatedWeights[i] = sum * 100 / weightSum;
             addPossValueForLogging(d);
@@ -52,13 +52,25 @@ public abstract class ProbabilityModelBasedOnPossBucketSum
             List<Action> actions) {
         Map<Integer, Integer> weightMap = new HashMap<Integer, Integer>();
         for (Action action : actions) {
-            if (weightMap.containsKey(action.poss)) {
-                weightMap.put(action.poss, weightMap.get(action.poss) + 1);
+            Integer poss = getElseCorrectedPoss(action);
+            if (weightMap.containsKey(poss)) {
+                weightMap.put(poss, weightMap.get(poss) + 1);
             } else {
-                weightMap.put(action.poss, 1);
+                weightMap.put(poss, 1);
             }
         }
         return weightMap;
+    }
+
+    private static Integer getElseCorrectedPoss(Action action) {
+        Integer poss = action.poss;
+        if (poss == null) {
+            return poss;
+        } else if (poss == 0) {
+            return null;
+        } else {
+            return poss;
+        }
     }
 
     private static int calculateUnweightedValue(
