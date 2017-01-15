@@ -356,10 +356,22 @@ public class Action extends AbstractAction {
             addCommand(new Save(Integer.parseInt(args[0]),
                     Integer.parseInt(args[1])));
         } else if (name == Statement.Poss) {
-            String args[] = cmd.args();
-            poss = new Integer(args[0]);
-            if (poss < 1 || poss > 100) {
-                throw new IllegalArgumentException(cmd.line);
+            if (poss != null) {
+                throw new IllegalArgumentException(
+                        ".poss and .else statements cannot be used simultanously");
+            } else {
+                String args[] = cmd.args();
+                poss = new Integer(args[0]);
+                if (poss < 1 || poss > 100) {
+                    throw new IllegalArgumentException(cmd.line);
+                }
+            }
+        } else if (name == Statement.Else) {
+            if (poss != null) {
+                throw new IllegalArgumentException(
+                        ".poss and .else statements cannot be used simultanously");
+            } else {
+                poss = 0;
             }
         } else if (name == Statement.IfSet) {
             String args[] = cmd.args();
@@ -375,8 +387,6 @@ public class Action extends AbstractAction {
                     cmd.argsFrom(1));
             Command ifUnset = new IfUnset(n, conditional);
             addCommand(ifUnset);
-        } else if (name == Statement.Else) {
-            poss = 0;
         }
         // interactions
         else if (name == Statement.Range) {
