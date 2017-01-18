@@ -1,0 +1,17 @@
+' pcm test cases
+
+.range 9999
+
+
+' testThatScriptRestoreWorks
+
+[action 1000]
+.mustnot 100
+.must 101
+.must 365
+.range 1001
+
+[action 1001]
+.unset 81
+.unset 101
+.loadsbd PersistencyTest_ScriptRestoreWorks_MainScript.sbd 1001

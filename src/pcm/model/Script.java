@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import pcm.controller.ScriptCache;
 import pcm.controller.ScriptParser;
+import pcm.state.commands.Restore;
 import teaselib.Actor;
 
 public class Script extends AbstractAction {
@@ -101,8 +102,7 @@ public class Script extends AbstractAction {
     public void add(ScriptLineTokenizer cmd) {
         Statement name = cmd.statement;
         if (name == Statement.Restore) {
-            // Restore is always executed, but
-            // without a save state, restore is a noop
+            addCommand(new Restore());
         } else if (name == Statement.BackColor) {
             String args[] = cmd.args();
             backColor = new Color(Integer.parseInt(args[0]),
@@ -205,5 +205,10 @@ public class Script extends AbstractAction {
             validationErrors
                     .add(new ValidationIssue("Wrong start range", this));
         }
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }
