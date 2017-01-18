@@ -78,11 +78,15 @@ public class State {
         this.player = player;
     }
 
-    public void restore(Script script) {
+    public void setScript(Script script) {
         this.script = script;
         step = 0;
         actions.clear();
         action2StepMap.clear();
+    }
+
+    public void restore() {
+        logger.info("Restoring script " + script.toString());
         // Restore restores:
         // - nothing if nothing has been saved before
         // - The range last saved

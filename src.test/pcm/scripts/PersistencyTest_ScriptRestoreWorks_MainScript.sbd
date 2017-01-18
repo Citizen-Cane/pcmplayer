@@ -1,0 +1,35 @@
+' pcm test cases
+
+' the main script doesn't have to call .resetrange
+' because on startup all actions are unset
+
+.restore
+.range 1000
+
+
+' testThatScriptRestoreWorks
+
+[action 1000]
+.mustnot 100
+.must 101
+.must 365
+.unset 80
+.set 81
+.unset 90
+.set 91
+.save 100 599
+.loadsbd PersistencyTest_ScriptRestoreWorks_SubScript.sbd 1000
+
+[action 1001]
+.mustnot 80
+.mustnot 81
+.mustnot 90
+.must 91
+.mustnot 100
+.must 101
+.must 365
+.range 9999
+
+' proper exit for all test cases
+[action 9999]
+.quit

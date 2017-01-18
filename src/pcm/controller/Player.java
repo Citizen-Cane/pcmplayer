@@ -27,10 +27,12 @@ import pcm.model.ScriptExecutionException;
 import pcm.model.ScriptParsingException;
 import pcm.model.Symbols;
 import pcm.model.ValidationIssue;
+import pcm.state.Command;
 import pcm.state.Condition;
 import pcm.state.MappedState;
 import pcm.state.State;
 import pcm.state.Visual;
+import pcm.state.commands.ResetRange;
 import pcm.state.conditions.Should;
 import pcm.state.conditions.ShouldNot;
 import teaselib.Actor;
@@ -58,9 +60,6 @@ public abstract class Player extends TeaseScript {
 
     public static final String ScriptFolder = "scripts/";
 
-    public static boolean validateScripts = false;
-    public static boolean debugOutput = false;
-
     public Script script = null;
     public final MappedState state;
     private final ProbabilityModel probabilityModel = new ProbabilityModelBasedOnPossBucketSum() {
@@ -73,6 +72,9 @@ public abstract class Player extends TeaseScript {
 
     private final ScriptCache scripts;
     private final String mistressPath;
+
+    public boolean validateScripts = false;
+    public boolean debugOutput = false;
     private boolean invokedOnAllSet = false;
     private boolean intentionalQuit = false;
 
@@ -111,7 +113,7 @@ public abstract class Player extends TeaseScript {
             Script main = scripts.get(actor, mainScript);
             // and validate to load all the sub scripts
             // TODO load scripts explicitly
-            validate(main, new ArrayList<ValidationIssue>());
+            validateScript(main, new ArrayList<ValidationIssue>());
             recorder.preparePass(entry);
             for (String scriptName : scripts.names()) {
                 Script script = scripts.get(actor, scriptName);
@@ -161,8 +163,8 @@ public abstract class Player extends TeaseScript {
         try {
             InputStream debugStream = resources.getResource(resourcePath);
             if (debugStream != null) {
-                Player.debugOutput = true;
-                Player.validateScripts = true;
+                debugOutput = true;
+                validateScripts = true;
                 BufferedReader debugReader = new BufferedReader(
                         new InputStreamReader(debugStream));
                 try {
@@ -204,7 +206,7 @@ public abstract class Player extends TeaseScript {
         play(scriptName, range);
     }
 
-    protected void play(String name, ActionRange startRange) {
+    public void play(String name, ActionRange startRange) {
         SpeechRecognitionRejectedScript srRejectedHandler = actor.speechRecognitionRejectedScript;
         actor.speechRecognitionRejectedScript = new SpeechRecognitionRejectedScript(
                 this) {
@@ -273,25 +275,29 @@ public abstract class Player extends TeaseScript {
 
     public void loadScript(String name) throws ScriptParsingException,
             ValidationIssue, IOException, ScriptExecutionException {
-        script = scripts.get(actor, name);
+        setScript(scripts.get(actor, name));
         if (validateScripts) {
-            validateAll();
+            validateProject();
         }
-        if (script != null) {
-            resetScript();
-        }
+        resetScript();
     }
 
-    private void validateAll()
+    private void setScript(Script newScript) {
+        logger.info("Loading script " + newScript.name);
+        script = newScript;
+        state.setScript(script);
+    }
+
+    private void validateProject()
             throws ScriptParsingException, ValidationIssue, IOException {
         List<ValidationIssue> validationErrors = new ArrayList<ValidationIssue>();
-        validate(script, validationErrors);
-        validateResources(script, resources, validationErrors);
+        validateAspects(script, state, resources, validationErrors);
+        // TODO Loaded scripts explicitly - currently they're loaded by loading
+        // the main script
         for (String s : scripts.names()) {
             Script subScript = scripts.get(actor, s);
             if (subScript != script) {
-                validate(subScript, validationErrors);
-                validateResources(subScript, resources, validationErrors);
+                validateAspects(subScript, state, resources, validationErrors);
             }
         }
         if (validationErrors.size() > 0) {
@@ -304,9 +310,53 @@ public abstract class Player extends TeaseScript {
         }
     }
 
+    private static void validateAspects(Script script, MappedState state,
+            ResourceLoader resources, List<ValidationIssue> validationErrors) {
+        validateScript(script, validationErrors);
+        validateMappings(script, state, validationErrors);
+        validateResources(script, resources, validationErrors);
+    }
+
+    private static void validateMappings(Script script, MappedState state,
+            List<ValidationIssue> validationErrors) {
+        if (commandContainMappedToys(script.commands, state)) {
+            validationErrors.add(new ValidationIssue(
+                    ".resetrange contains mapped toys", script));
+        }
+        for (Action action : script.actions.getAll()) {
+            if (commandContainMappedToys(action.commands, state)) {
+                validationErrors.add(new ValidationIssue(action,
+                        ".resetrange contains mapped toys", script));
+            }
+        }
+
+    }
+
+    private static boolean commandContainMappedToys(List<Command> commands,
+            MappedState state) {
+        if (commands != null) {
+            for (Command command : commands) {
+                if (command instanceof ResetRange) {
+                    if (rangeContainsMappedToys((ActionRange) command, state)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private static boolean rangeContainsMappedToys(ActionRange range,
+            MappedState state) {
+        for (Integer n : range) {
+            if (state.hasToyMapping(n)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void resetScript() throws ScriptExecutionException {
-        logger.info("Starting script " + script.name);
-        state.restore(script);
         invokedOnAllSet = false;
         if (script.onClose != null) {
             final Thread scriptThread = Thread.currentThread();
@@ -365,7 +415,7 @@ public abstract class Player extends TeaseScript {
                     break;
                 } else if (range instanceof ActionLoadSbd) {
                     ActionLoadSbd loadSbd = (ActionLoadSbd) range;
-                    script = loadSbd.script;
+                    setScript(loadSbd.script);
                     resetScript();
                     range = loadSbd;
                     // Jumping into a different script
@@ -642,7 +692,7 @@ public abstract class Player extends TeaseScript {
         }
     }
 
-    public static void validate(Script script,
+    public static void validateScript(Script script,
             List<ValidationIssue> validationErrors) {
         script.validate(validationErrors);
         for (Action action : script.actions.values()) {

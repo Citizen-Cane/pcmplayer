@@ -53,11 +53,11 @@ public class MappedState extends State {
     }
 
     @Override
-    public void restore(Script script) {
+    public void setScript(Script script) {
+        super.setScript(script);
         scriptMapping = getScriptMapping(script.name);
         ScriptMapping globalMapping = getScriptMapping(Global);
         scriptMapping.putAll(globalMapping);
-        super.restore(script);
     }
 
     private ScriptMapping getScriptMapping(String name) {

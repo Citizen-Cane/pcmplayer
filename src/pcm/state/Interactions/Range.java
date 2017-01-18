@@ -28,6 +28,10 @@ public class Range implements Interaction {
         this.end = end;
     }
 
+    public ActionRange getRange() {
+        return new ActionRange(start, end);
+    }
+
     @Override
     public ActionRange getRange(Script script, Action action, Runnable visuals,
             Player player) {

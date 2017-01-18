@@ -30,6 +30,10 @@ public class Actions {
         }
     }
 
+    public List<Action> getAll() {
+        return new ArrayList<Action>(actions.values());
+    }
+
     /**
      * Get all actions in the given range.
      * 
