@@ -21,7 +21,7 @@
 .range 9999
 
 
-' testStandardPoss
+' testPoss100
 
 [action 1010]
 .poss 100
@@ -39,7 +39,7 @@
 .range 9999
 
 
-' testStandardPoss
+' testWeightedElse
 
 [action 1020]
 .must 0
