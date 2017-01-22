@@ -50,20 +50,26 @@ public abstract class ProbabilityModel {
     protected abstract double random(double from, double to);
 
     private Action randomActionAccordingToWeight(List<Action> actions) {
-        Action action;
         double value = random(0, 100.0);
-        action = null;
+        Action action = chooseAction(actions, value);
+        if (action == null) {
+            throw new IllegalStateException(
+                    "Poss weighting calculation error - no action selected for random value "
+                            + value);
+        }
+        logger.info(
+                "Random = " + value + " -> choosing action " + action.number);
+        return action;
+    }
+
+    private Action chooseAction(List<Action> actions, double weightedRandomValue) {
+        Action action = null;
         for (int i = 0; i < accumulatedWeights.length; i++) {
-            if (value <= accumulatedWeights[i]) {
+            if (weightedRandomValue <= accumulatedWeights[i]) {
                 action = actions.get(i);
                 break;
             }
         }
-        if (action == null) {
-            throw new IllegalStateException("Poss weighting calculation error");
-        }
-        logger.info(
-                "Random = " + value + " -> choosing action " + action.number);
         return action;
     }
 
