@@ -433,10 +433,15 @@ public class Action extends AbstractAction {
             setInteraction(Quit.instance);
         } else if (name == Statement.Break) {
             String args[] = cmd.args();
-            setInteraction(new Break(
-                    new ActionRange(Integer.parseInt(args[0]),
-                            Integer.parseInt(args[1])),
-                    rangesFromArgv(args, 2)));
+            ActionRange playRange = new ActionRange(Integer.parseInt(args[0]),
+                    Integer.parseInt(args[1]));
+            if (args[2].equalsIgnoreCase(Break.SuppressStackCorrectionOnBreak)) {
+                setInteraction(
+                        new Break(playRange, rangesFromArgv(args, 3), true));
+            } else {
+                setInteraction(
+                        new Break(playRange, rangesFromArgv(args, 2), false));
+            }
         } else if (name == Statement.GoSub) {
             String args[] = cmd.args();
             int start = Integer.parseInt(args[0]);
