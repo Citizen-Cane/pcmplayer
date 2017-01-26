@@ -5,7 +5,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pcm.controller.AllActionsSetException;
 import pcm.controller.Player;
 import pcm.model.Action;
 import pcm.model.ActionRange;
@@ -27,8 +26,7 @@ public class Return implements Interaction {
                     + (range != null ? range.toString() : "end of script"));
             return range;
         } else {
-            logger.info("Return: stack empty");
-            throw new AllActionsSetException(action, script);
+            throw new ScriptExecutionException(action, "Stack empty", script);
         }
     }
 
