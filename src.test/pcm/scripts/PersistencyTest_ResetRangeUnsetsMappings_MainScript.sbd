@@ -11,7 +11,8 @@
 [action 1000]
 .mustnot 100
 .must 101
-.mustnot 365  ' wrong, since the toy mapping is global
+.must 365
+'.mustnot 365  ' wrong, since the toy mapping is global
 .unset 80
 .set 81
 .unset 90
@@ -26,7 +27,8 @@
 .must 91
 .mustnot 100
 .must 101     ' works because .restore is executed after .resetrange
-.mustnot 365  ' wrong, since the toy mapping is global, and the toy has been cleared by .resetrange
+.must 365
+'.mustnot 365  ' wrong, since the toy mapping is global, and the toy has been cleared by .resetrange
 .range 9999
 
 ' proper exit for all test cases

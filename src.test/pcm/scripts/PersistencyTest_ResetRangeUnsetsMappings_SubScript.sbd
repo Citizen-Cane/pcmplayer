@@ -8,8 +8,8 @@
 [action 1000]
 .mustnot 100
 .must 101
-'.must 365
-.mustnot 365  ' wrong, since the toy mapping is global
+.must 365
+'.mustnot 365  ' wrong, since the toy mapping is global
 .range 1001
 
 [action 1001]
