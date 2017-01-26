@@ -159,7 +159,7 @@ public class MappedState extends State {
                         + ": Multiple-mapped values can only be unset");
             }
         } else if (hasStateMapping(n)) {
-            scriptMapping.stateMapping.get(n).apply();
+            scriptMapping.stateMapping.get(n).applyForSession();
         }
         super.set(n);
     }
