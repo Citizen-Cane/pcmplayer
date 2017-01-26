@@ -1,10 +1,12 @@
 package pcm.state;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.TimeUnit;
@@ -151,12 +153,19 @@ public class State {
     public void save(ActionRange range) {
         write("save.start", range.start);
         write("save.end", range.end);
-        // Data values
+        saveData(range);
+        saveTime(range);
+    }
+
+    private void saveData(ActionRange range) {
+        // TODO store the same way resetrange clears, but write tests first
         for (int i : range) {
             Long value = getInternal(i);
             write(Integer.toString(i), value.equals(UNSET) ? null : value);
         }
-        // time values
+    }
+
+    private void saveTime(ActionRange range) {
         StringBuilder keys = null;
         for (Integer n : times.keySet()) {
             if (range.contains(n)) {
@@ -260,8 +269,15 @@ public class State {
     }
 
     public void resetRange(int start, int end) {
-        for (int i = start; i <= end; i++) {
-            Integer n = new Integer(i);
+        Collection<Integer> mustUnset = new ArrayList<Integer>(end - start);
+        for (Entry<Integer, Long> entry : data.entrySet()) {
+            Integer n = entry.getKey();
+            if (n >= start && n <= end) {
+                mustUnset.add(n);
+            }
+        }
+
+        for (Integer n : mustUnset) {
             unset(n);
         }
     }
