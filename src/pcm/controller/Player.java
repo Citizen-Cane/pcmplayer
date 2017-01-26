@@ -467,12 +467,15 @@ public abstract class Player extends TeaseScript {
                 range = script.onAllSet;
                 actions = range(script, range);
                 if (actions.size() == 0) {
-                    throw new AllActionsSetException(action, script);
+                    throw new AllActionsSetException(
+                            script.actions.getAll(range),
+                            new ActionRange(range.start, range.end), script);
                 } else {
                     action = chooseAction(actions);
                 }
             } else {
-                throw new AllActionsSetException(action, script);
+                throw new AllActionsSetException(script.actions.getAll(range),
+                        new ActionRange(range.start, range.end), script);
             }
         }
         return action;
