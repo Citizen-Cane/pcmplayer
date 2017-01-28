@@ -1,8 +1,9 @@
 package pcm.state;
 
 import pcm.model.ScriptExecutionException;
+import pcm.state.persistence.ScriptState;
 
 
 public interface Command {
-	void execute(State state) throws ScriptExecutionException;
+	void execute(ScriptState state) throws ScriptExecutionException;
 }

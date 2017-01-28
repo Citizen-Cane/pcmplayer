@@ -1,4 +1,4 @@
-package pcm.state;
+package pcm.state.persistence;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,14 +34,15 @@ import pcm.model.ScriptExecutionException;
  * set() and unset() actually set the value to either 1 or 0, whereas
  * resetRange() removes the value from the storage.
  *
- * TODO add full test coverage as this central class responsible for the flow of
- * execution is completely untested
+ * TODO improve test coverage as this a central class responsible for the flow
+ * of execution and it's not covered good enough
  * 
  * * @author someone
  *
  */
-public class State {
-    private static final Logger logger = LoggerFactory.getLogger(State.class);
+public class ScriptState {
+    private static final Logger logger = LoggerFactory
+            .getLogger(ScriptState.class);
 
     public final Player player;
 
@@ -76,7 +77,7 @@ public class State {
 
     private static final String TIMEKEYS = "TimeKeys";
 
-    public State(Player player) {
+    public ScriptState(Player player) {
         this.player = player;
     }
 
@@ -364,9 +365,9 @@ public class State {
     }
 
     /**
-     * Preset an action to a defined value. Applies to {@link State#get},
-     * {@link State#set} and {@link State#unset}. The original value is always
-     * preserved, Overridden values are not saved back.
+     * Preset an action to a defined value. Applies to {@link ScriptState#get},
+     * {@link ScriptState#set} and {@link ScriptState#unset}. The original value
+     * is always preserved, Overridden values are not saved back.
      * <p>
      * TODO Overrides apply to all scripts, so use it on common state only in
      * order to avoid side effects.
@@ -374,7 +375,8 @@ public class State {
      * @param n
      *            The action number
      * @param value
-     *            {@link State#SET}, {@link State#UNSET} or any other value.
+     *            {@link ScriptState#SET}, {@link ScriptState#UNSET} or any other
+     *            value.
      */
     public void overwrite(Integer n, Long value) {
         dataOverwrites.put(n, value);

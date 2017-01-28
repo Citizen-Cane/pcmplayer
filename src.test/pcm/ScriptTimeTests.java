@@ -16,8 +16,8 @@ import org.junit.Test;
 import pcm.controller.Player;
 import pcm.model.ActionRange;
 import pcm.model.Duration;
-import pcm.state.State;
 import pcm.state.conditions.TimeCondition;
+import pcm.state.persistence.ScriptState;
 import teaselib.Actor;
 import teaselib.core.ResourceLoader;
 import teaselib.core.TeaseLib;
@@ -113,7 +113,7 @@ public class ScriptTimeTests {
         ActionRange r = new ActionRange(1000);
         player.range = r;
         player.play(r);
-        assertEquals(State.SET, player.state.get(1000));
+        assertEquals(ScriptState.SET, player.state.get(1000));
         player.teaseLib.sleep(2, TimeUnit.SECONDS);
         assertTrue(containsAction(1001));
         assertTrue(!containsAction(1002));
@@ -127,7 +127,7 @@ public class ScriptTimeTests {
         ActionRange r = new ActionRange(1010);
         player.range = r;
         player.play(r);
-        assertEquals(State.SET, player.state.get(1010));
+        assertEquals(ScriptState.SET, player.state.get(1010));
         player.teaseLib.sleep(2, TimeUnit.SECONDS);
         assertTrue(containsAction(1011));
         assertTrue(!containsAction(1012));
@@ -144,7 +144,7 @@ public class ScriptTimeTests {
         ActionRange r = new ActionRange(1020);
         player.range = r;
         player.play(r);
-        assertEquals(State.SET, player.state.get(1020));
+        assertEquals(ScriptState.SET, player.state.get(1020));
         assertTrue(!containsAction(1021));
         assertTrue(containsAction(1022));
     }
@@ -154,7 +154,7 @@ public class ScriptTimeTests {
         ActionRange r = new ActionRange(1025);
         player.range = r;
         player.play(r);
-        assertEquals(State.SET, player.state.get(1025));
+        assertEquals(ScriptState.SET, player.state.get(1025));
         assertTrue(containsAction(1026));
         assertTrue(containsAction(1027));
         assertTrue(!containsAction(1028));

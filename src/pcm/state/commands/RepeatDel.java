@@ -1,7 +1,7 @@
 package pcm.state.commands;
 
 import pcm.state.Command;
-import pcm.state.State;
+import pcm.state.persistence.ScriptState;
 
 public class RepeatDel implements Command {
 
@@ -22,7 +22,7 @@ public class RepeatDel implements Command {
 	}
 
 	@Override
-	public void execute(State state) {
+	public void execute(ScriptState state) {
 		state.repeatDel(n, state.getRandom(y, z));
 	}
 

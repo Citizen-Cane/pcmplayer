@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import pcm.model.Duration;
 import pcm.state.Condition;
-import pcm.state.State;
+import pcm.state.persistence.ScriptState;
 
 /**
  * @author someone
@@ -32,7 +32,7 @@ public abstract class TimeCondition implements Condition {
     protected abstract boolean predicate(long elapsedMillis);
 
     @Override
-    public boolean isTrueFor(State state) {
+    public boolean isTrueFor(ScriptState state) {
         long now = state.getTimeMillis();
         Date setTime = state.getTime(n);
         if (setTime != null) {

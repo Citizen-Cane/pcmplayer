@@ -29,12 +29,12 @@ import pcm.model.Symbols;
 import pcm.model.ValidationIssue;
 import pcm.state.Command;
 import pcm.state.Condition;
-import pcm.state.MappedState;
-import pcm.state.State;
 import pcm.state.Visual;
 import pcm.state.commands.ResetRange;
 import pcm.state.conditions.Should;
 import pcm.state.conditions.ShouldNot;
+import pcm.state.persistence.MappedScriptState;
+import pcm.state.persistence.ScriptState;
 import teaselib.Actor;
 import teaselib.Images;
 import teaselib.Message;
@@ -61,7 +61,7 @@ public abstract class Player extends TeaseScript {
     public static final String ScriptFolder = "scripts/";
 
     public Script script = null;
-    public final MappedState state;
+    public final MappedScriptState state;
     private final ProbabilityModel probabilityModel = new ProbabilityModelBasedOnPossBucketSum() {
         @Override
         public double random(double from, double to) {
@@ -131,7 +131,7 @@ public abstract class Player extends TeaseScript {
                 createDominantSubmissiveSymbols());
         this.mistressPath = mistressPath;
         this.invokedOnAllSet = false;
-        this.state = new MappedState(this);
+        this.state = new MappedScriptState(this);
     }
 
     private Symbols createDominantSubmissiveSymbols() {
@@ -310,50 +310,47 @@ public abstract class Player extends TeaseScript {
         }
     }
 
-    private static void validateAspects(Script script, MappedState state,
+    private static void validateAspects(Script script, MappedScriptState state,
             ResourceLoader resources, List<ValidationIssue> validationErrors) {
         validateScript(script, validationErrors);
         validateMappings(script, state, validationErrors);
         validateResources(script, resources, validationErrors);
     }
 
-    private static void validateMappings(Script script, MappedState state,
+    private static void validateMappings(Script script, MappedScriptState state,
             List<ValidationIssue> validationErrors) {
-        if (commandContainMappedToys(script.commands, state)) {
-            validationErrors.add(new ValidationIssue(
-                    ".resetrange contains mapped toys", script));
-        }
+        validateCommands(script, script, script.commands, state,
+                validationErrors);
         for (Action action : script.actions.getAll()) {
-            if (commandContainMappedToys(action.commands, state)) {
-                validationErrors.add(new ValidationIssue(action,
-                        ".resetrange contains mapped toys", script));
-            }
+            validateCommands(script, action, action.commands, state,
+                    validationErrors);
         }
-
     }
 
-    private static boolean commandContainMappedToys(List<Command> commands,
-            MappedState state) {
+    private static void validateCommands(Script script,
+            AbstractAction abstractAction, List<Command> commands,
+            MappedScriptState state, List<ValidationIssue> validationErrors) {
         if (commands != null) {
             for (Command command : commands) {
                 if (command instanceof ResetRange) {
-                    if (rangeContainsMappedToys((ActionRange) command, state)) {
-                        return true;
-                    }
+                    validateCommand(script, abstractAction,
+                            (ActionRange) command, state, validationErrors);
                 }
             }
         }
-        return false;
     }
 
-    private static boolean rangeContainsMappedToys(ActionRange range,
-            MappedState state) {
-        for (Integer n : range) {
-            if (state.hasToyMapping(n)) {
-                return true;
+    private static void validateCommand(Script script,
+            AbstractAction abstractAction, ActionRange range,
+            MappedScriptState state, List<ValidationIssue> validationErrors) {
+        for (int n : range) {
+            if (state.hasGameValueMapping(n)) {
+                validationErrors
+                        .add(new ValidationIssue(abstractAction.toString()
+                                + ": .resetrange may not unset mapped item or state "
+                                + n, script));
             }
         }
-        return false;
     }
 
     private void resetScript() throws ScriptExecutionException {
@@ -665,8 +662,8 @@ public abstract class Player extends TeaseScript {
     protected String showChoices(ScriptFunction scriptFunction,
             Confidence recognitionConfidence, List<String> choices) {
         // Display text according to slave's level of articulateness
-        Long gag = script != null ? state.get(script.gag) : State.UNSET;
-        if (gag.equals(State.SET)) {
+        Long gag = script != null ? state.get(script.gag) : ScriptState.UNSET;
+        if (gag.equals(ScriptState.SET)) {
             // Slave is gagged
             final List<String> processedChoices = new ArrayList<String>(
                     choices.size());
@@ -712,16 +709,11 @@ public abstract class Player extends TeaseScript {
             ResourceLoader resourceLoader,
             List<ValidationIssue> validationIssues) {
         for (Action action : script.actions.values()) {
-            testResources(action, resourceLoader, validationIssues);
-        }
-        for (ScriptException scriptError : validationIssues) {
-            if (scriptError.script == null) {
-                scriptError.script = script;
-            }
+            testResources(script, action, resourceLoader, validationIssues);
         }
     }
 
-    private static void testResources(Action action,
+    private static void testResources(Script script, Action action,
             ResourceLoader resourceLoader,
             List<ValidationIssue> validationIssues) {
         for (String resource : action.validateResources()) {
@@ -732,7 +724,7 @@ public abstract class Player extends TeaseScript {
                     stream.close();
                 }
             } catch (IOException e) {
-                validationIssues.add(new ValidationIssue(action, e));
+                validationIssues.add(new ValidationIssue(action, e, script));
             }
         }
     }

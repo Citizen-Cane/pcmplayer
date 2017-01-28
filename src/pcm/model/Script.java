@@ -209,6 +209,6 @@ public class Script extends AbstractAction {
 
     @Override
     public String toString() {
-        return name;
+        return "Script " + name;
     }
 }

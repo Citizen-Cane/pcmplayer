@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import pcm.model.Duration;
 import pcm.state.Command;
-import pcm.state.State;
+import pcm.state.persistence.ScriptState;
 
 public class SetTime implements Command {
     private static final Logger logger = LoggerFactory.getLogger(SetTime.class);
@@ -28,7 +28,7 @@ public class SetTime implements Command {
     }
 
     @Override
-    public void execute(State state) {
+    public void execute(ScriptState state) {
         final Date date;
         if (offset.toLowerCase().startsWith("inf")
                 || offset.toLowerCase().startsWith("+inf")) {

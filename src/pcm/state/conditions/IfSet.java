@@ -4,7 +4,7 @@
 package pcm.state.conditions;
 
 import pcm.state.Command;
-import pcm.state.State;
+import pcm.state.persistence.ScriptState;
 
 /**
  * @author someone
@@ -19,8 +19,8 @@ public class IfSet extends IfClause {
     }
 
     @Override
-    public boolean isTrueFor(State state) {
-        return state.get(n) != State.UNSET;
+    public boolean isTrueFor(ScriptState state) {
+        return state.get(n) != ScriptState.UNSET;
     }
 
     @Override

@@ -2,7 +2,7 @@ package pcm.state.commands;
 
 import pcm.model.ActionRange;
 import pcm.state.Command;
-import pcm.state.State;
+import pcm.state.persistence.ScriptState;
 
 public class Save extends ActionRange implements Command {
 
@@ -11,7 +11,7 @@ public class Save extends ActionRange implements Command {
 	}
 
 	@Override
-	public void execute(State state) {
+	public void execute(ScriptState state) {
 		state.save(this);
 	}
 

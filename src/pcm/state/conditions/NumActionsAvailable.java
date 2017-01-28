@@ -2,7 +2,7 @@ package pcm.state.conditions;
 
 import pcm.model.ActionRange;
 import pcm.state.Condition;
-import pcm.state.State;
+import pcm.state.persistence.ScriptState;
 
 /**
  * The PCM version of "Greater or equal than": triggers if at least a number of
@@ -19,7 +19,7 @@ public class NumActionsAvailable extends ActionRange implements Condition {
     }
 
     @Override
-    public boolean isTrueFor(State state) {
+    public boolean isTrueFor(ScriptState state) {
         int numActionsAvailable = state.player.range(this).size();
         return numActionsAvailable >= x;
     }

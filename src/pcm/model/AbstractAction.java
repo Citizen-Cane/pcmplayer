@@ -10,9 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pcm.state.Command;
-import pcm.state.State;
 import pcm.state.commands.ResetRange;
 import pcm.state.conditions.TimeFrom;
+import pcm.state.persistence.ScriptState;
 
 public abstract class AbstractAction {
     private static final Logger logger = LoggerFactory.getLogger(Logger.class);
@@ -257,7 +257,7 @@ public abstract class AbstractAction {
         responses.put(statement, response);
     }
 
-    public ActionRange execute(State state) throws ScriptExecutionException {
+    public ActionRange execute(ScriptState state) throws ScriptExecutionException {
         if (commands != null) {
             for (Command command : commands) {
                 logger.info(command.getClass().getSimpleName() + " "

@@ -8,8 +8,9 @@ import org.junit.Test;
 import pcm.controller.AllActionsSetException;
 import pcm.controller.Player;
 import pcm.model.ActionRange;
-import pcm.state.MappedState;
-import pcm.state.State;
+import pcm.state.persistence.MappedScriptItemValue;
+import pcm.state.persistence.MappedScriptState;
+import pcm.state.persistence.ScriptState;
 import pcm.util.TestUtils;
 import teaselib.Toys;
 
@@ -20,12 +21,12 @@ public class PersistencyTest {
     public void testThatResetRangeUnsetsMappings() throws Exception {
         Player player = TestUtils.createPlayer(getClass());
 
-        player.state.addToyMapping(MappedState.Global, 365,
-                player.items(Toys.Collars));
+        player.state.addScriptValueMapping(MappedScriptState.Global,
+                new MappedScriptItemValue<Toys>(365, player.items(Toys.Collars)));
         player.item(Toys.Collar).setAvailable(true);
 
         assertEquals(1, player.items(Toys.Collars).available().size());
-        assertEquals(State.UNSET, player.state.get(365));
+        assertEquals(ScriptState.UNSET, player.state.get(365));
 
         player.validateScripts = false;
         player.loadScript(
@@ -35,7 +36,7 @@ public class PersistencyTest {
         // restored items,
         // and thus won't clear the toy anymore
         assertEquals(1, player.items(Toys.Collars).available().size());
-        assertEquals(State.SET, player.state.get(365));
+        assertEquals(ScriptState.SET, player.state.get(365));
 
         player.state.unset(100);
         player.state.set(101);
@@ -54,16 +55,16 @@ public class PersistencyTest {
     public void testThatScriptRestoreWorks() throws Exception {
         Player player = TestUtils.createPlayer(getClass());
 
-        player.state.addToyMapping(MappedState.Global, 365,
-                player.items(Toys.Collars));
+        player.state.addScriptValueMapping(MappedScriptState.Global,
+                new MappedScriptItemValue<Toys>(365, player.items(Toys.Collars)));
         player.item(Toys.Collar).setAvailable(true);
 
         assertEquals(1, player.items(Toys.Collars).available().size());
-        assertEquals(State.UNSET, player.state.get(365));
+        assertEquals(ScriptState.UNSET, player.state.get(365));
         player.validateScripts = true;
         player.loadScript("PersistencyTest_ScriptRestoreWorks_MainScript");
         assertEquals(1, player.items(Toys.Collars).available().size());
-        assertEquals(State.SET, player.state.get(365));
+        assertEquals(ScriptState.SET, player.state.get(365));
 
         player.state.unset(100);
         player.state.set(101);

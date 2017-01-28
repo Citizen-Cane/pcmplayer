@@ -1,7 +1,7 @@
 package pcm.state.commands;
 
 import pcm.state.Command;
-import pcm.state.State;
+import pcm.state.persistence.ScriptState;
 
 public class Repeat implements Command {
 
@@ -14,7 +14,7 @@ public class Repeat implements Command {
 	}
 
 	@Override
-	public void execute(State state) {
+	public void execute(ScriptState state) {
 		state.repeatSet(n, m);
 	}
 

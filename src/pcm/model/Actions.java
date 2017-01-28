@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import pcm.state.State;
+import pcm.state.persistence.ScriptState;
 
 /**
  * Enumerate actions. - Find action by index - Enum action range and evaluate
@@ -59,13 +59,13 @@ public class Actions {
      * @param state
      * @return List of actions
      */
-    public List<Action> getUnset(ActionRange range, State state) {
+    public List<Action> getUnset(ActionRange range, ScriptState state) {
         List<Action> actionRange = new ArrayList<Action>();
         for (int i = range.start; i <= range.end; i++) {
             Integer index = new Integer(i);
             if (actions.containsKey(index)) {
                 Action action = actions.get(index);
-                if (!state.get(new Integer(action.number)).equals(State.SET)) {
+                if (!state.get(new Integer(action.number)).equals(ScriptState.SET)) {
                     actionRange.add(actions.get(index));
                 }
             }

@@ -1,7 +1,8 @@
 package pcm.state;
 
+import pcm.state.persistence.ScriptState;
 
 public interface Condition {
 
-	boolean isTrueFor(State state);
+	boolean isTrueFor(ScriptState state);
 }

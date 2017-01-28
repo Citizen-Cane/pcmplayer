@@ -1,7 +1,7 @@
 /**
  * 
  */
-package pcm.state;
+package pcm.state.persistence;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -30,17 +30,16 @@ import teaselib.util.Items;
  * @author someone
  *
  */
-public class MappedState extends State {
+public class MappedScriptState extends ScriptState {
     public static final String Global = "";
 
     private static class ScriptMapping {
-        final Map<Integer, Items<Toys>> toyMapping = new HashMap<Integer, Items<Toys>>();
-        final Map<Integer, teaselib.State> stateMapping = new HashMap<Integer, teaselib.State>();
+
+        final Map<Integer, MappedScriptValue> gameValueMapping = new HashMap<Integer, MappedScriptValue>();
         final Map<Integer, teaselib.State> stateTimeMapping = new HashMap<Integer, teaselib.State>();
 
         public void putAll(ScriptMapping globalMapping) {
-            toyMapping.putAll(globalMapping.toyMapping);
-            stateMapping.putAll(globalMapping.stateMapping);
+            gameValueMapping.putAll(globalMapping.gameValueMapping);
             stateTimeMapping.putAll(globalMapping.stateTimeMapping);
         }
     }
@@ -48,7 +47,7 @@ public class MappedState extends State {
     Map<String, ScriptMapping> scriptMappings = new HashMap<String, ScriptMapping>();
     ScriptMapping scriptMapping = null;
 
-    public MappedState(Player player) {
+    public MappedScriptState(Player player) {
         super(player);
     }
 
@@ -71,21 +70,10 @@ public class MappedState extends State {
         }
     }
 
-    public void addToyMapping(String scriptName, Integer action,
-            Item<Toys> item) {
-        Items<Toys> items = new Items<Toys>();
-        items.add(item);
-        getScriptMapping(scriptName).toyMapping.put(action, items);
-    }
-
-    public void addToyMapping(String scriptName, Integer action,
-            Items<Toys> items) {
-        getScriptMapping(scriptName).toyMapping.put(action, items);
-    }
-
-    public void addStateMapping(String scriptName, Integer action,
-            teaselib.State state) {
-        getScriptMapping(scriptName).stateMapping.put(action, state);
+    public void addScriptValueMapping(String scriptName,
+            MappedScriptValue mappedGameValue) {
+        getScriptMapping(scriptName).gameValueMapping
+                .put(mappedGameValue.getNumber(), mappedGameValue);
     }
 
     public void addStateTimeMapping(String scriptName, Integer action,
@@ -95,16 +83,8 @@ public class MappedState extends State {
 
     @Override
     public Long get(Integer n) {
-        if (hasToyMapping(n)) {
-            if (scriptMapping.toyMapping.get(n).available().size() > 0) {
-                super.set(n);
-                return SET;
-            } else {
-                super.unset(n);
-                return UNSET;
-            }
-        } else if (hasStateMapping(n)) {
-            if (scriptMapping.stateMapping.get(n).applied()) {
+        if (hasGameValueMapping(n)) {
+            if (scriptMapping.gameValueMapping.get(n).isSet()) {
                 super.set(n);
                 return SET;
             } else {
@@ -116,25 +96,19 @@ public class MappedState extends State {
         }
     }
 
-    public boolean hasToyMapping(Integer n) {
+    public boolean hasGameValueMapping(Integer n) {
         if (scriptMapping == null) {
             return false;
         }
-        return scriptMapping.toyMapping.containsKey(n);
+        return scriptMapping.gameValueMapping.containsKey(n);
     }
 
-    public Items<Toys> getMappedToys(Integer n) {
+    public Items<?> getMappedItems(Integer n) {
         if (scriptMapping == null) {
+            // TODO throw
             return new Items<Toys>();
         }
-        return scriptMapping.toyMapping.get(n);
-    }
-
-    private boolean hasStateMapping(Integer n) {
-        if (scriptMapping == null) {
-            return false;
-        }
-        return scriptMapping.stateMapping.containsKey(n);
+        return scriptMapping.gameValueMapping.get(n).items();
     }
 
     private boolean hasStateTimeMapping(Integer n) {
@@ -149,39 +123,25 @@ public class MappedState extends State {
      */
     @Override
     public void set(Integer n) {
-        if (hasToyMapping(n)) {
-            Items<Toys> items = scriptMapping.toyMapping.get(n);
-            if (items.size() == 1) {
-                // 1:1 mapping
-                items.get(0).setAvailable(true);
-            } else {
-                throw new IllegalStateException(n + "(" + items.toString() + ")"
-                        + ": Multiple-mapped values can only be unset");
-            }
-        } else if (hasStateMapping(n)) {
-            scriptMapping.stateMapping.get(n).applyForSession();
+        if (hasGameValueMapping(n)) {
+            scriptMapping.gameValueMapping.get(n).set();
         }
         super.set(n);
     }
 
     public void setOverride(Integer n) {
-        if (hasToyMapping(n)) {
+        if (hasGameValueMapping(n)) {
             super.set(n);
         } else {
             throw new IllegalStateException(
-                    "setOverride can only be called for toy mappings");
+                    "setOverride can only be called for mappings");
         }
     }
 
     @Override
     public void unset(Integer n) {
-        if (hasToyMapping(n)) {
-            Items<Toys> items = scriptMapping.toyMapping.get(n);
-            for (Item<Toys> item : items) {
-                item.setAvailable(false);
-            }
-        } else if (hasStateMapping(n)) {
-            scriptMapping.stateMapping.get(n).remove();
+        if (hasGameValueMapping(n)) {
+            scriptMapping.gameValueMapping.get(n).unset();
         }
         super.unset(n);
     }
@@ -213,25 +173,24 @@ public class MappedState extends State {
     @Override
     public void overwrite(Integer n, Long value) {
         ScriptMapping mapping = getScriptMapping(Global);
-        mapping.toyMapping.remove(n);
-        mapping.stateMapping.remove(n);
+        mapping.gameValueMapping.remove(n);
         mapping.stateTimeMapping.remove(n);
         super.overwrite(n, value);
     }
 
-    public void overwrite(Toys toy, boolean available) {
-        Entry<Integer, Items<Toys>> entry = getEntry(toy);
+    public void overwrite(Object item, boolean available) {
+        Entry<Integer, MappedScriptValue> entry = getEntry(item);
         if (entry != null) {
             overwrite(entry.getKey(), available ? SET : UNSET);
         }
     }
 
-    private Entry<Integer, Items<Toys>> getEntry(Toys toy) {
-        for (Entry<Integer, Items<Toys>> entry : getScriptMapping(
-                Global).toyMapping.entrySet()) {
-            Items<Toys> toys = entry.getValue();
-            for (Item<Toys> item : toys) {
-                if (item.item == toy) {
+    private Entry<Integer, MappedScriptValue> getEntry(Object item) {
+        for (Entry<Integer, MappedScriptValue> entry : getScriptMapping(
+                Global).gameValueMapping.entrySet()) {
+            Items<?> items = entry.getValue().items();
+            for (Item<?> i : items) {
+                if (i.item == item) {
                     return entry;
                 }
             }

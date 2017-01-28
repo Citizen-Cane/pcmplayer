@@ -1,7 +1,7 @@
 package pcm.state.conditions;
 
 import pcm.state.Condition;
-import pcm.state.State;
+import pcm.state.persistence.ScriptState;
 
 /**
  * @author someone
@@ -20,7 +20,7 @@ public class NumActionsFrom implements Condition {
 	}
 
 	@Override
-	public boolean isTrueFor(State state) {
+	public boolean isTrueFor(ScriptState state) {
 		int n = state.getStep(action) + numActionsFrom; 
 		return state.getStep() > n;
 	}
