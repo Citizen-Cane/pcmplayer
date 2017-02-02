@@ -6,21 +6,21 @@ import pcm.state.persistence.ScriptState;
 
 public class ResetRange extends ActionRange implements Command {
 
-	public ResetRange(int start) {
-		super(start);
-	}
-	
-	public ResetRange(int start, int end) {
-		super(start, end);
-	}
+    public ResetRange(int start) {
+        super(start);
+    }
 
-	@Override
-	public void execute(ScriptState state) {
-		state.resetRange(start, end);
-	}
+    public ResetRange(int start, int end) {
+        super(start, end);
+    }
 
-	@Override
-	public String toString() {
-		return Integer.toString(start) + " " + Integer.toString(end); 
-	}
+    @Override
+    public void execute(ScriptState state) {
+        state.resetRange(this);
+    }
+
+    @Override
+    public String toString() {
+        return Integer.toString(start) + " " + Integer.toString(end);
+    }
 }

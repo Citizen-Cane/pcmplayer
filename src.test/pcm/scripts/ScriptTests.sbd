@@ -65,6 +65,18 @@
 .range 9999
 
 
+' testResetRange
+
+[action 1040]
+.set 1042
+.settime 1043 INF
+.range 1041
+
+[action 1041]
+.resetrange 1040 1043
+.range 9999
+
+
 ' proper exit for all test cases
 [action 9999]
 .noimage

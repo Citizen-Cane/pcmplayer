@@ -4,8 +4,10 @@
 package pcm;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.Locale;
 
 import org.junit.Before;
@@ -14,7 +16,11 @@ import org.junit.Test;
 import pcm.controller.AllActionsSetException;
 import pcm.controller.Player;
 import pcm.model.ActionRange;
+import pcm.model.ScriptExecutionException;
+import pcm.model.ScriptParsingException;
+import pcm.model.ValidationIssue;
 import pcm.state.persistence.ScriptState;
+import pcm.util.TestUtils;
 import teaselib.Actor;
 import teaselib.core.ResourceLoader;
 import teaselib.core.TeaseLib;
@@ -121,5 +127,20 @@ public class ScriptTests {
         player.play(r);
 
         assertEquals(ScriptState.SET, player.state.get(1032));
+    }
+
+    @Test
+    public void testResetRange()
+            throws AllActionsSetException, ScriptExecutionException,
+            ScriptParsingException, ValidationIssue, IOException {
+        Player player = TestUtils.createPlayer(getClass(), "ScriptTests");
+        TestUtils.play(player, new ActionRange(1040),
+                new ActionRange(1040, 1041));
+
+        assertEquals(ScriptState.UNSET, player.state.get(1040));
+        assertEquals(ScriptState.UNSET, player.state.get(1041));
+        assertEquals(ScriptState.UNSET, player.state.get(1042));
+        assertEquals(ScriptState.UNSET, player.state.get(1043));
+        assertNull(player.state.getTime(1043));
     }
 }

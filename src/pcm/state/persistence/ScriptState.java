@@ -269,11 +269,25 @@ public class ScriptState {
         times.remove(n);
     }
 
-    public void resetRange(int start, int end) {
-        Collection<Integer> mustUnset = new ArrayList<Integer>(end - start);
+    public void resetRange(ActionRange actionRange) {
+        Collection<Integer> mustUnset = new ArrayList<Integer>(
+                actionRange.size());
+
         for (Entry<Integer, Long> entry : data.entrySet()) {
             Integer n = entry.getKey();
-            if (n >= start && n <= end) {
+            if (actionRange.contains(n)) {
+                mustUnset.add(n);
+            }
+        }
+
+        for (Integer n : actions) {
+            if (actionRange.contains(n)) {
+                mustUnset.add(n);
+            }
+        }
+
+        for (Integer n : times.keySet()) {
+            if (actionRange.contains(n)) {
                 mustUnset.add(n);
             }
         }
@@ -375,8 +389,8 @@ public class ScriptState {
      * @param n
      *            The action number
      * @param value
-     *            {@link ScriptState#SET}, {@link ScriptState#UNSET} or any other
-     *            value.
+     *            {@link ScriptState#SET}, {@link ScriptState#UNSET} or any
+     *            other value.
      */
     public void overwrite(Integer n, Long value) {
         dataOverwrites.put(n, value);
