@@ -218,9 +218,12 @@ public abstract class AbstractAction {
          * <p>
          * If used right, it's a good tool for creating realistic dialogs.
          */
-        relaxedSpeechRecognitionConfidence
+        relaxedSpeechRecognitionConfidence,
 
-        ;
+        /**
+         * True if at least one of the actions is not set.
+         */
+        MustNotAllOf;
 
         public final static Map<String, Statement> lookup = new HashMap<String, Statement>();
         public final static Map<String, Statement> KeywordToStatement = new HashMap<String, Statement>();
@@ -257,7 +260,8 @@ public abstract class AbstractAction {
         responses.put(statement, response);
     }
 
-    public ActionRange execute(ScriptState state) throws ScriptExecutionException {
+    public ActionRange execute(ScriptState state)
+            throws ScriptExecutionException {
         if (commands != null) {
             for (Command command : commands) {
                 logger.info(command.getClass().getSimpleName() + " "

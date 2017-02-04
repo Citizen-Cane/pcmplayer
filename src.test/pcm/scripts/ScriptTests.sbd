@@ -77,6 +77,56 @@
 .range 9999
 
 
+' testMustNotAllOf
+
+[action 1050]
+.set 8 9
+.range 1051
+
+[action 1051]
+.must 8 9
+.unset 8 9
+.range 1052
+
+[action 1052]
+.mustnot 8 9
+.range 1053
+
+[action 1053]
+.mustnotallof 8 9
+.set 8
+.range 1054 1055
+
+
+' true
+[action 1054]
+.mustnotallof 8 9
+.range 1056
+
+[action 1055]
+.else
+.mustnot 8 9
+.range 1056
+
+
+[action 1056]
+.mustnotallof 8 9
+.set 9
+.range 1057 1058
+
+
+' true
+[action 1057]
+.must 8 9
+.range 9999
+
+[action 1058]
+.else
+.mustnotallof 8 9
+.range 9999
+
+
+
 ' proper exit for all test cases
 [action 9999]
 .noimage

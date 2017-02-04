@@ -143,4 +143,17 @@ public class ScriptTests {
         assertEquals(ScriptState.UNSET, player.state.get(1043));
         assertNull(player.state.getTime(1043));
     }
+
+    @Test
+    public void testMustNotAllOf()
+            throws AllActionsSetException, ScriptExecutionException,
+            ScriptParsingException, ValidationIssue, IOException {
+        Player player = TestUtils.createPlayer(getClass(), "ScriptTests");
+        TestUtils.play(player, new ActionRange(1050),
+                new ActionRange(1050, 1059));
+
+        assertEquals(ScriptState.SET, player.state.get(1053));
+        assertEquals(ScriptState.SET, player.state.get(1054));
+        assertEquals(ScriptState.SET, player.state.get(1057));
+    }
 }

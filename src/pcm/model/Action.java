@@ -36,6 +36,7 @@ import pcm.state.conditions.IfSet;
 import pcm.state.conditions.IfUnset;
 import pcm.state.conditions.Must;
 import pcm.state.conditions.MustNot;
+import pcm.state.conditions.MustNotAllOf;
 import pcm.state.conditions.NumActionsAvailable;
 import pcm.state.conditions.NumActionsFrom;
 import pcm.state.conditions.NumberOfActionsSet;
@@ -259,6 +260,10 @@ public class Action extends AbstractAction {
             MustNot mustNot = new MustNot();
             cmd.addArgsTo(mustNot);
             addCondition(mustNot);
+        } else if (name == Statement.MustNotAllOf) {
+            MustNotAllOf mustNotAllOf = new MustNotAllOf();
+            cmd.addArgsTo(mustNotAllOf);
+            addCondition(mustNotAllOf);
         } else if (name == Statement.Should) {
             Should should = new Should();
             cmd.addArgsTo(should);
@@ -435,7 +440,8 @@ public class Action extends AbstractAction {
             String args[] = cmd.args();
             ActionRange playRange = new ActionRange(Integer.parseInt(args[0]),
                     Integer.parseInt(args[1]));
-            if (args[2].equalsIgnoreCase(Break.SuppressStackCorrectionOnBreak)) {
+            if (args[2]
+                    .equalsIgnoreCase(Break.SuppressStackCorrectionOnBreak)) {
                 setInteraction(
                         new Break(playRange, rangesFromArgv(args, 3), true));
             } else {
