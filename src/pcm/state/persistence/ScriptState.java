@@ -395,4 +395,8 @@ public class ScriptState {
     public void overwrite(Integer n, Long value) {
         dataOverwrites.put(n, value);
     }
+
+    public int size() {
+        return data.size() + actions.size() + times.size();
+    }
 }

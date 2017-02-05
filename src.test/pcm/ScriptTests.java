@@ -54,6 +54,17 @@ public class ScriptTests {
     }
 
     @Test
+    public void testAllUnsetAfterInit() throws Exception {
+        Player player = TestUtils.createPlayer(getClass(), "ScriptTests");
+        assertEquals(0, player.state.size());
+
+        TestUtils.play(player, new ActionRange(9999), new ActionRange(9999));
+
+        assertEquals(ScriptState.SET, player.state.get(9999));
+        assertEquals(1, player.state.size());
+    }
+
+    @Test
     public void testOutOfActions() throws Exception {
         ActionRange r = new ActionRange(1000, 1001);
         player.range = r;
