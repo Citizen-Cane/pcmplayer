@@ -34,7 +34,6 @@ public class YesNo extends AbstractInteraction {
             final Player player) throws ScriptExecutionException {
         String yes = action.getResponseText(Statement.YesText, script);
         String no = action.getResponseText(Statement.NoText, script);
-        logger.info("AskYesNo: '" + yes + "', '" + no + '+');
         final List<String> choices = new ArrayList<String>();
         choices.add(yes);
         choices.add(no);

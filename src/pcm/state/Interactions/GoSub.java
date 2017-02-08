@@ -32,7 +32,7 @@ public class GoSub extends AbstractInteractionWithRangeProvider {
     @Override
     public ActionRange getRange(Script script, Action action, Runnable visuals,
             Player player) throws ScriptExecutionException {
-        logger.info("Gosub -> " + range.toString());
+        logger.info(range.toString());
         visuals.run();
         script.stack.push(
                 rangeProvider.getRange(script, action, NoVisuals, player));

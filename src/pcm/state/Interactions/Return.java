@@ -22,8 +22,7 @@ public class Return implements Interaction {
         visuals.run();
         if (script.stack.size() > 0) {
             ActionRange range = script.stack.pop();
-            logger.info("Return: "
-                    + (range != null ? range.toString() : "end of script"));
+            logger.info(range != null ? range.toString() : "end of script");
             return range;
         } else {
             throw new ScriptExecutionException(action, "Stack empty", script);

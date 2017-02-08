@@ -15,8 +15,6 @@ import pcm.state.conditions.TimeFrom;
 import pcm.state.persistence.ScriptState;
 
 public abstract class AbstractAction {
-    private static final Logger logger = LoggerFactory.getLogger(Logger.class);
-
     // / Names of Statements used in PCM scripts
     public enum Statement {
         // Conditions
@@ -264,8 +262,8 @@ public abstract class AbstractAction {
             throws ScriptExecutionException {
         if (commands != null) {
             for (Command command : commands) {
-                logger.info(command.getClass().getSimpleName() + " "
-                        + command.toString());
+                Logger logger = LoggerFactory.getLogger(command.getClass());
+                logger.info(command.toString());
                 command.execute(state);
             }
         }
