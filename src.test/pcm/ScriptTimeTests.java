@@ -3,8 +3,7 @@
  */
 package pcm;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Date;
 import java.util.Locale;
@@ -130,13 +129,13 @@ public class ScriptTimeTests {
         assertEquals(ScriptState.SET, player.state.get(1010));
         player.teaseLib.sleep(2, TimeUnit.SECONDS);
         assertTrue(containsAction(1011));
-        assertTrue(!containsAction(1012));
-        assertTrue(!containsAction(1013));
+        assertFalse(containsAction(1012));
+        assertFalse(containsAction(1013));
         assertTrue(containsAction(1014));
 
-        assertTrue(!containsAction(1015));
+        assertFalse(containsAction(1015));
         assertTrue(containsAction(1016));
-        assertTrue(!containsAction(1017));
+        assertFalse(containsAction(1017));
     }
 
     @Test
@@ -145,7 +144,7 @@ public class ScriptTimeTests {
         player.range = r;
         player.play(r);
         assertEquals(ScriptState.SET, player.state.get(1020));
-        assertTrue(!containsAction(1021));
+        assertFalse(containsAction(1021));
         assertTrue(containsAction(1022));
     }
 
@@ -157,8 +156,18 @@ public class ScriptTimeTests {
         assertEquals(ScriptState.SET, player.state.get(1025));
         assertTrue(containsAction(1026));
         assertTrue(containsAction(1027));
-        assertTrue(!containsAction(1028));
-        assertTrue(!containsAction(1029));
+        assertFalse(containsAction(1028));
+        assertFalse(containsAction(1029));
+    }
+
+    @Test
+    public void testTimeToInfinity() throws Exception {
+        ActionRange r = new ActionRange(1030);
+        player.range = r;
+        player.play(r);
+        assertEquals(ScriptState.SET, player.state.get(1030));
+        assertTrue(containsAction(1031));
+        assertFalse(containsAction(1032));
     }
 
 }

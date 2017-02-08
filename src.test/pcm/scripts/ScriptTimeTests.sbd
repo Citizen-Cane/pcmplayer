@@ -6,7 +6,7 @@
 
 ' testTimeFromTo
 
-' settime, then wait 2 seconds
+' settime, then sleeping 2 seconds in java
 [action 1000]
 .settime 9
 .range 9999
@@ -45,7 +45,7 @@
 ' timeto "after" values are positive
 ' -> less than the given duration has passed
 
-' one minute after now
+' one minute after now - sleeping 2 seconds in java
 [action 1010]
 .settime 9 +00:01"00
 .range 9999
@@ -97,7 +97,7 @@
 .timefrom 9 99:99"99
 .range 9999
 
-' a lot of time left
+' a lot of time left - true
 [action 1022]
 .timeto 9 -99:99"99
 .range 9999
@@ -129,6 +129,23 @@
 .timeto 9 99:99"99
 .range 9999
 
+
+' testTimeToInfinity
+
+[action 1030]
+.settime 9 INF
+.range 9999
+
+' always true
+[action 1031]
+.timeto 9 -INF
+.range 9999
+
+' always false
+[action 1032]
+.timeto 9 INF
+.range 9999
+ 
 
 ' proper exit for all test cases
 [action 9999]

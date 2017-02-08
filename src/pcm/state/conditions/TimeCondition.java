@@ -1,6 +1,3 @@
-/**
- * 
- */
 package pcm.state.conditions;
 
 import java.util.Date;
@@ -12,10 +9,6 @@ import pcm.model.Duration;
 import pcm.state.Condition;
 import pcm.state.persistence.ScriptState;
 
-/**
- * @author someone
- *
- */
 public abstract class TimeCondition implements Condition {
     private static final Logger logger = LoggerFactory
             .getLogger(TimeCondition.class);
@@ -26,7 +19,13 @@ public abstract class TimeCondition implements Condition {
     public TimeCondition(int n, String duration) {
         super();
         this.n = n;
-        this.durationMillis = new Duration(duration).getTimeSpanMillis();
+        if ("INF".equalsIgnoreCase(duration)) {
+            this.durationMillis = teaselib.State.INFINITE;
+        } else if ("-INF".equalsIgnoreCase(duration)) {
+            this.durationMillis = -teaselib.State.INFINITE;
+        } else {
+            this.durationMillis = new Duration(duration).getTimeSpanMillis();
+        }
     }
 
     protected abstract boolean predicate(long elapsedMillis);
@@ -51,7 +50,7 @@ public abstract class TimeCondition implements Condition {
                 + setTime.toString() + ", duration = "
                 + toString(durationMillis) + "(" + durationMillis + ") , now = "
                 + new Date(System.currentTimeMillis()) + ", elapsed = "
-                + new Date(elapsedMillis) + " -> " + result);
+                + toString(elapsedMillis) + " -> " + result);
     }
 
     @Override

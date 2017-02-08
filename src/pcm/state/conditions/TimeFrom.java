@@ -1,5 +1,7 @@
 package pcm.state.conditions;
 
+import teaselib.State;
+
 public class TimeFrom extends TimeCondition {
 
     public TimeFrom(int n, String timeSpan) {
@@ -8,6 +10,12 @@ public class TimeFrom extends TimeCondition {
 
     @Override
     protected boolean predicate(long elapsedMillis) {
-        return elapsedMillis > durationMillis;
+        if (durationMillis == -State.INFINITE) {
+            return false;
+        } else if (durationMillis == State.INFINITE) {
+            return true;
+        } else {
+            return elapsedMillis > durationMillis;
+        }
     }
 }
