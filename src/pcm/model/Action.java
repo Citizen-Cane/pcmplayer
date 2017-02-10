@@ -49,10 +49,10 @@ import pcm.state.visuals.Delay;
 import pcm.state.visuals.Exec;
 import pcm.state.visuals.Image;
 import pcm.state.visuals.KeyReleaseHandler;
-import pcm.state.visuals.MistressImage;
 import pcm.state.visuals.NoImage;
 import pcm.state.visuals.NoMessage;
 import pcm.state.visuals.Sound;
+import pcm.state.visuals.SpokenMessage;
 import pcm.state.visuals.Timeout;
 import teaselib.core.speechrecognition.SpeechRecognition.TimeoutBehavior;
 
@@ -101,11 +101,6 @@ public class Action extends AbstractAction {
                 hasDelay = hasMessage;
             }
             if (hasDelay) {
-                // Automatic mistress image
-                if (!visuals.containsKey(Statement.Image)
-                        && !visuals.containsKey(Statement.NoImage)) {
-                    addVisual(Statement.Image, MistressImage.instance);
-                }
                 // Add empty message in order to render NoImage + NoMessage
                 if (!hasMessage && !hasTxt) {
                     addVisual(Statement.Txt, NoMessage.instance);
@@ -570,26 +565,40 @@ public class Action extends AbstractAction {
                             validationErrors);
                 }
             }
-            // empty message but image - image will not be displayed
+
             if (!visuals.containsKey(Statement.Message)
                     && !visuals.containsKey(Statement.Txt)) {
-                Statement[] requiredMessage = { Statement.Image,
+                Statement[] requiresMessage = { Statement.Image,
                         Statement.Delay };
-                for (Statement statement : requiredMessage) {
+                for (Statement statement : requiresMessage) {
                     if (visuals.containsKey(statement)) {
                         validationErrors.add(new ValidationIssue(this,
                                 "Message without .txt or speech part won't render images or other media",
                                 script));
                     }
                 }
-            }
-            // Check common scripting mistakes
-            if (visuals.containsKey(Statement.Txt)
+            } else if (visuals.containsKey(Statement.Message)) {
+                SpokenMessage message = (SpokenMessage) visuals
+                        .get(Statement.Message);
+                if (message.getMessages().size() > 1) {
+                    Statement[] requiresSinglePageMessage = { Statement.Image,
+                            Statement.Delay };
+                    for (Statement statement : requiresSinglePageMessage) {
+                        if (visuals.containsKey(statement)) {
+                            validationErrors.add(new ValidationIssue(this,
+                                    "." + statement.toString()
+                                            + " doesn't work correctly in multi-page messages",
+                                    script));
+                        }
+                    }
+                }
+            } else if (visuals.containsKey(Statement.Txt)
                     && visuals.containsKey(Statement.Message)) {
                 validationErrors.add(new ValidationIssue(this,
                         "Both .txt and message is supported", script));
             }
-            // delay 0 & noimage
+
+            // .delay 0 & .noimage
             if (visuals.containsKey(Statement.Delay)
                     && visuals.containsKey(Statement.NoImage)) {
                 Delay delay = (Delay) visuals.get(Statement.Delay);
