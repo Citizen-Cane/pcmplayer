@@ -22,22 +22,24 @@ import pcm.model.ScriptExecutionException;
 
 /**
  * Well, the original PCMistress likely used a single (long?) array for storing
- * values of any kind - set/unset: just a bool - RepeatAdd, RepeatDelete: a
- * number, when 0 set returns true - setTime appears to have stored hours and
- * minutes, but has missed to store seconds -> corrected in this player by
- * enforcing the use of the add-on command '.timefrom
+ * values of any kind
+ * <li>set/unset: 0 and -1
+ * <li>RepeatAdd, RepeatDelete: a number, when 0 set() returns true
+ * <li>setTime appears to have stored hours and minutes, but has missed to store
+ * seconds - fixed, using the time format hh:mm'ss.
+ * <p>
+ * The storing scheme here looks weird at first, but ScriptState implements SET
+ * as 1, and UNSET as 0. As a result, repeatAdd/Delete counts up with negative
+ * numbers, and the repeat count evaluates to (-n)-1.
+ * <p>
+ * Using this scheme adds some awkwardness to repeat -add/del, but only if
+ * debugging it, and it allows the usual set/unset to be persisted as 1/0 (true,
+ * false).
+ * <p>
+ * The set() and unset() methods actually set the value to either 1 or 0,
+ * whereas resetRange() also removes the value from the storage.
  * 
- * The storing scheme looks weird at first, but implements SET as 1, UNSET as 0.
- * As a result, repeatAdd/Delete counts up with negative numbers, and the repeat
- * count evaluates to (-n)-1.
- * 
- * set() and unset() actually set the value to either 1 or 0, whereas
- * resetRange() removes the value from the storage.
- *
- * TODO improve test coverage as this a central class responsible for the flow
- * of execution and it's not covered good enough
- * 
- * * @author someone
+ * @author Citizen-Cane
  *
  */
 public class ScriptState {
