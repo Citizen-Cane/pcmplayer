@@ -1,0 +1,35 @@
+' pcm test cases
+
+
+.restore
+.range 1000
+
+
+' testThatTimeMappingsPersistsPositiveValues
+
+[action 1000]
+.set 267
+.settime 45 01:00"00
+.save 90 799
+.range 9999
+
+
+' testThatTimeMappingPersists_SetTime_00_00_00
+
+[action 1010]
+.settime 45 00:00"00
+.save 90 799
+.range 9999
+
+
+' testThatTimeMappingPersistsNegativeValue
+
+[action 1020]
+.settime 45 -01:00"00
+.save 90 799
+.range 9999
+
+
+' proper exit for all test cases
+[action 9999]
+.quit

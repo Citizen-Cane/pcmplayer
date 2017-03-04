@@ -39,7 +39,7 @@ public abstract class MappedScriptStateValue implements MappedScriptValue {
 
         @Override
         public void set() {
-            state.applyForSession();
+            state.apply();
         }
     }
 
@@ -50,7 +50,8 @@ public abstract class MappedScriptStateValue implements MappedScriptValue {
 
         @Override
         public void set() {
-            state.applyIndefinitely();
+            state.apply();
+            state.remember();
         }
     }
 }

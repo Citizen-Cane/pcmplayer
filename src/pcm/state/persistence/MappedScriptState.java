@@ -166,6 +166,7 @@ public class MappedScriptState extends ScriptState {
             long now = System.currentTimeMillis();
             long duration = date.getTime() - now;
             state.apply(duration, TimeUnit.MILLISECONDS);
+            state.remember();
         }
         super.setTime(n, date);
     }
