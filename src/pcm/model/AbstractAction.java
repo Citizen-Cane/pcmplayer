@@ -219,9 +219,16 @@ public abstract class AbstractAction {
         relaxedSpeechRecognitionConfidence,
 
         /**
-         * True if at least one of the actions is not set.
+         * True if at least one of the actions is unset.
          */
-        MustNotAllOf;
+        MustNotAllOf,
+
+        /**
+         * True if at least one of the actions is set.
+         */
+        MustAnyOf
+
+        ;
 
         public final static Map<String, Statement> lookup = new HashMap<String, Statement>();
         public final static Map<String, Statement> KeywordToStatement = new HashMap<String, Statement>();

@@ -3,9 +3,7 @@
  */
 package pcm;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.Locale;
@@ -165,6 +163,19 @@ public class ScriptTests {
 
         assertEquals(ScriptState.SET, player.state.get(1053));
         assertEquals(ScriptState.SET, player.state.get(1054));
-        assertEquals(ScriptState.SET, player.state.get(1057));
+        assertEquals(ScriptState.SET, player.state.get(1058));
+    }
+
+    @Test
+    public void testMustAnyOf()
+            throws AllActionsSetException, ScriptExecutionException,
+            ScriptParsingException, ValidationIssue, IOException {
+        Player player = TestUtils.createPlayer(getClass(), "ScriptTests");
+        TestUtils.play(player, new ActionRange(1060),
+                new ActionRange(1060, 1069));
+
+        assertEquals(ScriptState.SET, player.state.get(1062));
+        assertEquals(ScriptState.SET, player.state.get(1064));
+        assertEquals(ScriptState.SET, player.state.get(1068));
     }
 }

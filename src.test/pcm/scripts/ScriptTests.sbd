@@ -115,15 +115,61 @@
 .range 1057 1058
 
 
-' true
+' false
 [action 1057]
-.must 8 9
+.mustnotallof 8 9
 .range 9999
 
 [action 1058]
 .else
-.mustnotallof 8 9
+.must 8 9
 .range 9999
+
+
+' testMustNotAllOf
+
+[action 1060]
+.set 8 9
+.range 1061
+
+[action 1061]
+.must 8 9
+.range 1062
+
+[action 1062]
+.mustanyof 8 9
+.unset 8
+.range 1064 1065
+
+
+' true
+[action 1064]
+.mustanyof 8 9
+.range 1066
+
+[action 1065]
+.else
+.mustnot 8 9
+.range 1066
+
+
+[action 1066]
+.mustanyof 8 9
+.unset 9
+.range 1067 1068
+
+
+' false
+[action 1067]
+.mustanyof 8 9
+.range 9999
+
+[action 1068]
+.else
+.mustnot 8 9
+.range 9999
+
+
 
 
 

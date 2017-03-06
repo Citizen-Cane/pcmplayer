@@ -35,6 +35,7 @@ import pcm.state.commands.Unset;
 import pcm.state.conditions.IfSet;
 import pcm.state.conditions.IfUnset;
 import pcm.state.conditions.Must;
+import pcm.state.conditions.MustAnyOf;
 import pcm.state.conditions.MustNot;
 import pcm.state.conditions.MustNotAllOf;
 import pcm.state.conditions.NumActionsAvailable;
@@ -259,6 +260,10 @@ public class Action extends AbstractAction {
             MustNotAllOf mustNotAllOf = new MustNotAllOf();
             cmd.addArgsTo(mustNotAllOf);
             addCondition(mustNotAllOf);
+        } else if (name == Statement.MustAnyOf) {
+            MustAnyOf mustAnyOf = new MustAnyOf();
+            cmd.addArgsTo(mustAnyOf);
+            addCondition(mustAnyOf);
         } else if (name == Statement.Should) {
             Should should = new Should();
             cmd.addArgsTo(should);

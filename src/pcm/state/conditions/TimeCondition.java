@@ -59,6 +59,10 @@ public abstract class TimeCondition implements Condition {
     }
 
     public static String toString(long durationMillis) {
+        // TODO negative output wrong -> example should be -00:20"00
+        // [TeaseScript main thread] INFO ... duration = -1:50"00(-600000) , now
+        // = Mon Mar 06 21:40:59 CET 2017, elapsed = 413564:40"59 -> true
+
         long h = Math.floorDiv(durationMillis, 60 * 60 * 1000);
         long m = Math.floorDiv(durationMillis - h * 60 * 60 * 1000, 60 * 1000);
         long s = Math.floorDiv(
