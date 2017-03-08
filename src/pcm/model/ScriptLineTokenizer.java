@@ -41,7 +41,11 @@ public class ScriptLineTokenizer {
     }
 
     public void addArgsTo(Collection<Integer> collection) {
-        for (String arg : args()) {
+        String[] args = args();
+        if (args.length == 0) {
+            throw new IllegalArgumentException("No arguments");
+        }
+        for (String arg : args) {
             collection.add(Integer.parseInt(arg));
         }
     }
