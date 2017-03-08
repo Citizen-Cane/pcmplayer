@@ -77,8 +77,8 @@ public class MappedScriptState extends ScriptState {
                 .put(mappedGameValue.getNumber(), mappedGameValue);
     }
 
-    public void addStateTimeMapping(String scriptName, Integer action,
-            teaselib.State state, Toys what) {
+    public <T> void addStateTimeMapping(String scriptName, Integer action,
+            teaselib.State state, T what) {
         ScriptMapping scriptMapping = getScriptMapping(scriptName);
         scriptMapping.stateTimeMapping.put(action, state);
         scriptMapping.what.put(action, what);
@@ -163,16 +163,14 @@ public class MappedScriptState extends ScriptState {
     }
 
     @Override
-    public void setTime(Integer n, Date date) {
+    public void setTime(Integer n, long now, long offset) {
         if (hasStateTimeMapping(n)) {
             teaselib.State state = scriptMapping.stateTimeMapping.get(n);
-            long now = System.currentTimeMillis();
-            long duration = date.getTime() - now;
-            state.apply(scriptMapping.what.get(n), duration,
+            state.apply(scriptMapping.what.get(n), now, offset,
                     TimeUnit.MILLISECONDS);
             state.remember();
         }
-        super.setTime(n, date);
+        super.setTime(n, now, offset);
     }
 
     @Override

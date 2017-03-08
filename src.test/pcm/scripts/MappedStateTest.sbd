@@ -1,0 +1,49 @@
+' pcm test cases
+
+
+.restore
+.range 1000
+
+
+' testThatUninitializedMultiMappedStateCanBeRead
+
+[action 1000]
+.timefrom 44 00:00"00
+.range 9999
+
+
+' testThatUninitializedUnmappedStateThrows
+
+[action 1010]
+.timefrom 666 00:00"00
+.range 9999
+
+
+' testThatScriptHandlesMultiMappedValuesCorrectly
+
+[action 1020]
+.timefrom 44 INF
+.range 1021 1022
+
+
+[action 1021]
+.else
+.timeto 44 99:59"59
+.range 1025
+
+[action 1022]
+.else
+.timeto 44 -INF
+.range 1025
+
+
+[action 1025]
+'.settime 44 +00:00"0
+.settime 44 +00:00"10
+.range 9999
+
+
+
+' proper exit for all test cases
+[action 9999]
+.quit

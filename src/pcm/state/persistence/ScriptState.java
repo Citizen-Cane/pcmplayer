@@ -246,9 +246,9 @@ public class ScriptState {
         }
     }
 
-    public void setTime(Integer n, Date date) {
+    public void setTime(Integer n, long now, long offset) {
         data.remove(n);
-        times.put(n, date);
+        times.put(n, new Date(now + offset));
     }
 
     public void unset(Collection<Integer> unset) {

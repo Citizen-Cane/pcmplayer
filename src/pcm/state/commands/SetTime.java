@@ -29,25 +29,24 @@ public class SetTime implements Command {
 
     @Override
     public void execute(ScriptState state) {
-        final Date date;
         if (offset.toLowerCase().startsWith("inf")
                 || offset.toLowerCase().startsWith("+inf")) {
-            date = new Date(Long.MAX_VALUE);
             logger.info("Setting time " + n + " to +INF (" + offset + ")");
+            state.setTime(n, state.getTimeMillis(), Long.MAX_VALUE);
         } else if (offset.toLowerCase().startsWith("-inf")) {
             // Values must actually be positive,
             // and Long.MIN_VALUE would lead to an overflow later on
-            date = new Date(0);
             logger.info("Setting time " + n + " to -INF (" + offset + ")");
+            state.setTime(n, 0, 0);
         } else {
+            // TODO use timespan to avoid unstable code
             long now = state.getTimeMillis();
             long offset = new Duration(this.offset).getTimeSpanMillis();
-            date = new Date(now + offset);
             logger.info("Setting time " + n + " to " + new Date(now).toString()
                     + (this.offset != None ? " + " + this.offset + " = "
                             + new Date(now + offset) : ""));
+            state.setTime(n, now, offset);
         }
-        state.setTime(n, date);
     }
 
     @Override

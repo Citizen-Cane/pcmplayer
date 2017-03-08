@@ -53,11 +53,20 @@ public class TestUtils {
         return player;
     }
 
+    public static void play(Player player, int start)
+            throws AllActionsSetException, ScriptExecutionException {
+        play(player, new ActionRange(start), null);
+    }
+
+    public static void play(Player player, ActionRange start)
+            throws AllActionsSetException, ScriptExecutionException {
+        play(player, start, null);
+    }
+
     public static void play(Player player, ActionRange start,
             ActionRange playRange)
             throws AllActionsSetException, ScriptExecutionException {
         player.range = start;
         player.play(playRange);
     }
-
 }
