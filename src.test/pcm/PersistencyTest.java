@@ -19,6 +19,10 @@ import teaselib.core.TeaseLib;
 
 public class PersistencyTest {
 
+    enum Body {
+        Chastified
+    }
+
     @Test
     // TODO Throws AllActionsSet - expected test result
     public void testThatResetRangeUnsetsMappings() throws Exception {
@@ -76,14 +80,6 @@ public class PersistencyTest {
         pcm.util.TestUtils.play(player, new ActionRange(1000), null);
     }
 
-    enum Assignments {
-        Enema
-    }
-
-    enum Body {
-        Chastified
-    }
-
     @Test
     public void testThatIndefiniteScriptValueMappingsArePersisted()
             throws Exception {
@@ -93,17 +89,17 @@ public class PersistencyTest {
 
         state.addScriptValueMapping(mainScript,
                 new MappedScriptStateValue.Indefinitely(267,
-                        player.state(Assignments.Enema)));
+                        player.state(Body.Chastified), Toys.Chastity_Cage));
 
         player.loadScript(mainScript);
 
         pcm.util.TestUtils.play(player, new ActionRange(1000), null);
 
-        TeaseLib.PersistentString enemaState = player.teaseLib.new PersistentString(
+        TeaseLib.PersistentString chastifiedState = player.teaseLib.new PersistentString(
                 TeaseLib.DefaultDomain, "pcm.PersistencyTest",
-                "Assignments.Enema.state");
+                "Body.Chastified.state");
 
-        assertTrue(enemaState.available());
+        assertTrue(chastifiedState.available());
     }
 
     @Test
@@ -115,7 +111,7 @@ public class PersistencyTest {
 
         state.addScriptValueMapping(mainScript,
                 new MappedScriptStateValue.ForSession(267,
-                        player.state(Assignments.Enema)));
+                        player.state(Body.Chastified), Toys.Chastity_Cage));
 
         player.loadScript(mainScript);
 
@@ -135,7 +131,7 @@ public class PersistencyTest {
         MappedScriptState state = player.state;
 
         state.addStateTimeMapping(MappedScriptState.Global, 45,
-                player.state(Body.Chastified));
+                player.state(Body.Chastified), Toys.Chastity_Cage);
 
         player.loadScript(mainScript);
 
@@ -155,7 +151,7 @@ public class PersistencyTest {
         MappedScriptState state = player.state;
 
         state.addStateTimeMapping(MappedScriptState.Global, 45,
-                player.state(Body.Chastified));
+                player.state(Body.Chastified), Toys.Chastity_Cage);
 
         player.loadScript(mainScript);
 
@@ -174,7 +170,7 @@ public class PersistencyTest {
         MappedScriptState state = player.state;
 
         state.addStateTimeMapping(MappedScriptState.Global, 45,
-                player.state(Body.Chastified));
+                player.state(Body.Chastified), Toys.Chastity_Cage);
 
         player.loadScript(mainScript);
 

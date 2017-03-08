@@ -34,13 +34,14 @@ public class MappedScriptState extends ScriptState {
     public static final String Global = "";
 
     private static class ScriptMapping {
-
         final Map<Integer, MappedScriptValue> gameValueMapping = new HashMap<Integer, MappedScriptValue>();
         final Map<Integer, teaselib.State> stateTimeMapping = new HashMap<Integer, teaselib.State>();
+        final Map<Integer, Object> what = new HashMap<Integer, Object>();
 
         public void putAll(ScriptMapping globalMapping) {
             gameValueMapping.putAll(globalMapping.gameValueMapping);
             stateTimeMapping.putAll(globalMapping.stateTimeMapping);
+            what.putAll(globalMapping.what);
         }
     }
 
@@ -77,8 +78,10 @@ public class MappedScriptState extends ScriptState {
     }
 
     public void addStateTimeMapping(String scriptName, Integer action,
-            teaselib.State state) {
-        getScriptMapping(scriptName).stateTimeMapping.put(action, state);
+            teaselib.State state, Toys what) {
+        ScriptMapping scriptMapping = getScriptMapping(scriptName);
+        scriptMapping.stateTimeMapping.put(action, state);
+        scriptMapping.what.put(action, what);
     }
 
     @Override
@@ -165,7 +168,8 @@ public class MappedScriptState extends ScriptState {
             teaselib.State state = scriptMapping.stateTimeMapping.get(n);
             long now = System.currentTimeMillis();
             long duration = date.getTime() - now;
-            state.apply(duration, TimeUnit.MILLISECONDS);
+            state.apply(scriptMapping.what.get(n), duration,
+                    TimeUnit.MILLISECONDS);
             state.remember();
         }
         super.setTime(n, date);

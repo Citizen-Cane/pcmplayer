@@ -33,24 +33,30 @@ public abstract class MappedScriptStateValue implements MappedScriptValue {
     }
 
     public static class ForSession extends MappedScriptStateValue {
-        public ForSession(int n, State state) {
+        private final Object what;
+
+        public ForSession(int n, State state, Object what) {
             super(n, state);
+            this.what = what;
         }
 
         @Override
         public void set() {
-            state.apply();
+            state.apply(what);
         }
     }
 
     public static class Indefinitely extends MappedScriptStateValue {
-        public Indefinitely(int n, State state) {
+        private final Object what;
+
+        public Indefinitely(int n, State state, Object what) {
             super(n, state);
+            this.what = what;
         }
 
         @Override
         public void set() {
-            state.apply();
+            state.apply(what);
             state.remember();
         }
     }
