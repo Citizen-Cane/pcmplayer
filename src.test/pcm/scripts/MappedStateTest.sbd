@@ -25,12 +25,12 @@
 .timefrom 44 INF
 .range 1021 1022
 
-
+' false
 [action 1021]
-.else
 .timeto 44 99:59"59
 .range 1025
 
+' true
 [action 1022]
 .else
 .timeto 44 -INF
@@ -38,10 +38,32 @@
 
 
 [action 1025]
-'.settime 44 +00:00"0
-.settime 44 +00:00"10
+.settime 44 00:10"00
+.range 1026 1027
+
+
+' false - it's just 00:10"00 before
+[action 1026]
+.timeto 44 -00:15"00
+.range 1028 1029
+
+' true - more than 00:09"00 left until 00:10"00
+[action 1027]
+.else
+.timeto 44 -00:09"00
+.range 1028 1029
+
+
+' false - we're not yet at -00:05"00
+[action 1028]
+.timefrom 44 -00:05"00
 .range 9999
 
+' true - it's 00:10"00 before
+[action 1029]
+.else
+.timefrom 44 -00:10"00
+.range 9999
 
 
 ' proper exit for all test cases

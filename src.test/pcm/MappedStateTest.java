@@ -41,29 +41,35 @@ public class MappedStateTest {
     @Before
     public void before() throws ScriptParsingException, ValidationIssue,
             ScriptExecutionException, IOException {
+        initPlayer();
+        installMapping();
+        loadTestScript();
+    }
+
+    private void initPlayer() {
         player = TestUtils.createPlayer(getClass());
         state = player.state(Body.SomethingOnPenis);
         pcm = player.state;
+    }
 
+    private void installMapping() {
         pcm.addScriptValueMapping(MappedScriptState.Global,
                 new MappedScriptStateValue.Indefinitely(flag, state,
                         Toys.Chastity_Cage));
 
         pcm.addStateTimeMapping(MappedScriptState.Global, flag, state,
                 Toys.Chastity_Cage);
+    }
 
+    private void loadTestScript() throws ScriptParsingException,
+            ValidationIssue, IOException, ScriptExecutionException {
         player.loadScript("MappedStateTest");
     }
 
     @Test
     public void testThatUninitializedMultiMappedStateCanBeRead()
             throws AllActionsSetException, ScriptExecutionException {
-        assertEquals(UNSET, pcm.get(flag));
-        assertFalse(state.applied());
-        assertEquals(state.what(), State.None);
-
-        long seconds = pcm.getTime(flag).getTime() / 1000;
-        assertEquals(State.REMOVED, seconds);
+        assertThatUninitializedStateHasCorrectDefaultValues();
 
         TestUtils.play(player, 1000);
 
@@ -134,22 +140,45 @@ public class MappedStateTest {
     }
 
     @Test
-    public void testThatScriptHandlesMultiMappedValuesCorrectly()
+    public void testThatUnmappedScriptTimeValuesCorrectly()
+            throws AllActionsSetException, ScriptExecutionException,
+            ScriptParsingException, ValidationIssue, IOException {
+        initPlayer();
+        loadTestScript();
+        TestUtils.play(player, 1025);
+        assertEquals(ScriptState.SET, pcm.get(1025));
+        assertThatScriptTimeFuctionsWork();
+    }
+
+    @Test
+    public void testThatScriptHandlesMultiMappedTimeValuesCorrectly()
             throws AllActionsSetException, ScriptExecutionException {
+        assertThatUninitializedStateHasCorrectDefaultValues();
+        TestUtils.play(player, 1020);
+
+        assertEquals(ScriptState.SET, pcm.get(1020));
+        assertEquals(ScriptState.SET, pcm.get(1022));
+        assertThatScriptTimeFuctionsWork();
+
+        assertEquals(600, state.expected());
+    }
+
+    private void assertThatUninitializedStateHasCorrectDefaultValues() {
         assertEquals(UNSET, pcm.get(flag));
         assertFalse(state.applied());
         assertEquals(state.what(), State.None);
 
         long seconds = pcm.getTime(flag).getTime() / 1000;
         assertEquals(State.REMOVED, seconds);
+    }
 
-        TestUtils.play(player, 1020);
-        assertEquals(ScriptState.SET, pcm.get(1020));
+    private void assertThatScriptTimeFuctionsWork() {
         assertEquals(ScriptState.SET, pcm.get(9999));
 
-        assertEquals(ScriptState.SET, pcm.get(1022));
+        assertEquals(ScriptState.SET, pcm.get(1025));
+        assertEquals(ScriptState.SET, pcm.get(1027));
+        assertEquals(ScriptState.SET, pcm.get(1029));
 
-        assertEquals(10, state.expected());
     }
 
 }
