@@ -38,6 +38,7 @@
 
 
 [action 1025]
+.mustnot 44
 .settime 44 00:10"00
 .range 1026 1027
 
@@ -57,15 +58,54 @@
 ' false - we're not yet at -00:05"00
 [action 1028]
 .timefrom 44 -00:05"00
-.range 9999
+.range 1030 1031
 
 ' true - it's 00:10"00 before
 [action 1029]
 .else
 .timefrom 44 -00:10"00
+.range 1030 1031
+
+
+' true - for mapped state
+[action 1030]
+.must 44
+.range 1035
+
+' true - for unmapped state
+[action 1031]
+.mustnot 44
+.range 1035
+
+
+[action 1035]
+.settime 44 -00:10"00
+.range 1036
+
+' always true
+[action 1036]
+.mustnot 44
+.range 1037
+
+
+[action 1037]
+.set 44
+.range 9999
+
+
+' true - for mapped states, throws for unmapped states
+[action 1038]
+.timefrom 44 00:00"00
+.timeto 44 00:00"01
+.range 9999
+
+' true - for unmapped states
+[action 1039]
+.must 44
 .range 9999
 
 
 ' proper exit for all test cases
 [action 9999]
+.unset 9999
 .quit

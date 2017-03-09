@@ -74,7 +74,6 @@ public class MappedStateTest {
         TestUtils.play(player, 1000);
 
         assertEquals(ScriptState.SET, pcm.get(1000));
-        assertEquals(ScriptState.SET, pcm.get(9999));
     }
 
     @Test(expected = java.lang.RuntimeException.class)
@@ -145,22 +144,31 @@ public class MappedStateTest {
             ScriptParsingException, ValidationIssue, IOException {
         initPlayer();
         loadTestScript();
+
         TestUtils.play(player, 1025);
+        TestUtils.play(player, 1039);
+
         assertEquals(ScriptState.SET, pcm.get(1025));
         assertThatScriptTimeFuctionsWork();
+        assertEquals(ScriptState.SET, pcm.get(1031));
+        assertEquals(ScriptState.SET, pcm.get(1039));
     }
 
     @Test
     public void testThatScriptHandlesMultiMappedTimeValuesCorrectly()
             throws AllActionsSetException, ScriptExecutionException {
         assertThatUninitializedStateHasCorrectDefaultValues();
+
         TestUtils.play(player, 1020);
+        TestUtils.play(player, 1038);
 
         assertEquals(ScriptState.SET, pcm.get(1020));
         assertEquals(ScriptState.SET, pcm.get(1022));
         assertThatScriptTimeFuctionsWork();
+        assertEquals(ScriptState.SET, pcm.get(1030));
+        assertEquals(ScriptState.SET, pcm.get(1038));
 
-        assertEquals(600, state.expected());
+        assertEquals(0, state.expected());
     }
 
     private void assertThatUninitializedStateHasCorrectDefaultValues() {
@@ -173,8 +181,6 @@ public class MappedStateTest {
     }
 
     private void assertThatScriptTimeFuctionsWork() {
-        assertEquals(ScriptState.SET, pcm.get(9999));
-
         assertEquals(ScriptState.SET, pcm.get(1025));
         assertEquals(ScriptState.SET, pcm.get(1027));
         assertEquals(ScriptState.SET, pcm.get(1029));
