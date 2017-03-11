@@ -3,22 +3,18 @@ package pcm.state.commands;
 import java.util.concurrent.TimeUnit;
 
 import pcm.model.AbstractAction.Statement;
-import pcm.model.ScriptExecutionException;
 import pcm.model.ScriptParsingException;
-import pcm.state.BasicStatement;
-import pcm.state.Command;
+import pcm.state.BasicCommand;
 import pcm.state.persistence.ScriptState;
 import teaselib.State;
 
-public class SetState extends BasicStatement implements Command {
+public class SetState extends BasicCommand {
 
     public enum Command {
         Apply,
         Remember,
         Clear,
     }
-
-    CommandImpl ci;
 
     public SetState(String[] args) throws ScriptParsingException {
         super(Statement.SetState, getCommandImplementation(args), args);
@@ -77,8 +73,4 @@ public class SetState extends BasicStatement implements Command {
         }
     }
 
-    @Override
-    public void execute(ScriptState state) throws ScriptExecutionException {
-        command.execute(state);
-    }
 }

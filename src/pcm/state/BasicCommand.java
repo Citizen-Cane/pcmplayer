@@ -7,7 +7,7 @@ import pcm.model.ScriptExecutionException;
 import pcm.state.persistence.ScriptState;
 import teaselib.core.util.ReflectionUtils;
 
-public class BasicStatement {
+public class BasicCommand  implements Command {
     private final Statement statement;
     private final String[] args;
     protected final CommandImpl command;
@@ -26,7 +26,7 @@ public class BasicStatement {
         void execute(ScriptState state) throws ScriptExecutionException;
     }
 
-    public BasicStatement(Statement statement, CommandImpl command,
+    public BasicCommand(Statement statement, CommandImpl command,
             String[] args) {
         this.statement = statement;
         this.command = command;
@@ -40,6 +40,11 @@ public class BasicStatement {
                 .forName(ReflectionUtils.getEnumClass(enumValue));
         return (Enum) Enum.valueOf((Class<? extends Enum>) enumClass,
                 ReflectionUtils.getEnmumValue(enumValue));
+    }
+
+    @Override
+    public void execute(ScriptState state) throws ScriptExecutionException {
+        command.execute(state);
     }
 
     @Override
