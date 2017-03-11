@@ -21,4 +21,8 @@ public class ScriptParsingException extends ScriptException {
                         + ": " + line
                 : reason + " in line " + lineNumber + ": " + line, script);
     }
+
+    public ScriptParsingException(Exception e) {
+        super(e.getMessage(), e);
+    }
 }
