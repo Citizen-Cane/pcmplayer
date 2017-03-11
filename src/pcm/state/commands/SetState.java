@@ -20,11 +20,11 @@ public class SetState extends BasicStatement implements Command {
 
     CommandImpl ci;
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     public SetState(String[] args) throws ScriptParsingException {
         super(Statement.SetState, getCommandImplementation(args), args);
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private static CommandImpl getCommandImplementation(String[] args)
             throws ScriptParsingException {
         try {
@@ -34,7 +34,6 @@ public class SetState extends BasicStatement implements Command {
                 final Enum<?> what = getEnum(args[2]);
                 if (args.length >= 4) {
                     String s = args[3];
-                    @SuppressWarnings("unused")
                     final long minutes;
                     if (s.equals("ÎNF")) {
                         minutes = State.INFINITE;

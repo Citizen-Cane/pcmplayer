@@ -282,6 +282,9 @@ public abstract class AbstractAction {
         return null;
     }
 
+    /**
+     * @throws ScriptParsingException
+     */
     public void add(ScriptLineTokenizer cmd) throws ScriptParsingException {
         Statement name = cmd.statement;
         if (name == Statement.YesText) {
