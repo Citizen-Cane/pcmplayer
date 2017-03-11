@@ -226,7 +226,12 @@ public abstract class AbstractAction {
         /**
          * True if at least one of the actions is set.
          */
-        MustAnyOf
+        MustAnyOf,
+
+        /**
+         * handle {@link teaselib.State}
+         */
+        SetState,
 
         ;
 
@@ -277,7 +282,7 @@ public abstract class AbstractAction {
         return null;
     }
 
-    public void add(ScriptLineTokenizer cmd) {
+    public void add(ScriptLineTokenizer cmd) throws ScriptParsingException {
         Statement name = cmd.statement;
         if (name == Statement.YesText) {
             addResponse(name, cmd.allAsText());

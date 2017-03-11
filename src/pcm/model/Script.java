@@ -99,7 +99,7 @@ public class Script extends AbstractAction {
     }
 
     @Override
-    public void add(ScriptLineTokenizer cmd) {
+    public void add(ScriptLineTokenizer cmd) throws ScriptParsingException {
         Statement name = cmd.statement;
         if (name == Statement.Restore) {
             addCommand(new Restore());

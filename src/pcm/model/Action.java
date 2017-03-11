@@ -151,7 +151,7 @@ public class Action extends AbstractAction {
      * @see pcm.model.AbstractAction#add(pcm.model.ScriptLineTokenizer)
      */
     @Override
-    public void add(ScriptLineTokenizer cmd) {
+    public void add(ScriptLineTokenizer cmd) throws ScriptParsingException {
         final Statement name = cmd.statement;
         if (name == Statement.NoImage) {
             addVisual(name, NoImage.instance);
@@ -468,7 +468,8 @@ public class Action extends AbstractAction {
         }
     }
 
-    private static Command createCommandFrom(int lineNumber, String line) {
+    private static Command createCommandFrom(int lineNumber, String line)
+            throws ScriptParsingException {
         ScriptLineTokenizer cmd = new ScriptLineTokenizer(lineNumber, line);
         Action action = new Action(0);
         action.add(cmd);

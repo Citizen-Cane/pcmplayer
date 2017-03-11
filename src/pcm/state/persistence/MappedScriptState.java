@@ -73,13 +73,27 @@ public class MappedScriptState extends ScriptState {
 
     public void addScriptValueMapping(String scriptName,
             MappedScriptValue mappedGameValue) {
-        getScriptMapping(scriptName).gameValueMapping
-                .put(mappedGameValue.getNumber(), mappedGameValue);
+        ScriptMapping scriptMapping = getScriptMapping(scriptName);
+
+        if (scriptMapping.gameValueMapping.containsValue(mappedGameValue)) {
+            throw new IllegalArgumentException(
+                    "Item " + mappedGameValue.toString()
+                            + " is already mapped to a value.");
+        }
+
+        scriptMapping.gameValueMapping.put(mappedGameValue.getNumber(),
+                mappedGameValue);
     }
 
     public <T> void addStateTimeMapping(String scriptName, Integer action,
             teaselib.State state, T what) {
         ScriptMapping scriptMapping = getScriptMapping(scriptName);
+
+        if (scriptMapping.stateTimeMapping.containsValue(state)) {
+            throw new IllegalArgumentException("State " + state.toString()
+                    + " is already mapped to a timer.");
+        }
+
         scriptMapping.stateTimeMapping.put(action, state);
         scriptMapping.what.put(action, what);
     }

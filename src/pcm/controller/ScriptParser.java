@@ -124,7 +124,17 @@ public class ScriptParser {
                                 }
                                 txt.add(text);
                             } else {
-                                action.add(cmd);
+                                try {
+                                    action.add(cmd);
+                                } catch (ScriptParsingException e) {
+                                    if (e.getCause() != null) {
+                                        throw new ScriptParsingException(l, n,
+                                                line, e.getCause(), script);
+                                    } else {
+                                        throw new ScriptParsingException(l, n,
+                                                line, e.getMessage(), script);
+                                    }
+                                }
                             }
                         }
                         // spoken Message
