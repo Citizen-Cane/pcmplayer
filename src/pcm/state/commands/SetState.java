@@ -7,6 +7,7 @@ import pcm.model.ScriptParsingException;
 import pcm.state.BasicCommand;
 import pcm.state.persistence.ScriptState;
 import teaselib.State;
+import teaselib.core.util.ReflectionUtils;
 
 public class SetState extends BasicCommand {
 
@@ -25,9 +26,9 @@ public class SetState extends BasicCommand {
             throws ScriptParsingException {
         try {
             Command command = Command.valueOf(args[0]);
-            final Enum where = getEnum(args[1]);
+            final Enum where = ReflectionUtils.getEnum(args[1]);
             if (command == Command.Apply) {
-                final Enum<?> what = getEnum(args[2]);
+                final Enum<?> what = ReflectionUtils.getEnum(args[2]);
                 if (args.length >= 4) {
                     String s = args[3];
                     final long minutes;
