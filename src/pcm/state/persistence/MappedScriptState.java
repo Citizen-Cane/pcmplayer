@@ -167,8 +167,8 @@ public class MappedScriptState extends ScriptState {
     public Date getTime(Integer n) {
         if (hasStateTimeMapping(n)) {
             teaselib.State state = scriptMapping.stateTimeMapping.get(n);
-            long time = (state.getDuration().startSeconds + state.expected())
-                    * 1000;
+            long time = (state.getDuration().start(TimeUnit.SECONDS)
+                    + state.expected()) * 1000;
             Date date = new Date(time);
             return date;
         } else {
