@@ -14,59 +14,43 @@ public abstract class TimeCondition implements Condition {
             .getLogger(TimeCondition.class);
 
     protected final int n;
-    protected final long durationMillis;
+    private final Duration duration;
 
     public TimeCondition(int n, String duration) {
-        super();
         this.n = n;
-        if ("INF".equalsIgnoreCase(duration)) {
-            this.durationMillis = teaselib.State.INDEFINITELY;
-        } else if ("-INF".equalsIgnoreCase(duration)) {
-            this.durationMillis = -teaselib.State.INDEFINITELY;
-        } else {
-            this.durationMillis = new Duration(duration).getTimeSpanMillis();
-        }
+        this.duration = new Duration(duration);
     }
 
-    protected abstract boolean predicate(long elapsedMillis);
+    protected abstract boolean predicate(long elapsedMillis,
+            long durationMillis);
 
     @Override
     public boolean isTrueFor(ScriptState state) {
         long now = state.getTimeMillis();
         Date setTime = state.getTime(n);
         if (setTime != null) {
-            final long elapsedMillis;
-            elapsedMillis = now - setTime.getTime();
-            boolean result = predicate(elapsedMillis);
-            log(setTime, elapsedMillis, result);
+            long elapsedMillis = now - setTime.getTime();
+            long durationMillis = duration.getTimeSpanMillis();
+            boolean result = predicate(elapsedMillis, durationMillis);
+            log(setTime, elapsedMillis, durationMillis, result);
             return result;
         } else {
             throw new RuntimeException("setTime not called on action " + n);
         }
     }
 
-    protected void log(Date setTime, long elapsedMillis, boolean result) {
+    protected void log(Date setTime, long elapsedMillis, long durationMillis,
+            boolean result) {
         logger.info(getClass().getSimpleName() + " " + n + ": setTime = "
-                + setTime.toString() + ", duration = "
-                + toString(durationMillis) + "(" + durationMillis + ") , now = "
+                + setTime.toString() + ", duration = " + duration.toString()
+                + "(" + durationMillis + ") , now = "
                 + new Date(System.currentTimeMillis()) + ", elapsed = "
-                + toString(elapsedMillis) + " -> " + result);
+                + Duration.toString(elapsedMillis) + "(" + elapsedMillis
+                + ") -> " + result);
     }
 
     @Override
     public String toString() {
-        return " " + n + " " + toString(durationMillis);
-    }
-
-    public static String toString(long durationMillis) {
-        // TODO negative output wrong -> example should be -00:20"00
-        // [TeaseScript main thread] INFO ... duration = -1:50"00(-600000) , now
-        // = Mon Mar 06 21:40:59 CET 2017, elapsed = 413564:40"59 -> true
-
-        long h = Math.floorDiv(durationMillis, 60 * 60 * 1000);
-        long m = Math.floorDiv(durationMillis - h * 60 * 60 * 1000, 60 * 1000);
-        long s = Math.floorDiv(
-                durationMillis - h * 60 * 60 * 1000 - m * 60 * 1000, 1000);
-        return String.format("%02d:%02d\"%02d", h, m, s);
+        return " " + n + " " + duration.toString();
     }
 }

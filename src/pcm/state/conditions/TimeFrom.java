@@ -9,7 +9,7 @@ public class TimeFrom extends TimeCondition {
     }
 
     @Override
-    protected boolean predicate(long elapsedMillis) {
+    protected boolean predicate(long elapsedMillis, long durationMillis) {
         if (durationMillis == -State.INDEFINITELY) {
             return false;
         } else if (durationMillis == State.INDEFINITELY) {

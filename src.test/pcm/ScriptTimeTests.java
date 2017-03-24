@@ -3,7 +3,9 @@
  */
 package pcm;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 import java.util.Locale;
@@ -15,7 +17,6 @@ import org.junit.Test;
 import pcm.controller.Player;
 import pcm.model.ActionRange;
 import pcm.model.Duration;
-import pcm.state.conditions.TimeCondition;
 import pcm.state.persistence.ScriptState;
 import teaselib.Actor;
 import teaselib.core.ResourceLoader;
@@ -83,28 +84,6 @@ public class ScriptTimeTests {
                 new Duration("+01:30").getTimeSpanMillis());
         assertEquals(-1000 * 60 * 30 - 1000 * 60 * 60,
                 new Duration("-01:30").getTimeSpanMillis());
-    }
-
-    @Test
-    public void testTimeCondtionToString() throws Exception {
-        assertEquals("00:00\"00", TimeCondition.toString(0));
-        assertEquals("00:00\"01", TimeCondition.toString(1000));
-        assertEquals("00:00\"59", TimeCondition.toString(1000 * 59));
-        assertEquals("00:01\"30",
-                TimeCondition.toString(1000 * 60 + 1000 * 30));
-        assertEquals("00:29\"45",
-                TimeCondition.toString(29 * 1000 * 60 + 1000 * 45));
-        assertEquals("02:42\"05", TimeCondition
-                .toString(2 * 60 * 60 * 1000 + 42 * 1000 * 60 + 1000 * 5));
-        assertEquals("13:39\"05", TimeCondition
-                .toString(13 * 60 * 60 * 1000 + 39 * 1000 * 60 + 1000 * 5));
-
-        assertEquals("00:01\"00", TimeCondition.toString(1000 * 60));
-        assertEquals("00:29\"00", TimeCondition.toString(29 * 1000 * 60));
-        assertEquals("02:42\"00",
-                TimeCondition.toString(2 * 60 * 60 * 1000 + 42 * 60 * 1000));
-        assertEquals("13:39\"00",
-                TimeCondition.toString(13 * 60 * 60 * 1000 + 39 * 60 * 1000));
     }
 
     @Test
