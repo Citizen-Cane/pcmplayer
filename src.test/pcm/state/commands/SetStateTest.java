@@ -30,24 +30,26 @@ public class SetStateTest {
         assertTrue(state.expired());
 
         SetState rememberFoo = new SetState(
-                new String[] { "Remember", "teaselib.Body.SomethingOnPenis" });
+                new String[] { "Apply", "teaselib.Body.SomethingOnPenis",
+                        "teaselib.Toys.Chastity_Cage", "Remember" });
         rememberFoo.execute(player.state);
 
         assertTrue(state.applied());
         assertTrue(state.expired());
+
         TeaseLib.PersistentString stateStorage = player.teaseLib.new PersistentString(
                 TeaseLib.DefaultDomain, Body.class.getName(),
-                Body.SomethingOnPenis.name() + ".state");
+                Body.SomethingOnPenis.name() + ".state.duration");
 
         assertTrue(stateStorage.available());
 
         SetState clearFoo = new SetState(
-                new String[] { "Clear", "teaselib.Body.SomethingOnPenis" });
+                new String[] { "Remove", "teaselib.Body.SomethingOnPenis" });
         clearFoo.execute(player.state);
 
         assertFalse(stateStorage.available());
         assertFalse(state.applied());
-        assertTrue(state.freeSince(0, TimeUnit.MINUTES));
+        assertTrue(state.expired());
 
         SetState fooTimed = new SetState(
                 new String[] { "Apply", "teaselib.Body.SomethingOnPenis",
@@ -55,6 +57,54 @@ public class SetStateTest {
         fooTimed.execute(player.state);
 
         assertTrue(state.applied());
-        assertEquals(600 * 60, state.expected());
+        assertFalse(state.expired());
+        assertEquals(600, state.duration().limit(TimeUnit.MINUTES));
+    }
+
+    @Test
+    public void testSetStateIndefinitely() throws Exception {
+        Player player = TestUtils.createPlayer(SetStateTest.class);
+        State state = player.state(Body.SomethingOnPenis);
+
+        new SetState(new String[] { "Apply", "teaselib.Body.SomethingOnPenis",
+                "teaselib.Toys.Chastity_Cage", "inf" }).execute(player.state);
+
+        assertTrue(state.applied());
+        assertFalse(state.expired());
+        assertTrue(state.duration().limit(TimeUnit.SECONDS) == Long.MAX_VALUE);
+
+        new SetState(
+                new String[] { "Remove", "teaselib.Body.SomethingOnPenis" })
+                        .execute(player.state);
+
+        assertFalse(state.applied());
+        assertTrue(state.expired());
+    }
+
+    @Test
+    public void testSetStateIndefinitelyAndRemember() throws Exception {
+        Player player = TestUtils.createPlayer(SetStateTest.class);
+        State state = player.state(Body.SomethingOnPenis);
+        TeaseLib.PersistentString stateStorage = player.teaseLib.new PersistentString(
+                TeaseLib.DefaultDomain, Body.class.getName(),
+                Body.SomethingOnPenis.name() + ".state.duration");
+
+        new SetState(new String[] { "Apply", "teaselib.Body.SomethingOnPenis",
+                "teaselib.Toys.Chastity_Cage", "inf", "remember" })
+                        .execute(player.state);
+
+        assertTrue(stateStorage.available());
+        assertTrue(state.applied());
+        assertFalse(state.expired());
+        assertTrue(state.duration().limit(TimeUnit.SECONDS) == Long.MAX_VALUE);
+
+        new SetState(
+                new String[] { "Remove", "teaselib.Body.SomethingOnPenis" })
+                        .execute(player.state);
+
+        assertFalse(stateStorage.available());
+        assertFalse(state.applied());
+        assertTrue(state.expired());
+
     }
 }

@@ -97,7 +97,7 @@ public class PersistencyTest {
 
         TeaseLib.PersistentString chastifiedState = player.teaseLib.new PersistentString(
                 TeaseLib.DefaultDomain, "pcm.PersistencyTest",
-                "Body.Chastified.state");
+                "Body.Chastified.state.duration");
 
         assertTrue(chastifiedState.available());
     }
@@ -139,7 +139,7 @@ public class PersistencyTest {
 
         TeaseLib.PersistentString chastifiedState = player.teaseLib.new PersistentString(
                 TeaseLib.DefaultDomain, "pcm.PersistencyTest",
-                "Body.Chastified.state");
+                "Body.Chastified.state.duration");
         assertTrue(chastifiedState.available());
     }
 
@@ -159,7 +159,7 @@ public class PersistencyTest {
 
         TeaseLib.PersistentString chastifiedState = player.teaseLib.new PersistentString(
                 TeaseLib.DefaultDomain, "pcm.PersistencyTest",
-                "Body.Chastified.state");
+                "Body.Chastified.state.duration");
         assertTrue(chastifiedState.available());
     }
 
@@ -178,7 +178,7 @@ public class PersistencyTest {
 
         TeaseLib.PersistentString chastifiedState = player.teaseLib.new PersistentString(
                 TeaseLib.DefaultDomain, "pcm.PersistencyTest",
-                "Body.Chastified.state");
+                "Body.Chastified.state.duration");
         assertTrue(chastifiedState.available());
     }
 }

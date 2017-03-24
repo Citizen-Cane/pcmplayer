@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 import pcm.controller.Player;
 import pcm.model.Script;
+import teaselib.Duration;
 import teaselib.Toys;
 import teaselib.util.Item;
 import teaselib.util.Items;
@@ -36,7 +37,7 @@ public class MappedScriptState extends ScriptState {
     private static class ScriptMapping {
         final Map<Integer, MappedScriptValue> gameValueMapping = new HashMap<Integer, MappedScriptValue>();
         final Map<Integer, teaselib.State> stateTimeMapping = new HashMap<Integer, teaselib.State>();
-        final Map<Integer, Object> what = new HashMap<Integer, Object>();
+        final Map<Integer, Enum<?>> what = new HashMap<Integer, Enum<?>>();
 
         public void putAll(ScriptMapping globalMapping) {
             gameValueMapping.putAll(globalMapping.gameValueMapping);
@@ -85,8 +86,8 @@ public class MappedScriptState extends ScriptState {
                 mappedGameValue);
     }
 
-    public <T> void addStateTimeMapping(String scriptName, Integer action,
-            teaselib.State state, T what) {
+    public <T extends Enum<?>> void addStateTimeMapping(String scriptName,
+            Integer action, teaselib.State state, T what) {
         ScriptMapping scriptMapping = getScriptMapping(scriptName);
 
         if (scriptMapping.stateTimeMapping.containsValue(state)) {
@@ -167,22 +168,25 @@ public class MappedScriptState extends ScriptState {
     public Date getTime(Integer n) {
         if (hasStateTimeMapping(n)) {
             teaselib.State state = scriptMapping.stateTimeMapping.get(n);
-            long time = (state.getDuration().start(TimeUnit.SECONDS)
-                    + state.expected()) * 1000;
-            Date date = new Date(time);
+            Duration duration = state.duration();
+            long timeMillis = duration.start(TimeUnit.MILLISECONDS)
+                    + state.duration().limit(TimeUnit.MILLISECONDS);
+            Date date = new Date(timeMillis);
             return date;
         } else {
             return super.getTime(n);
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void setTime(Integer n, long now, long offset) {
         if (hasStateTimeMapping(n)) {
             teaselib.State state = scriptMapping.stateTimeMapping.get(n);
-            state.apply(scriptMapping.what.get(n), now, offset,
-                    TimeUnit.MILLISECONDS);
-            state.remember();
+            state.apply(scriptMapping.what.get(n))
+                    .over(player.teaseLib.new DurationImpl(now, offset,
+                            TimeUnit.MILLISECONDS))
+                    .remember();
         }
         super.setTime(n, now, offset);
     }

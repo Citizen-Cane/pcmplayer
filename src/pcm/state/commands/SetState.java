@@ -14,7 +14,7 @@ public class SetState extends BasicCommand {
     public enum Command {
         Apply,
         Remember,
-        Clear,
+        Remove,
     }
 
     public SetState(String[] args) throws ScriptParsingException {
@@ -32,18 +32,38 @@ public class SetState extends BasicCommand {
                 if (args.length >= 4) {
                     String s = args[3];
                     final long minutes;
-                    if (s.equals("ÎNF")) {
-                        minutes = State.INFINITE;
+                    if (s.equalsIgnoreCase("INF")) {
+                        minutes = State.INDEFINITELY;
+                    } else if (s.equals(Command.Remember.name())) {
+                        return new CommandImpl() {
+                            @Override
+                            public void execute(ScriptState state) {
+                                state.player.state(where).apply(what)
+                                        .remember();
+                            }
+                        };
                     } else {
                         minutes = Integer.parseInt(s);
                     }
-                    return new CommandImpl() {
-                        @Override
-                        public void execute(ScriptState state) {
-                            state.player.state(where).apply(what, minutes,
-                                    TimeUnit.MINUTES);
-                        }
-                    };
+                    if (args.length >= 5 && args[4]
+                            .equalsIgnoreCase(Command.Remember.name())) {
+                        return new CommandImpl() {
+                            @Override
+                            public void execute(ScriptState state) {
+                                state.player.state(where).apply(what)
+                                        .over(minutes, TimeUnit.MINUTES)
+                                        .remember();
+                            }
+                        };
+                    } else {
+                        return new CommandImpl() {
+                            @Override
+                            public void execute(ScriptState state) {
+                                state.player.state(where).apply(what)
+                                        .over(minutes, TimeUnit.MINUTES);
+                            }
+                        };
+                    }
                 } else {
                     return new CommandImpl() {
                         @Override
@@ -53,13 +73,10 @@ public class SetState extends BasicCommand {
                     };
                 }
             } else if (command == Command.Remember) {
-                return new CommandImpl() {
-                    @Override
-                    public void execute(ScriptState state) {
-                        state.player.state(where).remember();
-                    }
-                };
-            } else if (command == Command.Clear) {
+                throw new IllegalArgumentException(
+                        command + " can only be used as an option for "
+                                + Command.Apply.name());
+            } else if (command == Command.Remove) {
                 return new CommandImpl() {
                     @Override
                     public void execute(ScriptState state) {

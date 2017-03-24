@@ -25,6 +25,7 @@
 .timefrom 44 INF
 .range 1021 1022
 
+
 ' false
 [action 1021]
 .timeto 44 99:59"59
@@ -60,7 +61,7 @@
 .timefrom 44 -00:05"00
 .range 1030 1031
 
-' true - it's 00:10"00 before
+' true - it's 00:10"00 before or earlier
 [action 1029]
 .else
 .timefrom 44 -00:10"00
@@ -82,7 +83,7 @@
 .settime 44 -00:10"00
 .range 1036
 
-' always true
+' always true for un-mapped as well for mapped state 
 [action 1036]
 .mustnot 44
 .range 1037

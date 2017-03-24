@@ -20,9 +20,9 @@ public abstract class TimeCondition implements Condition {
         super();
         this.n = n;
         if ("INF".equalsIgnoreCase(duration)) {
-            this.durationMillis = teaselib.State.INFINITE;
+            this.durationMillis = teaselib.State.INDEFINITELY;
         } else if ("-INF".equalsIgnoreCase(duration)) {
-            this.durationMillis = -teaselib.State.INFINITE;
+            this.durationMillis = -teaselib.State.INDEFINITELY;
         } else {
             this.durationMillis = new Duration(duration).getTimeSpanMillis();
         }

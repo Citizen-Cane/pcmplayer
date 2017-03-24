@@ -10,9 +10,9 @@ public class TimeTo extends TimeCondition {
 
     @Override
     protected boolean predicate(long elapsedMillis) {
-        if (durationMillis == -State.INFINITE) {
+        if (durationMillis == -State.INDEFINITELY) {
             return true;
-        } else if (durationMillis == State.INFINITE) {
+        } else if (durationMillis == State.INDEFINITELY) {
             return false;
         } else {
             return elapsedMillis < durationMillis;

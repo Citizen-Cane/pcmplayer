@@ -33,13 +33,14 @@ public abstract class MappedScriptStateValue implements MappedScriptValue {
     }
 
     public static class ForSession extends MappedScriptStateValue {
-        private final Object what;
+        private final Enum<?> what;
 
-        public ForSession(int n, State state, Object what) {
+        public ForSession(int n, State state, Enum<?> what) {
             super(n, state);
             this.what = what;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public void set() {
             state.apply(what);
@@ -47,17 +48,16 @@ public abstract class MappedScriptStateValue implements MappedScriptValue {
     }
 
     public static class Indefinitely extends MappedScriptStateValue {
-        private final Object what;
+        private final Enum<?>[] peers;
 
-        public Indefinitely(int n, State state, Object what) {
+        public Indefinitely(int n, State state, Enum<?>... peers) {
             super(n, state);
-            this.what = what;
+            this.peers = peers;
         }
 
         @Override
         public void set() {
-            state.apply(what);
-            state.remember();
+            state.apply(peers).remember();
         }
     }
 }

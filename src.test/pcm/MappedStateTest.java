@@ -24,6 +24,8 @@ import pcm.util.TestUtils;
 import teaselib.State;
 
 public class MappedStateTest {
+    private static final String MAPPED_STATE_TEST_SCRIPT = "MappedStateTest";
+
     static final int flag = 44;
 
     private Player player;
@@ -63,7 +65,7 @@ public class MappedStateTest {
 
     private void loadTestScript() throws ScriptParsingException,
             ValidationIssue, IOException, ScriptExecutionException {
-        player.loadScript("MappedStateTest");
+        player.loadScript(MAPPED_STATE_TEST_SCRIPT);
     }
 
     @Test
@@ -96,44 +98,45 @@ public class MappedStateTest {
         assertEquals(UNSET, pcm.get(flag));
     }
 
-    private void assertThatUninitializedMultiMappedStateDefaultsToRemove() {
+    @Test
+    public void assertThatUninitializedMultiMappedStateDefaultsToRemove() {
         assertEquals(UNSET, pcm.get(flag));
         assertFalse(state.applied());
-        assertEquals(state.what(), State.None);
+        assertTrue(state.peers().isEmpty());
         assertEquals(State.REMOVED, pcm.getTime(flag).getTime() / 1000);
     }
 
-    private void assertThatMultiMappedSetTimeSetsFlag() {
+    @Test
+    public void assertThatMultiMappedSetTimeSetsFlag() {
         assertEquals(UNSET, pcm.get(flag));
         // TODO This may fail due to timing issues -> manually advance getTime()
         int expectedSeconds = 10;
         pcm.setTime(flag, player.teaseLib.getTime(TimeUnit.MILLISECONDS),
                 1000 * expectedSeconds);
-        assertEquals(expectedSeconds, state.expected());
-        assertEquals(expectedSeconds, state.remaining(TimeUnit.SECONDS));
+        assertEquals(expectedSeconds,
+                state.duration().remaining(TimeUnit.SECONDS));
         assertTrue(state.applied());
-        assertEquals(state.what(), Toys.Chastity_Cage);
+        assertTrue(state.peers().contains(Toys.Chastity_Cage));
         assertEquals(SET, pcm.get(flag));
     }
 
-    private void assertThatUnsetFlagResetsStateTime() {
+    @Test
+    public void assertThatUnsetFlagResetsStateTime() {
         pcm.unset(flag);
         assertFalse(state.applied());
-        assertEquals(state.what(), Toys.Chastity_Cage);
-        assertEquals(State.REMOVED, state.expected());
-        // TODO This may fail due to timing issues -> manually advance getTime()
+        assertEquals(State.REMOVED, state.duration().limit(TimeUnit.SECONDS));
         assertEquals(State.REMOVED, pcm.getTime(flag).getTime() / 1000
                 - player.teaseLib.getTime(TimeUnit.SECONDS));
     }
 
-    private void assertThatSetMultiMappedFlagSetsTime() {
+    @Test
+    public void assertThatSetMultiMappedFlagSetsTime() {
         pcm.set(flag);
         assertTrue(state.applied());
-        assertEquals(state.what(), Toys.Chastity_Cage);
+        assertTrue(state.peers().contains(Toys.Chastity_Cage));
         assertTrue(state.expired());
 
         long time = pcm.getTime(flag).getTime();
-        // TODO This may fail due to timing issues -> manually advance getTime()
         assertEquals(player.teaseLib.getTime(TimeUnit.MILLISECONDS), time,
                 1000);
     }
@@ -142,16 +145,16 @@ public class MappedStateTest {
     public void testThatUnmappedScriptTimeValuesCorrectly()
             throws AllActionsSetException, ScriptExecutionException,
             ScriptParsingException, ValidationIssue, IOException {
-        initPlayer();
-        loadTestScript();
+        Player testScript = TestUtils.createPlayer(getClass(),
+                MAPPED_STATE_TEST_SCRIPT);
 
-        TestUtils.play(player, 1025);
-        TestUtils.play(player, 1039);
+        TestUtils.play(testScript, 1025);
+        TestUtils.play(testScript, 1039);
 
-        assertEquals(ScriptState.SET, pcm.get(1025));
-        assertThatScriptTimeFuctionsWork();
-        assertEquals(ScriptState.SET, pcm.get(1031));
-        assertEquals(ScriptState.SET, pcm.get(1039));
+        assertEquals(ScriptState.SET, testScript.state.get(1025));
+        assertThatScriptTimeFuctionsWork(testScript.state);
+        assertEquals(ScriptState.SET, testScript.state.get(1031));
+        assertEquals(ScriptState.SET, testScript.state.get(1039));
     }
 
     @Test
@@ -164,26 +167,31 @@ public class MappedStateTest {
 
         assertEquals(ScriptState.SET, pcm.get(1020));
         assertEquals(ScriptState.SET, pcm.get(1022));
-        assertThatScriptTimeFuctionsWork();
+        assertThatScriptTimeFuctionsWork(pcm);
         assertEquals(ScriptState.SET, pcm.get(1030));
         assertEquals(ScriptState.SET, pcm.get(1038));
 
-        assertEquals(0, state.expected());
+        assertThatSettingTheMappedActionSetsTheStateToTemporary();
+    }
+
+    private void assertThatSettingTheMappedActionSetsTheStateToTemporary() {
+        assertEquals(State.TEMPORARY, state.duration().limit(TimeUnit.SECONDS));
     }
 
     private void assertThatUninitializedStateHasCorrectDefaultValues() {
         assertEquals(UNSET, pcm.get(flag));
         assertFalse(state.applied());
-        assertEquals(state.what(), State.None);
+        assertTrue(state.peers().isEmpty());
 
         long seconds = pcm.getTime(flag).getTime() / 1000;
         assertEquals(State.REMOVED, seconds);
     }
 
-    private void assertThatScriptTimeFuctionsWork() {
-        assertEquals(ScriptState.SET, pcm.get(1025));
-        assertEquals(ScriptState.SET, pcm.get(1027));
-        assertEquals(ScriptState.SET, pcm.get(1029));
+    private static void assertThatScriptTimeFuctionsWork(
+            ScriptState scriptState) {
+        assertEquals(ScriptState.SET, scriptState.get(1025));
+        assertEquals(ScriptState.SET, scriptState.get(1027));
+        assertEquals(ScriptState.SET, scriptState.get(1029));
 
     }
 
