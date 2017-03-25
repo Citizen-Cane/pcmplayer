@@ -23,17 +23,19 @@ import pcm.state.persistence.ScriptState;
 import pcm.util.TestUtils;
 import teaselib.State;
 
-public class MappedStateTest {
-    private static final String MAPPED_STATE_TEST_SCRIPT = "MappedStateTest";
+public class MappedScriptStateTest {
+    private static final String MAPPED_STATE_TEST_SCRIPT = "MappedScriptStateTest";
 
-    static final int flag = 44;
+    static final int SomethingOnPenisAction = 23;
+    static final int ChastityCageAction = 44;
 
     private Player player;
-    private State state;
+    private State chastityCageState;
     private MappedScriptState pcm;
 
     enum Body {
-        SomethingOnPenis
+        SomethingOnPenis,
+        CannotJerkOff
     }
 
     enum Toys {
@@ -50,17 +52,18 @@ public class MappedStateTest {
 
     private void initPlayer() {
         player = TestUtils.createPlayer(getClass());
-        state = player.state(Body.SomethingOnPenis);
+        chastityCageState = player.state(Toys.Chastity_Cage);
         pcm = player.state;
     }
 
     private void installMapping() {
         pcm.addScriptValueMapping(MappedScriptState.Global,
-                new MappedScriptStateValue.Indefinitely(flag, state,
-                        Toys.Chastity_Cage));
+                new MappedScriptStateValue.Indefinitely(ChastityCageAction,
+                        chastityCageState, Body.SomethingOnPenis,
+                        Body.CannotJerkOff));
 
-        pcm.addStateTimeMapping(MappedScriptState.Global, flag, state,
-                Toys.Chastity_Cage);
+        pcm.addStateTimeMapping(MappedScriptState.Global, ChastityCageAction,
+                chastityCageState, Body.SomethingOnPenis, Body.CannotJerkOff);
     }
 
     private void loadTestScript() throws ScriptParsingException,
@@ -94,49 +97,55 @@ public class MappedStateTest {
         assertThatUnsetFlagResetsStateTime();
         assertThatSetMultiMappedFlagSetsTime();
 
-        state.remove();
-        assertEquals(UNSET, pcm.get(flag));
+        chastityCageState.remove();
+        assertEquals(UNSET, pcm.get(ChastityCageAction));
     }
 
     @Test
     public void assertThatUninitializedMultiMappedStateDefaultsToRemove() {
-        assertEquals(UNSET, pcm.get(flag));
-        assertFalse(state.applied());
-        assertTrue(state.peers().isEmpty());
-        assertEquals(State.REMOVED, pcm.getTime(flag).getTime() / 1000);
+        assertEquals(UNSET, pcm.get(ChastityCageAction));
+        assertFalse(chastityCageState.applied());
+        assertTrue(chastityCageState.peers().isEmpty());
+        assertEquals(State.REMOVED,
+                pcm.getTime(ChastityCageAction).getTime() / 1000);
     }
 
     @Test
     public void assertThatMultiMappedSetTimeSetsFlag() {
-        assertEquals(UNSET, pcm.get(flag));
+        assertEquals(UNSET, pcm.get(ChastityCageAction));
         // TODO This may fail due to timing issues -> manually advance getTime()
         int expectedSeconds = 10;
-        pcm.setTime(flag, player.teaseLib.getTime(TimeUnit.MILLISECONDS),
+        pcm.setTime(ChastityCageAction,
+                player.teaseLib.getTime(TimeUnit.MILLISECONDS),
                 1000 * expectedSeconds);
         assertEquals(expectedSeconds,
-                state.duration().remaining(TimeUnit.SECONDS));
-        assertTrue(state.applied());
-        assertTrue(state.peers().contains(Toys.Chastity_Cage));
-        assertEquals(SET, pcm.get(flag));
+                chastityCageState.duration().remaining(TimeUnit.SECONDS));
+        assertTrue(chastityCageState.applied());
+        assertTrue(chastityCageState.peers().contains(Body.SomethingOnPenis));
+        assertTrue(chastityCageState.peers().contains(Body.CannotJerkOff));
+        assertEquals(SET, pcm.get(ChastityCageAction));
     }
 
     @Test
     public void assertThatUnsetFlagResetsStateTime() {
-        pcm.unset(flag);
-        assertFalse(state.applied());
-        assertEquals(State.REMOVED, state.duration().limit(TimeUnit.SECONDS));
-        assertEquals(State.REMOVED, pcm.getTime(flag).getTime() / 1000
-                - player.teaseLib.getTime(TimeUnit.SECONDS));
+        pcm.unset(ChastityCageAction);
+        assertFalse(chastityCageState.applied());
+        assertEquals(State.REMOVED,
+                chastityCageState.duration().limit(TimeUnit.SECONDS));
+        assertEquals(State.REMOVED,
+                pcm.getTime(ChastityCageAction).getTime() / 1000
+                        - player.teaseLib.getTime(TimeUnit.SECONDS));
     }
 
     @Test
     public void assertThatSetMultiMappedFlagSetsTime() {
-        pcm.set(flag);
-        assertTrue(state.applied());
-        assertTrue(state.peers().contains(Toys.Chastity_Cage));
-        assertTrue(state.expired());
+        pcm.set(ChastityCageAction);
+        assertTrue(chastityCageState.applied());
+        assertTrue(chastityCageState.peers().contains(Body.SomethingOnPenis));
+        assertTrue(chastityCageState.peers().contains(Body.CannotJerkOff));
+        assertTrue(chastityCageState.expired());
 
-        long time = pcm.getTime(flag).getTime();
+        long time = pcm.getTime(ChastityCageAction).getTime();
         assertEquals(player.teaseLib.getTime(TimeUnit.MILLISECONDS), time,
                 1000);
     }
@@ -175,15 +184,16 @@ public class MappedStateTest {
     }
 
     private void assertThatSettingTheMappedActionSetsTheStateToTemporary() {
-        assertEquals(State.TEMPORARY, state.duration().limit(TimeUnit.SECONDS));
+        assertEquals(State.TEMPORARY,
+                chastityCageState.duration().limit(TimeUnit.SECONDS));
     }
 
     private void assertThatUninitializedStateHasCorrectDefaultValues() {
-        assertEquals(UNSET, pcm.get(flag));
-        assertFalse(state.applied());
-        assertTrue(state.peers().isEmpty());
+        assertEquals(UNSET, pcm.get(ChastityCageAction));
+        assertFalse(chastityCageState.applied());
+        assertTrue(chastityCageState.peers().isEmpty());
 
-        long seconds = pcm.getTime(flag).getTime() / 1000;
+        long seconds = pcm.getTime(ChastityCageAction).getTime() / 1000;
         assertEquals(State.REMOVED, seconds);
     }
 
@@ -195,4 +205,23 @@ public class MappedStateTest {
 
     }
 
+    @Test
+    public void testThatStatesWithMultiplePeersWorkAsExpectedEvenWithSelfReferencingItems()
+            throws AllActionsSetException, ScriptExecutionException,
+            ScriptParsingException, ValidationIssue, IOException {
+        assertThatUninitializedStateHasCorrectDefaultValues();
+
+        State somethingOnPenisState = player.state(Body.SomethingOnPenis);
+        pcm.addScriptValueMapping(MappedScriptState.Global,
+                new MappedScriptStateValue.Indefinitely(SomethingOnPenisAction,
+                        somethingOnPenisState, Body.SomethingOnPenis));
+
+        pcm.addStateTimeMapping(MappedScriptState.Global,
+                SomethingOnPenisAction, somethingOnPenisState,
+                Body.SomethingOnPenis);
+
+        loadTestScript();
+
+        TestUtils.play(player, 1050);
+    }
 }

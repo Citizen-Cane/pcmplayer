@@ -37,12 +37,12 @@ public class MappedScriptState extends ScriptState {
     private static class ScriptMapping {
         final Map<Integer, MappedScriptValue> gameValueMapping = new HashMap<Integer, MappedScriptValue>();
         final Map<Integer, teaselib.State> stateTimeMapping = new HashMap<Integer, teaselib.State>();
-        final Map<Integer, Enum<?>> what = new HashMap<Integer, Enum<?>>();
+        final Map<Integer, Enum<?>[]> peers = new HashMap<Integer, Enum<?>[]>();
 
         public void putAll(ScriptMapping globalMapping) {
             gameValueMapping.putAll(globalMapping.gameValueMapping);
             stateTimeMapping.putAll(globalMapping.stateTimeMapping);
-            what.putAll(globalMapping.what);
+            peers.putAll(globalMapping.peers);
         }
     }
 
@@ -87,7 +87,7 @@ public class MappedScriptState extends ScriptState {
     }
 
     public <T extends Enum<?>> void addStateTimeMapping(String scriptName,
-            Integer action, teaselib.State state, T what) {
+            Integer action, teaselib.State state, T... peers) {
         ScriptMapping scriptMapping = getScriptMapping(scriptName);
 
         if (scriptMapping.stateTimeMapping.containsValue(state)) {
@@ -96,7 +96,7 @@ public class MappedScriptState extends ScriptState {
         }
 
         scriptMapping.stateTimeMapping.put(action, state);
-        scriptMapping.what.put(action, what);
+        scriptMapping.peers.put(action, peers);
     }
 
     @Override
@@ -178,12 +178,11 @@ public class MappedScriptState extends ScriptState {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void setTime(Integer n, long now, long offset) {
         if (hasStateTimeMapping(n)) {
             teaselib.State state = scriptMapping.stateTimeMapping.get(n);
-            state.apply(scriptMapping.what.get(n))
+            state.apply(scriptMapping.peers.get(n))
                     .over(player.teaseLib.new DurationImpl(now, offset,
                             TimeUnit.MILLISECONDS))
                     .remember();

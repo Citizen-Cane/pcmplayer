@@ -23,27 +23,28 @@ public abstract class MappedScriptStateValue implements MappedScriptValue {
     }
 
     @Override
-    public void unset() {
-        state.remove();
-    }
-
-    @Override
     public Items<?> items() {
         return new Items<teaselib.State>();
     }
 
     public static class ForSession extends MappedScriptStateValue {
-        private final Enum<?> what;
+        private final Enum<?>[] peers;
 
-        public ForSession(int n, State state, Enum<?> what) {
+        public ForSession(int n, State state, Enum<?>... peers) {
             super(n, state);
-            this.what = what;
+            this.peers = peers;
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         public void set() {
-            state.apply(what);
+            state.apply(peers);
+        }
+
+        @Override
+        public void unset() {
+            for (Enum<?> peer : peers) {
+                state.remove(peer);
+            }
         }
     }
 
@@ -58,6 +59,13 @@ public abstract class MappedScriptStateValue implements MappedScriptValue {
         @Override
         public void set() {
             state.apply(peers).remember();
+        }
+
+        @Override
+        public void unset() {
+            for (Enum<?> peer : peers) {
+                state.remove(peer);
+            }
         }
     }
 }

@@ -106,6 +106,36 @@
 .range 9999
 
 
+' testThatStatesWithMultiplePeersWorkAsExpected
+
+[action 1050]
+.set 44            ' setting the cage set peers -> something on penis 23
+.range 1051
+
+[action 1051]
+.must 23           ' true since mapping references this as a peer
+.must 44
+.range 1052
+
+[action 1052]
+.unset 23          ' unsetting something on penis only removes the place holder
+.range 1053
+
+[action 1053]
+.must 23           ' still set because the chastity cage is still on the penis
+.must 44
+.range 1054
+
+[action 1054]
+.unset 44
+.range 1055
+
+[action 1055]
+.mustnot 23           ' unset now because the chastity cage has been removed
+.mustnot 44
+.range 9999
+
+
 ' proper exit for all test cases
 [action 9999]
 .unset 9999
