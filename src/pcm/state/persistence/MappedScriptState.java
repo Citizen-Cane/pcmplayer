@@ -3,7 +3,6 @@
  */
 package pcm.state.persistence;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -165,29 +164,25 @@ public class MappedScriptState extends ScriptState {
     }
 
     @Override
-    public Date getTime(Integer n) {
+    public long getTime(Integer n) {
         if (hasStateTimeMapping(n)) {
             teaselib.State state = scriptMapping.stateTimeMapping.get(n);
             Duration duration = state.duration();
-            long timeMillis = duration.start(TimeUnit.MILLISECONDS)
-                    + state.duration().limit(TimeUnit.MILLISECONDS);
-            Date date = new Date(timeMillis);
-            return date;
+            long timeSeconds = duration.start(TimeUnit.SECONDS)
+                    + state.duration().limit(TimeUnit.SECONDS);
+            return timeSeconds;
         } else {
             return super.getTime(n);
         }
     }
 
     @Override
-    public void setTime(Integer n, long now, long offset) {
+    public void setTime(Integer n, Duration duration) {
         if (hasStateTimeMapping(n)) {
             teaselib.State state = scriptMapping.stateTimeMapping.get(n);
-            state.apply(scriptMapping.peers.get(n))
-                    .over(player.teaseLib.new DurationImpl(now, offset,
-                            TimeUnit.MILLISECONDS))
-                    .remember();
+            state.apply(scriptMapping.peers.get(n)).over(duration).remember();
         }
-        super.setTime(n, now, offset);
+        super.setTime(n, duration);
     }
 
     @Override

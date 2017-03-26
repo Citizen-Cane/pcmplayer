@@ -53,6 +53,7 @@
 [action 1027]
 .else
 .timeto 44 -00:09"00
+.timeto 44 -00:10"00    ' time frozen via debuger
 .range 1028 1029
 
 
@@ -145,7 +146,7 @@
 
 [action 1061]
 .must 44                ' applied
-.timeto 44 -00:00"09    ' not expired
+.timeto 44 -00:00"10    ' not expired
 .range 9999
 
 

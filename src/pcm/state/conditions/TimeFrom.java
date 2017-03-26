@@ -9,13 +9,13 @@ public class TimeFrom extends TimeCondition {
     }
 
     @Override
-    protected boolean predicate(long elapsedMillis, long durationMillis) {
-        if (durationMillis == -State.INDEFINITELY) {
+    protected boolean predicate(long elapsedSeconds, long durationSeconds) {
+        if (durationSeconds == -State.INDEFINITELY) {
             return false;
-        } else if (durationMillis == State.INDEFINITELY) {
+        } else if (durationSeconds == State.INDEFINITELY) {
             return true;
         } else {
-            return elapsedMillis > durationMillis;
+            return elapsedSeconds >= durationSeconds;
         }
     }
 }

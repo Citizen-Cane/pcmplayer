@@ -12,13 +12,15 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import pcm.controller.Player;
 import pcm.model.ActionRange;
-import pcm.model.Duration;
+import pcm.model.DurationFormat;
 import pcm.state.persistence.ScriptState;
 import teaselib.Actor;
+import teaselib.core.Debugger;
 import teaselib.core.ResourceLoader;
 import teaselib.core.TeaseLib;
 import teaselib.core.texttospeech.Voice;
@@ -31,7 +33,7 @@ import teaselib.hosts.DummyPersistence;
  */
 public class ScriptTimeTests {
 
-    Player player = new Player(
+    private final Player player = new Player(
             new TeaseLib(new DummyHost(), new DummyPersistence()),
             new ResourceLoader(ScriptTimeTests.class),
             new Actor("Test", Voice.Gender.Female, Locale.US), "pcm", null) {
@@ -41,11 +43,14 @@ public class ScriptTimeTests {
         }
     };
 
+    private final Debugger debugger = new Debugger(player.teaseLib);
+
     /**
      * @throws java.lang.Exception
      */
     @Before
     public void setUpBefore() throws Exception {
+        debugger.freezeTime();
         player.loadScript("ScriptTimeTests");
     }
 
@@ -56,34 +61,30 @@ public class ScriptTimeTests {
 
     @Test
     public void testDuration() throws Exception {
-        final long now = player.teaseLib.getTime(TimeUnit.MILLISECONDS);
+        long now = player.teaseLib.getTime(TimeUnit.MILLISECONDS);
         Date date = new Date(now);
         assertEquals(now, date.getTime());
-        assertEquals(0, new Duration("00:00\"00").getTimeSpanMillis());
-        assertEquals(+1000, new Duration("+00:00\"01").getTimeSpanMillis());
-        assertEquals(-1000, new Duration("-00:00\"01").getTimeSpanMillis());
-        assertEquals(+1000 * 30,
-                new Duration("+00:00\"30").getTimeSpanMillis());
-        assertEquals(-1000 * 30,
-                new Duration("-00:00\"30").getTimeSpanMillis());
-        assertEquals(+1000 * 60 * 15,
-                new Duration("+00:15\"00").getTimeSpanMillis());
-        assertEquals(-1000 * 60 * 15,
-                new Duration("-00:15\"00").getTimeSpanMillis());
-        assertEquals(+1000 * 60 * 30 + 1000 * 60 * 60,
-                new Duration("+01:30\"00").getTimeSpanMillis());
-        assertEquals(-1000 * 60 * 30 - 1000 * 60 * 60,
-                new Duration("-01:30\"00").getTimeSpanMillis());
+        assertEquals(0, new DurationFormat("00:00\"00").toSeconds());
+        assertEquals(+1, new DurationFormat("+00:00\"01").toSeconds());
+        assertEquals(-1, new DurationFormat("-00:00\"01").toSeconds());
+        assertEquals(+1 * 30, new DurationFormat("+00:00\"30").toSeconds());
+        assertEquals(-1 * 30, new DurationFormat("-00:00\"30").toSeconds());
+        assertEquals(+1 * 60 * 15,
+                new DurationFormat("+00:15\"00").toSeconds());
+        assertEquals(-1 * 60 * 15,
+                new DurationFormat("-00:15\"00").toSeconds());
+        assertEquals(+1 * 60 * 30 + 1 * 60 * 60,
+                new DurationFormat("+01:30\"00").toSeconds());
+        assertEquals(-1 * 60 * 30 - 1 * 60 * 60,
+                new DurationFormat("-01:30\"00").toSeconds());
 
-        assertEquals(0, new Duration("00:00").getTimeSpanMillis());
-        assertEquals(+1000 * 60 * 15,
-                new Duration("+00:15").getTimeSpanMillis());
-        assertEquals(-1000 * 60 * 15,
-                new Duration("-00:15").getTimeSpanMillis());
-        assertEquals(+1000 * 60 * 30 + 1000 * 60 * 60,
-                new Duration("+01:30").getTimeSpanMillis());
-        assertEquals(-1000 * 60 * 30 - 1000 * 60 * 60,
-                new Duration("-01:30").getTimeSpanMillis());
+        assertEquals(0, new DurationFormat("00:00").toSeconds());
+        assertEquals(60 * 15, new DurationFormat("+00:15").toSeconds());
+        assertEquals(-60 * 15, new DurationFormat("-00:15").toSeconds());
+        assertEquals(+60 * 30 + 60 * 60,
+                new DurationFormat("+01:30").toSeconds());
+        assertEquals(-60 * 30 - 60 * 60,
+                new DurationFormat("-01:30").toSeconds());
     }
 
     @Test
@@ -91,8 +92,11 @@ public class ScriptTimeTests {
         ActionRange r = new ActionRange(1000);
         player.range = r;
         player.play(r);
+
         assertEquals(ScriptState.SET, player.state.get(1000));
-        player.teaseLib.sleep(2, TimeUnit.SECONDS);
+
+        debugger.advanceTime(2, TimeUnit.SECONDS);
+
         assertTrue(containsAction(1001));
         assertTrue(!containsAction(1002));
         assertTrue(containsAction(1003));
@@ -106,7 +110,9 @@ public class ScriptTimeTests {
         player.range = r;
         player.play(r);
         assertEquals(ScriptState.SET, player.state.get(1010));
-        player.teaseLib.sleep(2, TimeUnit.SECONDS);
+
+        debugger.advanceTime(2, TimeUnit.SECONDS);
+
         assertTrue(containsAction(1011));
         assertFalse(containsAction(1012));
         assertFalse(containsAction(1013));
@@ -128,6 +134,7 @@ public class ScriptTimeTests {
     }
 
     @Test
+    @Ignore
     public void testInfinityMinus() throws Exception {
         ActionRange r = new ActionRange(1025);
         player.range = r;
@@ -148,5 +155,4 @@ public class ScriptTimeTests {
         assertTrue(containsAction(1031));
         assertFalse(containsAction(1032));
     }
-
 }

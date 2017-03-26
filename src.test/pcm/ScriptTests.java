@@ -3,7 +3,9 @@
  */
 package pcm;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.Locale;
@@ -150,7 +152,12 @@ public class ScriptTests {
         assertEquals(ScriptState.UNSET, player.state.get(1041));
         assertEquals(ScriptState.UNSET, player.state.get(1042));
         assertEquals(ScriptState.UNSET, player.state.get(1043));
-        assertNull(player.state.getTime(1043));
+
+        try {
+            player.state.getTime(1043);
+            fail("Action 1043 isn't supposed to be a timer");
+        } catch (IllegalArgumentException expected) {
+        }
     }
 
     @Test

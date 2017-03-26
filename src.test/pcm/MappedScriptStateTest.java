@@ -22,6 +22,7 @@ import pcm.state.persistence.MappedScriptStateValue;
 import pcm.state.persistence.ScriptState;
 import pcm.util.TestUtils;
 import teaselib.State;
+import teaselib.core.Debugger;
 
 public class MappedScriptStateTest {
     private static final String MAPPED_STATE_TEST_SCRIPT = "MappedScriptStateTest";
@@ -107,18 +108,20 @@ public class MappedScriptStateTest {
         assertFalse(chastityCageState.applied());
         assertTrue(chastityCageState.expired());
         assertTrue(chastityCageState.peers().isEmpty());
-        assertEquals(State.REMOVED,
-                pcm.getTime(ChastityCageAction).getTime() / 1000);
+        assertEquals(State.REMOVED, pcm.getTime(ChastityCageAction));
     }
 
     @Test
     public void assertThatMultiMappedSetTimeSetsFlag() {
+        Debugger debugger = new Debugger(player.teaseLib);
+        debugger.freezeTime();
+
         assertEquals(UNSET, pcm.get(ChastityCageAction));
-        // TODO This may fail due to timing issues -> manually advance getTime()
+
         int expectedSeconds = 10;
         pcm.setTime(ChastityCageAction,
-                player.teaseLib.getTime(TimeUnit.MILLISECONDS),
-                1000 * expectedSeconds);
+                player.duration(expectedSeconds, TimeUnit.SECONDS));
+
         assertEquals(expectedSeconds,
                 chastityCageState.duration().remaining(TimeUnit.SECONDS));
         assertTrue(chastityCageState.applied());
@@ -127,13 +130,7 @@ public class MappedScriptStateTest {
         assertTrue(chastityCageState.peers().contains(Body.CannotJerkOff));
         assertEquals(SET, pcm.get(ChastityCageAction));
 
-        try {
-            // TODO Use teaselib time debug (currently only available for core
-            // classes)
-            Thread.sleep(10 * 1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        debugger.advanceTime(10, TimeUnit.SECONDS);
 
         assertTrue(chastityCageState.applied());
         assertTrue(chastityCageState.expired());
@@ -146,19 +143,24 @@ public class MappedScriptStateTest {
 
     @Test
     public void assertThatUnsetFlagResetsStateToRemoved() {
+        Debugger debugger = new Debugger(player.teaseLib);
+        debugger.freezeTime();
+
         pcm.unset(ChastityCageAction);
         assertFalse(chastityCageState.applied());
         assertTrue(chastityCageState.expired());
 
         assertEquals(State.REMOVED,
                 chastityCageState.duration().limit(TimeUnit.SECONDS));
-        assertEquals(State.REMOVED,
-                pcm.getTime(ChastityCageAction).getTime() / 1000
-                        - player.teaseLib.getTime(TimeUnit.SECONDS));
+        assertEquals(State.REMOVED, pcm.getTime(ChastityCageAction)
+                - player.teaseLib.getTime(TimeUnit.SECONDS));
     }
 
     @Test
     public void assertThatSetMultiMappedFlagSetsStateToAppliedTemporary() {
+        Debugger debugger = new Debugger(player.teaseLib);
+        debugger.freezeTime();
+
         pcm.set(ChastityCageAction);
         assertTrue(chastityCageState.applied());
         assertTrue(chastityCageState.expired());
@@ -167,9 +169,8 @@ public class MappedScriptStateTest {
         assertTrue(chastityCageState.peers().contains(Body.CannotJerkOff));
         assertTrue(chastityCageState.expired());
 
-        long time = pcm.getTime(ChastityCageAction).getTime();
-        assertEquals(player.teaseLib.getTime(TimeUnit.MILLISECONDS), time,
-                1000);
+        long time = pcm.getTime(ChastityCageAction);
+        assertEquals(player.teaseLib.getTime(TimeUnit.SECONDS), time);
     }
 
     @Test
@@ -216,7 +217,7 @@ public class MappedScriptStateTest {
         assertTrue(chastityCageState.expired());
         assertTrue(chastityCageState.peers().isEmpty());
 
-        long seconds = pcm.getTime(ChastityCageAction).getTime() / 1000;
+        long seconds = pcm.getTime(ChastityCageAction);
         assertEquals(State.REMOVED, seconds);
     }
 
@@ -251,19 +252,16 @@ public class MappedScriptStateTest {
     @Test
     public void testThatScriptHandlesAppliedAndExpiredCorrectly()
             throws AllActionsSetException, ScriptExecutionException {
+        Debugger debugger = new Debugger(player.teaseLib);
+        debugger.freezeTime();
+
         assertThatUninitializedStateHasCorrectDefaultValues();
 
         TestUtils.play(player, 1060);
         assertTrue(chastityCageState.applied());
         assertFalse(chastityCageState.expired());
 
-        try {
-            // TODO Use teaselib time debug (currently only available for core
-            // classes)
-            Thread.sleep(10 * 1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        debugger.advanceTime(10, TimeUnit.SECONDS);
 
         TestUtils.play(player, 1062);
         assertTrue(chastityCageState.applied());

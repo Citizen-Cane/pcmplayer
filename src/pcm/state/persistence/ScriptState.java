@@ -2,7 +2,6 @@ package pcm.state.persistence;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -19,6 +18,7 @@ import pcm.model.Action;
 import pcm.model.ActionRange;
 import pcm.model.Script;
 import pcm.model.ScriptExecutionException;
+import teaselib.Duration;
 
 /**
  * Well, the original PCMistress likely used a single (long?) array for storing
@@ -69,7 +69,7 @@ public class ScriptState {
     /**
      * Action may also contain a time stamp.
      */
-    private Map<Integer, Date> times = new HashMap<Integer, Date>();
+    private Map<Integer, Long> times = new HashMap<Integer, Long>();
 
     private int step = 0;
     private Map<Integer, Integer> action2StepMap = new HashMap<Integer, Integer>();
@@ -120,7 +120,7 @@ public class ScriptState {
                                     + " - Don't you dare to hack into my memories!");
                         }
                         long timeValue = Long.parseLong(value);
-                        times.put(new Integer(key), new Date(timeValue * 1000));
+                        times.put(new Integer(key), timeValue);
                     }
                 }
             }
@@ -180,8 +180,7 @@ public class ScriptState {
                     keys.append(number);
                 }
                 // Save seconds
-                write(number,
-                        new Long(times.get(n).getTime() / 1000).toString());
+                write(number, Long.toString(times.get(n)));
             }
         }
         if (keys != null) {
@@ -238,17 +237,19 @@ public class ScriptState {
         }
     }
 
-    public Date getTime(Integer n) {
+    public long getTime(Integer n) {
         if (times.containsKey(n)) {
             return times.get(n);
         } else {
-            return null;
+            throw new IllegalArgumentException(
+                    "Action " + n + " isn't a timer");
         }
     }
 
-    public void setTime(Integer n, long now, long offset) {
+    public void setTime(Integer n, Duration duration) {
         data.remove(n);
-        times.put(n, new Date(now + offset));
+        times.put(n, duration.start(TimeUnit.SECONDS)
+                + duration.limit(TimeUnit.SECONDS));
     }
 
     public void unset(Collection<Integer> unset) {

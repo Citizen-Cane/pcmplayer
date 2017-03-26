@@ -1,44 +1,45 @@
 package pcm.model;
 
-public class Duration {
-    private final String duration;
-    private final long timeMillis;
+import java.util.concurrent.TimeUnit;
 
-    public Duration(long timeMillis) {
-        this.timeMillis = timeMillis;
-        this.duration = toString(timeMillis);
+public class DurationFormat {
+    private final String duration;
+    private final long timeSeconds;
+
+    public DurationFormat(long time, TimeUnit unit) {
+        this.timeSeconds = TimeUnit.SECONDS.convert(time, unit);
+        this.duration = toString(time, unit);
     }
 
-    public static String toString(long timeMillis) {
-        if (timeMillis == Long.MAX_VALUE) {
+    public static String toString(long time, TimeUnit unit) {
+        long timeSeconds = TimeUnit.SECONDS.convert(time, unit);
+        if (timeSeconds == Long.MAX_VALUE) {
             return "INF";
-        } else if (timeMillis == Long.MIN_VALUE) {
+        } else if (timeSeconds == Long.MIN_VALUE) {
             return "-INF";
         } else {
-            String sign = timeMillis < 0 ? "-" : "";
-            long absoluteTimeMillis = Math.abs(timeMillis);
-            long h = Math.floorDiv(absoluteTimeMillis, 60 * 60 * 1000);
-            long m = Math.floorDiv(absoluteTimeMillis - h * 60 * 60 * 1000,
-                    60 * 1000);
-            long s = Math.floorDiv(
-                    absoluteTimeMillis - h * 60 * 60 * 1000 - m * 60 * 1000,
-                    1000);
+            String sign = timeSeconds < 0 ? "-" : "";
+            long absoluteTimeSeconds = Math.abs(timeSeconds);
+            long h = Math.floorDiv(absoluteTimeSeconds, 60 * 60);
+            long m = Math.floorDiv(absoluteTimeSeconds - h * 60 * 60, 60);
+            long s = absoluteTimeSeconds - h * 60 * 60 - m * 60;
             return String.format(sign + "%02d:%02d\"%02d", h, m, s);
         }
     }
 
-    public Duration(String duration) {
+    public DurationFormat(String duration) {
         this.duration = duration;
-        timeMillis = parse(duration);
+        timeSeconds = toSeconds(duration);
     }
 
     /**
-     * Get the number of milliseconds of this duration
+     * Get the number of seconds of this duration
      * 
-     * @return The duration in milli seconds
+     * @return The duration in seconds
      */
-    public long getTimeSpanMillis() {
-        return timeMillis;
+
+    public long toSeconds() {
+        return timeSeconds;
     }
 
     /**
@@ -49,7 +50,7 @@ public class Duration {
      *            milliseconds of the duration
      * @return
      */
-    private static long parse(String duration) {
+    private static long toSeconds(String duration) {
         if ("INF".equalsIgnoreCase(duration)) {
             return teaselib.State.INDEFINITELY;
         } else if ("-INF".equalsIgnoreCase(duration)) {
@@ -79,7 +80,7 @@ public class Duration {
                         .parseInt(duration.substring(doubleColonPos + 1));
                 seconds = 0;
             }
-            return sign * (3600 * hours + 60 * minutes + seconds) * 1000;
+            return sign * (3600 * hours + 60 * minutes + seconds);
         }
     }
 

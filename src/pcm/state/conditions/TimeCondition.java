@@ -1,11 +1,12 @@
 package pcm.state.conditions;
 
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pcm.model.Duration;
+import pcm.model.DurationFormat;
 import pcm.state.Condition;
 import pcm.state.persistence.ScriptState;
 
@@ -14,39 +15,35 @@ public abstract class TimeCondition implements Condition {
             .getLogger(TimeCondition.class);
 
     protected final int n;
-    private final Duration duration;
+    private final DurationFormat duration;
 
     public TimeCondition(int n, String duration) {
         this.n = n;
-        this.duration = new Duration(duration);
+        this.duration = new DurationFormat(duration);
     }
 
-    protected abstract boolean predicate(long elapsedMillis,
-            long durationMillis);
+    protected abstract boolean predicate(long elapsedSeconds,
+            long durationSeconds);
 
     @Override
     public boolean isTrueFor(ScriptState state) {
-        long now = state.getTimeMillis();
-        Date setTime = state.getTime(n);
-        if (setTime != null) {
-            long elapsedMillis = now - setTime.getTime();
-            long durationMillis = duration.getTimeSpanMillis();
-            boolean result = predicate(elapsedMillis, durationMillis);
-            log(setTime, elapsedMillis, durationMillis, result);
-            return result;
-        } else {
-            throw new RuntimeException("setTime not called on action " + n);
-        }
+        long nowSeconds = state.getTimeMillis() / 1000;
+        long setTimeSeconds = state.getTime(n);
+        long elapsedSeconds = nowSeconds - setTimeSeconds;
+        long durationSeconds = duration.toSeconds();
+        boolean result = predicate(elapsedSeconds, durationSeconds);
+        log(setTimeSeconds, elapsedSeconds, durationSeconds, result);
+        return result;
     }
 
-    protected void log(Date setTime, long elapsedMillis, long durationMillis,
+    protected void log(long time, long elapsedSeconds, long durationSeconds,
             boolean result) {
         logger.info(getClass().getSimpleName() + " " + n + ": setTime = "
-                + setTime.toString() + ", duration = " + duration.toString()
-                + "(" + durationMillis + ") , now = "
+                + new Date(time * 1000).toString() + ", duration = "
+                + duration.toString() + "(" + durationSeconds + ") , now = "
                 + new Date(System.currentTimeMillis()) + ", elapsed = "
-                + Duration.toString(elapsedMillis) + "(" + elapsedMillis
-                + ") -> " + result);
+                + DurationFormat.toString(elapsedSeconds, TimeUnit.SECONDS)
+                + "(" + elapsedSeconds + ") -> " + result);
     }
 
     @Override
