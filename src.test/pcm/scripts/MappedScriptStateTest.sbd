@@ -136,6 +136,30 @@
 .range 9999
 
 
+' testThatScriptHandlesAppliedAndExpiredCorrectly
+
+[action 1060]
+.mustnot 44
+.settime 44 00:00"10
+.range 1061
+
+[action 1061]
+.must 44                ' applied
+.timeto 44 -00:00"09    ' not expired
+.range 9999
+
+
+[action 1062]
+.must 44                ' applied
+.timefrom 44 00:00"00   ' expired since the test code advanced the time 00:10"00
+.range 9999
+
+
+[action 1063]
+.unset 44               ' removed
+.range 9999
+
+
 ' proper exit for all test cases
 [action 9999]
 .unset 9999
