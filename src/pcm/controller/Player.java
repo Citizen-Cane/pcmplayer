@@ -344,7 +344,7 @@ public abstract class Player extends TeaseScript {
             AbstractAction abstractAction, ActionRange range,
             MappedScriptState state, List<ValidationIssue> validationErrors) {
         for (int n : range) {
-            if (state.hasGameValueMapping(n)) {
+            if (state.hasScriptValueMapping(n)) {
                 validationErrors
                         .add(new ValidationIssue(abstractAction.toString()
                                 + ": .resetrange may not unset mapped item or state "

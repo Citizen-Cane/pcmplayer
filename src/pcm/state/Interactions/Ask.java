@@ -85,7 +85,7 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
             Integer n = indices.get(i);
             if (results.get(i) == true) {
                 // Handle mapped values
-                if (mappedState.hasGameValueMapping(n)) {
+                if (mappedState.hasScriptValueMapping(n)) {
                     Items<?> items = mappedState.getMappedItems(n);
                     if (items.isEmpty()) {
                         throw new ScriptExecutionException(

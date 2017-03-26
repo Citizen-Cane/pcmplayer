@@ -35,12 +35,12 @@ public class MappedScriptState extends ScriptState {
     public static final String Global = "";
 
     private static class ScriptMapping {
-        final Map<Integer, MappedScriptValue> gameValueMapping = new HashMap<Integer, MappedScriptValue>();
+        final Map<Integer, MappedScriptValue> scriptValueMapping = new HashMap<Integer, MappedScriptValue>();
         final Map<Integer, teaselib.State> stateTimeMapping = new HashMap<Integer, teaselib.State>();
         final Map<Integer, Enum<?>[]> peers = new HashMap<Integer, Enum<?>[]>();
 
         public void putAll(ScriptMapping globalMapping) {
-            gameValueMapping.putAll(globalMapping.gameValueMapping);
+            scriptValueMapping.putAll(globalMapping.scriptValueMapping);
             stateTimeMapping.putAll(globalMapping.stateTimeMapping);
             peers.putAll(globalMapping.peers);
         }
@@ -76,13 +76,13 @@ public class MappedScriptState extends ScriptState {
             MappedScriptValue mappedGameValue) {
         ScriptMapping scriptMapping = getScriptMapping(scriptName);
 
-        if (scriptMapping.gameValueMapping.containsValue(mappedGameValue)) {
+        if (scriptMapping.scriptValueMapping.containsValue(mappedGameValue)) {
             throw new IllegalArgumentException(
                     "Item " + mappedGameValue.toString()
                             + " is already mapped to a value.");
         }
 
-        scriptMapping.gameValueMapping.put(mappedGameValue.getNumber(),
+        scriptMapping.scriptValueMapping.put(mappedGameValue.getNumber(),
                 mappedGameValue);
     }
 
@@ -101,8 +101,8 @@ public class MappedScriptState extends ScriptState {
 
     @Override
     public Long get(Integer n) {
-        if (hasGameValueMapping(n)) {
-            if (scriptMapping.gameValueMapping.get(n).isSet()) {
+        if (hasScriptValueMapping(n)) {
+            if (scriptMapping.scriptValueMapping.get(n).isSet()) {
                 super.set(n);
                 return SET;
             } else {
@@ -114,11 +114,11 @@ public class MappedScriptState extends ScriptState {
         }
     }
 
-    public boolean hasGameValueMapping(Integer n) {
+    public boolean hasScriptValueMapping(Integer n) {
         if (scriptMapping == null) {
             return false;
         }
-        return scriptMapping.gameValueMapping.containsKey(n);
+        return scriptMapping.scriptValueMapping.containsKey(n);
     }
 
     public Items<?> getMappedItems(Integer n) {
@@ -126,7 +126,7 @@ public class MappedScriptState extends ScriptState {
             // TODO throw
             return new Items<Toys>();
         }
-        return scriptMapping.gameValueMapping.get(n).items();
+        return scriptMapping.scriptValueMapping.get(n).items();
     }
 
     private boolean hasStateTimeMapping(Integer n) {
@@ -141,14 +141,14 @@ public class MappedScriptState extends ScriptState {
      */
     @Override
     public void set(Integer n) {
-        if (hasGameValueMapping(n)) {
-            scriptMapping.gameValueMapping.get(n).set();
+        if (hasScriptValueMapping(n)) {
+            scriptMapping.scriptValueMapping.get(n).set();
         }
         super.set(n);
     }
 
     public void setOverride(Integer n) {
-        if (hasGameValueMapping(n)) {
+        if (hasScriptValueMapping(n)) {
             super.set(n);
         } else {
             throw new IllegalStateException(
@@ -158,8 +158,8 @@ public class MappedScriptState extends ScriptState {
 
     @Override
     public void unset(Integer n) {
-        if (hasGameValueMapping(n)) {
-            scriptMapping.gameValueMapping.get(n).unset();
+        if (hasScriptValueMapping(n)) {
+            scriptMapping.scriptValueMapping.get(n).unset();
         }
         super.unset(n);
     }
@@ -193,7 +193,7 @@ public class MappedScriptState extends ScriptState {
     @Override
     public void overwrite(Integer n, Long value) {
         ScriptMapping mapping = getScriptMapping(Global);
-        mapping.gameValueMapping.remove(n);
+        mapping.scriptValueMapping.remove(n);
         mapping.stateTimeMapping.remove(n);
         super.overwrite(n, value);
     }
@@ -207,7 +207,7 @@ public class MappedScriptState extends ScriptState {
 
     private Entry<Integer, MappedScriptValue> getEntry(Object item) {
         for (Entry<Integer, MappedScriptValue> entry : getScriptMapping(
-                Global).gameValueMapping.entrySet()) {
+                Global).scriptValueMapping.entrySet()) {
             Items<?> items = entry.getValue().items();
             for (Item<?> i : items) {
                 if (i.item == item) {
