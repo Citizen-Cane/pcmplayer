@@ -167,14 +167,13 @@ public class MappedScriptStateTest {
 
         assertTrue(chastityCageState.peers().contains(Body.SomethingOnPenis));
         assertTrue(chastityCageState.peers().contains(Body.CannotJerkOff));
-        assertTrue(chastityCageState.expired());
 
         long time = pcm.getTime(ChastityCageAction);
         assertEquals(player.teaseLib.getTime(TimeUnit.SECONDS), time);
     }
 
     @Test
-    public void testThatUnmappedScriptTimeValuesCorrectly()
+    public void testThatScriptHandlesUnmappedTimeValuesCorrectly()
             throws AllActionsSetException, ScriptExecutionException,
             ScriptParsingException, ValidationIssue, IOException {
         Player testScript = TestUtils.createPlayer(getClass(),
