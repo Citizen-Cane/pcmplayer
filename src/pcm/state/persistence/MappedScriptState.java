@@ -72,24 +72,26 @@ public class MappedScriptState extends ScriptState {
     }
 
     public void addScriptValueMapping(String scriptName,
-            MappedScriptValue mappedGameValue) {
+            MappedScriptValue mappedValue) {
         ScriptMapping scriptMapping = getScriptMapping(scriptName);
 
-        if (scriptMapping.scriptValueMapping.containsValue(mappedGameValue)) {
-            throw new IllegalArgumentException(
-                    "Item " + mappedGameValue.toString()
-                            + " is already mapped to a value.");
+        if (scriptMapping.scriptValueMapping.containsKey(mappedValue)
+                || scriptMapping.scriptValueMapping
+                        .containsValue(mappedValue)) {
+            throw new IllegalArgumentException("Item " + mappedValue.toString()
+                    + " is already mapped to a value.");
         }
 
-        scriptMapping.scriptValueMapping.put(mappedGameValue.getNumber(),
-                mappedGameValue);
+        scriptMapping.scriptValueMapping.put(mappedValue.getNumber(),
+                mappedValue);
     }
 
     public <T extends Enum<?>> void addStateTimeMapping(String scriptName,
             Integer action, teaselib.State state, T... peers) {
         ScriptMapping scriptMapping = getScriptMapping(scriptName);
 
-        if (scriptMapping.stateTimeMapping.containsValue(state)) {
+        if (scriptMapping.stateTimeMapping.containsKey(action)
+                || scriptMapping.stateTimeMapping.containsValue(state)) {
             throw new IllegalArgumentException("State " + state.toString()
                     + " is already mapped to a timer.");
         }
