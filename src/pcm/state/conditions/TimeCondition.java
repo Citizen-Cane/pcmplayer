@@ -22,8 +22,8 @@ public abstract class TimeCondition implements Condition {
         this.duration = new DurationFormat(duration);
     }
 
-    protected abstract boolean predicate(long elapsedSeconds,
-            long durationSeconds);
+    protected abstract boolean predicate(long setTimeSeconds,
+            long elapsedSeconds, long durationSeconds);
 
     @Override
     public boolean isTrueFor(ScriptState state) {
@@ -31,7 +31,8 @@ public abstract class TimeCondition implements Condition {
         long setTimeSeconds = state.getTime(n);
         long elapsedSeconds = nowSeconds - setTimeSeconds;
         long durationSeconds = duration.toSeconds();
-        boolean result = predicate(elapsedSeconds, durationSeconds);
+        boolean result = predicate(setTimeSeconds, elapsedSeconds,
+                durationSeconds);
         log(setTimeSeconds, elapsedSeconds, durationSeconds, result);
         return result;
     }

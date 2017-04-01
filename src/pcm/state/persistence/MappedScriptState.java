@@ -170,8 +170,7 @@ public class MappedScriptState extends ScriptState {
         if (hasStateTimeMapping(n)) {
             teaselib.State state = scriptMapping.stateTimeMapping.get(n);
             Duration duration = state.duration();
-            long timeSeconds = duration.start(TimeUnit.SECONDS)
-                    + state.duration().limit(TimeUnit.SECONDS);
+            long timeSeconds = duration.end(TimeUnit.SECONDS);
             return timeSeconds;
         } else {
             return super.getTime(n);

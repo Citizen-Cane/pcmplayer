@@ -21,20 +21,21 @@
 
 ' testThatScriptHandlesMultiMappedValuesCorrectly
 
+' true since the state is uninitialized, so it's over for long but not since infinitely
 [action 1020]
-.timefrom 44 INF
+.timefrom 44 00:00"00
 .range 1021 1022
 
 
-' false
+' false since the mapped state start is initially set to 0, so it is over for longer than 99:59"59 
 [action 1021]
 .timeto 44 99:59"59
 .range 1025
 
-' true
+' true since the state start is set to 0 (which is a long time in the past), but hasn't been over for longer than INF
 [action 1022]
 .else
-.timeto 44 -INF
+.timeto 44 INF
 .range 1025
 
 

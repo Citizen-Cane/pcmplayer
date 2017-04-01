@@ -12,12 +12,13 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
+import pcm.controller.AllActionsSetException;
 import pcm.controller.Player;
 import pcm.model.ActionRange;
 import pcm.model.DurationFormat;
+import pcm.model.ScriptExecutionException;
 import pcm.state.persistence.ScriptState;
 import teaselib.Actor;
 import teaselib.core.Debugger;
@@ -131,11 +132,12 @@ public class ScriptTimeTests {
         assertEquals(ScriptState.SET, player.state.get(1020));
         assertFalse(containsAction(1021));
         assertTrue(containsAction(1022));
+        assertTrue(containsAction(1023));
     }
 
-    @Test
-    @Ignore
-    public void testInfinityMinus() throws Exception {
+    @Test(expected = ScriptExecutionException.class)
+    public void testThatInfinityMinusIsAnIllegalArgumentToSetTime()
+            throws AllActionsSetException, ScriptExecutionException {
         ActionRange r = new ActionRange(1025);
         player.range = r;
         player.play(r);
@@ -147,12 +149,24 @@ public class ScriptTimeTests {
     }
 
     @Test
-    public void testTimeToInfinity() throws Exception {
+    public void testTimeToInfinityIsAlwaysTrue() throws Exception {
+        debugger.freezeTime();
+
         ActionRange r = new ActionRange(1030);
         player.range = r;
         player.play(r);
         assertEquals(ScriptState.SET, player.state.get(1030));
-        assertTrue(containsAction(1031));
+
+        assertFalse(containsAction(1031));
         assertFalse(containsAction(1032));
+        assertTrue(containsAction(1033));
+
+        assertTrue(containsAction(1034));
+        debugger.advanceTime(71, TimeUnit.MINUTES);
+        assertFalse(containsAction(1034));
+
+        assertTrue(containsAction(1035));
+        assertTrue(containsAction(1036));
+        assertTrue(containsAction(1037));
     }
 }

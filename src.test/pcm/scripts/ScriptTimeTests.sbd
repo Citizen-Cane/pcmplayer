@@ -6,7 +6,7 @@
 
 ' testTimeFromTo
 
-' settime, then sleeping 2 seconds in java
+' settime, then advancing time 2 seconds
 [action 1000]
 .settime 9
 .range 9999
@@ -102,50 +102,56 @@
 .timeto 9 -99:99"99
 .range 9999
 
-
-' testInfinityMinus
-
-[action 1025]
-.settime 9 -INF
-.range 9999
-
-' always true
-[action 1026]
-.timefrom 9 -99:99"99
-.range 9999
-
-' always true
-[action 1027]
-.timefrom 9 99:99"99
-.range 9999
-
-' always false
-[action 1028]
-.timeto 9 -99:99"99
-.range 9999
-
-' always false
-[action 1029]
-.timeto 9 99:99"99
+' always true since we've set the time to INF so there's infinite time left
+[action 1023]
+.timefrom 9 -INF
 .range 9999
 
 
 ' testTimeToInfinity
 
 [action 1030]
-.settime 9 INF
+.settime  9 01:00"00
+.settime 10 INF
 .range 9999
 
-' always true
+' false because there is only an hour left to 01:00"00
 [action 1031]
 .timeto 9 -INF
 .range 9999
 
-' always false
+' still false because there is only an hour left to 01:00"00
 [action 1032]
-.timeto 9 INF
+.timeto 9 -01:00"01
 .range 9999
- 
+
+' true because there is only an hour left to 01:00"00
+[action 1033]
+.timeto 9 -00:59"59
+.range 9999
+
+' true since it's not yet 10 minutes past the time we've set earlier on 
+' false after time has been advanced by 01:11"00
+[action 1034]
+.timeto 9 00:10"00
+.range 9999
+
+
+' always true because there is a infinite time left to infinity
+[action 1035]
+.timeto 10 -99:59"59
+.range 9999
+
+' always true since there is always infinite time left to infinity
+[action 1036]
+.timeto 10 -INF
+.range 9999
+
+' always true because a time past infinity will never be reached 
+[action 1037]
+.timeto 10 INF
+.range 9999
+  
 
 ' proper exit for all test cases
 [action 9999]

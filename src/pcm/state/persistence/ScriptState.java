@@ -248,8 +248,7 @@ public class ScriptState {
 
     public void setTime(Integer n, Duration duration) {
         data.remove(n);
-        times.put(n, duration.start(TimeUnit.SECONDS)
-                + duration.limit(TimeUnit.SECONDS));
+        times.put(n, duration.end(TimeUnit.SECONDS));
     }
 
     public void unset(Collection<Integer> unset) {
