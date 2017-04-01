@@ -136,22 +136,47 @@
 .timeto 9 00:10"00
 .range 9999
 
+' always true because a time past infinity will never be reached 
+[action 1035]
+.timeto 9 INF
+.range 9999
+
 
 ' always true because there is a infinite time left to infinity
-[action 1035]
+[action 1036]
 .timeto 10 -99:59"59
 .range 9999
 
 ' always true since there is always infinite time left to infinity
-[action 1036]
+[action 1037]
 .timeto 10 -INF
 .range 9999
 
 ' always true because a time past infinity will never be reached 
-[action 1037]
+[action 1038]
 .timeto 10 INF
 .range 9999
   
+
+'
+
+[action 1040]
+.settime  9 01:00"00
+.settime 10 INF
+.range 9999
+
+' false
+[action 1041]
+.timeto  9 -INF
+.range 9999
+
+' true
+[action 1042]
+.timeto 10 -INF
+.range 9999
+
+
+
 
 ' proper exit for all test cases
 [action 9999]

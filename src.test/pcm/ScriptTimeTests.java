@@ -19,8 +19,10 @@ import pcm.controller.Player;
 import pcm.model.ActionRange;
 import pcm.model.DurationFormat;
 import pcm.model.ScriptExecutionException;
+import pcm.state.conditions.TimeTo;
 import pcm.state.persistence.ScriptState;
 import teaselib.Actor;
+import teaselib.State;
 import teaselib.core.Debugger;
 import teaselib.core.ResourceLoader;
 import teaselib.core.TeaseLib;
@@ -149,7 +151,7 @@ public class ScriptTimeTests {
     }
 
     @Test
-    public void testTimeToInfinityIsAlwaysTrue() throws Exception {
+    public void showDifferencesOfFiniteVsInfiniteSetTime() throws Exception {
         debugger.freezeTime();
 
         ActionRange r = new ActionRange(1030);
@@ -166,7 +168,36 @@ public class ScriptTimeTests {
         assertFalse(containsAction(1034));
 
         assertTrue(containsAction(1035));
+
         assertTrue(containsAction(1036));
         assertTrue(containsAction(1037));
+        assertTrue(containsAction(1038));
+    }
+
+    @Test
+    public void showHowToCheckForInfinityInCode() throws Exception {
+        debugger.freezeTime();
+
+        player.state.setTime(9, player.duration(10, TimeUnit.SECONDS));
+        assertFalse(new TimeTo(9, "-INF").isTrueFor(player.state));
+
+        player.state.setTime(9,
+                player.duration(State.INDEFINITELY, TimeUnit.SECONDS));
+        assertTrue(new TimeTo(9, "-INF").isTrueFor(player.state));
+    }
+
+    @Test
+    public void showHowToCheckForInfinityInScript() throws Exception {
+        debugger.freezeTime();
+
+        ActionRange r = new ActionRange(1040);
+        player.range = r;
+        player.play(r);
+        assertEquals(ScriptState.SET, player.state.get(1040));
+
+        int setTImeFinite = 1041;
+        assertFalse(containsAction(setTImeFinite));
+        int setTImeInfinite = 1042;
+        assertTrue(containsAction(setTImeInfinite));
     }
 }
