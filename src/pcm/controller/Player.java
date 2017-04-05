@@ -311,7 +311,8 @@ public abstract class Player extends TeaseScript {
     }
 
     private static void validateAspects(Script script, MappedScriptState state,
-            ResourceLoader resources, List<ValidationIssue> validationErrors) {
+            ResourceLoader resources, List<ValidationIssue> validationErrors)
+            throws ScriptParsingException {
         validateScript(script, validationErrors);
         validateMappings(script, state, validationErrors);
         validateResources(script, resources, validationErrors);
@@ -693,7 +694,8 @@ public abstract class Player extends TeaseScript {
     }
 
     public static void validateScript(Script script,
-            List<ValidationIssue> validationErrors) {
+            List<ValidationIssue> validationErrors)
+            throws ScriptParsingException {
         script.validate(validationErrors);
         for (Action action : script.actions.values()) {
             action.validate(script, validationErrors);

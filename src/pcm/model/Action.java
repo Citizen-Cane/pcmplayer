@@ -554,8 +554,8 @@ public class Action extends AbstractAction {
         return script.getResponseText(name);
     }
 
-    public void validate(Script script,
-            List<ValidationIssue> validationErrors) {
+    public void validate(Script script, List<ValidationIssue> validationErrors)
+            throws ScriptParsingException {
         if (poss != null) {
             if (poss < 0 || poss > 100) {
                 validationErrors.add(new ValidationIssue(this,
@@ -625,13 +625,7 @@ public class Action extends AbstractAction {
         if (interaction != null)
 
         {
-            try {
-                interaction.validate(script, this, validationErrors);
-            } catch (ScriptParsingException e) {
-                validationErrors.add(new ValidationIssue(this, e));
-            } catch (Exception e) {
-                validationErrors.add(new ValidationIssue(this, e, script));
-            }
+            interaction.validate(script, this, validationErrors);
         } else {
             validationErrors
                     .add(new ValidationIssue(this, "No interaction", script));

@@ -7,9 +7,9 @@ import pcm.controller.Player;
 import pcm.model.Action;
 import pcm.model.ActionLoadSbd;
 import pcm.model.ActionRange;
-import pcm.model.ScriptParsingException;
 import pcm.model.Script;
 import pcm.model.ScriptExecutionException;
+import pcm.model.ScriptParsingException;
 import pcm.model.ValidationIssue;
 import pcm.state.Interaction;
 
@@ -29,34 +29,33 @@ public class LoadSbd implements Interaction {
     }
 
     @Override
-    public ActionRange getRange(Script script, Action action,
-            Runnable visuals, Player player) throws ScriptExecutionException {
+    public ActionRange getRange(Script script, Action action, Runnable visuals,
+            Player player) throws ScriptExecutionException {
         visuals.run();
         Script loadSbd;
         try {
             loadSbd = script.load(scriptName);
         } catch (ScriptParsingException e) {
-            throw new ScriptExecutionException(action, "Failed to parse script "
-                    + scriptName, e, script);
+            throw new ScriptExecutionException(action,
+                    "Failed to parse script " + scriptName, e, script);
         } catch (ValidationIssue e) {
-            throw new ScriptExecutionException(action, "Failed to validate script "
-                    + scriptName, e, script);
+            throw new ScriptExecutionException(action,
+                    "Failed to validate script " + scriptName, e, script);
         } catch (IOException e) {
-            throw new ScriptExecutionException(action, "Failed to load script "
-                    + scriptName, e, script);
+            throw new ScriptExecutionException(action,
+                    "Failed to load script " + scriptName, e, script);
         }
         return new ActionLoadSbd(loadSbd, start, end);
     }
 
     @Override
     public void validate(Script script, Action action,
-            List<ValidationIssue> validationErrors) throws ScriptParsingException {
+            List<ValidationIssue> validationErrors)
+            throws ScriptParsingException {
         try {
             Script loadSbd = script.load(scriptName);
             loadSbd.actions.validate(script, action,
                     new ActionRange(start, end), validationErrors);
-        } catch (ScriptParsingException e) {
-            throw e;
         } catch (ValidationIssue e) {
             validationErrors.add(e);
         } catch (IOException e) {
