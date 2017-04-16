@@ -5,19 +5,26 @@ import java.util.Collections;
 import teaselib.util.Item;
 import teaselib.util.Items;
 
-public class MappedScriptItemValue<T> implements MappedScriptValue {
-
+public class MappedScriptItemValue implements MappedScriptValue {
     private final int n;
-    private final Items<T> items;
+    private final Items items;
 
-    public MappedScriptItemValue(int n, Item<T> item) {
+    public MappedScriptItemValue(int n, Item item) {
         this.n = n;
-        this.items = new Items<T>(Collections.singletonList(item));
+        this.items = new Items(Collections.singletonList(item));
     }
 
-    public MappedScriptItemValue(int n, Items<T> items) {
+    public MappedScriptItemValue(int n, Items items) {
         this.n = n;
         this.items = items;
+    }
+
+    public MappedScriptItemValue(int n, Items... items) {
+        this.n = n;
+        this.items = new Items();
+        for (Items i : items) {
+            this.items.addAll(i);
+        }
     }
 
     @Override
@@ -43,13 +50,13 @@ public class MappedScriptItemValue<T> implements MappedScriptValue {
 
     @Override
     public void unset() {
-        for (Item<T> item : items) {
+        for (Item item : items) {
             item.setAvailable(false);
         }
     }
 
     @Override
-    public Items<T> items() {
+    public Items items() {
         return items;
     }
 }

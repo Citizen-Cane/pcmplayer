@@ -35,8 +35,8 @@ public class MappedScriptBooleanValue implements MappedScriptValue {
     }
 
     @Override
-    public Items<?> items() {
-        return new Items<Object>();
+    public Items items() {
+        return Items.None;
     }
 
 }

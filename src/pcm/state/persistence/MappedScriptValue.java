@@ -12,5 +12,5 @@ public interface MappedScriptValue {
 
     public void unset();
 
-    Items<?> items();
+    Items items();
 }

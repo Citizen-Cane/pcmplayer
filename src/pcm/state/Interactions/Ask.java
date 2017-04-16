@@ -20,9 +20,9 @@ import pcm.model.ValidationIssue;
 import pcm.state.Command;
 import pcm.state.Interaction;
 import pcm.state.Interaction.NeedsRangeProvider;
+import pcm.state.Visual;
 import pcm.state.persistence.MappedScriptState;
 import pcm.state.persistence.ScriptState;
-import pcm.state.Visual;
 import teaselib.util.Item;
 import teaselib.util.Items;
 
@@ -47,8 +47,8 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
     }
 
     @Override
-    public ActionRange getRange(Script script, Action action, Runnable visuals,
-            Player player) throws ScriptExecutionException {
+    public ActionRange getRange(Script script, Action action, Runnable visuals, Player player)
+            throws ScriptExecutionException {
         List<Boolean> values = new ArrayList<Boolean>();
         List<String> choices = new ArrayList<String>();
         List<Integer> indices = new ArrayList<Integer>();
@@ -64,9 +64,8 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
                     int condition = askItem.condition;
                     if (condition == AskItem.ALWAYS
                             || state.get(condition).equals(ScriptState.SET)) {
-                        Boolean value = state
-                                .get(askItem.action) == ScriptState.SET
-                                        ? Boolean.TRUE : Boolean.FALSE;
+                        Boolean value = state.get(askItem.action) == ScriptState.SET ? Boolean.TRUE
+                                : Boolean.FALSE;
                         values.add(value);
                         choices.add(askItem.title);
                         indices.add(new Integer(askItem.action));
@@ -86,10 +85,10 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
             if (results.get(i) == true) {
                 // Handle mapped values
                 if (mappedState.hasScriptValueMapping(n)) {
-                    Items<?> items = mappedState.getMappedItems(n);
+                    Items items = mappedState.getMappedItems(n);
                     if (items.isEmpty()) {
-                        throw new ScriptExecutionException(
-                                "Undefined items in mapping " + n, script);
+                        throw new ScriptExecutionException("Undefined items in mapping " + n,
+                                script);
                     } else if (items.size() == 1) {
                         // Just a single item - just set
                         state.set(n);
@@ -100,8 +99,8 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
                         // Execute action for selecting the mapped items
                         Action detailAction = script.actions.get(n);
                         if (detailAction == null) {
-                            throw new ScriptExecutionException(
-                                    "Missing mapping action for " + n, script);
+                            throw new ScriptExecutionException("Missing mapping action for " + n,
+                                    script);
                         }
                         LinkedHashMap<Statement, Visual> detailVisuals = detailAction.visuals;
                         if (detailVisuals != null) {
@@ -109,8 +108,7 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
                                 player.render(visual);
                             }
                         }
-                        boolean anySet = checkDetailedItems(player, title,
-                                items);
+                        boolean anySet = checkDetailedItems(player, title, items);
                         if (anySet) {
                             // Update, cache result
                             mappedState.setOverride(n);
@@ -130,18 +128,16 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
         return rangeProvider.getRange(script, action, NoVisuals, player);
     }
 
-    private static boolean checkDetailedItems(Player player, String title,
-            Items<?> items) {
+    private static boolean checkDetailedItems(Player player, String title, Items items) {
         // Ask which items of the category have been set
         List<Boolean> itemValues = new ArrayList<Boolean>();
         List<String> itemChoices = new ArrayList<String>();
-        for (Item<?> item : items) {
+        for (Item item : items) {
             itemValues.add(item.isAvailable());
-            itemChoices.add(item.displayName);
+            itemChoices.add(item.displayName());
         }
         // The check box title is reused
-        List<Boolean> itemResults = player.showItems(title, itemChoices,
-                itemValues, false);
+        List<Boolean> itemResults = player.showItems(title, itemChoices, itemValues, false);
         // Apply changes to category items
         boolean anySet = false;
         for (int j = 0; j < itemResults.size(); j++) {
@@ -158,8 +154,7 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
     }
 
     @Override
-    public void validate(Script script, Action action,
-            List<ValidationIssue> validationErrors)
+    public void validate(Script script, Action action, List<ValidationIssue> validationErrors)
             throws ScriptParsingException {
         if (rangeProvider != null) {
             rangeProvider.validate(script, action, validationErrors);

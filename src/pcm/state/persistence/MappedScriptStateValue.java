@@ -23,8 +23,8 @@ public abstract class MappedScriptStateValue implements MappedScriptValue {
     }
 
     @Override
-    public Items<?> items() {
-        return new Items<teaselib.State>();
+    public Items items() {
+        return Items.None;
     }
 
     public static class ForSession extends MappedScriptStateValue {

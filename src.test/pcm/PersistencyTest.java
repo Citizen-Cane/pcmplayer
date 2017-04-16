@@ -29,21 +29,21 @@ public class PersistencyTest {
         Player player = TestUtils.createPlayer(getClass());
 
         player.state.addScriptValueMapping(MappedScriptState.Global,
-                new MappedScriptItemValue<Toys>(365,
-                        player.items(Toys.Collars)));
+                new MappedScriptItemValue(365, player.items(Toys.Collar)));
+        // TODO same as in TeaseLib tests - item must return actual collar from
+        // user list
         player.item(Toys.Collar).setAvailable(true);
 
-        assertEquals(1, player.items(Toys.Collars).available().size());
+        assertEquals(1, player.items(Toys.Collar).available().size());
         assertEquals(ScriptState.UNSET, player.state.get(365));
 
         player.validateScripts = false;
-        player.loadScript(
-                "PersistencyTest_ResetRangeUnsetsMappings_MainScript");
+        player.loadScript("PersistencyTest_ResetRangeUnsetsMappings_MainScript");
 
         // Correct because the optimized .resetrange only clears previously
         // restored items,
         // and thus won't clear the toy anymore
-        assertEquals(1, player.items(Toys.Collars).available().size());
+        assertEquals(1, player.items(Toys.Collar).available().size());
         assertEquals(ScriptState.SET, player.state.get(365));
 
         player.state.unset(100);
@@ -64,15 +64,14 @@ public class PersistencyTest {
         Player player = TestUtils.createPlayer(getClass());
 
         player.state.addScriptValueMapping(MappedScriptState.Global,
-                new MappedScriptItemValue<Toys>(365,
-                        player.items(Toys.Collars)));
+                new MappedScriptItemValue(365, player.items(Toys.Collar)));
         player.item(Toys.Collar).setAvailable(true);
 
-        assertEquals(1, player.items(Toys.Collars).available().size());
+        assertEquals(1, player.items(Toys.Collar).available().size());
         assertEquals(ScriptState.UNSET, player.state.get(365));
         player.validateScripts = true;
         player.loadScript("PersistencyTest_ScriptRestoreWorks_MainScript");
-        assertEquals(1, player.items(Toys.Collars).available().size());
+        assertEquals(1, player.items(Toys.Collar).available().size());
         assertEquals(ScriptState.SET, player.state.get(365));
 
         player.state.unset(100);
@@ -81,45 +80,39 @@ public class PersistencyTest {
     }
 
     @Test
-    public void testThatIndefiniteScriptValueMappingsArePersisted()
-            throws Exception {
+    public void testThatIndefiniteScriptValueMappingsArePersisted() throws Exception {
         Player player = TestUtils.createPlayer(getClass());
         String mainScript = "PersistencyTest_testThatMappedStateIsPersisted";
         MappedScriptState state = player.state;
 
-        state.addScriptValueMapping(mainScript,
-                new MappedScriptStateValue.Indefinitely(267,
-                        player.state(Body.Chastified), Toys.Chastity_Cage));
+        state.addScriptValueMapping(mainScript, new MappedScriptStateValue.Indefinitely(267,
+                player.state(Body.Chastified), Toys.Chastity_Device));
 
         player.loadScript(mainScript);
 
         pcm.util.TestUtils.play(player, new ActionRange(1000), null);
 
         TeaseLib.PersistentString chastifiedState = player.teaseLib.new PersistentString(
-                TeaseLib.DefaultDomain, "pcm.PersistencyTest",
-                "Body.Chastified.state.duration");
+                TeaseLib.DefaultDomain, "pcm.PersistencyTest", "Body.Chastified.state.duration");
 
         assertTrue(chastifiedState.available());
     }
 
     @Test
-    public void testThatSessionOnlyScriptValueMappingsAreLocal()
-            throws Exception {
+    public void testThatSessionOnlyScriptValueMappingsAreLocal() throws Exception {
         Player player = TestUtils.createPlayer(getClass());
         String mainScript = "PersistencyTest_testThatMappedStateIsPersisted";
         MappedScriptState state = player.state;
 
-        state.addScriptValueMapping(mainScript,
-                new MappedScriptStateValue.ForSession(267,
-                        player.state(Body.Chastified), Toys.Chastity_Cage));
+        state.addScriptValueMapping(mainScript, new MappedScriptStateValue.ForSession(267,
+                player.state(Body.Chastified), Toys.Chastity_Device));
 
         player.loadScript(mainScript);
 
         pcm.util.TestUtils.play(player, new ActionRange(1000), null);
 
         TeaseLib.PersistentString enemaState = player.teaseLib.new PersistentString(
-                TeaseLib.DefaultDomain, "pcm.PersistencyTest",
-                "Assignments.Enema.state");
+                TeaseLib.DefaultDomain, "pcm.PersistencyTest", "Assignments.Enema.state");
 
         assertFalse(enemaState.available());
     }
@@ -130,36 +123,33 @@ public class PersistencyTest {
         String mainScript = "PersistencyTest_testThatMappedStateIsPersisted";
         MappedScriptState state = player.state;
 
-        state.addStateTimeMapping(MappedScriptState.Global, 45,
-                player.state(Body.Chastified), Toys.Chastity_Cage);
+        state.addStateTimeMapping(MappedScriptState.Global, 45, player.state(Body.Chastified),
+                Toys.Chastity_Device);
 
         player.loadScript(mainScript);
 
         pcm.util.TestUtils.play(player, new ActionRange(1000), null);
 
         TeaseLib.PersistentString chastifiedState = player.teaseLib.new PersistentString(
-                TeaseLib.DefaultDomain, "pcm.PersistencyTest",
-                "Body.Chastified.state.duration");
+                TeaseLib.DefaultDomain, "pcm.PersistencyTest", "Body.Chastified.state.duration");
         assertTrue(chastifiedState.available());
     }
 
     @Test
-    public void testThatTimeMappingPersists_SetTime_00_00_00()
-            throws Exception {
+    public void testThatTimeMappingPersists_SetTime_00_00_00() throws Exception {
         Player player = TestUtils.createPlayer(getClass());
         String mainScript = "PersistencyTest_testThatMappedStateIsPersisted";
         MappedScriptState state = player.state;
 
-        state.addStateTimeMapping(MappedScriptState.Global, 45,
-                player.state(Body.Chastified), Toys.Chastity_Cage);
+        state.addStateTimeMapping(MappedScriptState.Global, 45, player.state(Body.Chastified),
+                Toys.Chastity_Device);
 
         player.loadScript(mainScript);
 
         pcm.util.TestUtils.play(player, new ActionRange(1010), null);
 
         TeaseLib.PersistentString chastifiedState = player.teaseLib.new PersistentString(
-                TeaseLib.DefaultDomain, "pcm.PersistencyTest",
-                "Body.Chastified.state.duration");
+                TeaseLib.DefaultDomain, "pcm.PersistencyTest", "Body.Chastified.state.duration");
         assertTrue(chastifiedState.available());
     }
 
@@ -169,16 +159,15 @@ public class PersistencyTest {
         String mainScript = "PersistencyTest_testThatMappedStateIsPersisted";
         MappedScriptState state = player.state;
 
-        state.addStateTimeMapping(MappedScriptState.Global, 45,
-                player.state(Body.Chastified), Toys.Chastity_Cage);
+        state.addStateTimeMapping(MappedScriptState.Global, 45, player.state(Body.Chastified),
+                Toys.Chastity_Device);
 
         player.loadScript(mainScript);
 
         pcm.util.TestUtils.play(player, new ActionRange(1020), null);
 
         TeaseLib.PersistentString chastifiedState = player.teaseLib.new PersistentString(
-                TeaseLib.DefaultDomain, "pcm.PersistencyTest",
-                "Body.Chastified.state.duration");
+                TeaseLib.DefaultDomain, "pcm.PersistencyTest", "Body.Chastified.state.duration");
         assertTrue(chastifiedState.available());
     }
 }
