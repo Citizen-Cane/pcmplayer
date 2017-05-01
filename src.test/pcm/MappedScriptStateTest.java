@@ -44,8 +44,8 @@ public class MappedScriptStateTest {
     }
 
     @Before
-    public void before() throws ScriptParsingException, ValidationIssue,
-            ScriptExecutionException, IOException {
+    public void before()
+            throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
         initPlayer();
         installMapping();
         loadTestScript();
@@ -58,17 +58,15 @@ public class MappedScriptStateTest {
     }
 
     private void installMapping() {
-        pcm.addScriptValueMapping(MappedScriptState.Global,
-                new MappedScriptStateValue.Indefinitely(ChastityCageAction,
-                        chastityCageState, Body.SomethingOnPenis,
-                        Body.CannotJerkOff));
+        pcm.addScriptValueMapping(MappedScriptState.Global, new MappedScriptStateValue.Indefinitely(
+                ChastityCageAction, chastityCageState, Body.SomethingOnPenis, Body.CannotJerkOff));
 
-        pcm.addStateTimeMapping(MappedScriptState.Global, ChastityCageAction,
-                chastityCageState, Body.SomethingOnPenis, Body.CannotJerkOff);
+        pcm.addStateTimeMapping(MappedScriptState.Global, ChastityCageAction, chastityCageState,
+                Body.SomethingOnPenis, Body.CannotJerkOff);
     }
 
-    private void loadTestScript() throws ScriptParsingException,
-            ValidationIssue, IOException, ScriptExecutionException {
+    private void loadTestScript()
+            throws ScriptParsingException, ValidationIssue, IOException, ScriptExecutionException {
         player.loadScript(MAPPED_STATE_TEST_SCRIPT);
     }
 
@@ -119,15 +117,13 @@ public class MappedScriptStateTest {
         assertEquals(UNSET, pcm.get(ChastityCageAction));
 
         int expectedSeconds = 10;
-        pcm.setTime(ChastityCageAction,
-                player.duration(expectedSeconds, TimeUnit.SECONDS));
+        pcm.setTime(ChastityCageAction, player.duration(expectedSeconds, TimeUnit.SECONDS));
 
-        assertEquals(expectedSeconds,
-                chastityCageState.duration().remaining(TimeUnit.SECONDS));
+        assertEquals(expectedSeconds, chastityCageState.duration().remaining(TimeUnit.SECONDS));
         assertTrue(chastityCageState.applied());
         assertFalse(chastityCageState.expired());
-        assertTrue(chastityCageState.peers().contains(Body.SomethingOnPenis));
-        assertTrue(chastityCageState.peers().contains(Body.CannotJerkOff));
+        assertTrue(chastityCageState.is(Body.SomethingOnPenis));
+        assertTrue(chastityCageState.is(Body.CannotJerkOff));
         assertEquals(SET, pcm.get(ChastityCageAction));
 
         debugger.advanceTime(10, TimeUnit.SECONDS);
@@ -137,8 +133,7 @@ public class MappedScriptStateTest {
 
         assertEquals(SET, pcm.get(ChastityCageAction));
 
-        assertEquals(0,
-                chastityCageState.duration().remaining(TimeUnit.SECONDS));
+        assertEquals(0, chastityCageState.duration().remaining(TimeUnit.SECONDS));
     }
 
     @Test
@@ -150,10 +145,9 @@ public class MappedScriptStateTest {
         assertFalse(chastityCageState.applied());
         assertTrue(chastityCageState.expired());
 
+        assertEquals(State.REMOVED, chastityCageState.duration().limit(TimeUnit.SECONDS));
         assertEquals(State.REMOVED,
-                chastityCageState.duration().limit(TimeUnit.SECONDS));
-        assertEquals(State.REMOVED, pcm.getTime(ChastityCageAction)
-                - player.teaseLib.getTime(TimeUnit.SECONDS));
+                pcm.getTime(ChastityCageAction) - player.teaseLib.getTime(TimeUnit.SECONDS));
     }
 
     @Test
@@ -165,19 +159,17 @@ public class MappedScriptStateTest {
         assertTrue(chastityCageState.applied());
         assertTrue(chastityCageState.expired());
 
-        assertTrue(chastityCageState.peers().contains(Body.SomethingOnPenis));
-        assertTrue(chastityCageState.peers().contains(Body.CannotJerkOff));
+        assertTrue(chastityCageState.is(Body.SomethingOnPenis));
+        assertTrue(chastityCageState.is(Body.CannotJerkOff));
 
         long time = pcm.getTime(ChastityCageAction);
         assertEquals(player.teaseLib.getTime(TimeUnit.SECONDS), time);
     }
 
     @Test
-    public void testThatScriptHandlesUnmappedTimeValuesCorrectly()
-            throws AllActionsSetException, ScriptExecutionException,
-            ScriptParsingException, ValidationIssue, IOException {
-        Player testScript = TestUtils.createPlayer(getClass(),
-                MAPPED_STATE_TEST_SCRIPT);
+    public void testThatScriptHandlesUnmappedTimeValuesCorrectly() throws AllActionsSetException,
+            ScriptExecutionException, ScriptParsingException, ValidationIssue, IOException {
+        Player testScript = TestUtils.createPlayer(getClass(), MAPPED_STATE_TEST_SCRIPT);
 
         TestUtils.play(testScript, 1025);
         TestUtils.play(testScript, 1039);
@@ -206,8 +198,7 @@ public class MappedScriptStateTest {
     }
 
     private void assertThatSettingTheMappedActionSetsTheStateToTemporary() {
-        assertEquals(State.TEMPORARY,
-                chastityCageState.duration().limit(TimeUnit.SECONDS));
+        assertEquals(State.TEMPORARY, chastityCageState.duration().limit(TimeUnit.SECONDS));
     }
 
     private void assertThatUninitializedStateHasCorrectDefaultValues() {
@@ -220,8 +211,7 @@ public class MappedScriptStateTest {
         assertEquals(State.REMOVED, seconds);
     }
 
-    private static void assertThatScriptTimeFuctionsWork(
-            ScriptState scriptState) {
+    private static void assertThatScriptTimeFuctionsWork(ScriptState scriptState) {
         assertEquals(ScriptState.SET, scriptState.get(1025));
         assertEquals(ScriptState.SET, scriptState.get(1027));
         assertEquals(ScriptState.SET, scriptState.get(1029));
@@ -230,18 +220,16 @@ public class MappedScriptStateTest {
 
     @Test
     public void testThatStatesWithMultiplePeersWorkAsExpectedWithSelfReferencingItems()
-            throws AllActionsSetException, ScriptExecutionException,
-            ScriptParsingException, ValidationIssue, IOException {
+            throws AllActionsSetException, ScriptExecutionException, ScriptParsingException,
+            ValidationIssue, IOException {
         assertThatUninitializedStateHasCorrectDefaultValues();
 
         State somethingOnPenisState = player.state(Body.SomethingOnPenis);
-        pcm.addScriptValueMapping(MappedScriptState.Global,
-                new MappedScriptStateValue.Indefinitely(SomethingOnPenisAction,
-                        somethingOnPenisState, Body.SomethingOnPenis));
+        pcm.addScriptValueMapping(MappedScriptState.Global, new MappedScriptStateValue.Indefinitely(
+                SomethingOnPenisAction, somethingOnPenisState, Body.SomethingOnPenis));
 
-        pcm.addStateTimeMapping(MappedScriptState.Global,
-                SomethingOnPenisAction, somethingOnPenisState,
-                Body.SomethingOnPenis);
+        pcm.addStateTimeMapping(MappedScriptState.Global, SomethingOnPenisAction,
+                somethingOnPenisState, Body.SomethingOnPenis);
 
         loadTestScript();
 
