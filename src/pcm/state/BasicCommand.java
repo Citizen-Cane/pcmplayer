@@ -6,16 +6,8 @@ import pcm.model.AbstractAction.Statement;
 import pcm.model.ScriptExecutionException;
 import pcm.state.persistence.ScriptState;
 
-public class BasicStatement {
+public class BasicCommand implements Command {
     protected final ParameterizedStatement statement;
-
-    public static class IllegalStatementException extends IllegalArgumentException {
-        private static final long serialVersionUID = 1L;
-
-        public IllegalStatementException(Statement statement, String[] args) {
-            super("Illegal statement arguments ." + statement + Arrays.asList(args).toString());
-        }
-    }
 
     protected static abstract class ParameterizedStatement {
         private final Statement statement;
@@ -35,14 +27,11 @@ public class BasicStatement {
         }
     }
 
-    public BasicStatement(ParameterizedStatement statement) {
+    public BasicCommand(ParameterizedStatement statement) {
         this.statement = statement;
     }
 
-    protected void runStatement(ScriptState state) throws ScriptExecutionException {
-        statement.run(state);
-    }
-
+    @Override
     public void execute(ScriptState state) throws ScriptExecutionException {
         statement.run(state);
     }

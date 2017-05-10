@@ -5,15 +5,15 @@ import java.util.concurrent.TimeUnit;
 
 import pcm.model.AbstractAction.Statement;
 import pcm.model.DurationFormat;
+import pcm.model.IllegalStatementException;
 import pcm.model.ScriptParsingException;
-import pcm.state.BasicStatement;
-import pcm.state.Command;
+import pcm.state.BasicCommand;
 import pcm.state.persistence.ScriptState;
 import teaselib.State;
 import teaselib.core.util.CommandLineParameters;
 import teaselib.core.util.ReflectionUtils;
 
-public class SetState extends BasicStatement implements Command {
+public class SetState extends BasicCommand {
 
     public enum Command {
         Apply,
