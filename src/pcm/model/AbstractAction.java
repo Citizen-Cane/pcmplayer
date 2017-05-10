@@ -229,7 +229,7 @@ public abstract class AbstractAction {
         MustAnyOf,
 
         /**
-         * handle {@link teaselib.State}
+         * Handle {@link teaselib.State}
          */
         State,
 
@@ -237,6 +237,11 @@ public abstract class AbstractAction {
          * Replace text in the script, much like with the C++ #define command
          */
         Define,
+
+        /**
+         * Handle {@link teaselib.Item}
+         */
+        Item,
 
         ;
 

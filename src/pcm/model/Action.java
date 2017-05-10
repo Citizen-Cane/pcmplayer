@@ -25,6 +25,7 @@ import pcm.state.Interactions.Return;
 import pcm.state.Interactions.Stop;
 import pcm.state.Interactions.Stop.TimeoutType;
 import pcm.state.Interactions.YesNo;
+import pcm.state.commands.Item;
 import pcm.state.commands.Repeat;
 import pcm.state.commands.RepeatAdd;
 import pcm.state.commands.RepeatDel;
@@ -379,6 +380,8 @@ public class Action extends AbstractAction {
             addCommand(ifUnset);
         } else if (name == Statement.State) {
             addCommand(new SetState(cmd.args()));
+        } else if (name == Statement.Item) {
+            addCommand(new Item(cmd.args()));
         }
         // interactions
         else if (name == Statement.Range) {
