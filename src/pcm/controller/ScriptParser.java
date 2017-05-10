@@ -2,6 +2,9 @@ package pcm.controller;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Stack;
 
 import pcm.model.AbstractAction.Statement;
@@ -26,6 +29,8 @@ public class ScriptParser {
     private final Stack<String[]> preprocessorScope = new Stack<String[]>();
     private final BufferedReader reader;
 
+    private final Map<String, String> defines = new LinkedHashMap<String, String>();
+
     private String line = null;
     private int l = 0;
     private int n = 0;
@@ -36,31 +41,38 @@ public class ScriptParser {
         this.staticSymbols = staticSymbols;
     }
 
-    public void parse(Script script)
-            throws ScriptParsingException, IOException {
+    public void parse(Script script) throws ScriptParsingException, IOException {
         while ((line = readLine()) != null) {
             if (line.toLowerCase().startsWith(ACTIONMATCH)) {
                 return;
             } else if (line.startsWith(".")) {
                 try {
-                    ScriptLineTokenizer cmd = new ScriptLineTokenizer(l, line);
-                    script.add(cmd);
+                    ScriptLineTokenizer cmd = new ScriptLineTokenizer(l, applyDefines(line));
+                    if (cmd.statement == Statement.Define) {
+                        defines.put(cmd.args()[0], cmd.args()[1]);
+                    } else {
+                        script.add(cmd);
+                    }
                 } catch (UnsupportedOperationException e) {
-                    throw new ScriptParsingException(l, n, line, e.getMessage(),
-                            script);
+                    throw new ScriptParsingException(l, n, line, e.getMessage(), script);
                 } catch (Throwable t) {
                     throw new ScriptParsingException(l, n, line, t, script);
                 }
             } else {
-                throw new ScriptParsingException(l, n, line,
-                        "Unexpected script input", script);
+                throw new ScriptParsingException(l, n, line, "Unexpected script input", script);
             }
         }
         return;
     }
 
-    public Action parseAction(Script script)
-            throws ScriptParsingException, ValidationIssue {
+    private String applyDefines(String string) {
+        for (Entry<String, String> entry : defines.entrySet()) {
+            string = string.replace(entry.getKey(), entry.getValue());
+        }
+        return string;
+    }
+
+    public Action parseAction(Script script) throws ScriptParsingException, ValidationIssue {
         if (line == null) {
             return null;
         } else {
@@ -73,14 +85,11 @@ public class ScriptParser {
                 int start = ACTIONMATCH.length();
                 int end = line.indexOf("]");
                 if (end < start) {
-                    throw new ScriptParsingException(l, 0, line,
-                            "Invalid action number", script);
+                    throw new ScriptParsingException(l, 0, line, "Invalid action number", script);
                 }
                 n = Integer.parseInt(line.substring(start, end));
                 if (n <= previousActionNumber) {
-                    throw new ScriptParsingException(l, n, line,
-                            "Action must be defined in increasing order",
-                            script);
+                    throw new ScriptParsingException(l, n, line, "Action must be defined in increasing order", script);
                 } else {
                     action = new Action(n);
                     previousActionNumber = action.number;
@@ -101,8 +110,7 @@ public class ScriptParser {
                         // inline reply
                         else if (line.startsWith("[") && line.endsWith("]")) {
                             if (message != null) {
-                                message.completeSection(
-                                        line.substring(1, line.length() - 1));
+                                message.completeSection(line.substring(1, line.length() - 1));
                                 message.startNewSection();
                             }
                         }
@@ -110,11 +118,9 @@ public class ScriptParser {
                         else if (line.startsWith(".")) {
                             // .txt messages must be executed last,
                             // so this has to be added last
-                            ScriptLineTokenizer cmd = new ScriptLineTokenizer(l,
-                                    line);
+                            ScriptLineTokenizer cmd = new ScriptLineTokenizer(l, applyDefines(line));
                             if (cmd.statement == Statement.Txt) {
-                                String text = line.substring(
-                                        Statement.Txt.toString().length() + 1);
+                                String text = line.substring(Statement.Txt.toString().length() + 1);
                                 // Trim one leading space
                                 if (!text.isEmpty()) {
                                     text = text.substring(1);
@@ -128,11 +134,9 @@ public class ScriptParser {
                                     action.add(cmd);
                                 } catch (ScriptParsingException e) {
                                     if (e.getCause() != null) {
-                                        throw new ScriptParsingException(l, n,
-                                                line, e.getCause(), script);
+                                        throw new ScriptParsingException(l, n, line, e.getCause(), script);
                                     } else {
-                                        throw new ScriptParsingException(l, n,
-                                                line, e.getMessage(), script);
+                                        throw new ScriptParsingException(l, n, line, e.getMessage(), script);
                                     }
                                 }
                             }
@@ -246,8 +250,7 @@ public class ScriptParser {
     private String consumeScope(String... until) throws IOException {
         String readLine;
         int scope = 1;
-        consumeScope: while ((readLine = reader.readLine()) != null
-                && scope > 0) {
+        consumeScope: while ((readLine = reader.readLine()) != null && scope > 0) {
             String[] args = readLine.replace("\t", " ").split(" ");
             String command = args[0].toLowerCase();
             if (DEFINE_IF.equalsIgnoreCase(command)) {

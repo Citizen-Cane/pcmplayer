@@ -30,6 +30,7 @@ import pcm.state.commands.RepeatAdd;
 import pcm.state.commands.RepeatDel;
 import pcm.state.commands.Save;
 import pcm.state.commands.Set;
+import pcm.state.commands.SetState;
 import pcm.state.commands.SetTime;
 import pcm.state.commands.Unset;
 import pcm.state.conditions.IfSet;
@@ -79,14 +80,12 @@ public class Action extends AbstractAction {
             } else if (visuals.containsKey(Statement.ActionDelay) == true) {
                 // ActionDelay is mapped to Delay statement, and may not appear
                 // in action visuals
-                throw new IllegalStateException(
-                        Statement.ActionDelay.toString());
+                throw new IllegalStateException(Statement.ActionDelay.toString());
             } else {
                 visual = null;
             }
             // Message or txt?
-            final boolean hasMessageStatement = visuals
-                    .containsKey(Statement.Message);
+            final boolean hasMessageStatement = visuals.containsKey(Statement.Message);
             final boolean hasTxt = visuals.containsKey(Statement.Txt);
             if (hasMessageStatement && hasTxt)
                 throw new ValidationIssue(this,
@@ -124,8 +123,7 @@ public class Action extends AbstractAction {
                     // such images wouldn't be rendered at all,
                     // or just pop up for a fraction of a second
                     throw new ValidationIssue(this,
-                            "Without a message, a Delay statement is needed to display the image",
-                            script);
+                            "Without a message, a Delay statement is needed to display the image", script);
                 }
             }
         }
@@ -204,16 +202,13 @@ public class Action extends AbstractAction {
                 // Build the statement
                 if (timeoutType != null && timeoutBehavior != null) {
                     addVisual(Statement.Delay, new Timeout(from, to));
-                    setInteraction(new Stop(rangesFromArgv(args, 4),
-                            timeoutType, timeoutBehavior));
+                    setInteraction(new Stop(rangesFromArgv(args, 4), timeoutType, timeoutBehavior));
                 } else if (timeoutType != null && timeoutBehavior == null) {
                     addVisual(Statement.Delay, new Timeout(from, to));
-                    setInteraction(new Stop(rangesFromArgv(args, 3),
-                            timeoutType, TimeoutBehavior.InDubioProDuriore));
+                    setInteraction(new Stop(rangesFromArgv(args, 3), timeoutType, TimeoutBehavior.InDubioProDuriore));
                 } else if (timeoutType == null && timeoutBehavior == null) {
                     addVisual(Statement.Delay, new Delay(from, to));
-                    setInteraction(new Stop(rangesFromArgv(args, 2),
-                            Stop.TimeoutType.Terminate,
+                    setInteraction(new Stop(rangesFromArgv(args, 2), Stop.TimeoutType.Terminate,
                             TimeoutBehavior.InDubioProDuriore));
                 } else {
                     throw new IllegalArgumentException(cmd.line);
@@ -231,8 +226,7 @@ public class Action extends AbstractAction {
                         keyRelease = new KeyReleaseHandler(command);
                         break;
                     } else if (args.length == 2) {
-                        keyRelease = new KeyReleaseHandler(command,
-                                Integer.parseInt(args[1]));
+                        keyRelease = new KeyReleaseHandler(command, Integer.parseInt(args[1]));
                         break;
                     } else {
                         throw new IllegalArgumentException(cmd.line);
@@ -289,8 +283,7 @@ public class Action extends AbstractAction {
                 addCommand(new SetTime(Integer.parseInt(args[0]), args[1]));
             }
         } else if (name == Statement.SetRange) {
-            throw new IllegalStateException(
-                    "Validate functionality of SetRange in PCMistress first");
+            throw new IllegalStateException("Validate functionality of SetRange in PCMistress first");
         } else if (name == Statement.TimeFrom) {
             String args[] = cmd.args();
             addCondition(new TimeFrom(Integer.parseInt(args[0]), args[1]));
@@ -299,14 +292,12 @@ public class Action extends AbstractAction {
             addCondition(new TimeTo(Integer.parseInt(args[0]), args[1]));
         } else if (name == Statement.NumActionsFrom) {
             String args[] = cmd.args();
-            addCondition(new NumActionsFrom(Integer.parseInt(args[0]),
-                    Integer.parseInt(args[1])));
+            addCondition(new NumActionsFrom(Integer.parseInt(args[0]), Integer.parseInt(args[1])));
         } else if (name == Statement.NumberOfActionsSet) {
             final Condition numberOfActionsSet;
             String args[] = cmd.args();
             if (args.length == 3) {
-                numberOfActionsSet = new NumberOfActionsSet(
-                        Integer.parseInt(args[0]), Integer.parseInt(args[1]),
+                numberOfActionsSet = new NumberOfActionsSet(Integer.parseInt(args[0]), Integer.parseInt(args[1]),
                         Integer.parseInt(args[2]));
             } else {
                 throw new IllegalArgumentException(cmd.line);
@@ -316,8 +307,7 @@ public class Action extends AbstractAction {
             final Condition numActionsAvailable;
             String args[] = cmd.args();
             if (args.length == 3) {
-                numActionsAvailable = new NumActionsAvailable(
-                        Integer.parseInt(args[0]), Integer.parseInt(args[1]),
+                numActionsAvailable = new NumActionsAvailable(Integer.parseInt(args[0]), Integer.parseInt(args[1]),
                         Integer.parseInt(args[2]));
             } else {
                 throw new IllegalArgumentException(cmd.line);
@@ -338,8 +328,8 @@ public class Action extends AbstractAction {
             if (args.length == 1) {
                 repeatAdd = new RepeatAdd(Integer.parseInt(args[0]));
             } else if (args.length == 3) {
-                repeatAdd = new RepeatAdd(Integer.parseInt(args[0]),
-                        Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+                repeatAdd = new RepeatAdd(Integer.parseInt(args[0]), Integer.parseInt(args[1]),
+                        Integer.parseInt(args[2]));
             } else {
                 throw new IllegalArgumentException(cmd.line);
             }
@@ -350,20 +340,18 @@ public class Action extends AbstractAction {
             if (args.length == 1) {
                 repeatDel = new RepeatDel(Integer.parseInt(args[0]));
             } else if (args.length == 3) {
-                repeatDel = new RepeatDel(Integer.parseInt(args[0]),
-                        Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+                repeatDel = new RepeatDel(Integer.parseInt(args[0]), Integer.parseInt(args[1]),
+                        Integer.parseInt(args[2]));
             } else {
                 throw new IllegalArgumentException(cmd.line);
             }
             addCommand(repeatDel);
         } else if (name == Statement.Save) {
             String args[] = cmd.args();
-            addCommand(new Save(Integer.parseInt(args[0]),
-                    Integer.parseInt(args[1])));
+            addCommand(new Save(Integer.parseInt(args[0]), Integer.parseInt(args[1])));
         } else if (name == Statement.Poss) {
             if (poss != null) {
-                throw new IllegalArgumentException(
-                        ".poss and .else statements cannot be used simultanously");
+                throw new IllegalArgumentException(".poss and .else statements cannot be used simultanously");
             } else {
                 String args[] = cmd.args();
                 poss = new Integer(args[0]);
@@ -373,25 +361,24 @@ public class Action extends AbstractAction {
             }
         } else if (name == Statement.Else) {
             if (poss != null) {
-                throw new IllegalArgumentException(
-                        ".poss and .else statements cannot be used simultanously");
+                throw new IllegalArgumentException(".poss and .else statements cannot be used simultanously");
             } else {
                 poss = 0;
             }
         } else if (name == Statement.IfSet) {
             String args[] = cmd.args();
             int n = new Integer(args[0]);
-            Command conditional = createCommandFrom(cmd.lineNumber,
-                    cmd.argsFrom(1));
+            Command conditional = createCommandFrom(cmd.lineNumber, cmd.argsFrom(1));
             Command ifSet = new IfSet(n, conditional);
             addCommand(ifSet);
         } else if (name == Statement.IfUnset) {
             String args[] = cmd.args();
             int n = new Integer(args[0]);
-            Command conditional = createCommandFrom(cmd.lineNumber,
-                    cmd.argsFrom(1));
+            Command conditional = createCommandFrom(cmd.lineNumber, cmd.argsFrom(1));
             Command ifUnset = new IfUnset(n, conditional);
             addCommand(ifUnset);
+        } else if (name == Statement.State) {
+            addCommand(new SetState(cmd.args()));
         }
         // interactions
         else if (name == Statement.Range) {
@@ -411,26 +398,21 @@ public class Action extends AbstractAction {
             setInteraction(new Pause());
         } else if (name == Statement.YesNo) {
             String args[] = cmd.args();
-            setInteraction(new YesNo(Integer.parseInt(args[0]),
-                    Integer.parseInt(args[1]), Integer.parseInt(args[2]),
+            setInteraction(new YesNo(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]),
                     Integer.parseInt(args[3])));
         } else if (name == Statement.LoadSbd) {
             String args[] = cmd.args();
             String arg0 = args[0];
             int endIndex = arg0.lastIndexOf('.');
             String script = endIndex < 0 ? arg0 : arg0.substring(0, endIndex);
-            setInteraction(args.length > 2
-                    ? new LoadSbd(script, Integer.parseInt(args[1]),
-                            Integer.parseInt(args[2]))
+            setInteraction(args.length > 2 ? new LoadSbd(script, Integer.parseInt(args[1]), Integer.parseInt(args[2]))
                     : new LoadSbd(script, Integer.parseInt(args[1])));
         } else if (name == Statement.PopUp) {
             String args[] = cmd.args();
-            setInteraction(new PopUp(Integer.parseInt(args[0]),
-                    Integer.parseInt(args[1])));
+            setInteraction(new PopUp(Integer.parseInt(args[0]), Integer.parseInt(args[1])));
         } else if (name == Statement.Ask) {
             String args[] = cmd.args();
-            Ask ask = new Ask(Integer.parseInt(args[0]),
-                    Integer.parseInt(args[1]));
+            Ask ask = new Ask(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
             // Ask must also be a command, in order to pick up the state
             addCommand(ask);
             setInteraction(ask);
@@ -438,15 +420,11 @@ public class Action extends AbstractAction {
             setInteraction(Quit.instance);
         } else if (name == Statement.Break) {
             String args[] = cmd.args();
-            ActionRange playRange = new ActionRange(Integer.parseInt(args[0]),
-                    Integer.parseInt(args[1]));
-            if (args[2]
-                    .equalsIgnoreCase(Break.SuppressStackCorrectionOnBreak)) {
-                setInteraction(
-                        new Break(playRange, rangesFromArgv(args, 3), true));
+            ActionRange playRange = new ActionRange(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
+            if (args[2].equalsIgnoreCase(Break.SuppressStackCorrectionOnBreak)) {
+                setInteraction(new Break(playRange, rangesFromArgv(args, 3), true));
             } else {
-                setInteraction(
-                        new Break(playRange, rangesFromArgv(args, 2), false));
+                setInteraction(new Break(playRange, rangesFromArgv(args, 2), false));
             }
         } else if (name == Statement.GoSub) {
             String args[] = cmd.args();
@@ -468,8 +446,7 @@ public class Action extends AbstractAction {
         }
     }
 
-    private static Command createCommandFrom(int lineNumber, String line)
-            throws ScriptParsingException {
+    private static Command createCommandFrom(int lineNumber, String line) throws ScriptParsingException {
         ScriptLineTokenizer cmd = new ScriptLineTokenizer(lineNumber, line);
         Action action = new Action(0);
         action.add(cmd);
@@ -485,8 +462,7 @@ public class Action extends AbstractAction {
      *            Start index.
      * @return
      */
-    private static Map<Statement, ActionRange> rangesFromArgv(String[] args,
-            int index) {
+    private static Map<Statement, ActionRange> rangesFromArgv(String[] args, int index) {
         Map<Statement, ActionRange> ranges = new LinkedHashMap<Statement, ActionRange>();
         while (index < args.length) {
             String keyword = args[index++];
@@ -513,8 +489,7 @@ public class Action extends AbstractAction {
     }
 
     private static Statement keywordToStatement(String keyword) {
-        Statement statement = Statement.KeywordToStatement
-                .get(keyword.toLowerCase());
+        Statement statement = Statement.KeywordToStatement.get(keyword.toLowerCase());
         return statement;
     }
 
@@ -522,21 +497,18 @@ public class Action extends AbstractAction {
         if (this.interaction != null) {
             if (this.interaction instanceof NeedsRangeProvider) {
                 // For instance delay + range
-                ((NeedsRangeProvider) this.interaction)
-                        .setRangeProvider(interaction);
+                ((NeedsRangeProvider) this.interaction).setRangeProvider(interaction);
             } else {
                 if (interaction instanceof NeedsRangeProvider) {
                     // For instance injection of delay -> interaction had been
                     // set to range already on parsing the script
-                    ((NeedsRangeProvider) interaction)
-                            .setRangeProvider(this.interaction);
+                    ((NeedsRangeProvider) interaction).setRangeProvider(this.interaction);
                     this.interaction = interaction;
                 } else {
                     // Only actions that need a range provide can be injected
                     // before an existing interaction
-                    throw new IllegalArgumentException(interaction.getClass()
-                            .getSimpleName() + ": Interaction already set to "
-                            + this.interaction.getClass().getSimpleName());
+                    throw new IllegalArgumentException(interaction.getClass().getSimpleName()
+                            + ": Interaction already set to " + this.interaction.getClass().getSimpleName());
                 }
             }
         } else {
@@ -544,8 +516,7 @@ public class Action extends AbstractAction {
         }
     }
 
-    public String getResponseText(Statement name, Script script)
-            throws ScriptExecutionException {
+    public String getResponseText(Statement name, Script script) throws ScriptExecutionException {
         if (responses != null) {
             if (responses.containsKey(name)) {
                 return responses.get(name);
@@ -554,71 +525,57 @@ public class Action extends AbstractAction {
         return script.getResponseText(name);
     }
 
-    public void validate(Script script, List<ValidationIssue> validationErrors)
-            throws ScriptParsingException {
+    public void validate(Script script, List<ValidationIssue> validationErrors) throws ScriptParsingException {
         if (poss != null) {
             if (poss < 0 || poss > 100) {
-                validationErrors.add(new ValidationIssue(this,
-                        "Invalid value for poss statement (" + poss + ")",
-                        script));
+                validationErrors
+                        .add(new ValidationIssue(this, "Invalid value for poss statement (" + poss + ")", script));
             }
         }
         if (visuals != null) {
             // Validate each visual
             for (Visual visual : visuals.values()) {
                 if (visual instanceof Validatable) {
-                    ((Validatable) visual).validate(script, this,
-                            validationErrors);
+                    ((Validatable) visual).validate(script, this, validationErrors);
                 }
             }
 
-            if (!visuals.containsKey(Statement.Message)
-                    && !visuals.containsKey(Statement.Txt)) {
-                Statement[] requiresMessage = { Statement.Image,
-                        Statement.Delay };
+            if (!visuals.containsKey(Statement.Message) && !visuals.containsKey(Statement.Txt)) {
+                Statement[] requiresMessage = { Statement.Image, Statement.Delay };
                 for (Statement statement : requiresMessage) {
                     if (visuals.containsKey(statement)) {
                         validationErrors.add(new ValidationIssue(this,
-                                "Message without .txt or speech part won't render images or other media",
-                                script));
+                                "Message without .txt or speech part won't render images or other media", script));
                     }
                 }
             } else if (visuals.containsKey(Statement.Message)) {
-                SpokenMessage message = (SpokenMessage) visuals
-                        .get(Statement.Message);
+                SpokenMessage message = (SpokenMessage) visuals.get(Statement.Message);
                 if (message.getMessages().size() > 1) {
-                    Statement[] requiresSinglePageMessage = { Statement.Image,
-                            Statement.Delay };
+                    Statement[] requiresSinglePageMessage = { Statement.Image, Statement.Delay };
                     for (Statement statement : requiresSinglePageMessage) {
                         if (visuals.containsKey(statement)) {
                             validationErrors.add(new ValidationIssue(this,
-                                    "." + statement.toString()
-                                            + " doesn't work correctly in multi-page messages",
+                                    "." + statement.toString() + " doesn't work correctly in multi-page messages",
                                     script));
                         }
                     }
                 }
-            } else if (visuals.containsKey(Statement.Txt)
-                    && visuals.containsKey(Statement.Message)) {
-                validationErrors.add(new ValidationIssue(this,
-                        "Both .txt and message is supported", script));
+            } else if (visuals.containsKey(Statement.Txt) && visuals.containsKey(Statement.Message)) {
+                validationErrors.add(new ValidationIssue(this, "Both .txt and message is supported", script));
             }
 
             // .delay 0 & .noimage
-            if (visuals.containsKey(Statement.Delay)
-                    && visuals.containsKey(Statement.NoImage)) {
+            if (visuals.containsKey(Statement.Delay) && visuals.containsKey(Statement.NoImage)) {
                 Delay delay = (Delay) visuals.get(Statement.Delay);
                 if (delay.to == 0) {
-                    validationErrors.add(new ValidationIssue(this,
-                            "Delay 0 + NoImage is deprecated and should be removed",
-                            script));
+                    validationErrors.add(
+                            new ValidationIssue(this, "Delay 0 + NoImage is deprecated and should be removed", script));
                 }
             } else if (visuals.containsKey(Statement.Delay)) {
                 Delay delay = (Delay) visuals.get(Statement.Delay);
                 if (delay.to == 0) {
-                    validationErrors.add(new ValidationIssue(this,
-                            "Delay 0 is deprecated and should be removed",
-                            script));
+                    validationErrors
+                            .add(new ValidationIssue(this, "Delay 0 is deprecated and should be removed", script));
                 }
             }
         }
@@ -627,8 +584,7 @@ public class Action extends AbstractAction {
         {
             interaction.validate(script, this, validationErrors);
         } else {
-            validationErrors
-                    .add(new ValidationIssue(this, "No interaction", script));
+            validationErrors.add(new ValidationIssue(this, "No interaction", script));
         }
     }
 
@@ -637,8 +593,7 @@ public class Action extends AbstractAction {
         if (visuals != null) {
             for (Visual visual : visuals.values()) {
                 if (visual instanceof ValidatableResources) {
-                    resources.addAll(
-                            ((ValidatableResources) visual).resources());
+                    resources.addAll(((ValidatableResources) visual).resources());
                 }
             }
         }

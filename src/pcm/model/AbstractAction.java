@@ -231,7 +231,12 @@ public abstract class AbstractAction {
         /**
          * handle {@link teaselib.State}
          */
-        SetState,
+        State,
+
+        /**
+         * Replace text in the script, much like with the C++ #define command
+         */
+        Define,
 
         ;
 
@@ -264,14 +269,12 @@ public abstract class AbstractAction {
         if (responses == null) {
             responses = new HashMap<Statement, String>();
         } else if (responses.containsKey(statement)) {
-            throw new IllegalArgumentException(
-                    "Duplicate default prompt: " + statement.toString());
+            throw new IllegalArgumentException("Duplicate default prompt: " + statement.toString());
         }
         responses.put(statement, response);
     }
 
-    public ActionRange execute(ScriptState state)
-            throws ScriptExecutionException {
+    public ActionRange execute(ScriptState state) throws ScriptExecutionException {
         if (commands != null) {
             for (Command command : commands) {
                 Logger logger = LoggerFactory.getLogger(command.getClass());
@@ -299,11 +302,9 @@ public abstract class AbstractAction {
             addResponse(name, cmd.allAsText());
         } else if (name == Statement.ResetRange) {
             String args[] = cmd.args();
-            addCommand(new ResetRange(Integer.parseInt(args[0]),
-                    Integer.parseInt(args[1])));
+            addCommand(new ResetRange(Integer.parseInt(args[0]), Integer.parseInt(args[1])));
         } else {
-            throw new UnsupportedOperationException(
-                    "Statement ." + name.toString() + " not implemented");
+            throw new UnsupportedOperationException("Statement ." + name.toString() + " not implemented");
         }
     }
 

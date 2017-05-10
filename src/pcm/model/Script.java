@@ -47,11 +47,9 @@ public class Script extends AbstractAction {
      * The condition range used when the script doesn't define its own list of
      * condition ranges.
      */
-    private final static ActionRange DefaultConditionRange = new ActionRange(
-            Integer.MIN_VALUE, Integer.MAX_VALUE);
+    private final static ActionRange DefaultConditionRange = new ActionRange(Integer.MIN_VALUE, Integer.MAX_VALUE);
 
-    public Script(Actor actor, String name, ScriptCache scriptCache,
-            ScriptParser parser)
+    public Script(Actor actor, String name, ScriptCache scriptCache, ScriptParser parser)
             throws ScriptParsingException, ValidationIssue, IOException {
         this.actor = actor;
         this.name = name;
@@ -93,8 +91,7 @@ public class Script extends AbstractAction {
         }
     }
 
-    public Script load(String name)
-            throws ScriptParsingException, ValidationIssue, IOException {
+    public Script load(String name) throws ScriptParsingException, ValidationIssue, IOException {
         return scriptCache.get(actor, name);
     }
 
@@ -105,56 +102,43 @@ public class Script extends AbstractAction {
             addCommand(new Restore());
         } else if (name == Statement.BackColor) {
             String args[] = cmd.args();
-            backColor = new Color(Integer.parseInt(args[0]),
-                    Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+            backColor = new Color(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
         } else if (name == Statement.TextColor) {
             String args[] = cmd.args();
-            backColor = new Color(Integer.parseInt(args[0]),
-                    Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+            backColor = new Color(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
         } else if (name == Statement.SsDir) {
             imageDirectory = cmd.allArgs().replace('\\', '/');
             mistressImages = imageDirectory + "/*.jpg";
         } else if (name == Statement.AskTitle) {
             String args[] = cmd.args();
-            AskItem askItem = new AskItem(Integer.parseInt(args[0]),
-                    cmd.allAsTextFrom(1));
+            AskItem askItem = new AskItem(Integer.parseInt(args[0]), cmd.allAsTextFrom(1));
             askItems.put(askItem.n, askItem);
         } else if (name == Statement.AskCheck) {
             String args[] = cmd.args();
-            AskItem askItem = new AskItem(Integer.parseInt(args[0]),
-                    Integer.parseInt(args[1]), AskItem.ALWAYS,
+            AskItem askItem = new AskItem(Integer.parseInt(args[0]), Integer.parseInt(args[1]), AskItem.ALWAYS,
                     cmd.allAsTextFrom(2));
             askItems.put(askItem.n, askItem);
         } else if (name == Statement.AskCheck2) {
             String args[] = cmd.args();
-            AskItem askItem = new AskItem(Integer.parseInt(args[0]),
-                    Integer.parseInt(args[1]), Integer.parseInt(args[2]),
-                    cmd.allAsTextFrom(3));
+            AskItem askItem = new AskItem(Integer.parseInt(args[0]), Integer.parseInt(args[1]),
+                    Integer.parseInt(args[2]), cmd.allAsTextFrom(3));
             askItems.put(askItem.n, askItem);
         } else if (name == Statement.Menu) {
             String args[] = cmd.args();
             MenuItem menuItem = new MenuItem(Integer.parseInt(args[0]),
-                    new ActionRange(Integer.parseInt(args[1]),
-                            Integer.parseInt(args[2])),
-                    cmd.allAsTextFrom(3));
+                    new ActionRange(Integer.parseInt(args[1]), Integer.parseInt(args[2])), cmd.allAsTextFrom(3));
             menuItems.put(menuItem.n, menuItem);
         } else if (name == Statement.OnAllSet) {
             String args[] = cmd.args();
-            onAllSet = args.length > 1
-                    ? new ActionRange(Integer.parseInt(args[0]),
-                            Integer.parseInt(args[1]))
+            onAllSet = args.length > 1 ? new ActionRange(Integer.parseInt(args[0]), Integer.parseInt(args[1]))
                     : new ActionRange(Integer.parseInt(args[0]));
         } else if (name == Statement.OnClose) {
             String args[] = cmd.args();
-            onClose = args.length > 1
-                    ? new ActionRange(Integer.parseInt(args[0]),
-                            Integer.parseInt(args[1]))
+            onClose = args.length > 1 ? new ActionRange(Integer.parseInt(args[0]), Integer.parseInt(args[1]))
                     : new ActionRange(Integer.parseInt(args[0]));
         } else if (name == Statement.Range) {
             String args[] = cmd.args();
-            startRange = args.length > 1
-                    ? new ActionRange(Integer.parseInt(args[0]),
-                            Integer.parseInt(args[1]))
+            startRange = args.length > 1 ? new ActionRange(Integer.parseInt(args[0]), Integer.parseInt(args[1]))
                     : new ActionRange(Integer.parseInt(args[0]));
         } else if (name == Statement.Message) {
             throw new IllegalStateException(name.toString());
@@ -164,8 +148,7 @@ public class Script extends AbstractAction {
         } else if (name == Statement.OnRecognitionRejected) {
             String args[] = cmd.args();
             onRecognitionRejected = args.length > 1
-                    ? new ActionRange(Integer.parseInt(args[0]),
-                            Integer.parseInt(args[1]))
+                    ? new ActionRange(Integer.parseInt(args[0]), Integer.parseInt(args[1]))
                     : new ActionRange(Integer.parseInt(args[0]));
         } else if (name == Statement.Gag) {
             String args[] = cmd.args();
@@ -187,23 +170,19 @@ public class Script extends AbstractAction {
         }
     }
 
-    public String getResponseText(Statement name)
-            throws ScriptExecutionException {
+    public String getResponseText(Statement name) throws ScriptExecutionException {
         if (responses.containsKey(name)) {
             return responses.get(name);
         } else {
-            throw new ScriptExecutionException(
-                    "Default text missing for " + name, this);
+            throw new ScriptExecutionException("Default text missing for " + name, this);
         }
     }
 
     public void validate(List<ValidationIssue> validationErrors) {
         if (startRange == null) {
-            validationErrors
-                    .add(new ValidationIssue("Missing start range", this));
+            validationErrors.add(new ValidationIssue("Missing start range", this));
         } else if (!startRange.validate()) {
-            validationErrors
-                    .add(new ValidationIssue("Wrong start range", this));
+            validationErrors.add(new ValidationIssue("Wrong start range", this));
         }
     }
 

@@ -1,94 +1,75 @@
 package pcm.state.commands;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import pcm.model.AbstractAction.Statement;
+import pcm.model.DurationFormat;
 import pcm.model.ScriptParsingException;
-import pcm.state.BasicCommand;
+import pcm.state.BasicStatement;
+import pcm.state.Command;
 import pcm.state.persistence.ScriptState;
 import teaselib.State;
+import teaselib.core.util.CommandLineParameters;
 import teaselib.core.util.ReflectionUtils;
 
-public class SetState extends BasicCommand {
+public class SetState extends BasicStatement implements Command {
 
     public enum Command {
         Apply,
+        To,
+        Over,
         Remember,
         Remove,
     }
 
     public SetState(String[] args) throws ScriptParsingException {
-        super(Statement.SetState, getCommandImplementation(args), args);
+        super(statement(Statement.State, args));
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    private static CommandImpl getCommandImplementation(String[] args)
+    private static ParameterizedStatement statement(final Statement statement, final String[] args)
             throws ScriptParsingException {
+        final CommandLineParameters<Command> cmd = new CommandLineParameters<SetState.Command>(args, Command.values());
         try {
-            Command command = Command.valueOf(args[0]);
-            final Enum where = ReflectionUtils.getEnum(args[1]);
-            if (command == Command.Apply) {
-                final Enum<?> what = ReflectionUtils.getEnum(args[2]);
-                if (args.length >= 4) {
-                    String s = args[3];
-                    final long minutes;
-                    if (s.equalsIgnoreCase("INF")) {
-                        minutes = State.INDEFINITELY;
-                    } else if (s.equals(Command.Remember.name())) {
-                        return new CommandImpl() {
-                            @Override
-                            public void execute(ScriptState state) {
-                                state.player.state(where).apply(what)
-                                        .remember();
-                            }
-                        };
-                    } else {
-                        minutes = Integer.parseInt(s);
-                    }
-                    if (args.length >= 5 && args[4]
-                            .equalsIgnoreCase(Command.Remember.name())) {
-                        return new CommandImpl() {
-                            @Override
-                            public void execute(ScriptState state) {
-                                state.player.state(where).apply(what)
-                                        .over(minutes, TimeUnit.MINUTES)
-                                        .remember();
-                            }
-                        };
-                    } else {
-                        return new CommandImpl() {
-                            @Override
-                            public void execute(ScriptState state) {
-                                state.player.state(where).apply(what)
-                                        .over(minutes, TimeUnit.MINUTES);
-                            }
-                        };
-                    }
-                } else {
-                    return new CommandImpl() {
-                        @Override
-                        public void execute(ScriptState state) {
-                            state.player.state(where).apply(what);
-                        }
-                    };
-                }
-            } else if (command == Command.Remember) {
-                throw new IllegalArgumentException(
-                        command + " can only be used as an option for "
-                                + Command.Apply.name());
-            } else if (command == Command.Remove) {
-                return new CommandImpl() {
+            if (cmd.containsKey(Command.Apply)) {
+                final List<Enum<?>> items = ReflectionUtils.getEnums(cmd.get(Command.Apply));
+                final Object[] attributes = ReflectionUtils.getEnums(cmd.get(Command.To)).toArray();
+                final DurationFormat duration = cmd.containsKey(Command.Over)
+                        ? new DurationFormat(cmd.get(Command.Over).get(0)) : null;
+                final boolean remember = cmd.containsKey(Command.Remember);
+                return new ParameterizedStatement(statement, args) {
                     @Override
-                    public void execute(ScriptState state) {
-                        state.player.state(where).remove();
+                    public void run(ScriptState state) {
+                        for (Enum<?> item : items) {
+                            State.Options options = state.player.state(item).apply(attributes);
+                            if (duration != null) {
+                                State.Persistence persistence = options.over(duration.toSeconds(), TimeUnit.SECONDS);
+                                if (remember) {
+                                    persistence.remember();
+                                }
+                            } else if (remember) {
+                                options.remember();
+                            }
+                        }
+                    }
+                };
+            } else if (cmd.containsKey(Command.Remove)) {
+                final List<Enum<?>> items = ReflectionUtils.getEnums(cmd.get(Command.Remove));
+                return new ParameterizedStatement(statement, args) {
+                    @Override
+                    public void run(ScriptState state) {
+                        for (Enum<?> item : items) {
+                            state.player.state(item).remove();
+                        }
                     }
                 };
             } else {
-                throw new IllegalComamndException(command);
+                throw new IllegalStatementException(statement, args);
             }
         } catch (ClassNotFoundException e) {
             throw new ScriptParsingException(e);
         }
+
     }
 
 }

@@ -1,0 +1,27 @@
+' pcm test cases
+
+.define Toys teaselib.Toys
+
+' testDefineStatement
+.range 1000
+
+
+[Action 1000]
+.state Apply Toys.Collar 
+.range 9999             ' ...to the submission sequence!
+
+[Action 1010]
+.state Apply Toys.Collar over 01:00"00
+.range 9999             ' ...to the submission sequence!
+
+[Action 1020]
+.state Remove Toys.Collar 
+.range 9999             ' ...to the submission sequence!
+
+
+' proper exit for all test cases
+[action 9999]
+.unset 9999
+.noimage
+.quit
+
