@@ -8,15 +8,15 @@
 
 [Action 1000]
 .state Toys.Collar apply
-.range 9999             ' ...to the submission sequence!
+.range 9999
 
 [Action 1010]
 .state Toys.Collar apply over 01:00"00
-.range 9999             ' ...to the submission sequence!
+.range 9999
 
 [Action 1020]
 .state Toys.Collar remove
-.range 9999             ' ...to the submission sequence!
+.range 9999
 
 
 ' proper exit for all test cases
