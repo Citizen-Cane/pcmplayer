@@ -243,6 +243,11 @@ public abstract class AbstractAction {
          */
         Item,
 
+        /**
+         * Invert the condition
+         */
+        Not,
+
         ;
 
         public final static Map<String, Statement> lookup = new HashMap<String, Statement>();

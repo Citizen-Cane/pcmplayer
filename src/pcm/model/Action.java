@@ -42,6 +42,7 @@ import pcm.state.conditions.Must;
 import pcm.state.conditions.MustAnyOf;
 import pcm.state.conditions.MustNot;
 import pcm.state.conditions.MustNotAllOf;
+import pcm.state.conditions.Not;
 import pcm.state.conditions.NumActionsAvailable;
 import pcm.state.conditions.NumActionsFrom;
 import pcm.state.conditions.NumberOfActionsSet;
@@ -317,6 +318,10 @@ public class Action extends AbstractAction {
                 throw new IllegalArgumentException(cmd.line);
             }
             addCondition(numActionsAvailable);
+        } else if (name == Statement.Not) {
+            Condition conditional = createConditionFrom(cmd.lineNumber, cmd.argsFrom(0));
+            Condition not = new Not(conditional);
+            addCondition(not);
         } else if (name == Statement.Repeat) {
             final Command repeat;
             String args[] = cmd.args();
@@ -458,6 +463,13 @@ public class Action extends AbstractAction {
         } else {
             super.add(cmd);
         }
+    }
+
+    private Condition createConditionFrom(int lineNumber, String line) throws ScriptParsingException {
+        ScriptLineTokenizer cmd = new ScriptLineTokenizer(lineNumber, line);
+        Action action = new Action(0);
+        action.add(cmd);
+        return action.conditions.get(0);
     }
 
     private static Command createCommandFrom(int lineNumber, String line) throws ScriptParsingException {

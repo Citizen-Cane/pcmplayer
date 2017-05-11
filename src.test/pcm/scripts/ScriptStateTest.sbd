@@ -7,7 +7,7 @@
 
 
 [Action 1000]
-'.state applied Toys.Collar
+.not .state applied Toys.Collar
 .state Apply Toys.Collar 
 .range 1001
 
@@ -18,7 +18,7 @@
 .range 1004
 
 [Action 1004]
-'.not .state applied Toys.Collar
+.not .state applied Toys.Collar
 .state expired Toys.Collar
 .range 1005
 
@@ -28,7 +28,7 @@
 
 [Action 1006]
 .state applied Toys.Collar
-'.not .state expired Toys.Collar
+.not .state expired Toys.Collar
 .range 9999
 
 
