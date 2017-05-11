@@ -7,15 +7,15 @@
 
 
 [Action 1000]
-.state Apply Toys.Collar 
+.state Toys.Collar apply
 .range 9999             ' ...to the submission sequence!
 
 [Action 1010]
-.state Apply Toys.Collar over 01:00"00
+.state Toys.Collar apply over 01:00"00
 .range 9999             ' ...to the submission sequence!
 
 [Action 1020]
-.state Remove Toys.Collar 
+.state Toys.Collar remove
 .range 9999             ' ...to the submission sequence!
 
 

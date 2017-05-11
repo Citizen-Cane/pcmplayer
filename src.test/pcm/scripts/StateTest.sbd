@@ -1,0 +1,50 @@
+' pcm test cases
+
+.define Toys teaselib.Toys
+
+' testState
+.range 1000
+
+
+[Action 1000]
+.not .state Toys.Collar applied
+.state Toys.Collar apply
+.range 1001
+
+[Action 1001]
+.state Toys.Collar applied 
+.state Toys.Collar expired
+.state Toys.Collar Remove 
+.range 1004
+
+[Action 1004]
+.not .state Toys.Collar applied
+.state Toys.Collar expired
+.range 1005
+
+[Action 1005]
+.state Toys.Collar Apply over 01:00"00
+.range 1006
+
+[Action 1006]
+.state Toys.Collar applied
+.not .state Toys.Collar expired
+.range 9999
+
+
+[Action 1008]
+.state Toys.Collar applied
+.state Toys.Collar expired
+.range 1009
+
+[Action 1009]
+.state Toys.Collar Remove
+.range 9999
+
+
+' proper exit for all test cases
+[action 9999]
+.unset 9999
+.noimage
+.quit
+

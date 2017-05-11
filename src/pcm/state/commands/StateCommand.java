@@ -1,6 +1,5 @@
 package pcm.state.commands;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import pcm.controller.StateCommandLineParameters;
@@ -16,15 +15,15 @@ public class StateCommand extends BasicCommand {
 
     private static final Statement STATE = Statement.State;
 
-    public StateCommand(String[] args) throws ScriptParsingException {
-        super(statement(new StateCommandLineParameters(args)));
+    public StateCommand(StateCommandLineParameters args) throws ScriptParsingException {
+        super(statement(args));
     }
 
     private static ParameterizedStatement statement(final StateCommandLineParameters args)
             throws ScriptParsingException {
         try {
+            final Enum<?>[] items = args.items();
             if (args.containsKey(StateCommandLineParameters.Keyword.Apply)) {
-                final Enum<?>[] items = args.options(StateCommandLineParameters.Keyword.Apply);
                 final Object[] attributes = args.options(StateCommandLineParameters.Keyword.To);
                 final DurationFormat duration = args.durationOption();
                 final boolean remember = args.rememberOption();
@@ -45,7 +44,6 @@ public class StateCommand extends BasicCommand {
                     }
                 };
             } else if (args.containsKey(StateCommandLineParameters.Keyword.Remove)) {
-                final List<Enum<?>> items = args.removeOptions();
                 return new ParameterizedStatement(STATE, args) {
                     @Override
                     public void run(ScriptState state) {

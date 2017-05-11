@@ -16,12 +16,12 @@ import pcm.util.TestUtils;
 import teaselib.Toys;
 import teaselib.core.Debugger;
 
-public class ScriptStateTest {
+public class ItemTest {
 
     @Test
     public void testState() throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
         Player player = TestUtils.createPlayer(getClass());
-        player.loadScript("ScriptStateTest");
+        player.loadScript(getClass().getSimpleName());
 
         Debugger debugger = new Debugger(player.teaseLib);
         debugger.freezeTime();
@@ -35,6 +35,7 @@ public class ScriptStateTest {
         assertFalse(player.state(Toys.Collar).expired());
 
         debugger.advanceTime(1, TimeUnit.HOURS);
+
         TestUtils.play(player, 1008);
 
         assertFalse(player.state(Toys.Collar).applied());

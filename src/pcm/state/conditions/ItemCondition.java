@@ -11,15 +11,15 @@ import pcm.state.persistence.ScriptState;
 public class ItemCondition extends BasicCondition {
     private static final Statement ITEM = AbstractAction.Statement.Item;
 
-    public ItemCondition(String args[]) throws ScriptParsingException {
-        super(statement(new StateCommandLineParameters(args)));
+    public ItemCondition(StateCommandLineParameters args) throws ScriptParsingException {
+        super(statement(args));
     }
 
     private static ParameterizedStatement statement(final StateCommandLineParameters args)
             throws ScriptParsingException {
         try {
+            final Enum<?>[] items = args.items();
             if (args.containsKey(StateCommandLineParameters.Keyword.Is)) {
-                final Enum<?>[] items = args.leading();
                 final Object[] attributes = args.options(StateCommandLineParameters.Keyword.Is);
                 return new ParameterizedStatement(ITEM, args) {
                     @Override
@@ -33,7 +33,6 @@ public class ItemCondition extends BasicCondition {
                     }
                 };
             } else if (args.containsKey(StateCommandLineParameters.Keyword.Available)) {
-                final Enum<?>[] items = args.options(StateCommandLineParameters.Keyword.Available);
                 return new ParameterizedStatement(ITEM, args) {
                     @Override
                     public boolean call(ScriptState state) {
@@ -46,7 +45,6 @@ public class ItemCondition extends BasicCondition {
                     }
                 };
             } else if (args.containsKey(StateCommandLineParameters.Keyword.CanApply)) {
-                final Enum<?>[] items = args.options(StateCommandLineParameters.Keyword.CanApply);
                 return new ParameterizedStatement(ITEM, args) {
                     @Override
                     public boolean call(ScriptState state) {
@@ -59,7 +57,6 @@ public class ItemCondition extends BasicCondition {
                     }
                 };
             } else if (args.containsKey(StateCommandLineParameters.Keyword.Applied)) {
-                final Enum<?>[] items = args.options(StateCommandLineParameters.Keyword.Applied);
                 return new ParameterizedStatement(ITEM, args) {
                     @Override
                     public boolean call(ScriptState state) {
@@ -72,7 +69,6 @@ public class ItemCondition extends BasicCondition {
                     }
                 };
             } else if (args.containsKey(StateCommandLineParameters.Keyword.Expired)) {
-                final Enum<?>[] items = args.options(StateCommandLineParameters.Keyword.Expired);
                 return new ParameterizedStatement(ITEM, args) {
                     @Override
                     public boolean call(ScriptState state) {

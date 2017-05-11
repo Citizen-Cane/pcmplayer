@@ -387,16 +387,18 @@ public class Action extends AbstractAction {
             Command ifUnset = new IfUnset(n, conditional);
             addCommand(ifUnset);
         } else if (name == Statement.State) {
-            if (StateCommandLineParameters.Keyword.isCommand(cmd.args())) {
-                addCommand(new StateCommand(cmd.args()));
+            StateCommandLineParameters args = new StateCommandLineParameters(cmd.args());
+            if (args.isCommand()) {
+                addCommand(new StateCommand(args));
             } else {
-                addCondition(new StateCondition(cmd.args()));
+                addCondition(new StateCondition(args));
             }
         } else if (name == Statement.Item) {
-            if (StateCommandLineParameters.Keyword.isCommand(cmd.args())) {
-                addCommand(new ItemCommand(cmd.args()));
+            StateCommandLineParameters args = new StateCommandLineParameters(cmd.args());
+            if (args.isCommand()) {
+                addCommand(new ItemCommand(args));
             } else {
-                addCondition(new ItemCondition(cmd.args()));
+                addCondition(new ItemCondition(args));
             }
         }
         // interactions
@@ -465,7 +467,7 @@ public class Action extends AbstractAction {
         }
     }
 
-    private Condition createConditionFrom(int lineNumber, String line) throws ScriptParsingException {
+    private static Condition createConditionFrom(int lineNumber, String line) throws ScriptParsingException {
         ScriptLineTokenizer cmd = new ScriptLineTokenizer(lineNumber, line);
         Action action = new Action(0);
         action.add(cmd);

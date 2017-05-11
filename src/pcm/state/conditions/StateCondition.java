@@ -11,15 +11,15 @@ import pcm.state.persistence.ScriptState;
 public class StateCondition extends BasicCondition {
     private static final Statement STATE = AbstractAction.Statement.State;
 
-    public StateCondition(String args[]) throws ScriptParsingException {
-        super(statement(new StateCommandLineParameters(args)));
+    public StateCondition(StateCommandLineParameters args) throws ScriptParsingException {
+        super(statement(args));
     }
 
     private static ParameterizedStatement statement(final StateCommandLineParameters args)
             throws ScriptParsingException {
         try {
+            final Enum<?>[] items = args.items();
             if (args.containsKey(StateCommandLineParameters.Keyword.Is)) {
-                final Enum<?>[] items = args.leading();
                 final Object[] attributes = args.options(StateCommandLineParameters.Keyword.Is);
                 return new ParameterizedStatement(STATE, args) {
                     @Override
@@ -33,7 +33,6 @@ public class StateCondition extends BasicCondition {
                     }
                 };
             } else if (args.containsKey(StateCommandLineParameters.Keyword.Applied)) {
-                final Enum<?>[] items = args.options(StateCommandLineParameters.Keyword.Applied);
                 return new ParameterizedStatement(STATE, args) {
                     @Override
                     public boolean call(ScriptState state) {
@@ -46,7 +45,6 @@ public class StateCondition extends BasicCondition {
                     }
                 };
             } else if (args.containsKey(StateCommandLineParameters.Keyword.Expired)) {
-                final Enum<?>[] items = args.options(StateCommandLineParameters.Keyword.Expired);
                 return new ParameterizedStatement(STATE, args) {
                     @Override
                     public boolean call(ScriptState state) {

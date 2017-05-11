@@ -4,7 +4,10 @@ import static pcm.controller.StateCommandLineParameters.Keyword.Over;
 import static pcm.controller.StateCommandLineParameters.Keyword.Remember;
 import static pcm.controller.StateCommandLineParameters.Keyword.Remove;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import pcm.model.DurationFormat;
@@ -16,6 +19,8 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
     private static final long serialVersionUID = 1L;
 
     public enum Keyword {
+        Item,
+
         Apply,
         To,
         Over,
@@ -30,14 +35,33 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
         Expired,
 
         ;
+
+        static final Set<Keyword> COMMANDS = new HashSet<Keyword>(Arrays.asList(Apply, Remove));
+
         public static boolean isCommand(String[] args) {
             Enum<?> keyword = getKeyword(args[0], Keyword.values());
             return keyword == Apply || keyword == Remove;
         }
     }
 
+    public boolean isCommand() {
+        for (Keyword keyword : Keyword.COMMANDS) {
+            if (containsKey(keyword)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public StateCommandLineParameters(String[] args) {
         super(args, Keyword.values());
+        try {
+            if (items().length == 0) {
+                throw new IllegalArgumentException("Items must be specified first");
+            }
+        } catch (ClassNotFoundException e) {
+            throw new IllegalArgumentException("Not an enum", e);
+        }
     }
 
     public DurationFormat durationOption() {
@@ -52,8 +76,8 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
         return ReflectionUtils.getEnums(get(Remove));
     }
 
-    public Enum<?>[] leading() throws ClassNotFoundException {
-        List<Enum<?>> enums = ReflectionUtils.getEnums(getLeading());
+    public Enum<?>[] items() throws ClassNotFoundException {
+        List<Enum<?>> enums = ReflectionUtils.getEnums(getItems());
         Enum<?>[] array = new Enum<?>[enums.size()];
         return enums.toArray(array);
     }
