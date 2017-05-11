@@ -1,10 +1,8 @@
 package pcm.controller;
 
-import static pcm.controller.StateCommandLineParameters.Keyword.Apply;
 import static pcm.controller.StateCommandLineParameters.Keyword.Over;
 import static pcm.controller.StateCommandLineParameters.Keyword.Remember;
 import static pcm.controller.StateCommandLineParameters.Keyword.Remove;
-import static pcm.controller.StateCommandLineParameters.Keyword.To;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -22,19 +20,24 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
         To,
         Over,
         Remember,
+
         Remove,
+
+        Is,
+        Available,
+        CanApply,
+        Applied,
+        Expired,
+
+        ;
+        public static boolean isCommand(String[] args) {
+            Enum<?> keyword = getKeyword(args[0], Keyword.values());
+            return keyword == Apply || keyword == Remove;
+        }
     }
 
     public StateCommandLineParameters(String[] args) {
         super(args, Keyword.values());
-    }
-
-    public List<Enum<?>> applyOptions() throws ClassNotFoundException {
-        return ReflectionUtils.getEnums(get(Apply));
-    }
-
-    public Object[] toOptions() throws ClassNotFoundException {
-        return ReflectionUtils.getEnums(get(To)).toArray();
     }
 
     public DurationFormat durationOption() {
@@ -47,6 +50,18 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
 
     public List<Enum<?>> removeOptions() throws ClassNotFoundException {
         return ReflectionUtils.getEnums(get(Remove));
+    }
+
+    public Enum<?>[] leading() throws ClassNotFoundException {
+        List<Enum<?>> enums = ReflectionUtils.getEnums(getLeading());
+        Enum<?>[] array = new Enum<?>[enums.size()];
+        return enums.toArray(array);
+    }
+
+    public Enum<?>[] options(Keyword keyword) throws ClassNotFoundException {
+        List<Enum<?>> enums = ReflectionUtils.getEnums(get(keyword));
+        Enum<?>[] array = new Enum<?>[enums.size()];
+        return enums.toArray(array);
     }
 
     public void handleStateOptions(State.Options options, final DurationFormat duration, final boolean remember) {

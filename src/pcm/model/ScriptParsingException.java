@@ -4,8 +4,8 @@ public class ScriptParsingException extends ScriptException {
     private static final long serialVersionUID = 1L;
 
     public ScriptParsingException(int lineNumber, int actionNumber, String line, Throwable t, Script script) {
-        super(actionNumber > 0 ? (reason(t) + " in line " + lineNumber + ", Action " + actionNumber + ": ")
-                : (reason(t) + " in line " + lineNumber + ": " + line), t, script);
+        super(actionNumber > 0 ? reason(t) + " in line " + lineNumber + ", Action " + actionNumber + ": " + line
+                : reason(t) + " in line " + lineNumber + ": " + line, t, script);
     }
 
     public ScriptParsingException(int lineNumber, int actionNumber, String line, String reason, Script script) {

@@ -12,20 +12,22 @@ import pcm.state.BasicCommand;
 import pcm.state.persistence.ScriptState;
 import teaselib.State;
 
-public class Item extends BasicCommand {
-    public Item(String[] args) throws ScriptParsingException {
-        super(statement(AbstractAction.Statement.Item, args));
+public class ItemCommand extends BasicCommand {
+    private static final Statement ITEM = AbstractAction.Statement.Item;
+
+    public ItemCommand(String[] args) throws ScriptParsingException {
+        super(statement(new StateCommandLineParameters(args)));
     }
 
-    private static ParameterizedStatement statement(Statement statement, String[] args) throws ScriptParsingException {
-        final StateCommandLineParameters cmd = new StateCommandLineParameters(args);
+    private static ParameterizedStatement statement(final StateCommandLineParameters args)
+            throws ScriptParsingException {
         try {
-            if (cmd.containsKey(StateCommandLineParameters.Keyword.Apply)) {
-                final List<Enum<?>> items = cmd.applyOptions();
-                final Object[] attributes = cmd.toOptions();
-                final DurationFormat duration = cmd.durationOption();
-                final boolean remember = cmd.rememberOption();
-                return new ParameterizedStatement(statement, args) {
+            if (args.containsKey(StateCommandLineParameters.Keyword.Apply)) {
+                final Enum<?>[] items = args.options(StateCommandLineParameters.Keyword.Apply);
+                final Object[] attributes = args.options(StateCommandLineParameters.Keyword.To);
+                final DurationFormat duration = args.durationOption();
+                final boolean remember = args.rememberOption();
+                return new ParameterizedStatement(ITEM, args) {
                     @Override
                     public void run(ScriptState state) {
                         for (Enum<?> item : items) {
@@ -35,14 +37,15 @@ public class Item extends BasicCommand {
                             } else {
                                 options = state.player.item(item).to(attributes);
                             }
-                            cmd.handleStateOptions(options, duration, remember);
+                            args.handleStateOptions(options, duration, remember);
                         }
                     }
 
                 };
-            } else if (cmd.containsKey(StateCommandLineParameters.Keyword.Remove)) {
-                final List<Enum<?>> items = cmd.removeOptions();
-                return new ParameterizedStatement(statement, args) {
+            } else if (args.containsKey(StateCommandLineParameters.Keyword.Remove)) {
+                final List<Enum<?>> items = args.removeOptions();
+                return new ParameterizedStatement(ITEM, args) {
+
                     @Override
                     public void run(ScriptState state) {
                         for (Enum<?> item : items) {
@@ -51,9 +54,11 @@ public class Item extends BasicCommand {
                     }
                 };
             } else {
-                throw new IllegalStatementException(statement, args);
+                throw new IllegalStatementException(ITEM, args);
             }
-        } catch (ClassNotFoundException e) {
+        } catch (
+
+        ClassNotFoundException e) {
             throw new ScriptParsingException(e);
         }
     }

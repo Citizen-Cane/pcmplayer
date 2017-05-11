@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import pcm.controller.StateCommandLineParameters;
 import pcm.state.Command;
 import pcm.state.Condition;
 import pcm.state.Interaction;
@@ -25,17 +26,18 @@ import pcm.state.Interactions.Return;
 import pcm.state.Interactions.Stop;
 import pcm.state.Interactions.Stop.TimeoutType;
 import pcm.state.Interactions.YesNo;
-import pcm.state.commands.Item;
+import pcm.state.commands.ItemCommand;
 import pcm.state.commands.Repeat;
 import pcm.state.commands.RepeatAdd;
 import pcm.state.commands.RepeatDel;
 import pcm.state.commands.Save;
 import pcm.state.commands.Set;
-import pcm.state.commands.SetState;
 import pcm.state.commands.SetTime;
+import pcm.state.commands.StateCommand;
 import pcm.state.commands.Unset;
 import pcm.state.conditions.IfSet;
 import pcm.state.conditions.IfUnset;
+import pcm.state.conditions.ItemCondition;
 import pcm.state.conditions.Must;
 import pcm.state.conditions.MustAnyOf;
 import pcm.state.conditions.MustNot;
@@ -45,6 +47,7 @@ import pcm.state.conditions.NumActionsFrom;
 import pcm.state.conditions.NumberOfActionsSet;
 import pcm.state.conditions.Should;
 import pcm.state.conditions.ShouldNot;
+import pcm.state.conditions.StateCondition;
 import pcm.state.conditions.TimeFrom;
 import pcm.state.conditions.TimeTo;
 import pcm.state.visuals.Args;
@@ -379,9 +382,17 @@ public class Action extends AbstractAction {
             Command ifUnset = new IfUnset(n, conditional);
             addCommand(ifUnset);
         } else if (name == Statement.State) {
-            addCommand(new SetState(cmd.args()));
+            if (StateCommandLineParameters.Keyword.isCommand(cmd.args())) {
+                addCommand(new StateCommand(cmd.args()));
+            } else {
+                addCondition(new StateCondition(cmd.args()));
+            }
         } else if (name == Statement.Item) {
-            addCommand(new Item(cmd.args()));
+            if (StateCommandLineParameters.Keyword.isCommand(cmd.args())) {
+                addCommand(new ItemCommand(cmd.args()));
+            } else {
+                addCondition(new ItemCondition(cmd.args()));
+            }
         }
         // interactions
         else if (name == Statement.Range) {

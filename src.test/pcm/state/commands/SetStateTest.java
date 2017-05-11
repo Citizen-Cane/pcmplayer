@@ -21,14 +21,14 @@ public class SetStateTest {
         Player player = TestUtils.createPlayer(SetStateTest.class);
         State state = player.state(Body.SomethingOnPenis);
 
-        SetState foo = new SetState(new String[] { "Apply", "teaselib.Body.SomethingOnPenis",
+        StateCommand foo = new StateCommand(new String[] { "Apply", "teaselib.Body.SomethingOnPenis",
                 "teaselib.Toys.Chastity_Device" });
         foo.execute(player.state);
 
         assertTrue(state.applied());
         assertTrue(state.expired());
 
-        SetState rememberFoo = new SetState(new String[] { "Apply",
+        StateCommand rememberFoo = new StateCommand(new String[] { "Apply",
                 "teaselib.Body.SomethingOnPenis", "teaselib.Toys.Chastity_Device", "Remember" });
         rememberFoo.execute(player.state);
 
@@ -41,7 +41,7 @@ public class SetStateTest {
 
         assertTrue(stateStorage.available());
 
-        SetState clearFoo = new SetState(
+        StateCommand clearFoo = new StateCommand(
                 new String[] { "Remove", "teaselib.Body.SomethingOnPenis" });
         clearFoo.execute(player.state);
 
@@ -49,7 +49,7 @@ public class SetStateTest {
         assertFalse(state.applied());
         assertTrue(state.expired());
 
-        SetState fooTimed = new SetState(new String[] { "Apply", "teaselib.Body.SomethingOnPenis",
+        StateCommand fooTimed = new StateCommand(new String[] { "Apply", "teaselib.Body.SomethingOnPenis",
                 "teaselib.Toys.Chastity_Device", "600" });
         fooTimed.execute(player.state);
 
@@ -63,14 +63,14 @@ public class SetStateTest {
         Player player = TestUtils.createPlayer(SetStateTest.class);
         State state = player.state(Body.SomethingOnPenis);
 
-        new SetState(new String[] { "Apply", "teaselib.Body.SomethingOnPenis",
+        new StateCommand(new String[] { "Apply", "teaselib.Body.SomethingOnPenis",
                 "teaselib.Toys.Chastity_Device", "inf" }).execute(player.state);
 
         assertTrue(state.applied());
         assertFalse(state.expired());
         assertTrue(state.duration().limit(TimeUnit.SECONDS) == Long.MAX_VALUE);
 
-        new SetState(new String[] { "Remove", "teaselib.Body.SomethingOnPenis" })
+        new StateCommand(new String[] { "Remove", "teaselib.Body.SomethingOnPenis" })
                 .execute(player.state);
 
         assertFalse(state.applied());
@@ -85,7 +85,7 @@ public class SetStateTest {
                 TeaseLib.DefaultDomain, Body.class.getName(),
                 Body.SomethingOnPenis.name() + ".state.duration");
 
-        new SetState(new String[] { "Apply", "teaselib.Body.SomethingOnPenis",
+        new StateCommand(new String[] { "Apply", "teaselib.Body.SomethingOnPenis",
                 "teaselib.Toys.Chastity_Device", "inf", "remember" }).execute(player.state);
 
         assertTrue(stateStorage.available());
@@ -93,7 +93,7 @@ public class SetStateTest {
         assertFalse(state.expired());
         assertTrue(state.duration().limit(TimeUnit.SECONDS) == Long.MAX_VALUE);
 
-        new SetState(new String[] { "Remove", "teaselib.Body.SomethingOnPenis" })
+        new StateCommand(new String[] { "Remove", "teaselib.Body.SomethingOnPenis" })
                 .execute(player.state);
 
         assertFalse(stateStorage.available());

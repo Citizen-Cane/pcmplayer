@@ -1,29 +1,27 @@
 package pcm.state;
 
-import java.util.Arrays;
-
 import pcm.model.AbstractAction.Statement;
 import pcm.model.ScriptExecutionException;
 import pcm.state.persistence.ScriptState;
+import teaselib.core.util.CommandLineParameters;
 
 public class BasicCommand implements Command {
     protected final ParameterizedStatement statement;
 
     protected static abstract class ParameterizedStatement {
         private final Statement statement;
-        private final String[] args;
+        private final CommandLineParameters<?> args;
 
-        public ParameterizedStatement(Statement statement, String[] args) {
-            super();
+        public <T extends Enum<?>> ParameterizedStatement(Statement statement, CommandLineParameters<T> args) {
             this.statement = statement;
-            this.args = Arrays.copyOf(args, 1);
+            this.args = args;
         }
 
         protected abstract void run(ScriptState state) throws ScriptExecutionException;
 
         @Override
         public String toString() {
-            return statement.toString() + args.toString();
+            return statement.toString() + " " + args.toString();
         }
     }
 

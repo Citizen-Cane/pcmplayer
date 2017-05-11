@@ -1,0 +1,71 @@
+package pcm.state.conditions;
+
+import pcm.controller.StateCommandLineParameters;
+import pcm.model.AbstractAction;
+import pcm.model.AbstractAction.Statement;
+import pcm.model.IllegalStatementException;
+import pcm.model.ScriptParsingException;
+import pcm.state.BasicCondition;
+import pcm.state.persistence.ScriptState;
+
+public class StateCondition extends BasicCondition {
+    private static final Statement STATE = AbstractAction.Statement.State;
+
+    public StateCondition(String args[]) throws ScriptParsingException {
+        super(statement(new StateCommandLineParameters(args)));
+    }
+
+    private static ParameterizedStatement statement(final StateCommandLineParameters args)
+            throws ScriptParsingException {
+        try {
+            if (args.containsKey(StateCommandLineParameters.Keyword.Is)) {
+                final Enum<?>[] items = args.leading();
+                final Object[] attributes = args.options(StateCommandLineParameters.Keyword.Is);
+                return new ParameterizedStatement(STATE, args) {
+                    @Override
+                    public boolean call(ScriptState state) {
+                        for (Enum<?> item : items) {
+                            if (!state.player.state(item).is(attributes)) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    }
+                };
+            } else if (args.containsKey(StateCommandLineParameters.Keyword.Applied)) {
+                final Enum<?>[] items = args.options(StateCommandLineParameters.Keyword.Applied);
+                return new ParameterizedStatement(STATE, args) {
+                    @Override
+                    public boolean call(ScriptState state) {
+                        for (Enum<?> item : items) {
+                            if (!state.player.state(item).applied()) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    }
+                };
+            } else if (args.containsKey(StateCommandLineParameters.Keyword.Expired)) {
+                final Enum<?>[] items = args.options(StateCommandLineParameters.Keyword.Expired);
+                return new ParameterizedStatement(STATE, args) {
+                    @Override
+                    public boolean call(ScriptState state) {
+                        for (Enum<?> item : items) {
+                            if (!state.player.state(item).expired()) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    }
+                };
+            } else {
+                throw new IllegalStatementException(STATE, args);
+            }
+        } catch (
+
+        ClassNotFoundException e) {
+            throw new ScriptParsingException(e);
+        }
+    }
+
+}
