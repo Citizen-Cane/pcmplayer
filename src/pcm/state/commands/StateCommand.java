@@ -3,6 +3,7 @@ package pcm.state.commands;
 import java.util.concurrent.TimeUnit;
 
 import pcm.controller.StateCommandLineParameters;
+import pcm.controller.StateCommandLineParameters.Keyword;
 import pcm.model.AbstractAction.Statement;
 import pcm.model.DurationFormat;
 import pcm.model.IllegalStatementException;
@@ -22,9 +23,9 @@ public class StateCommand extends BasicCommand {
     private static ParameterizedStatement statement(final StateCommandLineParameters args)
             throws ScriptParsingException {
         try {
-            final String[] items = args.items();
+            final String[] items = args.items(Keyword.Item);
             if (args.containsKey(StateCommandLineParameters.Keyword.Apply)) {
-                final Object[] attributes = args.array(StateCommandLineParameters.Keyword.To);
+                final Object[] attributes = args.items(Keyword.To);
                 final DurationFormat duration = args.durationOption();
                 final boolean remember = args.rememberOption();
                 return new ParameterizedStatement(STATE, args) {
@@ -44,11 +45,12 @@ public class StateCommand extends BasicCommand {
                     }
                 };
             } else if (args.containsKey(StateCommandLineParameters.Keyword.Remove)) {
+                final Object[] attributes = args.items(Keyword.Remove);
                 return new ParameterizedStatement(STATE, args) {
                     @Override
                     public void run(ScriptState state) {
                         for (String item : items) {
-                            state.player.state(item).remove();
+                            state.player.state(item).remove(attributes);
                         }
                     }
                 };

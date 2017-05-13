@@ -1,6 +1,7 @@
 package pcm.state.conditions;
 
 import pcm.controller.StateCommandLineParameters;
+import pcm.controller.StateCommandLineParameters.Keyword;
 import pcm.model.AbstractAction;
 import pcm.model.AbstractAction.Statement;
 import pcm.model.IllegalStatementException;
@@ -18,9 +19,9 @@ public class StateCondition extends BasicCondition {
     private static ParameterizedStatement statement(final StateCommandLineParameters args)
             throws ScriptParsingException {
         try {
-            final String[] items = args.items();
+            final String[] items = args.items(Keyword.Item);
             if (args.containsKey(StateCommandLineParameters.Keyword.Is)) {
-                final Object[] attributes = args.array(StateCommandLineParameters.Keyword.Is);
+                final Object[] attributes = args.items(StateCommandLineParameters.Keyword.Is);
                 return new ParameterizedStatement(STATE, args) {
                     @Override
                     public boolean call(ScriptState state) {

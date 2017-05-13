@@ -1,6 +1,10 @@
 ' pcm test cases
 
 .define Toys teaselib.Toys
+.define Clothes teaselib.Toys
+
+.declare Toys Enum
+
 
 ' testItem
 .range 1000
@@ -15,31 +19,31 @@
 [Action 1001]
 .item Toys.Collar applied
 .item Toys.Collar expired
-.state Toys.Collar remove
+.item Toys.Collar remove
 .range 1004
 
 [Action 1004]
-.not .state Toys.Collar applied
-.state Toys.Collar expired
+.not .item Toys.Collar applied
+.item Toys.Collar expired
 .range 1005
 
 [Action 1005]
-.state Toys.Collar apply over 01:00"00
+.item Toys.Collar apply over 01:00"00
 .range 1006
 
 [Action 1006]
 .item Toys.Collar applied
-.not .state Toys.Collar expired
+.not .item Toys.Collar expired
 .range 9999
 
 
 [Action 1008]
-.state Toys.Collar applied
-.state Toys.Collar expired
+.item Toys.Collar applied
+.item Toys.Collar expired
 .range 1009
 
 [Action 1009]
-.state Toys.Collar remove
+.item Toys.Collar remove
 .range 9999
 
 

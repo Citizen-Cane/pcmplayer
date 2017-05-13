@@ -1,6 +1,7 @@
 package pcm.state.commands;
 
 import pcm.controller.StateCommandLineParameters;
+import pcm.controller.StateCommandLineParameters.Keyword;
 import pcm.model.AbstractAction;
 import pcm.model.AbstractAction.Statement;
 import pcm.model.DurationFormat;
@@ -20,9 +21,9 @@ public class ItemCommand extends BasicCommand {
     private static ParameterizedStatement statement(final StateCommandLineParameters args)
             throws ScriptParsingException {
         try {
-            final String[] items = args.items();
-            if (args.containsKey(StateCommandLineParameters.Keyword.Apply)) {
-                final String[] attributes = args.array(StateCommandLineParameters.Keyword.To);
+            final String[] items = args.items(Keyword.Item);
+            if (args.containsKey(Keyword.Apply)) {
+                final String[] attributes = args.items(Keyword.To);
                 final DurationFormat duration = args.durationOption();
                 final boolean remember = args.rememberOption();
                 return new ParameterizedStatement(ITEM, args) {
@@ -36,7 +37,7 @@ public class ItemCommand extends BasicCommand {
                     }
 
                 };
-            } else if (args.containsKey(StateCommandLineParameters.Keyword.Remove)) {
+            } else if (args.containsKey(Keyword.Remove)) {
                 return new ParameterizedStatement(ITEM, args) {
                     @Override
                     public void run(ScriptState state) {

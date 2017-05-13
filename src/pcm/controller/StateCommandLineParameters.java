@@ -12,7 +12,6 @@ import java.util.concurrent.TimeUnit;
 import pcm.model.DurationFormat;
 import teaselib.State;
 import teaselib.core.util.CommandLineParameters;
-import teaselib.core.util.QualifiedItem;
 
 public class StateCommandLineParameters extends CommandLineParameters<StateCommandLineParameters.Keyword> {
     private static final long serialVersionUID = 1L;
@@ -57,12 +56,18 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
         super(args, Keyword.values());
         this.declarations = declarations;
         try {
-            if (items().length == 0) {
+            if (items(Keyword.Item).length == 0) {
                 throw new IllegalArgumentException("Items must be specified first");
             }
         } catch (ClassNotFoundException e) {
             throw new IllegalArgumentException("Not an enum", e);
         }
+    }
+
+    public String[] items(Keyword keyword) throws ClassNotFoundException {
+        List<String> items = declarations.checked(get(keyword));
+        String[] array = new String[items.size()];
+        return items.toArray(array);
     }
 
     public DurationFormat durationOption() {
@@ -71,38 +76,6 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
 
     public boolean rememberOption() {
         return containsKey(Remember);
-    }
-
-    public String[] items() throws ClassNotFoundException {
-        return array(defaultKeyword);
-    }
-
-    public String[] array(Keyword keyword) throws ClassNotFoundException {
-        List<String> items = get(keyword);
-        String[] array = new String[items.size()];
-        return items.toArray(array);
-    }
-
-    @Override
-    public List<String> get(Object value) {
-        List<String> values = super.get(value);
-        if (declarations != null && declarations.available()) {
-            check(values);
-        }
-        return values;
-    }
-
-    private void check(List<String> values) {
-        for (String value : values) {
-            for (java.util.Map.Entry<String, String> entry : declarations.entries()) {
-                if (QualifiedItem.fromType(value).namespace().equalsIgnoreCase(entry.getKey())) {
-                    if (entry.getValue().equals(Declarations.ENUM)) {
-                        // TODO try to instanciate enum
-                        // TODO move method to declarations
-                    }
-                }
-            }
-        }
     }
 
     public void handleStateOptions(State.Options options, final DurationFormat duration, final boolean remember) {
@@ -114,21 +87,5 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
         } else if (remember) {
             options.remember();
         }
-    }
-
-    public QualifiedItem<?>[] toQualifiedItems(Object... items) {
-        QualifiedItem<?>[] qualifiedItems = new QualifiedItem<?>[items.length];
-        for (int i = 0; i < items.length; i++) {
-            qualifiedItems[i] = QualifiedItem.fromType(items[i]);
-        }
-        return qualifiedItems;
-    }
-
-    public QualifiedItem<?>[] toQualifiedItems(List<?> items) {
-        QualifiedItem<?>[] qualifiedItems = new QualifiedItem<?>[items.size()];
-        for (int i = 0; i < items.size(); i++) {
-            qualifiedItems[i] = QualifiedItem.fromType(items.get(i));
-        }
-        return qualifiedItems;
     }
 }

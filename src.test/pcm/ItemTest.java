@@ -26,20 +26,20 @@ public class ItemTest {
         Debugger debugger = new Debugger(player.teaseLib);
         debugger.freezeTime();
 
-        assertFalse(player.state(Toys.Collar).applied());
-        assertTrue(player.state(Toys.Collar).expired());
+        assertFalse(player.item(Toys.Collar).applied());
+        assertTrue(player.item(Toys.Collar).expired());
 
         TestUtils.play(player, 1000);
 
-        assertTrue(player.state(Toys.Collar).applied());
-        assertFalse(player.state(Toys.Collar).expired());
+        assertTrue(player.item(Toys.Collar).applied());
+        assertFalse(player.item(Toys.Collar).expired());
 
         debugger.advanceTime(1, TimeUnit.HOURS);
 
         TestUtils.play(player, 1008);
 
-        assertFalse(player.state(Toys.Collar).applied());
-        assertTrue(player.state(Toys.Collar).expired());
+        assertFalse(player.item(Toys.Collar).applied());
+        assertTrue(player.item(Toys.Collar).expired());
     }
 
 }
