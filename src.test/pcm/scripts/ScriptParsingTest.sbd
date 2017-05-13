@@ -1,6 +1,8 @@
 ' pcm test cases
 
 .define Toys teaselib.Toys
+.declare Toys String
+
 
 ' testDefineStatement
 .range 1000

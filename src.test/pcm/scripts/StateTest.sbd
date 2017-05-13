@@ -1,8 +1,6 @@
 ' pcm test cases
 
 .define Toys teaselib.Toys
-.define Clothes teaselib.Toys
-
 .declare Toys Enum
 
 

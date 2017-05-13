@@ -23,6 +23,8 @@ public class StateCommandTest {
         Player player = TestUtils.createPlayer(StateCommandTest.class);
         State state = player.state(Body.SomethingOnPenis);
         Declarations declarations = new Declarations();
+        declarations.add("teaselib.Body", Declarations.STRING);
+        declarations.add("teaselib.Toys", Declarations.STRING);
 
         StateCommand foo = new StateCommand(new StateCommandLineParameters(
                 new String[] { "teaselib.Body.SomethingOnPenis", "Apply", "teaselib.Toys.Chastity_Device" },
@@ -68,6 +70,7 @@ public class StateCommandTest {
         Player player = TestUtils.createPlayer(StateCommandTest.class);
         State state = player.state(Body.SomethingOnPenis);
         Declarations declarations = new Declarations();
+        declarations.add("teaselib.Body", Declarations.STRING);
 
         new StateCommand(new StateCommandLineParameters(new String[] { "teaselib.Body.SomethingOnPenis", "Apply",
                 "teaselib.Toys.Chastity_Device", "over", "inf" }, declarations)).execute(player.state);
@@ -88,6 +91,8 @@ public class StateCommandTest {
         Player player = TestUtils.createPlayer(StateCommandTest.class);
         State state = player.state(Body.SomethingOnPenis);
         Declarations declarations = new Declarations();
+        declarations.add("teaselib.Body", Declarations.STRING);
+        declarations.add("teaselib.Toys", Declarations.STRING);
 
         TeaseLib.PersistentString stateStorage = player.teaseLib.new PersistentString(TeaseLib.DefaultDomain,
                 Body.class.getName(), Body.SomethingOnPenis.name() + ".state.duration");

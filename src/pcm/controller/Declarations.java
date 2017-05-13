@@ -30,24 +30,22 @@ public class Declarations {
     }
 
     public List<String> checked(List<String> qualifiedNames) throws ClassNotFoundException {
-        if (available()) {
-            for (String value : qualifiedNames) {
-                boolean valueChecked = false;
-                for (java.util.Map.Entry<String, String> entry : entries()) {
-                    if (QualifiedItem.fromType(value).namespace().equalsIgnoreCase(entry.getKey())) {
-                        if (entry.getValue().equalsIgnoreCase(Declarations.ENUM)) {
-                            ReflectionUtils.getEnum(value);
-                            valueChecked = true;
-                            break;
-                        } else if (entry.getValue().equalsIgnoreCase(Declarations.STRING)) {
-                            valueChecked = true;
-                            break;
-                        }
+        for (String value : qualifiedNames) {
+            boolean valueChecked = false;
+            for (java.util.Map.Entry<String, String> entry : entries()) {
+                if (QualifiedItem.fromType(value).namespace().equalsIgnoreCase(entry.getKey())) {
+                    if (entry.getValue().equalsIgnoreCase(Declarations.ENUM)) {
+                        ReflectionUtils.getEnum(value);
+                        valueChecked = true;
+                        break;
+                    } else if (entry.getValue().equalsIgnoreCase(Declarations.STRING)) {
+                        valueChecked = true;
+                        break;
                     }
                 }
-                if (!valueChecked) {
-                    throw new IllegalArgumentException("Undeclared qualified name " + value);
-                }
+            }
+            if (!valueChecked) {
+                throw new IllegalArgumentException("Undeclared qualified name " + value);
             }
         }
         return qualifiedNames;
