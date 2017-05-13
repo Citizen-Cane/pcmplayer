@@ -23,8 +23,7 @@ import teaselib.Actor;
 import teaselib.core.ResourceLoader;
 
 public class ScriptCache {
-    private static final Logger logger = LoggerFactory
-            .getLogger(ScriptCache.class);
+    private static final Logger logger = LoggerFactory.getLogger(ScriptCache.class);
 
     private final Symbols staticSymbols;
     private final Map<String, SoftReference<Script>> cache = new HashMap<String, SoftReference<Script>>();
@@ -33,16 +32,14 @@ public class ScriptCache {
 
     public final Stack<ActionRange> stack;
 
-    public ScriptCache(ResourceLoader resourceLoader, String path,
-            Symbols staticSymbols) {
+    public ScriptCache(ResourceLoader resourceLoader, String path, Symbols staticSymbols) {
         this.resourceLoader = resourceLoader;
         this.staticSymbols = staticSymbols;
         this.path = path;
         stack = new Stack<ActionRange>();
     }
 
-    public Script get(Actor actor, String name)
-            throws ScriptParsingException, ValidationIssue, IOException {
+    public Script get(Actor actor, String name) throws ScriptParsingException, ValidationIssue, IOException {
         Script script = null;
         if (cache.containsKey(name)) {
             script = cache.get(name).get();
@@ -53,8 +50,7 @@ public class ScriptCache {
             String location = path + name;
             BufferedReader scriptReader = script(location);
             try {
-                script = new Script(actor, name, this,
-                        new ScriptParser(scriptReader, staticSymbols));
+                script = new Script(actor, name, this, new ScriptParser(scriptReader, staticSymbols));
             } finally {
                 scriptReader.close();
             }

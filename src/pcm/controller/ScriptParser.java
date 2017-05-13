@@ -30,6 +30,7 @@ public class ScriptParser {
     private final BufferedReader reader;
 
     private final Map<String, String> defines = new LinkedHashMap<String, String>();
+    private final Declarations declarations;
 
     private String line = null;
     private int l = 0;
@@ -39,6 +40,7 @@ public class ScriptParser {
     public ScriptParser(BufferedReader reader, Symbols staticSymbols) {
         this.reader = reader;
         this.staticSymbols = staticSymbols;
+        this.declarations = new Declarations();
     }
 
     public void parse(Script script) throws ScriptParsingException, IOException {
@@ -47,9 +49,11 @@ public class ScriptParser {
                 return;
             } else if (line.startsWith(".")) {
                 try {
-                    ScriptLineTokenizer cmd = new ScriptLineTokenizer(l, applyDefines(line));
+                    ScriptLineTokenizer cmd = new ScriptLineTokenizer(l, applyDefines(line), declarations);
                     if (cmd.statement == Statement.Define) {
                         defines.put(cmd.args()[0], cmd.args()[1]);
+                    } else if (cmd.statement == Statement.Declare) {
+                        declarations.add(cmd.args()[0], cmd.args()[1]);
                     } else {
                         script.add(cmd);
                     }
@@ -118,7 +122,7 @@ public class ScriptParser {
                         else if (line.startsWith(".")) {
                             // .txt messages must be executed last,
                             // so this has to be added last
-                            ScriptLineTokenizer cmd = new ScriptLineTokenizer(l, applyDefines(line));
+                            ScriptLineTokenizer cmd = new ScriptLineTokenizer(l, applyDefines(line), declarations);
                             if (cmd.statement == Statement.Txt) {
                                 String text = line.substring(Statement.Txt.toString().length() + 1);
                                 // Trim one leading space

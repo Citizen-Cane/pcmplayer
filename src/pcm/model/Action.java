@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import pcm.controller.Declarations;
 import pcm.controller.StateCommandLineParameters;
 import pcm.state.Command;
 import pcm.state.Condition;
@@ -319,7 +320,7 @@ public class Action extends AbstractAction {
             }
             addCondition(numActionsAvailable);
         } else if (name == Statement.Not) {
-            Condition conditional = createConditionFrom(cmd.lineNumber, cmd.argsFrom(0));
+            Condition conditional = createConditionFrom(cmd.lineNumber, cmd.argsFrom(0), cmd.declarations);
             Condition not = new Not(conditional);
             addCondition(not);
         } else if (name == Statement.Repeat) {
@@ -377,24 +378,24 @@ public class Action extends AbstractAction {
         } else if (name == Statement.IfSet) {
             String args[] = cmd.args();
             int n = new Integer(args[0]);
-            Command conditional = createCommandFrom(cmd.lineNumber, cmd.argsFrom(1));
+            Command conditional = createCommandFrom(cmd.lineNumber, cmd.argsFrom(1), cmd.declarations);
             Command ifSet = new IfSet(n, conditional);
             addCommand(ifSet);
         } else if (name == Statement.IfUnset) {
             String args[] = cmd.args();
             int n = new Integer(args[0]);
-            Command conditional = createCommandFrom(cmd.lineNumber, cmd.argsFrom(1));
+            Command conditional = createCommandFrom(cmd.lineNumber, cmd.argsFrom(1), cmd.declarations);
             Command ifUnset = new IfUnset(n, conditional);
             addCommand(ifUnset);
         } else if (name == Statement.State) {
-            StateCommandLineParameters args = new StateCommandLineParameters(cmd.args());
+            StateCommandLineParameters args = new StateCommandLineParameters(cmd.args(), cmd.declarations);
             if (args.isCommand()) {
                 addCommand(new StateCommand(args));
             } else {
                 addCondition(new StateCondition(args));
             }
         } else if (name == Statement.Item) {
-            StateCommandLineParameters args = new StateCommandLineParameters(cmd.args());
+            StateCommandLineParameters args = new StateCommandLineParameters(cmd.args(), cmd.declarations);
             if (args.isCommand()) {
                 addCommand(new ItemCommand(args));
             } else {
@@ -467,15 +468,17 @@ public class Action extends AbstractAction {
         }
     }
 
-    private static Condition createConditionFrom(int lineNumber, String line) throws ScriptParsingException {
-        ScriptLineTokenizer cmd = new ScriptLineTokenizer(lineNumber, line);
+    private static Condition createConditionFrom(int lineNumber, String line, Declarations declarations)
+            throws ScriptParsingException {
+        ScriptLineTokenizer cmd = new ScriptLineTokenizer(lineNumber, line, declarations);
         Action action = new Action(0);
         action.add(cmd);
         return action.conditions.get(0);
     }
 
-    private static Command createCommandFrom(int lineNumber, String line) throws ScriptParsingException {
-        ScriptLineTokenizer cmd = new ScriptLineTokenizer(lineNumber, line);
+    private static Command createCommandFrom(int lineNumber, String line, Declarations declarations)
+            throws ScriptParsingException {
+        ScriptLineTokenizer cmd = new ScriptLineTokenizer(lineNumber, line, declarations);
         Action action = new Action(0);
         action.add(cmd);
         return action.commands.get(0);

@@ -22,15 +22,15 @@ public class StateCommand extends BasicCommand {
     private static ParameterizedStatement statement(final StateCommandLineParameters args)
             throws ScriptParsingException {
         try {
-            final Enum<?>[] items = args.items();
+            final String[] items = args.items();
             if (args.containsKey(StateCommandLineParameters.Keyword.Apply)) {
-                final Object[] attributes = args.options(StateCommandLineParameters.Keyword.To);
+                final Object[] attributes = args.array(StateCommandLineParameters.Keyword.To);
                 final DurationFormat duration = args.durationOption();
                 final boolean remember = args.rememberOption();
                 return new ParameterizedStatement(STATE, args) {
                     @Override
                     public void run(ScriptState state) {
-                        for (Enum<?> item : items) {
+                        for (String item : items) {
                             State.Options options = state.player.state(item).apply(attributes);
                             if (duration != null) {
                                 State.Persistence persistence = options.over(duration.toSeconds(), TimeUnit.SECONDS);
@@ -47,7 +47,7 @@ public class StateCommand extends BasicCommand {
                 return new ParameterizedStatement(STATE, args) {
                     @Override
                     public void run(ScriptState state) {
-                        for (Enum<?> item : items) {
+                        for (String item : items) {
                             state.player.state(item).remove();
                         }
                     }

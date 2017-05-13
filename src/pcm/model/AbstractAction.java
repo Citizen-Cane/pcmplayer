@@ -248,6 +248,11 @@ public abstract class AbstractAction {
          */
         Not,
 
+        /**
+         * Declare a name space to prevent spelling mistakes of qualified items
+         */
+        Declare,
+
         ;
 
         public final static Map<String, Statement> lookup = new HashMap<String, Statement>();

@@ -18,13 +18,13 @@ public class StateCondition extends BasicCondition {
     private static ParameterizedStatement statement(final StateCommandLineParameters args)
             throws ScriptParsingException {
         try {
-            final Enum<?>[] items = args.items();
+            final String[] items = args.items();
             if (args.containsKey(StateCommandLineParameters.Keyword.Is)) {
-                final Object[] attributes = args.options(StateCommandLineParameters.Keyword.Is);
+                final Object[] attributes = args.array(StateCommandLineParameters.Keyword.Is);
                 return new ParameterizedStatement(STATE, args) {
                     @Override
                     public boolean call(ScriptState state) {
-                        for (Enum<?> item : items) {
+                        for (String item : items) {
                             if (!state.player.state(item).is(attributes)) {
                                 return false;
                             }
@@ -36,7 +36,7 @@ public class StateCondition extends BasicCondition {
                 return new ParameterizedStatement(STATE, args) {
                     @Override
                     public boolean call(ScriptState state) {
-                        for (Enum<?> item : items) {
+                        for (String item : items) {
                             if (!state.player.state(item).applied()) {
                                 return false;
                             }
@@ -48,7 +48,7 @@ public class StateCondition extends BasicCondition {
                 return new ParameterizedStatement(STATE, args) {
                     @Override
                     public boolean call(ScriptState state) {
-                        for (Enum<?> item : items) {
+                        for (String item : items) {
                             if (!state.player.state(item).expired()) {
                                 return false;
                             }
