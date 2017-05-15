@@ -3,10 +3,12 @@
 .define Toys teaselib.Toys
 .declare Toys Enum
 
+.declare Test_Namespace String
 
-' testState
 .range 1000
 
+
+' testState
 
 [Action 1000]
 .not .state Toys.Collar applied
@@ -41,6 +43,25 @@
 
 [Action 1009]
 .state Toys.Collar Remove
+.range 9999
+
+
+' testStateNamespace
+
+[Action 1020]
+.not .state Toys.Nipple_clamps applied
+.range 1021
+
+[Action 1021]
+.loadsbd StateTest_subscript.sbd 1020
+
+
+[Action 1025]
+.state Toys.Nipple_clamps applied
+.range 1026
+
+[Action 1026]
+.state Toys.Nipple_clamps is Test_Namespace
 .range 9999
 
 

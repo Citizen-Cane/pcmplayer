@@ -17,9 +17,10 @@ import teaselib.hosts.DummyHost;
 import teaselib.hosts.DummyPersistence;
 
 public class TestUtils {
+    public static final String TEST_NAMESPACE = "Test_Namespace";
+
     public static TeaseLib teaseLib() {
-        TeaseLib teaseLib = new TeaseLib(new DummyHost(),
-                new DummyPersistence());
+        TeaseLib teaseLib = new TeaseLib(new DummyHost(), new DummyPersistence());
         return teaseLib;
     }
 
@@ -29,14 +30,11 @@ public class TestUtils {
     }
 
     public static Player createPlayer(TeaseLib teaseLib, Class<?> scriptClass) {
-        return createPlayer(teaseLib, scriptClass,
-                teaseLib.getDominant(Gender.Female, Locale.US));
+        return createPlayer(teaseLib, scriptClass, teaseLib.getDominant(Gender.Female, Locale.US));
     }
 
-    public static Player createPlayer(TeaseLib teaseLib, Class<?> scriptClass,
-            Actor dominant) {
-        Player player = new Player(teaseLib, new ResourceLoader(scriptClass),
-                dominant, "pcm", null) {
+    public static Player createPlayer(TeaseLib teaseLib, Class<?> scriptClass, Actor dominant) {
+        Player player = new Player(teaseLib, new ResourceLoader(scriptClass), dominant, TEST_NAMESPACE, null) {
             @Override
             public void run() {
             }
@@ -45,26 +43,22 @@ public class TestUtils {
     }
 
     public static Player createPlayer(Class<?> scriptClass, String script)
-            throws ScriptParsingException, ScriptExecutionException,
-            IOException, ValidationIssue {
+            throws ScriptParsingException, ScriptExecutionException, IOException, ValidationIssue {
         TeaseLib teaseLib = teaseLib();
         Player player = createPlayer(teaseLib, scriptClass);
         player.loadScript(script);
         return player;
     }
 
-    public static void play(Player player, int start)
-            throws AllActionsSetException, ScriptExecutionException {
+    public static void play(Player player, int start) throws AllActionsSetException, ScriptExecutionException {
         play(player, new ActionRange(start), null);
     }
 
-    public static void play(Player player, ActionRange start)
-            throws AllActionsSetException, ScriptExecutionException {
+    public static void play(Player player, ActionRange start) throws AllActionsSetException, ScriptExecutionException {
         play(player, start, null);
     }
 
-    public static void play(Player player, ActionRange start,
-            ActionRange playRange)
+    public static void play(Player player, ActionRange start, ActionRange playRange)
             throws AllActionsSetException, ScriptExecutionException {
         player.range = start;
         player.play(playRange);

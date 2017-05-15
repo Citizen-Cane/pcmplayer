@@ -11,9 +11,11 @@ import pcm.state.persistence.ScriptState;
 
 public class StateCondition extends BasicCondition {
     private static final Statement STATE = AbstractAction.Statement.State;
+    private final StateCommandLineParameters args;
 
     public StateCondition(StateCommandLineParameters args) throws ScriptParsingException {
         super(statement(args));
+        this.args = args;
     }
 
     private static ParameterizedStatement statement(final StateCommandLineParameters args)
@@ -65,6 +67,11 @@ public class StateCondition extends BasicCondition {
         ClassNotFoundException e) {
             throw new ScriptParsingException(e);
         }
+    }
+
+    @Override
+    public String toString() {
+        return args.toString();
     }
 
 }

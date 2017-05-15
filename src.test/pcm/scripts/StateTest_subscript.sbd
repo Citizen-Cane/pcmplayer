@@ -1,0 +1,25 @@
+' pcm test cases
+
+.define Toys teaselib.Toys
+.declare Toys Enum
+
+
+' testState
+.range 1000
+
+
+[Action 1020]
+.not .state Toys.Nipple_clamps applied
+.state Toys.Nipple_clamps apply
+.range 1021
+
+[Action 1021]
+.loadsbd StateTest.sbd 1025
+
+
+' proper exit for all test cases
+[action 9999]
+.unset 9999
+.noimage
+.quit
+

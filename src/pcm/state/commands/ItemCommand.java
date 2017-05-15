@@ -13,9 +13,11 @@ import teaselib.State;
 
 public class ItemCommand extends BasicCommand {
     private static final Statement ITEM = AbstractAction.Statement.Item;
+    private final StateCommandLineParameters args;
 
     public ItemCommand(StateCommandLineParameters args) throws ScriptParsingException {
         super(statement(args));
+        this.args = args;
     }
 
     private static ParameterizedStatement statement(final StateCommandLineParameters args)
@@ -54,6 +56,11 @@ public class ItemCommand extends BasicCommand {
         ClassNotFoundException e) {
             throw new ScriptParsingException(e);
         }
+    }
+
+    @Override
+    public String toString() {
+        return args.toString();
     }
 
 }

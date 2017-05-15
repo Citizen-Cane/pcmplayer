@@ -15,9 +15,11 @@ import teaselib.State;
 public class StateCommand extends BasicCommand {
 
     private static final Statement STATE = Statement.State;
+    private final StateCommandLineParameters args;
 
     public StateCommand(StateCommandLineParameters args) throws ScriptParsingException {
         super(statement(args));
+        this.args = args;
     }
 
     private static ParameterizedStatement statement(final StateCommandLineParameters args)
@@ -50,7 +52,13 @@ public class StateCommand extends BasicCommand {
                     @Override
                     public void run(ScriptState state) {
                         for (String item : items) {
-                            state.player.state(item).remove(attributes);
+                            if (attributes.length == 0) {
+                                state.player.state(item).remove();
+                            } else {
+                                for (Object attribute : attributes) {
+                                    state.player.state(item).remove(attribute);
+                                }
+                            }
                         }
                     }
                 };
@@ -61,6 +69,11 @@ public class StateCommand extends BasicCommand {
             throw new ScriptParsingException(e);
         }
 
+    }
+
+    @Override
+    public String toString() {
+        return args.toString();
     }
 
 }

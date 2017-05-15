@@ -94,21 +94,16 @@ public abstract class Player extends TeaseScript {
      */
     public final static ActionRange ReturnToPlayer = new ActionRange(0);
 
-    public static void recordVoices(Actor actor, String mainScript, File path,
-            String resourcesRoot, String[] assets)
+    public static void recordVoices(Actor actor, String mainScript, File path, String resourcesRoot, String[] assets)
             throws IOException, ValidationIssue, ScriptParsingException {
         ResourceLoader resources = new ResourceLoader(path, resourcesRoot);
         resources.addAssets(assets);
-        TextToSpeechRecorder recorder = new TextToSpeechRecorder(path,
-                resourcesRoot, resources, new TextVariables());
-        Symbols dominantSubmissiveRelations = Symbols
-                .getDominantSubmissiveRelations();
-        for (Entry<String, String> entry : dominantSubmissiveRelations
-                .entrySet()) {
+        TextToSpeechRecorder recorder = new TextToSpeechRecorder(path, resourcesRoot, resources, new TextVariables());
+        Symbols dominantSubmissiveRelations = Symbols.getDominantSubmissiveRelations();
+        for (Entry<String, String> entry : dominantSubmissiveRelations.entrySet()) {
             Symbols dominantSubmissiveRelation = new Symbols();
             dominantSubmissiveRelation.put(entry.getKey(), entry.getValue());
-            ScriptCache scripts = new ScriptCache(resources,
-                    Player.ScriptFolder, dominantSubmissiveRelation);
+            ScriptCache scripts = new ScriptCache(resources, Player.ScriptFolder, dominantSubmissiveRelation);
             // Get the main script
             Script main = scripts.get(actor, mainScript);
             // and validate to load all the sub scripts
@@ -124,11 +119,9 @@ public abstract class Player extends TeaseScript {
         recorder.finish();
     }
 
-    public Player(TeaseLib teaseLib, ResourceLoader resources, Actor actor,
-            String namespace, String mistressPath) {
+    public Player(TeaseLib teaseLib, ResourceLoader resources, Actor actor, String namespace, String mistressPath) {
         super(teaseLib, resources, actor, namespace);
-        this.scripts = new ScriptCache(resources, Player.ScriptFolder,
-                createDominantSubmissiveSymbols());
+        this.scripts = new ScriptCache(resources, Player.ScriptFolder, createDominantSubmissiveSymbols());
         this.mistressPath = mistressPath;
         this.invokedOnAllSet = false;
         this.state = new MappedScriptState(this);
@@ -141,12 +134,10 @@ public abstract class Player extends TeaseScript {
         } else {
             dominantSubmissiveSymbol.append("F");
         }
-        if (persistentEnum(Sexuality.Sex.class)
-                .value() == Sexuality.Sex.Female) {
+        if (persistentEnum(Sexuality.Sex.class).value() == Sexuality.Sex.Female) {
             dominantSubmissiveSymbol.append("f");
         } else {
-            if (persistentEnum(Sexuality.Gender.class)
-                    .value() == Gender.Feminine) {
+            if (persistentEnum(Sexuality.Gender.class).value() == Gender.Feminine) {
                 dominantSubmissiveSymbol.append("tv");
             } else {
                 dominantSubmissiveSymbol.append("m");
@@ -165,8 +156,7 @@ public abstract class Player extends TeaseScript {
             if (debugStream != null) {
                 debugOutput = true;
                 validateScripts = true;
-                BufferedReader debugReader = new BufferedReader(
-                        new InputStreamReader(debugStream));
+                BufferedReader debugReader = new BufferedReader(new InputStreamReader(debugStream));
                 try {
                     String line;
                     while ((line = debugReader.readLine()) != null) {
@@ -208,12 +198,10 @@ public abstract class Player extends TeaseScript {
 
     public void play(String name, ActionRange startRange) {
         SpeechRecognitionRejectedScript srRejectedHandler = actor.speechRecognitionRejectedScript;
-        actor.speechRecognitionRejectedScript = new SpeechRecognitionRejectedScript(
-                this) {
+        actor.speechRecognitionRejectedScript = new SpeechRecognitionRejectedScript(this) {
             @Override
             public boolean canRun() {
-                return Player.this.script.onRecognitionRejected != null
-                        && !intentionalQuit;
+                return Player.this.script.onRecognitionRejected != null && !intentionalQuit;
             }
 
             @Override
@@ -273,8 +261,8 @@ public abstract class Player extends TeaseScript {
         }
     }
 
-    public void loadScript(String name) throws ScriptParsingException,
-            ValidationIssue, IOException, ScriptExecutionException {
+    public void loadScript(String name)
+            throws ScriptParsingException, ValidationIssue, IOException, ScriptExecutionException {
         setScript(scripts.get(actor, name));
         if (validateScripts) {
             validateProject();
@@ -288,8 +276,7 @@ public abstract class Player extends TeaseScript {
         state.setScript(script);
     }
 
-    private void validateProject()
-            throws ScriptParsingException, ValidationIssue, IOException {
+    private void validateProject() throws ScriptParsingException, ValidationIssue, IOException {
         List<ValidationIssue> validationErrors = new ArrayList<ValidationIssue>();
         validateAspects(script, state, resources, validationErrors);
         // TODO Loaded scripts explicitly - currently they're loaded by loading
@@ -304,15 +291,12 @@ public abstract class Player extends TeaseScript {
             for (ScriptException scriptError : validationErrors) {
                 logger.info(errorMessage(scriptError));
             }
-            throw new ValidationIssue(
-                    "Validation failed, " + validationErrors.size() + " issues",
-                    script);
+            throw new ValidationIssue("Validation failed, " + validationErrors.size() + " issues", script);
         }
     }
 
-    private static void validateAspects(Script script, MappedScriptState state,
-            ResourceLoader resources, List<ValidationIssue> validationErrors)
-            throws ScriptParsingException {
+    private static void validateAspects(Script script, MappedScriptState state, ResourceLoader resources,
+            List<ValidationIssue> validationErrors) throws ScriptParsingException {
         validateScript(script, validationErrors);
         validateMappings(script, state, validationErrors);
         validateResources(script, resources, validationErrors);
@@ -320,36 +304,29 @@ public abstract class Player extends TeaseScript {
 
     private static void validateMappings(Script script, MappedScriptState state,
             List<ValidationIssue> validationErrors) {
-        validateCommands(script, script, script.commands, state,
-                validationErrors);
+        validateCommands(script, script, script.commands, state, validationErrors);
         for (Action action : script.actions.getAll()) {
-            validateCommands(script, action, action.commands, state,
-                    validationErrors);
+            validateCommands(script, action, action.commands, state, validationErrors);
         }
     }
 
-    private static void validateCommands(Script script,
-            AbstractAction abstractAction, List<Command> commands,
+    private static void validateCommands(Script script, AbstractAction abstractAction, List<Command> commands,
             MappedScriptState state, List<ValidationIssue> validationErrors) {
         if (commands != null) {
             for (Command command : commands) {
                 if (command instanceof ResetRange) {
-                    validateCommand(script, abstractAction,
-                            (ActionRange) command, state, validationErrors);
+                    validateCommand(script, abstractAction, (ActionRange) command, state, validationErrors);
                 }
             }
         }
     }
 
-    private static void validateCommand(Script script,
-            AbstractAction abstractAction, ActionRange range,
+    private static void validateCommand(Script script, AbstractAction abstractAction, ActionRange range,
             MappedScriptState state, List<ValidationIssue> validationErrors) {
         for (int n : range) {
             if (state.hasScriptValueMapping(n)) {
-                validationErrors
-                        .add(new ValidationIssue(abstractAction.toString()
-                                + ": .resetrange may not unset mapped item or state "
-                                + n, script));
+                validationErrors.add(new ValidationIssue(
+                        abstractAction.toString() + ": .resetrange may not unset mapped item or state " + n, script));
             }
         }
     }
@@ -361,20 +338,15 @@ public abstract class Player extends TeaseScript {
             teaseLib.host.setQuitHandler(new TeaseScript(this) {
                 @Override
                 public void run() {
-                    logger.info("Interrupting script thread '"
-                            + scriptThread.getName() + "'");
+                    logger.info("Interrupting script thread '" + scriptThread.getName() + "'");
                     scriptThread.interrupt();
                     // The main script continues at the onClose range
                 }
             });
         }
         script.execute(state);
-        boolean haveImages = mistressPath != null
-                && script.mistressImages != null;
-        actor.images = haveImages
-                ? new RandomImages(
-                        resources(mistressPath + script.mistressImages))
-                : Images.None;
+        boolean haveImages = mistressPath != null && script.mistressImages != null;
+        actor.images = haveImages ? new RandomImages(resources(mistressPath + script.mistressImages)) : Images.None;
     }
 
     /**
@@ -388,8 +360,7 @@ public abstract class Player extends TeaseScript {
      * @throws AllActionsSetException
      * @throws ScriptExecutionException
      */
-    public void play(ActionRange playRange)
-            throws AllActionsSetException, ScriptExecutionException {
+    public void play(ActionRange playRange) throws AllActionsSetException, ScriptExecutionException {
         while (true) {
             // Choose action
             Action action = getAction();
@@ -432,8 +403,7 @@ public abstract class Player extends TeaseScript {
                 // (placing the onClose range inside the play range),
                 // but saves us from creating a second player instance
                 boolean callOnClose = playRange == null
-                        || (playRange.contains(script.onClose.start)
-                                && playRange.contains(script.onClose.end));
+                        || (playRange.contains(script.onClose.start) && playRange.contains(script.onClose.end));
                 if (script.onClose != null && callOnClose && !intentionalQuit) {
                     // Done automatically in reply(), otherwise we have to do it
                     endAll();
@@ -447,8 +417,7 @@ public abstract class Player extends TeaseScript {
             } catch (ScriptExecutionException e) {
                 throw e;
             } catch (Throwable t) {
-                throw new ScriptExecutionException(action,
-                        "Error executing script", t, script);
+                throw new ScriptExecutionException(action, "Error executing script", t, script);
             }
         }
     }
@@ -465,22 +434,20 @@ public abstract class Player extends TeaseScript {
                 range = script.onAllSet;
                 actions = range(script, range);
                 if (actions.size() == 0) {
-                    throw new AllActionsSetException(
-                            script.actions.getAll(range),
+                    throw new AllActionsSetException(script.actions.getAll(range),
                             new ActionRange(range.start, range.end), script);
                 } else {
                     action = chooseAction(actions);
                 }
             } else {
-                throw new AllActionsSetException(script.actions.getAll(range),
-                        new ActionRange(range.start, range.end), script);
+                throw new AllActionsSetException(script.actions.getAll(range), new ActionRange(range.start, range.end),
+                        script);
             }
         }
         return action;
     }
 
-    public ActionRange execute(final Action action)
-            throws ScriptExecutionException {
+    public ActionRange execute(final Action action) throws ScriptExecutionException {
         // Mark this action as executed
         state.set(action);
         // Perform commands
@@ -540,8 +507,7 @@ public abstract class Player extends TeaseScript {
         List<Action> selectable = new LinkedList<Action>();
         List<ActionRange> relaxedConditions;
         Iterator<ActionRange> conditionsRanges;
-        relaxedConditions = new ArrayList<ActionRange>(
-                script.conditionRanges.size());
+        relaxedConditions = new ArrayList<ActionRange>(script.conditionRanges.size());
         conditionsRanges = script.conditionRanges.iterator();
         while (true) {
             List<Action> poss0 = null;
@@ -583,10 +549,8 @@ public abstract class Player extends TeaseScript {
             } else if (conditionsRanges.hasNext()) {
                 ActionRange ignore = conditionsRanges.next();
                 if (ignore != null) {
-                    if (ignore.start > Integer.MIN_VALUE
-                            || ignore.end < Integer.MAX_VALUE) {
-                        logger.info("Should/ShouldNot: ignoring "
-                                + ignore.toString());
+                    if (ignore.start > Integer.MIN_VALUE || ignore.end < Integer.MAX_VALUE) {
+                        logger.info("Should/ShouldNot: ignoring " + ignore.toString());
                     }
                 }
                 relaxedConditions.add(ignore);
@@ -597,8 +561,7 @@ public abstract class Player extends TeaseScript {
         }
     }
 
-    private boolean evalConditions(Action action,
-            List<ActionRange> conditionRanges) {
+    private boolean evalConditions(Action action, List<ActionRange> conditionRanges) {
         if (action.conditions != null) {
             for (Condition condition : action.conditions) {
                 if (ignoreOptionalCondition(condition, conditionRanges)) {
@@ -607,8 +570,7 @@ public abstract class Player extends TeaseScript {
                     if (condition.isTrueFor(state)) {
                         continue;
                     } else {
-                        logger.info("Action " + action.number + ": "
-                                + condition.getClass().getSimpleName()
+                        logger.info("Action " + action.number + ": " + condition.getClass().getSimpleName() + " "
                                 + condition.toString());
                         return false;
                     }
@@ -618,10 +580,8 @@ public abstract class Player extends TeaseScript {
         return true;
     }
 
-    public boolean ignoreOptionalCondition(Condition condition,
-            List<ActionRange> conditionRanges) {
-        boolean isOptionalCondition = condition instanceof Should
-                || condition instanceof ShouldNot;
+    public boolean ignoreOptionalCondition(Condition condition, List<ActionRange> conditionRanges) {
+        boolean isOptionalCondition = condition instanceof Should || condition instanceof ShouldNot;
         if (conditionRanges != null && isOptionalCondition) {
             @SuppressWarnings("unchecked")
             Collection<Integer> col = (Collection<Integer>) condition;
@@ -660,14 +620,13 @@ public abstract class Player extends TeaseScript {
     }
 
     @Override
-    protected String showChoices(ScriptFunction scriptFunction,
-            Confidence recognitionConfidence, List<String> choices) {
+    protected String showChoices(ScriptFunction scriptFunction, Confidence recognitionConfidence,
+            List<String> choices) {
         // Display text according to slave's level of articulateness
         Long gag = script != null ? state.get(script.gag) : ScriptState.UNSET;
         if (gag.equals(ScriptState.SET)) {
             // Slave is gagged
-            final List<String> processedChoices = new ArrayList<String>(
-                    choices.size());
+            final List<String> processedChoices = new ArrayList<String>(choices.size());
             for (String choice : choices) {
                 // The simple solution: replace vocals with consonants
                 choice = choice.replace("a", "m");
@@ -677,8 +636,7 @@ public abstract class Player extends TeaseScript {
                 choice = choice.replace("u", "m");
                 processedChoices.add(choice);
             }
-            final String processedChoice = super.showChoices(scriptFunction,
-                    recognitionConfidence, processedChoices);
+            final String processedChoice = super.showChoices(scriptFunction, recognitionConfidence, processedChoices);
             // Return the original choice instance
             int index = processedChoices.indexOf(processedChoice);
             if (index < 0) {
@@ -688,13 +646,11 @@ public abstract class Player extends TeaseScript {
                 return choices.get(index);
             }
         } else {
-            return super.showChoices(scriptFunction, recognitionConfidence,
-                    choices);
+            return super.showChoices(scriptFunction, recognitionConfidence, choices);
         }
     }
 
-    public static void validateScript(Script script,
-            List<ValidationIssue> validationErrors)
+    public static void validateScript(Script script, List<ValidationIssue> validationErrors)
             throws ScriptParsingException {
         script.validate(validationErrors);
         for (Action action : script.actions.values()) {
@@ -707,16 +663,14 @@ public abstract class Player extends TeaseScript {
         }
     }
 
-    public static void validateResources(Script script,
-            ResourceLoader resourceLoader,
+    public static void validateResources(Script script, ResourceLoader resourceLoader,
             List<ValidationIssue> validationIssues) {
         for (Action action : script.actions.values()) {
             testResources(script, action, resourceLoader, validationIssues);
         }
     }
 
-    private static void testResources(Script script, Action action,
-            ResourceLoader resourceLoader,
+    private static void testResources(Script script, Action action, ResourceLoader resourceLoader,
             List<ValidationIssue> validationIssues) {
         for (String resource : action.validateResources()) {
             InputStream stream = null;
@@ -747,12 +701,10 @@ public abstract class Player extends TeaseScript {
     private static String errorMessage(Throwable t, String scriptName) {
         Throwable cause = t.getCause();
         if (cause != null) {
-            return "Script " + scriptName + ": " + t.getMessage() + "\n"
-                    + cause.getClass().getSimpleName() + ": "
+            return "Script " + scriptName + ": " + t.getMessage() + "\n" + cause.getClass().getSimpleName() + ": "
                     + cause.getMessage();
         } else {
-            return "Script " + scriptName + ", " + t.getClass().getName() + ": "
-                    + t.getMessage();
+            return "Script " + scriptName + ", " + t.getClass().getName() + ": " + t.getMessage();
         }
     }
 

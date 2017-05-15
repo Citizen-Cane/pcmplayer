@@ -16,4 +16,9 @@ public class Not implements Condition {
         return !condition.isTrueFor(state);
     }
 
+    @Override
+    public String toString() {
+        return condition.getClass().getSimpleName() + " " + condition.toString();
+    }
+
 }
