@@ -47,18 +47,14 @@ public class StateCommand extends BasicCommand {
                     }
                 };
             } else if (args.containsKey(StateCommandLineParameters.Keyword.Remove)) {
-                final Object[] attributes = args.items(Keyword.Remove);
+                if (args.items(Keyword.Remove).length > 0) {
+                    throw new IllegalArgumentException("Remove can only remove all items");
+                }
                 return new ParameterizedStatement(STATE, args) {
                     @Override
                     public void run(ScriptState state) {
                         for (String item : items) {
-                            if (attributes.length == 0) {
-                                state.player.state(item).remove();
-                            } else {
-                                for (Object attribute : attributes) {
-                                    state.player.state(item).remove(attribute);
-                                }
-                            }
+                            state.player.state(item).remove();
                         }
                     }
                 };

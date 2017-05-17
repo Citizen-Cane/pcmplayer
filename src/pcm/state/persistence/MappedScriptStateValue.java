@@ -42,9 +42,7 @@ public abstract class MappedScriptStateValue implements MappedScriptValue {
 
         @Override
         public void unset() {
-            for (Enum<?> peer : peers) {
-                state.remove(peer);
-            }
+            state.remove();
         }
     }
 
@@ -63,9 +61,7 @@ public abstract class MappedScriptStateValue implements MappedScriptValue {
 
         @Override
         public void unset() {
-            for (Enum<?> peer : peers) {
-                state.remove(peer);
-            }
+            state.remove();
         }
     }
 }

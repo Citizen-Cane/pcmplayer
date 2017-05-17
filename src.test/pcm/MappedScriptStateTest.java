@@ -21,6 +21,7 @@ import pcm.state.persistence.MappedScriptState;
 import pcm.state.persistence.MappedScriptStateValue;
 import pcm.state.persistence.ScriptState;
 import pcm.util.TestUtils;
+import teaselib.HouseHold;
 import teaselib.State;
 import teaselib.core.Debugger;
 
@@ -29,6 +30,7 @@ public class MappedScriptStateTest {
 
     static final int SomethingOnPenisAction = 23;
     static final int ChastityCageAction = 44;
+    static final int CondomsAction = 46;
 
     private Player player;
     private State chastityCageState;
@@ -44,8 +46,7 @@ public class MappedScriptStateTest {
     }
 
     @Before
-    public void before()
-            throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
+    public void before() throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
         initPlayer();
         installMapping();
         loadTestScript();
@@ -58,11 +59,11 @@ public class MappedScriptStateTest {
     }
 
     private void installMapping() {
-        pcm.addScriptValueMapping(MappedScriptState.Global, new MappedScriptStateValue.Indefinitely(
-                ChastityCageAction, chastityCageState, Body.SomethingOnPenis, Body.CannotJerkOff));
+        pcm.addScriptValueMapping(MappedScriptState.Global, new MappedScriptStateValue.Indefinitely(ChastityCageAction,
+                chastityCageState, Body.SomethingOnPenis, Body.CannotJerkOff));
 
-        pcm.addStateTimeMapping(MappedScriptState.Global, ChastityCageAction, chastityCageState,
-                Body.SomethingOnPenis, Body.CannotJerkOff);
+        pcm.addStateTimeMapping(MappedScriptState.Global, ChastityCageAction, chastityCageState, Body.SomethingOnPenis,
+                Body.CannotJerkOff);
     }
 
     private void loadTestScript()
@@ -81,8 +82,7 @@ public class MappedScriptStateTest {
     }
 
     @Test(expected = java.lang.RuntimeException.class)
-    public void testThatUninitializedUnmappedStateThrows()
-            throws AllActionsSetException, ScriptExecutionException {
+    public void testThatUninitializedUnmappedStateThrows() throws AllActionsSetException, ScriptExecutionException {
         TestUtils.play(player, 1010);
 
         assertEquals(SET, pcm.get(1010));
@@ -142,12 +142,16 @@ public class MappedScriptStateTest {
         debugger.freezeTime();
 
         pcm.unset(ChastityCageAction);
+        assertEquals(UNSET, pcm.get(ChastityCageAction));
         assertFalse(chastityCageState.applied());
         assertTrue(chastityCageState.expired());
 
         assertEquals(State.REMOVED, chastityCageState.duration().limit(TimeUnit.SECONDS));
-        assertEquals(State.REMOVED,
-                pcm.getTime(ChastityCageAction) - player.teaseLib.getTime(TimeUnit.SECONDS));
+        long chastityActionRemoveTime = pcm.getTime(ChastityCageAction);
+        long time = player.teaseLib.getTime(TimeUnit.SECONDS);
+        // assertEquals(State.REMOVED, chastityActionRemoveTime);
+
+        assertEquals(State.REMOVED, chastityActionRemoveTime - time);
     }
 
     @Test
@@ -219,21 +223,59 @@ public class MappedScriptStateTest {
     }
 
     @Test
-    public void testThatStatesWithMultiplePeersWorkAsExpectedWithSelfReferencingItems()
-            throws AllActionsSetException, ScriptExecutionException, ScriptParsingException,
-            ValidationIssue, IOException {
+    public void testThatStatesWithMultiplePeersWorkAsExpectedWithSelfReferencingItems() throws AllActionsSetException,
+            ScriptExecutionException, ScriptParsingException, ValidationIssue, IOException {
         assertThatUninitializedStateHasCorrectDefaultValues();
 
-        State somethingOnPenisState = player.state(Body.SomethingOnPenis);
-        pcm.addScriptValueMapping(MappedScriptState.Global, new MappedScriptStateValue.Indefinitely(
-                SomethingOnPenisAction, somethingOnPenisState, Body.SomethingOnPenis));
+        State condomState = player.state(HouseHold.Condoms);
+        pcm.addScriptValueMapping(MappedScriptState.Global, new MappedScriptStateValue.Indefinitely(CondomsAction,
+                condomState, HouseHold.Condoms, Body.SomethingOnPenis));
 
-        pcm.addStateTimeMapping(MappedScriptState.Global, SomethingOnPenisAction,
-                somethingOnPenisState, Body.SomethingOnPenis);
+        pcm.addStateTimeMapping(MappedScriptState.Global, CondomsAction, condomState, HouseHold.Condoms,
+                Body.SomethingOnPenis);
+
+        pcm.addScriptValueMapping(MappedScriptState.Global,
+                new MappedScriptStateValue.Indefinitely(SomethingOnPenisAction, condomState, Body.SomethingOnPenis));
 
         loadTestScript();
 
         TestUtils.play(player, 1050);
+    }
+
+    @Test
+    public void testThatStatesWithMultiplePeersWorkAsExpectedWithSelfReferencingItemsInJava()
+            throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
+        assertThatUninitializedStateHasCorrectDefaultValues();
+
+        State condomState = player.state(HouseHold.Condoms);
+        pcm.addScriptValueMapping(MappedScriptState.Global, new MappedScriptStateValue.Indefinitely(CondomsAction,
+                condomState, HouseHold.Condoms, Body.SomethingOnPenis));
+
+        pcm.addStateTimeMapping(MappedScriptState.Global, CondomsAction, condomState, HouseHold.Condoms,
+                Body.SomethingOnPenis);
+
+        pcm.addScriptValueMapping(MappedScriptState.Global,
+                new MappedScriptStateValue.Indefinitely(SomethingOnPenisAction, condomState, Body.SomethingOnPenis));
+
+        // Load test script to actually select the mapping
+        loadTestScript();
+
+        pcm.set(CondomsAction);
+        pcm.set(ChastityCageAction);
+
+        assertEquals(SET, pcm.get(SomethingOnPenisAction));
+        assertEquals(SET, pcm.get(ChastityCageAction));
+        assertEquals(SET, pcm.get(CondomsAction));
+
+        pcm.unset(ChastityCageAction);
+        assertEquals(SET, pcm.get(SomethingOnPenisAction));
+        assertEquals(UNSET, pcm.get(ChastityCageAction));
+        assertEquals(SET, pcm.get(CondomsAction));
+
+        pcm.unset(CondomsAction);
+        assertEquals(UNSET, pcm.get(SomethingOnPenisAction));
+        assertEquals(UNSET, pcm.get(ChastityCageAction));
+        assertEquals(UNSET, pcm.get(CondomsAction));
     }
 
     @Test

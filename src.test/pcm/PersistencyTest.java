@@ -85,15 +85,15 @@ public class PersistencyTest {
         String mainScript = "PersistencyTest_testThatMappedStateIsPersisted";
         MappedScriptState state = player.state;
 
-        state.addScriptValueMapping(mainScript, new MappedScriptStateValue.Indefinitely(267,
-                player.state(Body.Chastified), Toys.Chastity_Device));
+        state.addScriptValueMapping(mainScript,
+                new MappedScriptStateValue.Indefinitely(267, player.state(Body.Chastified), Toys.Chastity_Device));
 
         player.loadScript(mainScript);
 
         pcm.util.TestUtils.play(player, new ActionRange(1000), null);
 
-        TeaseLib.PersistentString chastifiedState = player.teaseLib.new PersistentString(
-                TeaseLib.DefaultDomain, "pcm.PersistencyTest", "Body.Chastified.state.duration");
+        TeaseLib.PersistentString chastifiedState = player.teaseLib.new PersistentString(TeaseLib.DefaultDomain,
+                "pcm.PersistencyTest", "Body.Chastified.state.duration");
 
         assertTrue(chastifiedState.available());
     }
@@ -104,15 +104,15 @@ public class PersistencyTest {
         String mainScript = "PersistencyTest_testThatMappedStateIsPersisted";
         MappedScriptState state = player.state;
 
-        state.addScriptValueMapping(mainScript, new MappedScriptStateValue.ForSession(267,
-                player.state(Body.Chastified), Toys.Chastity_Device));
+        state.addScriptValueMapping(mainScript,
+                new MappedScriptStateValue.ForSession(267, player.state(Body.Chastified), Toys.Chastity_Device));
 
         player.loadScript(mainScript);
 
         pcm.util.TestUtils.play(player, new ActionRange(1000), null);
 
-        TeaseLib.PersistentString enemaState = player.teaseLib.new PersistentString(
-                TeaseLib.DefaultDomain, "pcm.PersistencyTest", "Assignments.Enema.state");
+        TeaseLib.PersistentString enemaState = player.teaseLib.new PersistentString(TeaseLib.DefaultDomain,
+                "pcm.PersistencyTest", "Assignments.Enema.state");
 
         assertFalse(enemaState.available());
     }
@@ -123,15 +123,14 @@ public class PersistencyTest {
         String mainScript = "PersistencyTest_testThatMappedStateIsPersisted";
         MappedScriptState state = player.state;
 
-        state.addStateTimeMapping(MappedScriptState.Global, 45, player.state(Body.Chastified),
-                Toys.Chastity_Device);
+        state.addStateTimeMapping(MappedScriptState.Global, 45, player.state(Body.Chastified), Toys.Chastity_Device);
 
         player.loadScript(mainScript);
 
         pcm.util.TestUtils.play(player, new ActionRange(1000), null);
 
-        TeaseLib.PersistentString chastifiedState = player.teaseLib.new PersistentString(
-                TeaseLib.DefaultDomain, "pcm.PersistencyTest", "Body.Chastified.state.duration");
+        TeaseLib.PersistentString chastifiedState = player.teaseLib.new PersistentString(TeaseLib.DefaultDomain,
+                "pcm.PersistencyTest", "Body.Chastified.state.duration");
         assertTrue(chastifiedState.available());
     }
 
@@ -141,15 +140,14 @@ public class PersistencyTest {
         String mainScript = "PersistencyTest_testThatMappedStateIsPersisted";
         MappedScriptState state = player.state;
 
-        state.addStateTimeMapping(MappedScriptState.Global, 45, player.state(Body.Chastified),
-                Toys.Chastity_Device);
+        state.addStateTimeMapping(MappedScriptState.Global, 45, player.state(Body.Chastified), Toys.Chastity_Device);
 
         player.loadScript(mainScript);
 
         pcm.util.TestUtils.play(player, new ActionRange(1010), null);
 
-        TeaseLib.PersistentString chastifiedState = player.teaseLib.new PersistentString(
-                TeaseLib.DefaultDomain, "pcm.PersistencyTest", "Body.Chastified.state.duration");
+        TeaseLib.PersistentString chastifiedState = player.teaseLib.new PersistentString(TeaseLib.DefaultDomain,
+                "pcm.PersistencyTest", "Body.Chastified.state.duration");
         assertTrue(chastifiedState.available());
     }
 
@@ -159,15 +157,14 @@ public class PersistencyTest {
         String mainScript = "PersistencyTest_testThatMappedStateIsPersisted";
         MappedScriptState state = player.state;
 
-        state.addStateTimeMapping(MappedScriptState.Global, 45, player.state(Body.Chastified),
-                Toys.Chastity_Device);
+        state.addStateTimeMapping(MappedScriptState.Global, 45, player.state(Body.Chastified), Toys.Chastity_Device);
 
         player.loadScript(mainScript);
 
         pcm.util.TestUtils.play(player, new ActionRange(1020), null);
 
-        TeaseLib.PersistentString chastifiedState = player.teaseLib.new PersistentString(
-                TeaseLib.DefaultDomain, "pcm.PersistencyTest", "Body.Chastified.state.duration");
+        TeaseLib.PersistentString chastifiedState = player.teaseLib.new PersistentString(TeaseLib.DefaultDomain,
+                "pcm.PersistencyTest", "Body.Chastified.state.duration");
         assertTrue(chastifiedState.available());
     }
 }
