@@ -1,23 +1,39 @@
 ' pcm test cases
 
-.define Toys teaselib.Toys
+
+.define body teaselib.Body
+.declare body enum
+
+.define Toys teASelib.TOys
 .declare Toys String
+
+.range 1000
 
 
 ' testDefineStatement
-.range 1000
-
 
 [Action 1000]
 .state Toys.Collar apply
 .range 9999
 
-[Action 1010]
+[Action 1001]
+.state Toys.Collar applied
 .state Toys.Collar apply over 01:00"00
 .range 9999
 
-[Action 1020]
+[Action 1002]
 .state Toys.Collar remove
+.range 9999
+
+
+' testCaseIndepencency
+
+[Action 1010]
+.state Toys.Collar apply body.AroundNeck
+.range 1011
+
+[Action 1011]
+.state body.AroundNeck applied
 .range 9999
 
 

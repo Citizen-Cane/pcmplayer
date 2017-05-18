@@ -35,7 +35,7 @@ public class ScriptParsingTest {
         assertTrue(player.state(Toys.Collar).applied());
         assertTrue(player.state(Toys.Collar).expired());
 
-        TestUtils.play(player, 1010);
+        TestUtils.play(player, 1001);
 
         assertTrue(player.state(Toys.Collar).applied());
         assertFalse(player.state(Toys.Collar).expired());
@@ -44,10 +44,21 @@ public class ScriptParsingTest {
         assertTrue(player.state(Toys.Collar).applied());
         assertTrue(player.state(Toys.Collar).expired());
 
-        TestUtils.play(player, 1020);
+        TestUtils.play(player, 1002);
 
         assertFalse(player.state(Toys.Collar).applied());
         assertTrue(player.state(Toys.Collar).expired());
     }
 
+    @Test
+    public void testCaseIndepencency()
+            throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
+        Player player = TestUtils.createPlayer(getClass());
+        player.loadScript("ScriptParsingTest");
+
+        Debugger debugger = new Debugger(player.teaseLib);
+        debugger.freezeTime();
+
+        TestUtils.play(player, 1010);
+    }
 }

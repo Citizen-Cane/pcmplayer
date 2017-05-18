@@ -33,12 +33,13 @@ public class Declarations {
         for (String value : qualifiedNames) {
             boolean valueChecked = false;
             for (java.util.Map.Entry<String, String> entry : entries()) {
-                if (QualifiedItem.fromType(value).namespace().equalsIgnoreCase(entry.getKey())) {
-                    if (entry.getValue().equalsIgnoreCase(Declarations.ENUM)) {
+                boolean isDeclared = QualifiedItem.fromType(value).namespace().equalsIgnoreCase(entry.getKey());
+                if (isDeclared) {
+                    if (isKeyword(entry, Declarations.ENUM)) {
                         ReflectionUtils.getEnum(value);
                         valueChecked = true;
                         break;
-                    } else if (entry.getValue().equalsIgnoreCase(Declarations.STRING)) {
+                    } else if (isKeyword(entry, Declarations.STRING)) {
                         valueChecked = true;
                         break;
                     }
@@ -49,6 +50,10 @@ public class Declarations {
             }
         }
         return qualifiedNames;
+    }
+
+    private static boolean isKeyword(java.util.Map.Entry<String, String> entry, String keyWord) {
+        return entry.getValue().equalsIgnoreCase(keyWord);
     }
 
 }
