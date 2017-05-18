@@ -19,7 +19,7 @@ import teaselib.core.Debugger;
 public class ItemTest {
 
     @Test
-    public void testState() throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
+    public void testApplyItem() throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
         Player player = TestUtils.createPlayer(getClass());
         player.loadScript(getClass().getSimpleName());
 
