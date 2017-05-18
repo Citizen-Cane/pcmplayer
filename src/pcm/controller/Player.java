@@ -72,6 +72,7 @@ public abstract class Player extends TeaseScript {
 
     private final ScriptCache scripts;
     private final String mistressPath;
+    public final String namespaceApplyAttribute;
 
     public boolean validateScripts = false;
     public boolean debugOutput = false;
@@ -123,6 +124,7 @@ public abstract class Player extends TeaseScript {
         super(teaseLib, resources, actor, namespace);
         this.scripts = new ScriptCache(resources, Player.ScriptFolder, createDominantSubmissiveSymbols());
         this.mistressPath = mistressPath;
+        this.namespaceApplyAttribute = "Applied.by." + namespace;
         this.invokedOnAllSet = false;
         this.state = new MappedScriptState(this);
     }

@@ -34,6 +34,8 @@ public class StateCommand extends BasicCommand {
                     @Override
                     public void run(ScriptState state) {
                         for (String item : items) {
+                            state.player.state(item).apply(state.player.script.scriptApplyAttribute);
+                            state.player.state(item).apply(state.player.namespaceApplyAttribute);
                             State.Options options = state.player.state(item).apply(attributes);
                             if (duration != null) {
                                 State.Persistence persistence = options.over(duration.toSeconds(), TimeUnit.SECONDS);

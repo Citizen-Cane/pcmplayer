@@ -35,15 +35,23 @@ public class StateTest {
         assertTrue(player.state(Toys.Collar).applied());
         assertFalse(player.state(Toys.Collar).expired());
 
+        assertTrue(player.state(Toys.Collar).is(TestUtils.TEST_NAMESPACE));
+        assertTrue(player.state(Toys.Collar).is("Applied.by.StateTest"));
+        assertFalse(player.state(Toys.Collar).is("Applied.by.StateTest_subscript"));
+
         debugger.advanceTime(1, TimeUnit.HOURS);
         TestUtils.play(player, 1008);
 
         assertFalse(player.state(Toys.Collar).applied());
         assertTrue(player.state(Toys.Collar).expired());
+
+        assertFalse(player.state(Toys.Collar).is(TestUtils.TEST_NAMESPACE));
+        assertFalse(player.state(Toys.Collar).is("Applied.by.StateTest"));
+        assertFalse(player.state(Toys.Collar).is("Applied.by.StateTest_subscript"));
     }
 
     @Test
-    public void testStateNamespace()
+    public void testStateNamespaceAndApplyTags()
             throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
         Player player = TestUtils.createPlayer(getClass());
         player.loadScript(getClass().getSimpleName());
@@ -57,6 +65,32 @@ public class StateTest {
         TestUtils.play(player, 1020);
 
         assertTrue(player.state(Toys.Nipple_clamps).is(TestUtils.TEST_NAMESPACE));
+
+        assertFalse(player.state(Toys.Nipple_clamps).is("Applied.by.StateTest"));
+        assertTrue(player.state(Toys.Nipple_clamps).is("Applied.by.StateTest_subscript"));
+    }
+
+    @Test
+    public void testStateNamespaceAndApplyTagsInScript()
+            throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
+        Player player = TestUtils.createPlayer(getClass());
+        player.loadScript(getClass().getSimpleName());
+
+        Debugger debugger = new Debugger(player.teaseLib);
+        debugger.freezeTime();
+
+        assertFalse(player.state(Toys.Nipple_clamps).applied());
+        assertTrue(player.state(Toys.Nipple_clamps).expired());
+
+        TestUtils.play(player, 1030);
+
+        assertFalse(player.state(Toys.Nipple_clamps).is(TestUtils.TEST_NAMESPACE));
+
+        assertFalse(player.state(Toys.Nipple_clamps).applied());
+        assertTrue(player.state(Toys.Nipple_clamps).expired());
+
+        assertFalse(player.state(Toys.Nipple_clamps).is("Applied.by.StateTest"));
+        assertFalse(player.state(Toys.Nipple_clamps).is("Applied.by.StateTest_subscript"));
     }
 
     @Test

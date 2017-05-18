@@ -3,10 +3,14 @@
 .define Toys teaselib.Toys
 .declare Toys Enum
 
+.declare Applied.by String
+
 
 ' testState
 .range 1000
 
+
+' testStateNamespaceAndApplyTags
 
 [Action 1020]
 .not .state Toys.Nipple_clamps applied
@@ -15,6 +19,29 @@
 
 [Action 1021]
 .loadsbd StateTest.sbd 1025
+
+
+' testStateNamespaceAndApplyTagsInScript
+
+[Action 1030]
+.state Toys.Collar applied
+.range 1031
+
+[Action 1031]
+.state Toys.Nipple_clamps apply
+.range 1032
+
+[Action 1032]
+state toys.Collar is applied.by.StateTest
+.range 1033
+
+[Action 1033]
+.state Toys.Collar is Applied.by.StateTest
+.state Toys.Nipple_clamps is Applied.by.StateTest_subscript
+.range 1035
+
+[Action 1035]
+.loadsbd StateTest.sbd 1035
 
 
 ' proper exit for all test cases

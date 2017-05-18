@@ -3,6 +3,7 @@
 .define Toys teaselib.Toys
 .declare Toys Enum
 
+.declare Applied.by String
 .declare Test_Namespace String
 
 .range 1000
@@ -46,7 +47,7 @@
 .range 9999
 
 
-' testStateNamespace
+' testStateNamespaceAndApplyTags
 
 [Action 1020]
 .not .state Toys.Nipple_clamps applied
@@ -63,6 +64,45 @@
 [Action 1026]
 .state Toys.Nipple_clamps is Test_Namespace
 .range 9999
+
+
+' testStateNamespaceAndApplyTagsInScript
+
+[Action 1030]
+.not .state Toys.Collar applied
+.not .state Toys.Nipple_clamps applied
+.range 1031
+
+[Action 1031]
+.state Toys.Collar apply
+.range 1032
+
+[Action 1032]
+.loadsbd StateTest_subscript.sbd 1030
+
+
+[Action 1035]
+.state Toys.Collar applied
+.state Toys.Nipple_clamps applied
+.range 1036
+
+[Action 1036]
+.state Toys.Collar is Applied.by.StateTest
+.state Toys.Nipple_clamps is Applied.by.StateTest_subscript
+.range 1037
+
+[Action 1037]
+.state Toys.Collar remove
+.state Toys.Nipple_clamps remove
+.range 1038
+
+[Action 1038]
+.not .state Toys.Collar applied
+.not .state Toys.Nipple_clamps applied
+.not .state Toys.Collar is applied.by.StateTest
+.not .state Toys.Nipple_clamps is applied.by.StateTest_subscript
+.range 9999
+
 
 
 ' proper exit for all test cases

@@ -23,6 +23,8 @@ public class Script extends AbstractAction {
     public final Actor actor;
 
     public final String name;
+    public final String scriptApplyAttribute;
+
     public Color backColor;
     public Color textColor;
     public ActionRange onAllSet = null;
@@ -53,6 +55,7 @@ public class Script extends AbstractAction {
             throws ScriptParsingException, ValidationIssue, IOException {
         this.actor = actor;
         this.name = name;
+        this.scriptApplyAttribute = "Applied.by." + name;
         this.scriptCache = scriptCache;
         this.stack = scriptCache.stack;
         logger.info("Parsing script " + name);

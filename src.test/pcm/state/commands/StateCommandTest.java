@@ -20,7 +20,7 @@ public class StateCommandTest {
 
     @Test
     public void testSetState() throws Exception {
-        Player player = TestUtils.createPlayer(StateCommandTest.class);
+        Player player = TestUtils.createPlayer(StateCommandTest.class, "../StateCommandTest");
         State state = player.state(Body.SomethingOnPenis);
         Declarations declarations = new Declarations();
         declarations.add("teaselib.Body", Declarations.STRING);
@@ -33,6 +33,8 @@ public class StateCommandTest {
 
         assertTrue(state.applied());
         assertTrue(state.expired());
+        assertTrue(state.is(player.namespaceApplyAttribute));
+        assertTrue(state.is(player.script.scriptApplyAttribute));
 
         StateCommand rememberFoo = new StateCommand(new StateCommandLineParameters(
                 new String[] { "teaselib.Body.SomethingOnPenis", "Apply", "teaselib.Toys.Chastity_Device", "Remember" },
@@ -67,7 +69,7 @@ public class StateCommandTest {
 
     @Test
     public void testSetStateIndefinitely() throws Exception {
-        Player player = TestUtils.createPlayer(StateCommandTest.class);
+        Player player = TestUtils.createPlayer(StateCommandTest.class, "../StateCommandTest");
         State state = player.state(Body.SomethingOnPenis);
         Declarations declarations = new Declarations();
         declarations.add("teaselib.Body", Declarations.STRING);
@@ -88,7 +90,7 @@ public class StateCommandTest {
 
     @Test
     public void testSetStateIndefinitelyAndRemember() throws Exception {
-        Player player = TestUtils.createPlayer(StateCommandTest.class);
+        Player player = TestUtils.createPlayer(StateCommandTest.class, "../StateCommandTest");
         State state = player.state(Body.SomethingOnPenis);
         Declarations declarations = new Declarations();
         declarations.add("teaselib.Body", Declarations.STRING);
