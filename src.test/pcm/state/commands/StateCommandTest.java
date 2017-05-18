@@ -73,6 +73,7 @@ public class StateCommandTest {
         State state = player.state(Body.SomethingOnPenis);
         Declarations declarations = new Declarations();
         declarations.add("teaselib.Body", Declarations.STRING);
+        declarations.add("teaselib.Toys", Declarations.STRING);
 
         new StateCommand(new StateCommandLineParameters(new String[] { "teaselib.Body.SomethingOnPenis", "Apply",
                 "teaselib.Toys.Chastity_Device", "over", "inf" }, declarations)).execute(player.state);

@@ -27,7 +27,7 @@ public class StateCommand extends BasicCommand {
         try {
             final String[] items = args.items(Keyword.Item);
             if (args.containsKey(StateCommandLineParameters.Keyword.Apply)) {
-                final Object[] attributes = args.items(Keyword.To);
+                final Object[] attributes = args.items(Keyword.Apply);
                 final DurationFormat duration = args.durationOption();
                 final boolean remember = args.rememberOption();
                 return new ParameterizedStatement(STATE, args) {
