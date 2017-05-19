@@ -32,8 +32,9 @@ public class ItemCommand extends BasicCommand {
                     @Override
                     public void run(ScriptState state) {
                         for (String item : items) {
-                            State.Options options;
-                            options = state.player.item(item).to(attributes);
+                            state.player.item(item).to(state.player.script.scriptApplyAttribute);
+                            state.player.item(item).to(state.player.namespaceApplyAttribute);
+                            State.Options options = state.player.item(item).to(attributes);
                             args.handleStateOptions(options, duration, remember);
                         }
                     }

@@ -14,6 +14,7 @@ import pcm.controller.StateCommandLineParameters;
 import pcm.util.TestUtils;
 import teaselib.Body;
 import teaselib.State;
+import teaselib.Toys;
 import teaselib.core.TeaseLib;
 
 public class StateCommandTest {
@@ -21,13 +22,13 @@ public class StateCommandTest {
     @Test
     public void testSetState() throws Exception {
         Player player = TestUtils.createPlayer(StateCommandTest.class, "../StateCommandTest");
-        State state = player.state(Body.SomethingOnPenis);
+        State state = player.state(Toys.Chastity_Device);
         Declarations declarations = new Declarations();
-        declarations.add("teaselib.Body", Declarations.STRING);
         declarations.add("teaselib.Toys", Declarations.STRING);
+        declarations.add("teaselib.Body", Declarations.STRING);
 
         StateCommand foo = new StateCommand(new StateCommandLineParameters(
-                new String[] { "teaselib.Body.SomethingOnPenis", "Apply", "teaselib.Toys.Chastity_Device" },
+                new String[] { "teaselib.Toys.Chastity_Device", "Apply", "teaselib.Body.SomethingOnPenis" },
                 declarations));
         foo.execute(player.state);
 
@@ -37,7 +38,7 @@ public class StateCommandTest {
         assertTrue(state.is(player.script.scriptApplyAttribute));
 
         StateCommand rememberFoo = new StateCommand(new StateCommandLineParameters(
-                new String[] { "teaselib.Body.SomethingOnPenis", "Apply", "teaselib.Toys.Chastity_Device", "Remember" },
+                new String[] { "teaselib.Toys.Chastity_Device", "Apply", "teaselib.Body.SomethingOnPenis", "Remember" },
                 declarations));
         rememberFoo.execute(player.state);
 
@@ -45,12 +46,12 @@ public class StateCommandTest {
         assertTrue(state.expired());
 
         TeaseLib.PersistentString stateStorage = player.teaseLib.new PersistentString(TeaseLib.DefaultDomain,
-                Body.class.getName(), Body.SomethingOnPenis.name() + ".state.duration");
+                Toys.class.getName(), Toys.Chastity_Device.name() + ".state.duration");
 
         assertTrue(stateStorage.available());
 
         StateCommand clearFoo = new StateCommand(new StateCommandLineParameters(
-                new String[] { "teaselib.Body.SomethingOnPenis", "Remove" }, declarations));
+                new String[] { "teaselib.Toys.Chastity_Device", "Remove" }, declarations));
         clearFoo.execute(player.state);
 
         assertFalse(stateStorage.available());
@@ -58,8 +59,8 @@ public class StateCommandTest {
         assertTrue(state.expired());
 
         StateCommand fooTimed = new StateCommand(
-                new StateCommandLineParameters(new String[] { "teaselib.Body.SomethingOnPenis", "Apply",
-                        "teaselib.Toys.Chastity_Device", "over", "10:00\"00" }, declarations));
+                new StateCommandLineParameters(new String[] { "teaselib.Toys.Chastity_Device", "Apply",
+                        "teaselib.Body.SomethingOnPenis", "over", "10:00\"00" }, declarations));
         fooTimed.execute(player.state);
 
         assertTrue(state.applied());
@@ -70,19 +71,19 @@ public class StateCommandTest {
     @Test
     public void testSetStateIndefinitely() throws Exception {
         Player player = TestUtils.createPlayer(StateCommandTest.class, "../StateCommandTest");
-        State state = player.state(Body.SomethingOnPenis);
+        State state = player.state(Toys.Chastity_Device);
         Declarations declarations = new Declarations();
-        declarations.add("teaselib.Body", Declarations.STRING);
         declarations.add("teaselib.Toys", Declarations.STRING);
+        declarations.add("teaselib.Body", Declarations.STRING);
 
-        new StateCommand(new StateCommandLineParameters(new String[] { "teaselib.Body.SomethingOnPenis", "Apply",
-                "teaselib.Toys.Chastity_Device", "over", "inf" }, declarations)).execute(player.state);
+        new StateCommand(new StateCommandLineParameters(new String[] { "teaselib.Toys.Chastity_Device", "Apply",
+                "teaselib.Body.SomethingOnPenis", "over", "inf" }, declarations)).execute(player.state);
 
         assertTrue(state.applied());
         assertFalse(state.expired());
         assertTrue(state.duration().limit(TimeUnit.SECONDS) == Long.MAX_VALUE);
 
-        new StateCommand(new StateCommandLineParameters(new String[] { "teaselib.Body.SomethingOnPenis", "Remove" },
+        new StateCommand(new StateCommandLineParameters(new String[] { "teaselib.Toys.Chastity_Device", "Remove" },
                 declarations)).execute(player.state);
 
         assertFalse(state.applied());
@@ -92,27 +93,35 @@ public class StateCommandTest {
     @Test
     public void testSetStateIndefinitelyAndRemember() throws Exception {
         Player player = TestUtils.createPlayer(StateCommandTest.class, "../StateCommandTest");
-        State state = player.state(Body.SomethingOnPenis);
+        State chastityDeviceState = player.state(Toys.Chastity_Device);
+        State somethingOnPenisState = player.state(Body.SomethingOnPenis);
+
         Declarations declarations = new Declarations();
-        declarations.add("teaselib.Body", Declarations.STRING);
         declarations.add("teaselib.Toys", Declarations.STRING);
+        declarations.add("teaselib.Body", Declarations.STRING);
 
         TeaseLib.PersistentString stateStorage = player.teaseLib.new PersistentString(TeaseLib.DefaultDomain,
-                Body.class.getName(), Body.SomethingOnPenis.name() + ".state.duration");
+                Toys.class.getName(), Toys.Chastity_Device.name() + ".state.duration");
 
-        new StateCommand(new StateCommandLineParameters(new String[] { "teaselib.Body.SomethingOnPenis", "Apply",
-                "teaselib.Toys.Chastity_Device", "over", "inf", "remember" }, declarations)).execute(player.state);
+        new StateCommand(new StateCommandLineParameters(new String[] { "teaselib.Toys.Chastity_Device", "Apply",
+                "teaselib.Body.SomethingOnPenis", "over", "inf", "remember" }, declarations)).execute(player.state);
 
         assertTrue(stateStorage.available());
-        assertTrue(state.applied());
-        assertFalse(state.expired());
-        assertTrue(state.duration().limit(TimeUnit.SECONDS) == Long.MAX_VALUE);
+        assertTrue(chastityDeviceState.applied());
+        assertFalse(chastityDeviceState.expired());
+        assertTrue(chastityDeviceState.duration().limit(TimeUnit.SECONDS) == Long.MAX_VALUE);
 
-        new StateCommand(new StateCommandLineParameters(new String[] { "teaselib.Body.SomethingOnPenis", "Remove" },
+        assertTrue(somethingOnPenisState.applied());
+        assertFalse(somethingOnPenisState.expired());
+
+        new StateCommand(new StateCommandLineParameters(new String[] { "teaselib.Toys.Chastity_Device", "Remove" },
                 declarations)).execute(player.state);
 
         assertFalse(stateStorage.available());
-        assertFalse(state.applied());
-        assertTrue(state.expired());
+        assertFalse(chastityDeviceState.applied());
+        assertTrue(chastityDeviceState.expired());
+
+        assertFalse(somethingOnPenisState.applied());
+        assertTrue(somethingOnPenisState.expired());
     }
 }
