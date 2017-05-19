@@ -13,6 +13,7 @@ import pcm.model.ScriptExecutionException;
 import pcm.model.ScriptParsingException;
 import pcm.model.ValidationIssue;
 import pcm.util.TestUtils;
+import teaselib.Body;
 import teaselib.Toys;
 import teaselib.core.Debugger;
 
@@ -22,7 +23,7 @@ public class ScriptParsingTest {
     public void testDefineStatement()
             throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
         Player player = TestUtils.createPlayer(getClass());
-        player.loadScript("ScriptParsingTest");
+        player.loadScript("ScriptParsingTest_State");
 
         Debugger debugger = new Debugger(player.teaseLib);
         debugger.freezeTime();
@@ -51,14 +52,49 @@ public class ScriptParsingTest {
     }
 
     @Test
-    public void testCaseIndepencency()
+    public void testCaseIndepencencyForState()
             throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
         Player player = TestUtils.createPlayer(getClass());
-        player.loadScript("ScriptParsingTest");
+        player.loadScript("ScriptParsingTest_State");
 
         Debugger debugger = new Debugger(player.teaseLib);
         debugger.freezeTime();
 
         TestUtils.play(player, 1010);
+
+        assertTrue(player.state(Toys.Collar).applied());
+        assertTrue(player.state(Body.AroundNeck).applied());
+    }
+
+    @Test
+    public void testCaseIndepencencyForItems()
+            throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
+        Player player = TestUtils.createPlayer(getClass());
+        player.loadScript("ScriptParsingTest_Items");
+
+        Debugger debugger = new Debugger(player.teaseLib);
+        debugger.freezeTime();
+
+        TestUtils.play(player, 1010);
+
+        assertTrue(player.item(Toys.Collar).applied());
+        assertTrue(player.state(Body.AroundNeck).applied());
+    }
+
+    @Test
+    public void testCaseIndepencencyWithoutDeclarations()
+            throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
+        Player player = TestUtils.createPlayer(getClass());
+        player.loadScript("ScriptParsingTest_WithoutDefinitions");
+
+        Debugger debugger = new Debugger(player.teaseLib);
+        debugger.freezeTime();
+
+        TestUtils.play(player, 1010);
+
+        assertTrue(player.item(Toys.Collar).applied());
+        assertTrue(player.item(Toys.Nipple_clamps).applied());
+        assertTrue(player.item(Toys.Buttplug).applied());
+        assertTrue(player.state(Body.AroundNeck).applied());
     }
 }

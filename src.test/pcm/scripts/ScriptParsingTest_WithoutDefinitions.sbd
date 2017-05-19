@@ -1,0 +1,43 @@
+' pcm test cases
+
+.declare teaselib.toys string
+.declare teaselib.body string
+
+.range 1010
+
+
+' ScriptParsingTest_WithoutDefinitions
+
+[Action 1010]
+.item teaselib.Toys.Collar apply
+.item teaselib.Toys.Nipple_cLAMPS apply
+.item teaselib.toys.buttplug apply
+.range 1011
+
+' same case
+[Action 1011]
+.item teaselib.Toys.Collar applied
+.item teaselib.Toys.Nipple_cLAMPS applied
+.item teaselib.toys.buttplug applied
+.range 1012
+
+' different case
+[Action 1012]
+.item teaselib.toys.colLAR applied
+.item teaselib.Toys.Nipple_clamps applied
+.item teaselib.toYS.Buttplug applied
+.range 1013
+
+[Action 1013]
+.state teaselib.Body.AroundNECK applied
+.state teaselib.BOdy.SomethingOnNipples applied
+.state teaselib.Body.somethinginbutt applied
+.range 9999
+
+
+' proper exit for all test cases
+[action 9999]
+.unset 9999
+.noimage
+.quit
+

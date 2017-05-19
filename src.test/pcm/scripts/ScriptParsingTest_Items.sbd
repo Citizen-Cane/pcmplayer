@@ -1,0 +1,32 @@
+' pcm test cases
+
+' Enums must be exactly defined,
+' and defines must match exactly
+.define body teaselib.Body
+.declare body enum
+
+' Strings are case independent,
+' but defines must match exactly
+.define Toys teASelib.TOys
+.declare Toys String
+
+.range 1010
+
+
+' testCaseIndepencencyForItems
+
+[Action 1010]
+.item Toys.Collar apply
+.range 1011
+
+[Action 1011]
+.item body.AroundNeck applied
+.range 9999
+
+
+' proper exit for all test cases
+[action 9999]
+.unset 9999
+.noimage
+.quit
+
