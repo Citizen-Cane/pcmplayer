@@ -1,7 +1,8 @@
 ' pcm test cases
 
-.declare teaselib.toys string
 .declare teaselib.body string
+.declare teaselib.household string
+.declare teaselib.toys string
 
 .range 1010
 
@@ -12,6 +13,7 @@
 .item teaselib.Toys.Collar apply
 .item teaselib.Toys.Nipple_cLAMPS apply
 .item teaselib.toys.buttplug apply
+.item teaselib.household.clothes_pegs apply to teaseLib.body.Somethingonnipples
 .range 1011
 
 ' same case
@@ -19,6 +21,7 @@
 .item teaselib.Toys.Collar applied
 .item teaselib.Toys.Nipple_cLAMPS applied
 .item teaselib.toys.buttplug applied
+.item teaselib.household.clothes_pegs applied
 .range 1012
 
 ' different case
@@ -26,12 +29,14 @@
 .item teaselib.toys.colLAR applied
 .item teaselib.Toys.Nipple_clamps applied
 .item teaselib.toYS.Buttplug applied
+.item teaselib.houSEholD.clothes_pegs applied
 .range 1013
 
 [Action 1013]
 .state teaselib.Body.AroundNECK applied
 .state teaselib.BOdy.SomethingOnNipples applied
 .state teaselib.Body.somethinginbutt applied
+.state teaselib.BoDy.somethingonNIpples applied
 .range 9999
 
 

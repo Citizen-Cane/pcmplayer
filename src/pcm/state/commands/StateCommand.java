@@ -49,9 +49,6 @@ public class StateCommand extends BasicCommand {
                     }
                 };
             } else if (args.containsKey(StateCommandLineParameters.Keyword.Remove)) {
-                if (args.items(Keyword.Remove).length > 0) {
-                    throw new IllegalArgumentException("Remove can only remove all items");
-                }
                 return new ParameterizedStatement(STATE, args) {
                     @Override
                     public void run(ScriptState state) {

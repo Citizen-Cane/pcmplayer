@@ -8,8 +8,7 @@ public class ValidationIssue extends ScriptException {
     }
 
     public ValidationIssue(Action action, ScriptParsingException e) {
-        super("Action " + action.number + ": " + e.getMessage(), e.getCause(),
-                e.script);
+        super("Action " + action.number + ": " + e.getMessage(), e.getCause(), e.script);
     }
 
     public ValidationIssue(Action action, Exception e) {
@@ -21,6 +20,6 @@ public class ValidationIssue extends ScriptException {
     }
 
     public ValidationIssue(Action action, Exception e, Script script) {
-        super("Action " + action.number + ": ", e, script);
+        super("Action " + action.number + ": " + e.getMessage(), e, script);
     }
 }

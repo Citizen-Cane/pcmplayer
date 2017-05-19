@@ -11,17 +11,15 @@ public class ScriptExecutionException extends ScriptException {
         super(reason + " in script " + script.name, script);
     }
 
-    public ScriptExecutionException(String reason, Throwable e, Script script) {
-        super(reason, e, script);
+    public ScriptExecutionException(String message, Throwable e, Script script) {
+        super(message + ": " + e.getMessage(), e, script);
     }
 
-    public ScriptExecutionException(Action action, String reason,
-            Script script) {
+    public ScriptExecutionException(Action action, String reason, Script script) {
         super(reason + " in Action " + action.number, script);
     }
 
-    public ScriptExecutionException(Action action, String reason, Throwable e,
-            Script script) {
-        super(reason + " in Action " + action.number, e, script);
+    public ScriptExecutionException(Action action, String reason, Throwable e, Script script) {
+        super(reason + " in Action " + action.number + ": " + e.getMessage(), e, script);
     }
 }

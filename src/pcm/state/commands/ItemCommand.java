@@ -25,7 +25,12 @@ public class ItemCommand extends BasicCommand {
         try {
             final String[] items = args.items(Keyword.Item);
             if (args.containsKey(Keyword.Apply)) {
-                final String[] attributes = args.items(Keyword.To);
+                final String[] peers = args.items(Keyword.To);
+                if (args.containsKey(Keyword.To) && peers.length == 0) {
+                    throw new IllegalArgumentException("Missing peers to apply the item to");
+                } else if (args.containsKey(Keyword.Apply) && args.items(Keyword.Apply).length > 0) {
+                    throw new IllegalArgumentException("Apply just applies the default peers - use 'To' instead");
+                }
                 final DurationFormat duration = args.durationOption();
                 final boolean remember = args.rememberOption();
                 return new ParameterizedStatement(ITEM, args) {
@@ -34,7 +39,7 @@ public class ItemCommand extends BasicCommand {
                         for (String item : items) {
                             state.player.item(item).to(state.player.script.scriptApplyAttribute);
                             state.player.item(item).to(state.player.namespaceApplyAttribute);
-                            State.Options options = state.player.item(item).to(attributes);
+                            State.Options options = state.player.item(item).to(peers);
                             args.handleStateOptions(options, duration, remember);
                         }
                     }
