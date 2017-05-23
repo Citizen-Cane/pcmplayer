@@ -59,15 +59,15 @@ public class StateTest {
         Debugger debugger = new Debugger(player.teaseLib);
         debugger.freezeTime();
 
-        assertFalse(player.state(Toys.Nipple_clamps).applied());
-        assertTrue(player.state(Toys.Nipple_clamps).expired());
+        assertFalse(player.state(Toys.Nipple_Clamps).applied());
+        assertTrue(player.state(Toys.Nipple_Clamps).expired());
 
         TestUtils.play(player, 1020);
 
-        assertTrue(player.state(Toys.Nipple_clamps).is(TestUtils.TEST_NAMESPACE));
+        assertTrue(player.state(Toys.Nipple_Clamps).is(TestUtils.TEST_NAMESPACE));
 
-        assertFalse(player.state(Toys.Nipple_clamps).is("Applied.by.StateTest"));
-        assertTrue(player.state(Toys.Nipple_clamps).is("Applied.by.StateTest_subscript"));
+        assertFalse(player.state(Toys.Nipple_Clamps).is("Applied.by.StateTest"));
+        assertTrue(player.state(Toys.Nipple_Clamps).is("Applied.by.StateTest_subscript"));
     }
 
     @Test
@@ -79,18 +79,18 @@ public class StateTest {
         Debugger debugger = new Debugger(player.teaseLib);
         debugger.freezeTime();
 
-        assertFalse(player.state(Toys.Nipple_clamps).applied());
-        assertTrue(player.state(Toys.Nipple_clamps).expired());
+        assertFalse(player.state(Toys.Nipple_Clamps).applied());
+        assertTrue(player.state(Toys.Nipple_Clamps).expired());
 
         TestUtils.play(player, 1030);
 
-        assertFalse(player.state(Toys.Nipple_clamps).is(TestUtils.TEST_NAMESPACE));
+        assertFalse(player.state(Toys.Nipple_Clamps).is(TestUtils.TEST_NAMESPACE));
 
-        assertFalse(player.state(Toys.Nipple_clamps).applied());
-        assertTrue(player.state(Toys.Nipple_clamps).expired());
+        assertFalse(player.state(Toys.Nipple_Clamps).applied());
+        assertTrue(player.state(Toys.Nipple_Clamps).expired());
 
-        assertFalse(player.state(Toys.Nipple_clamps).is("Applied.by.StateTest"));
-        assertFalse(player.state(Toys.Nipple_clamps).is("Applied.by.StateTest_subscript"));
+        assertFalse(player.state(Toys.Nipple_Clamps).is("Applied.by.StateTest"));
+        assertFalse(player.state(Toys.Nipple_Clamps).is("Applied.by.StateTest_subscript"));
     }
 
     @Test

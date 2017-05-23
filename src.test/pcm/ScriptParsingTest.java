@@ -93,7 +93,7 @@ public class ScriptParsingTest {
         TestUtils.play(player, 1010);
 
         assertTrue(player.item(Toys.Collar).applied());
-        assertTrue(player.item(Toys.Nipple_clamps).applied());
+        assertTrue(player.item(Toys.Nipple_Clamps).applied());
         assertTrue(player.item(Toys.Buttplug).applied());
         assertTrue(player.state(Body.AroundNeck).applied());
     }
