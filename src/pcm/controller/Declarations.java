@@ -33,10 +33,11 @@ public class Declarations {
         for (String value : qualifiedNames) {
             boolean valueChecked = false;
             for (java.util.Map.Entry<String, String> entry : entries()) {
-                boolean isDeclared = QualifiedItem.fromType(value).namespace().equalsIgnoreCase(entry.getKey());
+                QualifiedItem<?> qualifiedItem = QualifiedItem.fromType(value);
+                boolean isDeclared = qualifiedItem.namespace().equalsIgnoreCase(entry.getKey());
                 if (isDeclared) {
                     if (isKeyword(entry, Declarations.ENUM)) {
-                        ReflectionUtils.getEnum(value);
+                        ReflectionUtils.getEnum(qualifiedItem);
                         valueChecked = true;
                         break;
                     } else if (isKeyword(entry, Declarations.STRING)) {
