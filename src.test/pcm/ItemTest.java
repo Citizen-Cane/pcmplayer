@@ -42,4 +42,16 @@ public class ItemTest {
         assertTrue(player.item(Toys.Collar).expired());
     }
 
+    @Test
+    public void testApplyItemTo()
+            throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
+        Player player = TestUtils.createPlayer(getClass());
+        player.loadScript(getClass().getSimpleName());
+
+        Debugger debugger = new Debugger(player.teaseLib);
+        debugger.freezeTime();
+
+        TestUtils.play(player, 1010);
+
+    }
 }

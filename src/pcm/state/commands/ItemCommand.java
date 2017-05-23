@@ -29,7 +29,8 @@ public class ItemCommand extends BasicCommand {
                 if (args.containsKey(Keyword.To) && peers.length == 0) {
                     throw new IllegalArgumentException("Missing peers to apply the item to");
                 } else if (args.containsKey(Keyword.Apply) && args.items(Keyword.Apply).length > 0) {
-                    throw new IllegalArgumentException("Apply just applies the default peers - use 'To' instead");
+                    throw new IllegalArgumentException(
+                            "Apply just applies the default peers - use 'To' to apply additional peers");
                 }
                 final DurationFormat duration = args.durationOption();
                 final boolean remember = args.rememberOption();

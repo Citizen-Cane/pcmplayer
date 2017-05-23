@@ -3,6 +3,12 @@
 .define Toys teaselib.Toys
 .declare Toys Enum
 
+.define Body teaselib.Body
+.declare Body Enum
+
+.define Household teaselib.HouseHold
+.declare Household Enum
+
 
 ' testItem
 .range 1000
@@ -42,6 +48,18 @@
 
 [Action 1009]
 .item Toys.Collar remove
+.range 9999
+
+
+[Action 1010]
+.not .item Household.Clothes_Pegs applied
+.not .state Body.SomethingOnNipples applied
+.item Household.Clothes_Pegs apply to Body.SomethingOnNipples 
+.range 1011
+
+[Action 1011]
+.item Household.Clothes_Pegs applied
+.state Body.SomethingOnNipples applied
 .range 9999
 
 
