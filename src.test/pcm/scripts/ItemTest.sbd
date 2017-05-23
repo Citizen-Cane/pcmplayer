@@ -53,13 +53,13 @@
 
 [Action 1010]
 .not .item Household.Clothes_Pegs applied
-.not .state Body.SomethingOnNipples applied
-.item Household.Clothes_Pegs apply to Body.SomethingOnNipples 
+.not .state Body.OnNipples applied
+.item Household.Clothes_Pegs apply to Body.OnNipples 
 .range 1011
 
 [Action 1011]
 .item Household.Clothes_Pegs applied
-.state Body.SomethingOnNipples applied
+.state Body.OnNipples applied
 .range 9999
 
 

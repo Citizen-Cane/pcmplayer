@@ -13,7 +13,7 @@
 .item teaselib.Toys.Collar apply
 .item teaselib.Toys.Nipple_cLAMPS apply
 .item teaselib.toys.buttplug apply
-.item teaselib.household.clothes_pegs apply to teaseLib.body.Somethingonnipples
+.item teaselib.household.clothes_pegs apply to teaseLib.body.onnipples
 .range 1011
 
 ' same case
@@ -34,9 +34,9 @@
 
 [Action 1013]
 .state teaselib.Body.AroundNECK applied
-.state teaselib.BOdy.SomethingOnNipples applied
-.state teaselib.Body.somethinginbutt applied
-.state teaselib.BoDy.somethingonNIpples applied
+.state teaselib.BOdy.OnNipples applied
+.state teaselib.Body.inbutt applied
+.state teaselib.BoDy.onNIpples applied
 .range 9999
 
 

@@ -24,7 +24,7 @@ public class ItemCommandTest {
     public void testSetItem() throws Exception {
         Player player = TestUtils.createPlayer(StateCommandTest.class, "../ItemCommandTest");
         Item chastityDeviceItem = player.item(Toys.Chastity_Device);
-        State somethingOnPenisState = player.state(Body.SomethingOnPenis);
+        State somethingOnPenisState = player.state(Body.OnPenis);
 
         Declarations declarations = new Declarations();
         declarations.add("teaselib.Toys", Declarations.STRING);
@@ -84,7 +84,7 @@ public class ItemCommandTest {
     public void testSetItemIndefinitely() throws Exception {
         Player player = TestUtils.createPlayer(StateCommandTest.class, "../ItemCommandTest");
         Item chastityDeviceItem = player.item(Toys.Chastity_Device);
-        State somethingOnPenisState = player.state(Body.SomethingOnPenis);
+        State somethingOnPenisState = player.state(Body.OnPenis);
         Declarations declarations = new Declarations();
         declarations.add("teaselib.Toys", Declarations.STRING);
         declarations.add("teaselib.Body", Declarations.STRING);
@@ -114,7 +114,7 @@ public class ItemCommandTest {
     public void testSetItemIndefinitelyAndRemember() throws Exception {
         Player player = TestUtils.createPlayer(StateCommandTest.class, "../ItemCommandTest");
         Item chastityDeviceItem = player.item(Toys.Chastity_Device);
-        State somethingOnPenisState = player.state(Body.SomethingOnPenis);
+        State somethingOnPenisState = player.state(Body.OnPenis);
 
         Declarations declarations = new Declarations();
         declarations.add("teaselib.Toys", Declarations.STRING);
@@ -124,7 +124,7 @@ public class ItemCommandTest {
                 Toys.class.getName(), Toys.Chastity_Device.name() + ".state.duration");
 
         new StateCommand(new StateCommandLineParameters(new String[] { "teaselib.Toys.Chastity_Device", "Apply",
-                "teaselib.Body.SomethingOnPenis", "over", "inf", "remember" }, declarations)).execute(player.state);
+                "teaselib.Body.OnPenis", "over", "inf", "remember" }, declarations)).execute(player.state);
 
         assertTrue(stateStorage.available());
         assertTrue(chastityDeviceItem.applied());
