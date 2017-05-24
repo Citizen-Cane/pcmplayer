@@ -1,9 +1,12 @@
 package pcm.state.conditions;
 
+import java.util.concurrent.TimeUnit;
+
 import pcm.controller.StateCommandLineParameters;
 import pcm.controller.StateCommandLineParameters.Keyword;
 import pcm.model.AbstractAction;
 import pcm.model.AbstractAction.Statement;
+import pcm.model.DurationFormat;
 import pcm.model.IllegalStatementException;
 import pcm.model.ScriptParsingException;
 import pcm.state.BasicCondition;
@@ -83,6 +86,38 @@ public class ItemCondition extends BasicCondition {
                         return true;
                     }
                 };
+            } else if (args.containsKey(StateCommandLineParameters.Keyword.Remaining)) {
+                if (args.values(Keyword.GreaterThan).length > 0) {
+                    final DurationFormat durationFormat = new DurationFormat(args.value(Keyword.GreaterThan));
+                    return new ParameterizedStatement(ITEM, args) {
+                        @Override
+                        public boolean call(ScriptState state) {
+                            for (String item : items) {
+                                if (!(state.player.item(item).duration().remaining(TimeUnit.SECONDS) > durationFormat
+                                        .toSeconds())) {
+                                    return false;
+                                }
+                            }
+                            return true;
+                        }
+                    };
+                } else if (args.values(Keyword.LessOrEqualThan).length > 0) {
+                    final DurationFormat durationFormat = new DurationFormat(args.value(Keyword.LessOrEqualThan));
+                    return new ParameterizedStatement(ITEM, args) {
+                        @Override
+                        public boolean call(ScriptState state) {
+                            for (String item : items) {
+                                if (!(state.player.item(item).duration().remaining(TimeUnit.SECONDS) <= durationFormat
+                                        .toSeconds())) {
+                                    return false;
+                                }
+                            }
+                            return true;
+                        }
+                    };
+                } else {
+                    throw new IllegalArgumentException(Keyword.Remaining.toString() + " expects an operator");
+                }
             } else {
                 throw new IllegalStatementException(ITEM, args);
             }

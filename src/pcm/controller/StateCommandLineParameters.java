@@ -32,6 +32,10 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
         CanApply,
         Applied,
         Expired,
+        Remaining,
+
+        GreaterThan,
+        LessOrEqualThan,
 
         ;
 
@@ -71,6 +75,30 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
         List<String> items = declarations.checked(get(keyword));
         String[] array = new String[items.size()];
         return items.toArray(array);
+    }
+
+    public String item(Keyword keyword) throws ClassNotFoundException {
+        List<String> items = declarations.checked(get(keyword));
+        if (items.size() == 1) {
+            return items.get(0);
+        } else {
+            throw new IllegalArgumentException(keyword + " requires a signle argument");
+        }
+    }
+
+    public String[] values(Keyword keyword) {
+        List<String> items = get(keyword);
+        String[] array = new String[items.size()];
+        return items.toArray(array);
+    }
+
+    public String value(Keyword keyword) {
+        List<String> items = get(keyword);
+        if (items.size() == 1) {
+            return items.get(0);
+        } else {
+            throw new IllegalArgumentException(keyword + " requires a signle argument");
+        }
     }
 
     public DurationFormat durationOption() {

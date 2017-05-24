@@ -54,4 +54,23 @@ public class ItemTest {
         TestUtils.play(player, 1010);
 
     }
+
+    @Test
+    public void testRemainingDuration()
+            throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
+        Player player = TestUtils.createPlayer(getClass());
+        player.loadScript(getClass().getSimpleName());
+
+        Debugger debugger = new Debugger(player.teaseLib);
+        debugger.freezeTime();
+
+        player.state(Toys.Nipple_Clamps).apply().over(30, TimeUnit.MINUTES);
+        TestUtils.play(player, 1040);
+
+        debugger.advanceTime(30, TimeUnit.MINUTES);
+        TestUtils.play(player, 1041);
+
+        debugger.advanceTime(10, TimeUnit.MINUTES);
+        TestUtils.play(player, 1042);
+    }
 }

@@ -63,6 +63,25 @@
 .range 9999
 
 
+' testRemainingDuration
+
+[Action 1040]
+.item Toys.Nipple_clamps remaining GreaterThan 00:29"00
+.item Toys.Nipple_clamps remaining LessOrEqualThan 00:30"00
+.range 9999
+
+[Action 1041]
+.item Toys.Nipple_clamps remaining GreaterThan -00:01"00
+.item Toys.Nipple_clamps remaining LessOrEqualThan 00:00"00
+.range 9999
+
+[Action 1042]
+.item Toys.Nipple_clamps remaining GreaterThan -00:11"00
+.item Toys.Nipple_clamps remaining LessOrEqualThan -00:10"00
+.range 9999
+
+
+
 ' proper exit for all test cases
 [action 9999]
 .unset 9999
