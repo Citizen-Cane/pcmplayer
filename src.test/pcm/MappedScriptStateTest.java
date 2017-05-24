@@ -21,7 +21,7 @@ import pcm.state.persistence.MappedScriptState;
 import pcm.state.persistence.MappedScriptStateValue;
 import pcm.state.persistence.ScriptState;
 import pcm.util.TestUtils;
-import teaselib.HouseHold;
+import teaselib.Household;
 import teaselib.State;
 import teaselib.core.Debugger;
 
@@ -227,11 +227,11 @@ public class MappedScriptStateTest {
             ScriptExecutionException, ScriptParsingException, ValidationIssue, IOException {
         assertThatUninitializedStateHasCorrectDefaultValues();
 
-        State condomState = player.state(HouseHold.Condoms);
+        State condomState = player.state(Household.Condoms);
         pcm.addScriptValueMapping(MappedScriptState.Global, new MappedScriptStateValue.Indefinitely(CondomsAction,
-                condomState, HouseHold.Condoms, Body.SomethingOnPenis));
+                condomState, Household.Condoms, Body.SomethingOnPenis));
 
-        pcm.addStateTimeMapping(MappedScriptState.Global, CondomsAction, condomState, HouseHold.Condoms,
+        pcm.addStateTimeMapping(MappedScriptState.Global, CondomsAction, condomState, Household.Condoms,
                 Body.SomethingOnPenis);
 
         pcm.addScriptValueMapping(MappedScriptState.Global,
@@ -247,11 +247,11 @@ public class MappedScriptStateTest {
             throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
         assertThatUninitializedStateHasCorrectDefaultValues();
 
-        State condomState = player.state(HouseHold.Condoms);
+        State condomState = player.state(Household.Condoms);
         pcm.addScriptValueMapping(MappedScriptState.Global, new MappedScriptStateValue.Indefinitely(CondomsAction,
-                condomState, HouseHold.Condoms, Body.SomethingOnPenis));
+                condomState, Household.Condoms, Body.SomethingOnPenis));
 
-        pcm.addStateTimeMapping(MappedScriptState.Global, CondomsAction, condomState, HouseHold.Condoms,
+        pcm.addStateTimeMapping(MappedScriptState.Global, CondomsAction, condomState, Household.Condoms,
                 Body.SomethingOnPenis);
 
         pcm.addScriptValueMapping(MappedScriptState.Global,
