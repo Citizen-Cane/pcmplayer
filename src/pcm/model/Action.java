@@ -37,6 +37,7 @@ import pcm.state.commands.SetTime;
 import pcm.state.commands.StateCommand;
 import pcm.state.commands.Unset;
 import pcm.state.conditions.IfSet;
+import pcm.state.conditions.IfState;
 import pcm.state.conditions.IfUnset;
 import pcm.state.conditions.ItemCondition;
 import pcm.state.conditions.Must;
@@ -401,6 +402,22 @@ public class Action extends AbstractAction {
             } else {
                 addCondition(new ItemCondition(args));
             }
+        } else if (name == Statement.IfState) {
+            addCondition(new IfState(name, cmd.args(), new IfState.ConditionCreator() {
+                @Override
+                public Condition createCondition(StateCommandLineParameters firstParameters)
+                        throws ScriptParsingException {
+                    return new StateCondition(firstParameters);
+                }
+            }, cmd.declarations));
+        } else if (name == Statement.IfItem) {
+            addCondition(new IfState(name, cmd.args(), new IfState.ConditionCreator() {
+                @Override
+                public Condition createCondition(StateCommandLineParameters firstParameters)
+                        throws ScriptParsingException {
+                    return new ItemCondition(firstParameters);
+                }
+            }, cmd.declarations));
         }
         // interactions
         else if (name == Statement.Range) {

@@ -74,6 +74,18 @@ public class ItemCondition extends BasicCondition {
                         return true;
                     }
                 };
+            } else if (args.containsKey(StateCommandLineParameters.Keyword.Free)) {
+                return new ParameterizedStatement(ITEM, args) {
+                    @Override
+                    public boolean call(ScriptState state) {
+                        for (String item : items) {
+                            if (state.player.item(item).applied()) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    }
+                };
             } else if (args.containsKey(StateCommandLineParameters.Keyword.Expired)) {
                 return new ParameterizedStatement(ITEM, args) {
                     @Override

@@ -253,6 +253,15 @@ public abstract class AbstractAction {
          */
         Declare,
 
+        /**
+         * Test conditions one after another from left to right. Return true on
+         * the first true condition. Returns false if all conditions are false.
+         * This is like the logical "or", and allows to check for multiple cases
+         * in one statement.
+         */
+        IfState,
+        IfItem,
+
         ;
 
         public final static Map<String, Statement> lookup = new HashMap<String, Statement>();

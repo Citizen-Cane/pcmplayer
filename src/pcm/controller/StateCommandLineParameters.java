@@ -31,6 +31,7 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
         Available,
         CanApply,
         Applied,
+        Free,
         Expired,
         Remaining,
         Elapsed,
@@ -58,6 +59,10 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
     }
 
     public StateCommandLineParameters(String[] args, Declarations declarations) {
+        this(Arrays.asList(args), declarations);
+    }
+
+    public StateCommandLineParameters(List<String> args, Declarations declarations) {
         super(args, Keyword.values());
         this.declarations = declarations;
         try {
@@ -83,7 +88,7 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
         if (items.size() == 1) {
             return items.get(0);
         } else {
-            throw new IllegalArgumentException(keyword + " requires a signle argument");
+            throw new IllegalArgumentException(keyword + " requires a single argument");
         }
     }
 

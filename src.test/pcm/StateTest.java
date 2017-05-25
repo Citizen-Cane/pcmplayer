@@ -156,4 +156,21 @@ public class StateTest {
         assertEquals(40, player.state(Toys.Nipple_Clamps).duration().elapsed(TimeUnit.MINUTES));
         TestUtils.play(player, 1053);
     }
+
+    @Test
+    public void testIfStateCondition()
+            throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
+        Player player = TestUtils.createPlayer(getClass());
+        player.loadScript(getClass().getSimpleName());
+
+        Debugger debugger = new Debugger(player.teaseLib);
+        debugger.freezeTime();
+
+        TestUtils.play(player, 1060);
+        TestUtils.play(player, 1065);
+        player.state(Toys.Nipple_Clamps).apply().over(30, TimeUnit.MINUTES);
+        TestUtils.play(player, 1060);
+        TestUtils.play(player, 1065);
+    }
+
 }

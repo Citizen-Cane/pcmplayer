@@ -148,6 +148,30 @@
 .range 9999
 
 
+' testIfStateCondition
+
+[Action 1060]
+.ifstate Toys.Nipple_Clamps free or remaining LessOrEqualThan 00:30"00 OR remaining GreaterThan 00:29"00
+.unset 1060
+.range 9999
+
+
+[Action 1065]
+.unset 1065
+.range 1066 1069
+
+
+[Action 1066]
+.state Toys.Nipple_Clamps free
+.range 9999
+
+[Action 1067]
+.state Toys.Nipple_Clamps applied
+.state Toys.Nipple_Clamps remaining LessOrEqualThan 00:30"00
+.state Toys.Nipple_Clamps remaining GreaterThan 00:29"00
+.range 9999
+
+
 ' proper exit for all test cases
 [action 9999]
 .unset 9999
