@@ -81,6 +81,30 @@
 .range 9999
 
 
+' testElapsedDuration
+' - duration is only exact in the chosen unit (set in minutes in the java test code)
+'   so for tests with frozen time we have to count one up (down for remaining duration)
+
+[Action 1050]
+.item Toys.Nipple_clamps elapsed GreaterThan 00:00"00
+.item Toys.Nipple_clamps elapsed LessOrEqualThan 00:01"00
+.range 9999
+
+[Action 1051]
+.item Toys.Nipple_clamps elapsed GreaterThan 00:10"00
+.item Toys.Nipple_clamps elapsed LessOrEqualThan 00:11"00
+.range 9999
+
+[Action 1052]
+.item Toys.Nipple_clamps elapsed GreaterThan 00:30"00
+.item Toys.Nipple_clamps elapsed LessOrEqualThan 00:31"00
+.range 9999
+
+[Action 1053]
+.item Toys.Nipple_clamps elapsed GreaterThan 00:40"00
+.item Toys.Nipple_clamps elapsed LessOrEqualThan 00:41"00
+.range 9999
+
 
 ' proper exit for all test cases
 [action 9999]

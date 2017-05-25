@@ -1,5 +1,6 @@
 package pcm;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -128,5 +129,31 @@ public class StateTest {
 
         debugger.advanceTime(10, TimeUnit.MINUTES);
         TestUtils.play(player, 1042);
+    }
+
+    @Test
+    public void testElapsedDuration()
+            throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
+        Player player = TestUtils.createPlayer(getClass());
+        player.loadScript(getClass().getSimpleName());
+
+        Debugger debugger = new Debugger(player.teaseLib);
+        debugger.freezeTime();
+
+        player.state(Toys.Nipple_Clamps).apply().over(30, TimeUnit.MINUTES);
+        assertEquals(0, player.state(Toys.Nipple_Clamps).duration().elapsed(TimeUnit.MINUTES));
+        TestUtils.play(player, 1050);
+
+        debugger.advanceTime(10, TimeUnit.MINUTES);
+        assertEquals(10, player.state(Toys.Nipple_Clamps).duration().elapsed(TimeUnit.MINUTES));
+        TestUtils.play(player, 1051);
+
+        debugger.advanceTime(20, TimeUnit.MINUTES);
+        assertEquals(30, player.state(Toys.Nipple_Clamps).duration().elapsed(TimeUnit.MINUTES));
+        TestUtils.play(player, 1052);
+
+        debugger.advanceTime(10, TimeUnit.MINUTES);
+        assertEquals(40, player.state(Toys.Nipple_Clamps).duration().elapsed(TimeUnit.MINUTES));
+        TestUtils.play(player, 1053);
     }
 }

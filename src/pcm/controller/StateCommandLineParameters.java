@@ -33,6 +33,7 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
         Applied,
         Expired,
         Remaining,
+        Elapsed,
 
         GreaterThan,
         LessOrEqualThan,
@@ -97,7 +98,7 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
         if (items.size() == 1) {
             return items.get(0);
         } else {
-            throw new IllegalArgumentException(keyword + " requires a signle argument");
+            throw new IllegalArgumentException(keyword + " requires a sinlge argument");
         }
     }
 
@@ -117,6 +118,44 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
             }
         } else if (remember) {
             options.remember();
+        }
+    }
+
+    public Keyword getCondition() {
+        Keyword[] conditionOperators = { Keyword.GreaterThan, Keyword.LessOrEqualThan };
+        for (Keyword keyword : conditionOperators) {
+            if (containsKey(keyword)) {
+                if (values(keyword).length != 1) {
+                    throw new IllegalArgumentException(
+                            "Condition operator " + keyword.toString() + " expects a single argument");
+                }
+                return keyword;
+            }
+        }
+        throw new IllegalArgumentException("Comparison operator missing ");
+    }
+
+    public interface Operator {
+        boolean isTrueFor(long arg0, long arg1);
+    }
+
+    public Operator getOperator(Keyword keyword) {
+        if (keyword == Keyword.GreaterThan) {
+            return new Operator() {
+                @Override
+                public boolean isTrueFor(long arg0, long arg1) {
+                    return arg0 > arg1;
+                }
+            };
+        } else if (keyword == Keyword.LessOrEqualThan) {
+            return new Operator() {
+                @Override
+                public boolean isTrueFor(long arg0, long arg1) {
+                    return arg0 <= arg1;
+                }
+            };
+        } else {
+            throw new IllegalArgumentException("Operator " + keyword.toString() + " not supported");
         }
     }
 }

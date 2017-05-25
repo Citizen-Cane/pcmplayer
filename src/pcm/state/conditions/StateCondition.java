@@ -64,37 +64,37 @@ public class StateCondition extends BasicCondition {
                     }
                 };
             } else if (args.containsKey(StateCommandLineParameters.Keyword.Remaining)) {
-                if (args.values(Keyword.GreaterThan).length > 0) {
-                    final DurationFormat durationFormat = new DurationFormat(args.value(Keyword.GreaterThan));
-                    return new ParameterizedStatement(STATE, args) {
-                        @Override
-                        public boolean call(ScriptState state) {
-                            for (String item : items) {
-                                if (!(state.player.state(item).duration().remaining(TimeUnit.SECONDS) > durationFormat
-                                        .toSeconds())) {
-                                    return false;
-                                }
+                Keyword condition = args.getCondition();
+                final StateCommandLineParameters.Operator op = args.getOperator(condition);
+                final DurationFormat durationFormat = new DurationFormat(args.value(condition));
+                return new ParameterizedStatement(STATE, args) {
+                    @Override
+                    public boolean call(ScriptState state) {
+                        for (String item : items) {
+                            if (!(op.isTrueFor(state.player.state(item).duration().remaining(TimeUnit.SECONDS),
+                                    durationFormat.toSeconds()))) {
+                                return false;
                             }
-                            return true;
                         }
-                    };
-                } else if (args.values(Keyword.LessOrEqualThan).length > 0) {
-                    final DurationFormat durationFormat = new DurationFormat(args.value(Keyword.LessOrEqualThan));
-                    return new ParameterizedStatement(STATE, args) {
-                        @Override
-                        public boolean call(ScriptState state) {
-                            for (String item : items) {
-                                if (!(state.player.state(item).duration().remaining(TimeUnit.SECONDS) <= durationFormat
-                                        .toSeconds())) {
-                                    return false;
-                                }
+                        return true;
+                    }
+                };
+            } else if (args.containsKey(StateCommandLineParameters.Keyword.Elapsed)) {
+                Keyword condition = args.getCondition();
+                final StateCommandLineParameters.Operator op = args.getOperator(condition);
+                final DurationFormat durationFormat = new DurationFormat(args.value(condition));
+                return new ParameterizedStatement(STATE, args) {
+                    @Override
+                    public boolean call(ScriptState state) {
+                        for (String item : items) {
+                            if (!(op.isTrueFor(state.player.state(item).duration().elapsed(TimeUnit.SECONDS),
+                                    durationFormat.toSeconds()))) {
+                                return false;
                             }
-                            return true;
                         }
-                    };
-                } else {
-                    throw new IllegalArgumentException(Keyword.Remaining.toString() + " expects an operator");
-                }
+                        return true;
+                    }
+                };
             } else {
                 throw new IllegalStatementException(STATE, args);
             }

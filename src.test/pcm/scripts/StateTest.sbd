@@ -105,6 +105,7 @@
 
 
 ' testRemainingDuration
+' - duration is only exact in the chosen unit (set in minutes in the java test code)
 
 [Action 1040]
 .state Toys.Nipple_clamps remaining GreaterThan 00:29"00
@@ -119,6 +120,31 @@
 [Action 1042]
 .state Toys.Nipple_clamps remaining GreaterThan -00:11"00
 .state Toys.Nipple_clamps remaining LessOrEqualThan -00:10"00
+.range 9999
+
+
+' testElapsedDuration
+' - duration is only exact in the chosen unit (set in minutes in the java test code)
+'   so for tests with frozen time we have to count one up (down for remaining duration)
+
+[Action 1050]
+.state Toys.Nipple_clamps elapsed GreaterThan 00:00"00
+.state Toys.Nipple_clamps elapsed LessOrEqualThan 00:01"00
+.range 9999
+
+[Action 1051]
+.state Toys.Nipple_clamps elapsed GreaterThan 00:10"00
+.state Toys.Nipple_clamps elapsed LessOrEqualThan 00:11"00
+.range 9999
+
+[Action 1052]
+.state Toys.Nipple_clamps elapsed GreaterThan 00:30"00
+.state Toys.Nipple_clamps elapsed LessOrEqualThan 00:31"00
+.range 9999
+
+[Action 1053]
+.state Toys.Nipple_clamps elapsed GreaterThan 00:40"00
+.state Toys.Nipple_clamps elapsed LessOrEqualThan 00:41"00
 .range 9999
 
 
