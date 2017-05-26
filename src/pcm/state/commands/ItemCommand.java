@@ -55,6 +55,16 @@ public class ItemCommand extends BasicCommand {
                         }
                     }
                 };
+            } else if (args.containsKey(Keyword.SetAvailable)) {
+                final boolean setAvailable = Boolean.parseBoolean(args.value(Keyword.SetAvailable));
+                return new ParameterizedStatement(ITEM, args) {
+                    @Override
+                    public void run(ScriptState state) {
+                        for (String item : items) {
+                            state.player.item(item).setAvailable(setAvailable);
+                        }
+                    }
+                };
             } else {
                 throw new IllegalStatementException(ITEM, args);
             }

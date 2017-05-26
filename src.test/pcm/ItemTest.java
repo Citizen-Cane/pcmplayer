@@ -102,7 +102,7 @@ public class ItemTest {
     }
 
     @Test
-    public void testIfStateCondition()
+    public void testIfStateConditionOr()
             throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
         Player player = TestUtils.createPlayer(getClass());
         player.loadScript(getClass().getSimpleName());
@@ -115,6 +115,26 @@ public class ItemTest {
         player.item(Toys.Nipple_Clamps).apply().over(30, TimeUnit.MINUTES);
         TestUtils.play(player, 1060);
         TestUtils.play(player, 1065);
+    }
+
+    @Test
+    public void testIfStateConditionAnd()
+            throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
+        Player player = TestUtils.createPlayer(getClass());
+        player.loadScript(getClass().getSimpleName());
+
+        Debugger debugger = new Debugger(player.teaseLib);
+        debugger.freezeTime();
+
+        player.item(Toys.Nipple_Clamps).apply();
+        TestUtils.play(player, 1070);
+        player.item(Toys.Nipple_Clamps).remove();
+        TestUtils.play(player, 1075);
+
+        player.item(Toys.Nipple_Clamps).apply().over(30, TimeUnit.MINUTES);
+        TestUtils.play(player, 1071);
+        player.item(Toys.Nipple_Clamps).remove();
+        TestUtils.play(player, 1075);
     }
 
 }

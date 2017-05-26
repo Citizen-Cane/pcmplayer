@@ -27,6 +27,8 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
 
         Remove,
 
+        SetAvailable,
+
         Is,
         Available,
         CanApply,
@@ -41,12 +43,7 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
 
         ;
 
-        static final Set<Keyword> COMMANDS = new HashSet<Keyword>(Arrays.asList(Apply, Remove));
-
-        public static boolean isCommand(String[] args) {
-            Enum<?> keyword = getKeyword(args[0], Keyword.values());
-            return keyword == Apply || keyword == Remove;
-        }
+        static final Set<Keyword> COMMANDS = new HashSet<Keyword>(Arrays.asList(Apply, Remove, SetAvailable));
     }
 
     public boolean isCommand() {
