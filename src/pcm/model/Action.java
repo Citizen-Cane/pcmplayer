@@ -603,7 +603,7 @@ public class Action extends AbstractAction {
                     for (Statement statement : requiresSinglePageMessage) {
                         if (visuals.containsKey(statement)) {
                             validationErrors.add(new ValidationIssue(this,
-                                    "." + statement.toString() + " doesn't work correctly in multi-page messages",
+                                    "." + statement.toString() + "  doesn't work correctly in multi-page messages",
                                     script));
                         }
                     }
