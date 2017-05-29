@@ -152,6 +152,13 @@ public abstract class Player extends TeaseScript {
     }
 
     public void play(String script) {
+        StringTokenizer argv = parseDebugFile(script);
+        String scriptName = argv.nextToken();
+        ActionRange range = parseStartRange(argv);
+        play(scriptName, range);
+    }
+
+    private StringTokenizer parseDebugFile(String script) {
         String resourcePath = getClass().getSimpleName() + "/" + "debug.txt";
         try {
             InputStream debugStream = resources.getResource(resourcePath);
@@ -182,7 +189,10 @@ public abstract class Player extends TeaseScript {
             logger.error(resourcePath, e);
         }
         StringTokenizer argv = new StringTokenizer(script, " \t");
-        String scriptName = argv.nextToken();
+        return argv;
+    }
+
+    private static ActionRange parseStartRange(StringTokenizer argv) {
         final ActionRange range;
         if (argv.hasMoreElements()) {
             int start = Integer.parseInt(argv.nextToken());
@@ -195,7 +205,7 @@ public abstract class Player extends TeaseScript {
         } else {
             range = null;
         }
-        play(scriptName, range);
+        return range;
     }
 
     public void play(String name, ActionRange startRange) {
