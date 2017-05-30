@@ -51,7 +51,7 @@ public class ScriptParser {
                 try {
                     ScriptLineTokenizer cmd = new ScriptLineTokenizer(l, applyDefines(line), declarations);
                     if (cmd.statement == Statement.Define) {
-                        defines.put(cmd.args()[0], cmd.args()[1]);
+                        defines.put(cmd.args()[0], cmd.argsFrom(1));
                     } else if (cmd.statement == Statement.Declare) {
                         declarations.add(cmd.args()[0], cmd.args()[1]);
                     } else {
