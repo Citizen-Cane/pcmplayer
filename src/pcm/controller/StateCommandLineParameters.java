@@ -21,11 +21,14 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
         Item,
 
         Apply,
+
         To,
         Over,
         Remember,
 
         Remove,
+
+        From,
 
         SetAvailable,
 

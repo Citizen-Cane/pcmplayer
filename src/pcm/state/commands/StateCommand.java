@@ -49,11 +49,18 @@ public class StateCommand extends BasicCommand {
                     }
                 };
             } else if (args.containsKey(StateCommandLineParameters.Keyword.Remove)) {
+                final Object[] peers = args.items(Keyword.From);
                 return new ParameterizedStatement(STATE, args) {
                     @Override
                     public void run(ScriptState state) {
                         for (String item : items) {
-                            state.player.state(item).remove();
+                            if (peers.length > 0) {
+                                for (Object peer : peers) {
+                                    state.player.state(item).remove(peer);
+                                }
+                            } else {
+                                state.player.state(item).remove();
+                            }
                         }
                     }
                 };
