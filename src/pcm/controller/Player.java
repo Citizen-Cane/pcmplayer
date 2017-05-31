@@ -213,7 +213,7 @@ public abstract class Player extends TeaseScript {
         actor.speechRecognitionRejectedScript = new SpeechRecognitionRejectedScript(this) {
             @Override
             public boolean canRun() {
-                return Player.this.script.onRecognitionRejected != null && !intentionalQuit;
+                return script != null && script.onRecognitionRejected != null && !intentionalQuit;
             }
 
             @Override
@@ -722,8 +722,9 @@ public abstract class Player extends TeaseScript {
 
     private void showError(Throwable t, String error) {
         logger.error(t.getMessage(), t);
-        logger.info(error);
+        logger.error(error);
         try {
+            setImage(Message.NoImage);
             show(error);
             reply("Oh Dear");
         } catch (ScriptInterruptedException e) {
