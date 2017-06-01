@@ -22,4 +22,10 @@ public class ScriptException extends Exception {
         super(message);
         this.script = script;
     }
+
+    @Override
+    public String getMessage() {
+        return (script != null ? script.name + ": " : "") + super.getMessage();
+    }
+
 }
