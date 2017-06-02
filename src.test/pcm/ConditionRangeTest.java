@@ -74,9 +74,9 @@ public class ConditionRangeTest {
         assertNotEquals(1401, player.range(new ActionRange(1400, 1402)).get(1).number);
 
         player.state.set(33);
-        // 1401 is first block by shouldnt 28
+        // 1401 is first block by .shouldnot 28
         // but 1400 and 1402 are blocked by 33
-        // -> condition ranges are removed until shouldnt 28 is removed
+        // -> condition ranges are removed until .shouldnot 28 is removed
         // As a result, 1401 is available
         assertEquals(1, player.range(new ActionRange(1400, 1402)).size());
         assertEquals(1401, player.range(new ActionRange(1400, 1402)).get(0).number);
