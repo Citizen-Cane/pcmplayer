@@ -49,7 +49,6 @@ import pcm.state.conditions.NumActionsAvailable;
 import pcm.state.conditions.NumActionsFrom;
 import pcm.state.conditions.NumberOfActionsSet;
 import pcm.state.conditions.Should;
-import pcm.state.conditions.ShouldNot;
 import pcm.state.conditions.StateCondition;
 import pcm.state.conditions.TimeFrom;
 import pcm.state.conditions.TimeTo;
@@ -266,14 +265,15 @@ public class Action extends AbstractAction {
             cmd.addArgsTo(mustAnyOf);
             addCondition(mustAnyOf);
         } else if (name == Statement.Should) {
-            Should should = new Should();
-            cmd.addArgsTo(should);
+            Must must = new Must();
+            cmd.addArgsTo(must);
+            Condition should = new Should(must);
             addCondition(should);
         } else if (name == Statement.ShouldNot) {
-            ShouldNot shouldNot = new ShouldNot();
-            cmd.addArgsTo(shouldNot);
-            addCondition(shouldNot);
-
+            MustNot mustNot = new MustNot();
+            cmd.addArgsTo(mustNot);
+            Condition should = new Should(mustNot);
+            addCondition(should);
         } else if (name == Statement.Set) {
             Set set = new Set();
             cmd.addArgsTo(set);

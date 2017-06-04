@@ -2,7 +2,7 @@ package pcm.model;
 
 import teaselib.util.Interval;
 
-public class ActionRange extends Interval {
+public class ActionRange extends Interval implements ConditionRange<Integer> {
     public ActionRange(int start) {
         super(start);
     }

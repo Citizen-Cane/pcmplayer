@@ -2,7 +2,7 @@ package pcm.model;
 
 import java.awt.Color;
 import java.io.IOException;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +36,7 @@ public class Script extends AbstractAction {
     public final Actions actions = new Actions();
     public final Map<Integer, AskItem> askItems = new HashMap<Integer, AskItem>();
     public final Map<Integer, MenuItem> menuItems = new HashMap<Integer, MenuItem>();
-    public List<ActionRange> conditionRanges = null;
+    public List<ConditionRange<? extends Object>> conditionRanges = null;
 
     public String mistressImages = null;
 
@@ -49,7 +49,8 @@ public class Script extends AbstractAction {
      * The condition range used when the script doesn't define its own list of
      * condition ranges.
      */
-    private final static ActionRange DefaultConditionRange = new ActionRange(Integer.MIN_VALUE, Integer.MAX_VALUE);
+    private final static ConditionRange<Integer> DefaultConditionRange = new ActionRange(Integer.MIN_VALUE,
+            Integer.MAX_VALUE);
 
     public Script(Actor actor, String name, ScriptCache scriptCache, ScriptParser parser)
             throws ScriptParsingException, ValidationIssue, IOException {
@@ -90,7 +91,9 @@ public class Script extends AbstractAction {
             // To sort out all optional conditions in the last step
             conditionRanges.add(DefaultConditionRange);
         } else {
-            conditionRanges = Collections.singletonList(DefaultConditionRange);
+            List<ConditionRange<? extends Object>> singletonList = new ArrayList<ConditionRange<? extends Object>>();
+            singletonList.add(DefaultConditionRange);
+            conditionRanges = singletonList;
         }
     }
 
@@ -158,7 +161,7 @@ public class Script extends AbstractAction {
             gag = Integer.parseInt(args[0]);
         } else if (name == Statement.ConditionRange) {
             if (conditionRanges == null) {
-                conditionRanges = new Vector<ActionRange>();
+                conditionRanges = new Vector<ConditionRange<?>>();
             }
             String args[] = cmd.args();
             int start = Integer.parseInt(args[0]);
