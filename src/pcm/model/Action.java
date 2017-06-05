@@ -265,27 +265,33 @@ public class Action extends AbstractAction {
             cmd.addArgsTo(mustAnyOf);
             addCondition(mustAnyOf);
         } else if (name == Statement.Should) {
-            if (AbstractAction.Statement.Lookup.containsKey(cmd.args()[0])) {
+            String arg0 = cmd.args()[0];
+            if (AbstractAction.Statement.Lookup.containsKey(cmd.args()[0].substring(1))) {
                 Condition condition = createConditionFrom(cmd.lineNumber, cmd.argsFrom(0), cmd.declarations);
                 Condition should = new Should(condition);
                 addCondition(should);
-            } else {
+            } else if (isNumeric(arg0)) {
                 Must must = new Must();
                 cmd.addArgsTo(must);
                 Condition should = new Should(must);
                 addCondition(should);
+            } else {
+                throw new IllegalStatementException(name, cmd.allArgs());
             }
         } else if (name == Statement.ShouldNot) {
-            if (AbstractAction.Statement.Lookup.containsKey(cmd.args()[0])) {
+            String arg0 = cmd.args()[0];
+            if (AbstractAction.Statement.Lookup.containsKey(cmd.args()[0].substring(1))) {
                 Condition condition = createConditionFrom(cmd.lineNumber, cmd.argsFrom(0), cmd.declarations);
                 Condition not = new Not(condition);
                 Condition should = new Should(not);
                 addCondition(should);
-            } else {
+            } else if (isNumeric(arg0)) {
                 MustNot mustNot = new MustNot();
                 cmd.addArgsTo(mustNot);
                 Condition should = new Should(mustNot);
                 addCondition(should);
+            } else {
+                throw new IllegalStatementException(name, cmd.allArgs());
             }
         } else if (name == Statement.Set) {
             Set set = new Set();
@@ -498,12 +504,8 @@ public class Action extends AbstractAction {
         }
     }
 
-    private static Condition createConditionFrom(int lineNumber, String line, Declarations declarations)
-            throws ScriptParsingException {
-        ScriptLineTokenizer cmd = new ScriptLineTokenizer(lineNumber, line, declarations);
-        Action action = new Action(0);
-        action.add(cmd);
-        return action.conditions.get(0);
+    private static boolean isNumeric(String string) {
+        return string.matches("[0-9]+");
     }
 
     private static Command createCommandFrom(int lineNumber, String line, Declarations declarations)

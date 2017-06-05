@@ -1,6 +1,7 @@
 package pcm.state;
 
 import pcm.model.AbstractAction.Statement;
+import pcm.model.ConditionRange;
 import pcm.state.persistence.ScriptState;
 import teaselib.core.util.CommandLineParameters;
 
@@ -31,6 +32,11 @@ public class BasicCondition implements Condition {
     @Override
     public boolean isTrueFor(ScriptState state) {
         return statement.call(state);
+    }
+
+    @Override
+    public boolean isInside(ConditionRange conditionRange) {
+        return conditionRange.contains(this);
     }
 
 }

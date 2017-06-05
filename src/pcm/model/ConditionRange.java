@@ -4,9 +4,9 @@
 package pcm.model;
 
 /**
- * @author someone
+ * @author Citizen-Cane
  *
  */
-public interface ConditionRange<T> {
-    public boolean contains(T condition);
+public interface ConditionRange {
+    public boolean contains(Object condition);
 }

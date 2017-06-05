@@ -7,13 +7,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
-import java.util.Vector;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pcm.controller.ScriptCache;
 import pcm.controller.ScriptParser;
+import pcm.state.Condition;
 import pcm.state.commands.Restore;
 import teaselib.Actor;
 
@@ -36,7 +36,7 @@ public class Script extends AbstractAction {
     public final Actions actions = new Actions();
     public final Map<Integer, AskItem> askItems = new HashMap<Integer, AskItem>();
     public final Map<Integer, MenuItem> menuItems = new HashMap<Integer, MenuItem>();
-    public List<ConditionRange<?>> conditionRanges = null;
+    public List<ConditionRange> conditionRanges = null;
 
     public String mistressImages = null;
 
@@ -49,7 +49,7 @@ public class Script extends AbstractAction {
      * The condition range used when the script doesn't define its own list of
      * condition ranges.
      */
-    public final static ConditionRange<?> DefaultConditionRange = new ActionRange(Integer.MIN_VALUE, Integer.MAX_VALUE);
+    public final static ConditionRange DefaultConditionRange = new ActionRange(Integer.MIN_VALUE, Integer.MAX_VALUE);
 
     public Script(Actor actor, String name, ScriptCache scriptCache, ScriptParser parser)
             throws ScriptParsingException, ValidationIssue, IOException {
@@ -90,7 +90,7 @@ public class Script extends AbstractAction {
             // To sort out all optional conditions in the last step
             conditionRanges.add(DefaultConditionRange);
         } else {
-            List<ConditionRange<?>> singletonList = new ArrayList<ConditionRange<?>>();
+            List<ConditionRange> singletonList = new ArrayList<ConditionRange>();
             singletonList.add(DefaultConditionRange);
             conditionRanges = singletonList;
         }
@@ -160,15 +160,25 @@ public class Script extends AbstractAction {
             gag = Integer.parseInt(args[0]);
         } else if (name == Statement.ConditionRange) {
             if (conditionRanges == null) {
-                conditionRanges = new Vector<ConditionRange<?>>();
+                conditionRanges = new ArrayList<ConditionRange>();
             }
             String args[] = cmd.args();
-            int start = Integer.parseInt(args[0]);
-            if (args.length > 1) {
-                int end = Integer.parseInt(args[1]);
-                conditionRanges.add(new ActionRange(start, end));
+            if (Statement.Lookup.containsKey(args[0].substring(1))) {
+                final Condition conditionRange = createConditionFrom(cmd.lineNumber, cmd.allArgs(), cmd.declarations);
+                conditionRanges.add(new ConditionRange() {
+                    @Override
+                    public boolean contains(Object condition) {
+                        return condition instanceof Condition && conditionRange.equals(condition);
+                    }
+                });
             } else {
-                conditionRanges.add(new ActionRange(start));
+                int start = Integer.parseInt(args[0]);
+                if (args.length > 1) {
+                    int end = Integer.parseInt(args[1]);
+                    conditionRanges.add(new ActionRange(start, end));
+                } else {
+                    conditionRanges.add(new ActionRange(start));
+                }
             }
         } else {
             super.add(cmd);

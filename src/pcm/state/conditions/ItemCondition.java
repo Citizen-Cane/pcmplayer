@@ -145,4 +145,29 @@ public class ItemCondition extends BasicCondition {
         return args.toString();
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((args == null) ? 0 : args.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        ItemCondition other = (ItemCondition) obj;
+        if (args == null) {
+            if (other.args != null)
+                return false;
+        } else if (!args.equals(other.args))
+            return false;
+        return true;
+    }
+
 }

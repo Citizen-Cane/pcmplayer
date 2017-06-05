@@ -1,11 +1,8 @@
 package pcm.state.conditions;
 
-import java.util.HashSet;
-
-import pcm.state.Condition;
 import pcm.state.persistence.ScriptState;
 
-public class MustNotAllOf extends HashSet<Integer> implements Condition {
+public class MustNotAllOf extends ActionSetCondition {
     private static final long serialVersionUID = 1L;
 
     @Override

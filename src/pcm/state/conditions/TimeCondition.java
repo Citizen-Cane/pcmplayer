@@ -6,13 +6,13 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pcm.model.ConditionRange;
 import pcm.model.DurationFormat;
 import pcm.state.Condition;
 import pcm.state.persistence.ScriptState;
 
 public abstract class TimeCondition implements Condition {
-    private static final Logger logger = LoggerFactory
-            .getLogger(TimeCondition.class);
+    private static final Logger logger = LoggerFactory.getLogger(TimeCondition.class);
 
     protected final int n;
     private final DurationFormat duration;
@@ -22,8 +22,7 @@ public abstract class TimeCondition implements Condition {
         this.duration = new DurationFormat(duration);
     }
 
-    protected abstract boolean predicate(long setTimeSeconds,
-            long elapsedSeconds, long durationSeconds);
+    protected abstract boolean predicate(long setTimeSeconds, long elapsedSeconds, long durationSeconds);
 
     @Override
     public boolean isTrueFor(ScriptState state) {
@@ -31,20 +30,21 @@ public abstract class TimeCondition implements Condition {
         long setTimeSeconds = state.getTime(n);
         long elapsedSeconds = nowSeconds - setTimeSeconds;
         long durationSeconds = duration.toSeconds();
-        boolean result = predicate(setTimeSeconds, elapsedSeconds,
-                durationSeconds);
+        boolean result = predicate(setTimeSeconds, elapsedSeconds, durationSeconds);
         log(setTimeSeconds, elapsedSeconds, durationSeconds, result);
         return result;
     }
 
-    protected void log(long time, long elapsedSeconds, long durationSeconds,
-            boolean result) {
-        logger.info(getClass().getSimpleName() + " " + n + ": setTime = "
-                + new Date(time * 1000).toString() + ", duration = "
-                + duration.toString() + "(" + durationSeconds + ") , now = "
+    protected void log(long time, long elapsedSeconds, long durationSeconds, boolean result) {
+        logger.info(getClass().getSimpleName() + " " + n + ": setTime = " + new Date(time * 1000).toString()
+                + ", duration = " + duration.toString() + "(" + durationSeconds + ") , now = "
                 + new Date(System.currentTimeMillis()) + ", elapsed = "
-                + DurationFormat.toString(elapsedSeconds, TimeUnit.SECONDS)
-                + "(" + elapsedSeconds + ") -> " + result);
+                + DurationFormat.toString(elapsedSeconds, TimeUnit.SECONDS) + "(" + elapsedSeconds + ") -> " + result);
+    }
+
+    @Override
+    public boolean isInside(ConditionRange conditionRange) {
+        return conditionRange.contains(n);
     }
 
     @Override

@@ -10,7 +10,9 @@ import java.util.Vector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pcm.controller.Declarations;
 import pcm.state.Command;
+import pcm.state.Condition;
 import pcm.state.commands.ResetRange;
 import pcm.state.conditions.TimeFrom;
 import pcm.state.persistence.ScriptState;
@@ -332,6 +334,14 @@ public abstract class AbstractAction {
         } else {
             throw new UnsupportedOperationException("Statement ." + name.toString() + " not implemented");
         }
+    }
+
+    static Condition createConditionFrom(int lineNumber, String line, Declarations declarations)
+            throws ScriptParsingException {
+        ScriptLineTokenizer cmd = new ScriptLineTokenizer(lineNumber, line, declarations);
+        Action action = new Action(0);
+        action.add(cmd);
+        return action.conditions.get(0);
     }
 
 }

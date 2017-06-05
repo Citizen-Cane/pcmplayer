@@ -2,7 +2,7 @@ package pcm.model;
 
 import teaselib.util.Interval;
 
-public class ActionRange extends Interval implements ConditionRange<Integer> {
+public class ActionRange extends Interval implements ConditionRange {
     public ActionRange(int start) {
         super(start);
     }
@@ -13,6 +13,15 @@ public class ActionRange extends Interval implements ConditionRange<Integer> {
 
     public boolean validate() {
         return start <= end;
+    }
+
+    public boolean isInside(ConditionRange conditionRange) {
+        return conditionRange.contains(start) && conditionRange.contains(end);
+    }
+
+    @Override
+    public boolean contains(Object n) {
+        return n instanceof Integer && super.contains((Integer) n);
     }
 
     @Override

@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -517,9 +516,9 @@ public abstract class Player extends TeaseScript {
         // Get all available, e.g. those not set yet
         List<Action> candidates = script.actions.getUnset(range, state);
         List<Action> selectable = new LinkedList<Action>();
-        List<ConditionRange<?>> relaxedConditions;
-        Iterator<ConditionRange<?>> conditionsRanges;
-        relaxedConditions = new ArrayList<ConditionRange<?>>(script.conditionRanges.size());
+        List<ConditionRange> relaxedConditions;
+        Iterator<ConditionRange> conditionsRanges;
+        relaxedConditions = new ArrayList<ConditionRange>(script.conditionRanges.size());
         conditionsRanges = script.conditionRanges.iterator();
         while (true) {
             List<Action> poss0 = null;
@@ -559,7 +558,7 @@ public abstract class Player extends TeaseScript {
                 logger.info("else");
                 return poss0;
             } else if (conditionsRanges.hasNext()) {
-                ConditionRange<?> relaxed = conditionsRanges.next();
+                ConditionRange relaxed = conditionsRanges.next();
                 if (!relaxed.equals(Script.DefaultConditionRange)) {
                     logger.info("Relaxing " + relaxed.toString());
                 }
@@ -571,7 +570,7 @@ public abstract class Player extends TeaseScript {
         }
     }
 
-    private boolean evalConditions(Action action, List<ConditionRange<?>> conditionRanges) {
+    private boolean evalConditions(Action action, List<ConditionRange> conditionRanges) {
         if (action.conditions != null) {
             for (Condition condition : action.conditions) {
                 if (ignoreOptionalCondition(condition, conditionRanges)) {
@@ -590,17 +589,12 @@ public abstract class Player extends TeaseScript {
         return true;
     }
 
-    @SuppressWarnings("unchecked")
-    public boolean ignoreOptionalCondition(Condition condition, List<ConditionRange<?>> conditionRanges) {
+    public boolean ignoreOptionalCondition(Condition condition, List<ConditionRange> conditionRanges) {
         boolean isOptionalCondition = condition instanceof Should;
         if (conditionRanges != null && isOptionalCondition) {
-            Collection<Integer> col = (Collection<Integer>) ((Should) condition).condition;
-            for (@SuppressWarnings("rawtypes")
-            ConditionRange conditionRange : conditionRanges) {
-                for (Integer n : col) {
-                    if (conditionRange.contains(n)) {
-                        return true;
-                    }
+            for (ConditionRange conditionRange : conditionRanges) {
+                if (condition.isInside(conditionRange)) {
+                    return true;
                 }
             }
         }

@@ -12,8 +12,9 @@ import pcm.model.ScriptExecutionException;
 import pcm.model.ScriptParsingException;
 import pcm.model.ValidationIssue;
 import pcm.util.TestUtils;
+import teaselib.Body;
 
-public class ConditionRangeTest {
+public class ConditionRangeTestWithStateConditions {
 
     @Test
     public void testRemoveAllAtOnceWithActionNumbers()
@@ -67,7 +68,7 @@ public class ConditionRangeTest {
 
         assertEquals(3, player.range(new ActionRange(1400, 1402)).size());
 
-        player.state.set(28);
+        player.state(Body.AroundNeck).apply();
         assertEquals(2, player.range(new ActionRange(1400, 1402)).size());
         assertNotEquals(1401, player.range(new ActionRange(1400, 1402)).get(0).number);
         assertNotEquals(1401, player.range(new ActionRange(1400, 1402)).get(1).number);
@@ -89,7 +90,7 @@ public class ConditionRangeTest {
 
         assertEquals(3, player.range(new ActionRange(1400, 1402)).size());
 
-        player.state.set(28);
+        player.state(Body.AroundNeck).apply();
         assertEquals(2, player.range(new ActionRange(1400, 1402)).size());
 
         player.state.set(400);

@@ -1,0 +1,66 @@
+' pcm test cases
+
+
+.define Body teaselib.Body
+.declare Body Enum
+
+
+' condition ranges for should/shouldnot:
+' condition statements to be dropped one after another
+' when no matching position can be selected (starting from the top)
+.ConditionRange 400 699      ' Try to select a position that hasn't been done before, but it's better to match the toy setup
+.ConditionRange 39           ' pussy clamps
+.ConditionRange .state Body.AroundNeck applied
+.ConditionRange 22           ' something in mouth, a gag
+.ConditionRange 20           ' something on nipples, clamps or clothes pegs
+.ConditionRange 25           ' ankle cuffs may affect assuming the exact posture, however ankles cuffs are less likely visible than wrist restraints
+.ConditionRange 26           ' wrist cuffs may affect assuming the exact posture
+
+
+.range 1000
+
+
+' test* - code fragment of mine-maid.sbd - used by multiple tests
+
+' 400 2pt kneel, hands on ground to side of hips, collar, wristlets, knees together
+[Action 1400]
+.shouldnot 20           ' something on nipples
+.shouldnot 22           ' something in mouth
+.shouldnot 25           ' ankles tied
+.mustnot 33             ' Can't kneel
+.shouldnot 39           ' pussy clamps
+.shouldnot 400          ' prefer a position that hasn't been done before
+.range 9999
+
+' 401 Standing bent over, hands on shins, ass presented, head down
+[Action 1401]
+.shouldnot 20           ' something on nipples
+.shouldnot 22           ' something in mouth
+.shouldnot 25           ' ankles tied
+.shouldnot 26           ' wrists tied
+.shouldnot .state Body.AroundNeck applied
+.mustnot 32             ' can't stand
+.shouldnot 39           ' pussy clamps
+.shouldnot 401          ' prefer a position that hasn't been done before
+.range 9999
+
+' 402 4pt kneel, hands on thighs palms up, collar
+[Action 1402]
+.shouldnot 20           ' something on nipples
+.shouldnot 22           ' something in mouth
+.shouldnot 25           ' ankles tied
+.mustnot 26             ' wrists tied
+.mustnot 33             ' Can't kneel
+.shouldnot 39           ' pussy clamps
+.shouldnot 402          ' prefer a position that hasn't been done before
+.range 9999
+
+
+
+
+' proper exit for all test cases
+[action 9999]
+.unset 9999
+.noimage
+.quit
+
