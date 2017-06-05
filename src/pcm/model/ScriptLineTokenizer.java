@@ -114,9 +114,8 @@ public class ScriptLineTokenizer {
     }
 
     private static Statement parseStatement(String statement) {
-        String key = statement.toLowerCase();
-        if (Statement.lookup.containsKey(key)) {
-            return Statement.lookup.get(key);
+        if (Statement.Lookup.containsKey(statement)) {
+            return Statement.Lookup.get(statement);
         } else {
             throw new IllegalArgumentException("Unknown statement " + statement);
         }

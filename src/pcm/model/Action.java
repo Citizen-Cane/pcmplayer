@@ -265,15 +265,28 @@ public class Action extends AbstractAction {
             cmd.addArgsTo(mustAnyOf);
             addCondition(mustAnyOf);
         } else if (name == Statement.Should) {
-            Must must = new Must();
-            cmd.addArgsTo(must);
-            Condition should = new Should(must);
-            addCondition(should);
+            if (AbstractAction.Statement.Lookup.containsKey(cmd.args()[0])) {
+                Condition condition = createConditionFrom(cmd.lineNumber, cmd.argsFrom(0), cmd.declarations);
+                Condition should = new Should(condition);
+                addCondition(should);
+            } else {
+                Must must = new Must();
+                cmd.addArgsTo(must);
+                Condition should = new Should(must);
+                addCondition(should);
+            }
         } else if (name == Statement.ShouldNot) {
-            MustNot mustNot = new MustNot();
-            cmd.addArgsTo(mustNot);
-            Condition should = new Should(mustNot);
-            addCondition(should);
+            if (AbstractAction.Statement.Lookup.containsKey(cmd.args()[0])) {
+                Condition condition = createConditionFrom(cmd.lineNumber, cmd.argsFrom(0), cmd.declarations);
+                Condition not = new Not(condition);
+                Condition should = new Should(not);
+                addCondition(should);
+            } else {
+                MustNot mustNot = new MustNot();
+                cmd.addArgsTo(mustNot);
+                Condition should = new Should(mustNot);
+                addCondition(should);
+            }
         } else if (name == Statement.Set) {
             Set set = new Set();
             cmd.addArgsTo(set);

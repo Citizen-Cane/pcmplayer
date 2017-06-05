@@ -4,6 +4,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.Vector;
 
 import org.slf4j.Logger;
@@ -264,13 +265,14 @@ public abstract class AbstractAction {
 
         ;
 
-        public final static Map<String, Statement> lookup = new HashMap<String, Statement>();
+        public final static Map<String, Statement> Lookup = new TreeMap<String, Statement>(
+                String.CASE_INSENSITIVE_ORDER);
         public final static Map<String, Statement> KeywordToStatement = new HashMap<String, Statement>();
     }
 
     {
         for (Statement name : EnumSet.allOf(Statement.class)) {
-            Statement.lookup.put(name.toString().toLowerCase(), name);
+            Statement.Lookup.put(name.toString(), name);
         }
         Statement.KeywordToStatement.put("cum", Statement.CumText);
         Statement.KeywordToStatement.put("no", Statement.NoText);
