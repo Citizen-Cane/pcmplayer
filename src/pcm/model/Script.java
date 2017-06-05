@@ -36,7 +36,7 @@ public class Script extends AbstractAction {
     public final Actions actions = new Actions();
     public final Map<Integer, AskItem> askItems = new HashMap<Integer, AskItem>();
     public final Map<Integer, MenuItem> menuItems = new HashMap<Integer, MenuItem>();
-    public List<ConditionRange<? extends Object>> conditionRanges = null;
+    public List<ConditionRange<?>> conditionRanges = null;
 
     public String mistressImages = null;
 
@@ -49,8 +49,7 @@ public class Script extends AbstractAction {
      * The condition range used when the script doesn't define its own list of
      * condition ranges.
      */
-    private final static ConditionRange<Integer> DefaultConditionRange = new ActionRange(Integer.MIN_VALUE,
-            Integer.MAX_VALUE);
+    public final static ConditionRange<?> DefaultConditionRange = new ActionRange(Integer.MIN_VALUE, Integer.MAX_VALUE);
 
     public Script(Actor actor, String name, ScriptCache scriptCache, ScriptParser parser)
             throws ScriptParsingException, ValidationIssue, IOException {
@@ -91,7 +90,7 @@ public class Script extends AbstractAction {
             // To sort out all optional conditions in the last step
             conditionRanges.add(DefaultConditionRange);
         } else {
-            List<ConditionRange<? extends Object>> singletonList = new ArrayList<ConditionRange<? extends Object>>();
+            List<ConditionRange<?>> singletonList = new ArrayList<ConditionRange<?>>();
             singletonList.add(DefaultConditionRange);
             conditionRanges = singletonList;
         }

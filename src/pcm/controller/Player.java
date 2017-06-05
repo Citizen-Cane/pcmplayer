@@ -517,9 +517,9 @@ public abstract class Player extends TeaseScript {
         // Get all available, e.g. those not set yet
         List<Action> candidates = script.actions.getUnset(range, state);
         List<Action> selectable = new LinkedList<Action>();
-        List<ConditionRange<? extends Object>> relaxedConditions;
-        Iterator<ConditionRange<? extends Object>> conditionsRanges;
-        relaxedConditions = new ArrayList<ConditionRange<? extends Object>>(script.conditionRanges.size());
+        List<ConditionRange<?>> relaxedConditions;
+        Iterator<ConditionRange<?>> conditionsRanges;
+        relaxedConditions = new ArrayList<ConditionRange<?>>(script.conditionRanges.size());
         conditionsRanges = script.conditionRanges.iterator();
         while (true) {
             List<Action> poss0 = null;
@@ -559,13 +559,11 @@ public abstract class Player extends TeaseScript {
                 logger.info("else");
                 return poss0;
             } else if (conditionsRanges.hasNext()) {
-                ActionRange ignore = (ActionRange) conditionsRanges.next();
-                if (ignore != null) {
-                    if (ignore.start > Integer.MIN_VALUE || ignore.end < Integer.MAX_VALUE) {
-                        logger.info("Should/ShouldNot: ignoring " + ignore.toString());
-                    }
+                ConditionRange<?> relaxed = conditionsRanges.next();
+                if (!relaxed.equals(Script.DefaultConditionRange)) {
+                    logger.info("Relaxing " + relaxed.toString());
                 }
-                relaxedConditions.add(ignore);
+                relaxedConditions.add(relaxed);
                 continue;
             } else {
                 return Collections.emptyList();
@@ -573,7 +571,7 @@ public abstract class Player extends TeaseScript {
         }
     }
 
-    private boolean evalConditions(Action action, List<ConditionRange<? extends Object>> conditionRanges) {
+    private boolean evalConditions(Action action, List<ConditionRange<?>> conditionRanges) {
         if (action.conditions != null) {
             for (Condition condition : action.conditions) {
                 if (ignoreOptionalCondition(condition, conditionRanges)) {
@@ -593,8 +591,7 @@ public abstract class Player extends TeaseScript {
     }
 
     @SuppressWarnings("unchecked")
-    public boolean ignoreOptionalCondition(Condition condition,
-            List<ConditionRange<? extends Object>> conditionRanges) {
+    public boolean ignoreOptionalCondition(Condition condition, List<ConditionRange<?>> conditionRanges) {
         boolean isOptionalCondition = condition instanceof Should;
         if (conditionRanges != null && isOptionalCondition) {
             Collection<Integer> col = (Collection<Integer>) ((Should) condition).condition;

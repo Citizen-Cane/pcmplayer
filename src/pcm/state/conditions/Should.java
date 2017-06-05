@@ -14,4 +14,10 @@ public class Should implements Condition {
     public boolean isTrueFor(ScriptState state) {
         return condition.isTrueFor(state);
     }
+
+    @Override
+    public String toString() {
+        return condition.getClass().getSimpleName() + " " + condition.toString();
+    }
+
 }
