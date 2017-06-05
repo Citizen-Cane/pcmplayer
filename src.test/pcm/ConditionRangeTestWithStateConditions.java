@@ -22,11 +22,12 @@ public class ConditionRangeTestWithStateConditions {
         Player player = TestUtils.createPlayer(getClass());
         player.loadScript(getClass().getSimpleName());
 
+        player.state(Body.OnPenis).apply();
         assertEquals(3, player.range(new ActionRange(1400, 1402)).size());
 
         player.state.set(20);
         assertEquals(3, player.range(new ActionRange(1400, 1402)).size());
-        player.state.set(22);
+        player.state(Body.InMouth).apply();
         assertEquals(3, player.range(new ActionRange(1400, 1402)).size());
         player.state.set(25);
         assertEquals(3, player.range(new ActionRange(1400, 1402)).size());
@@ -45,6 +46,7 @@ public class ConditionRangeTestWithStateConditions {
         Player player = TestUtils.createPlayer(getClass());
         player.loadScript(getClass().getSimpleName());
 
+        player.state(Body.OnPenis).apply();
         assertEquals(3, player.range(new ActionRange(1400, 1402)).size());
 
         player.state.set(400);
@@ -55,7 +57,7 @@ public class ConditionRangeTestWithStateConditions {
 
         // condition relaxed by condition range declaration
         assertEquals(3, player.range(new ActionRange(1400, 1402)).size());
-        player.state.set(33);
+        player.state(Body.CantKneel).apply();
         assertEquals(1, player.range(new ActionRange(1400, 1402)).size());
         assertEquals(1401, player.range(new ActionRange(1400, 1402)).get(0).number);
     }
@@ -66,6 +68,7 @@ public class ConditionRangeTestWithStateConditions {
         Player player = TestUtils.createPlayer(getClass());
         player.loadScript(getClass().getSimpleName());
 
+        player.state(Body.OnPenis).apply();
         assertEquals(3, player.range(new ActionRange(1400, 1402)).size());
 
         player.state(Body.AroundNeck).apply();
@@ -73,7 +76,7 @@ public class ConditionRangeTestWithStateConditions {
         assertNotEquals(1401, player.range(new ActionRange(1400, 1402)).get(0).number);
         assertNotEquals(1401, player.range(new ActionRange(1400, 1402)).get(1).number);
 
-        player.state.set(33);
+        player.state(Body.CantKneel).apply();
         // 1401 is first block by .shouldnot 28
         // but 1400 and 1402 are blocked by 33
         // -> condition ranges are removed until .shouldnot 28 is removed
@@ -88,6 +91,7 @@ public class ConditionRangeTestWithStateConditions {
         Player player = TestUtils.createPlayer(getClass());
         player.loadScript(getClass().getSimpleName());
 
+        player.state(Body.OnPenis).apply();
         assertEquals(3, player.range(new ActionRange(1400, 1402)).size());
 
         player.state(Body.AroundNeck).apply();
@@ -98,5 +102,35 @@ public class ConditionRangeTestWithStateConditions {
         player.state.set(402);
 
         assertEquals(2, player.range(new ActionRange(1400, 1402)).size());
+    }
+
+    @Test
+    public void ensureCodeCoverageOfShould()
+            throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
+        Player player = TestUtils.createPlayer(getClass());
+        player.loadScript(getClass().getSimpleName());
+
+        assertEquals(1, player.range(new ActionRange(1400, 1402)).size());
+        assertEquals(1400, player.range(new ActionRange(1400, 1402)).get(0).number);
+
+        player.state(Body.OnPenis).apply();
+        assertEquals(3, player.range(new ActionRange(1400, 1402)).size());
+
+        player.state(Body.AroundNeck).apply();
+        assertEquals(2, player.range(new ActionRange(1400, 1402)).size());
+        assertEquals(1400, player.range(new ActionRange(1400, 1402)).get(0).number);
+        assertEquals(1402, player.range(new ActionRange(1400, 1402)).get(1).number);
+
+        player.state.set(400);
+        player.state.set(401);
+        player.state.set(402);
+
+        assertEquals(2, player.range(new ActionRange(1400, 1402)).size());
+        assertEquals(1400, player.range(new ActionRange(1400, 1402)).get(0).number);
+        assertEquals(1402, player.range(new ActionRange(1400, 1402)).get(1).number);
+
+        player.state(Body.OnPenis).remove();
+        assertEquals(1, player.range(new ActionRange(1400, 1402)).size());
+        assertEquals(1400, player.range(new ActionRange(1400, 1402)).get(0).number);
     }
 }

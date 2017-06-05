@@ -11,10 +11,12 @@
 .ConditionRange 400 699      ' Try to select a position that hasn't been done before, but it's better to match the toy setup
 .ConditionRange 39           ' pussy clamps
 .ConditionRange .state Body.AroundNeck applied
-.ConditionRange 22           ' something in mouth, a gag
+.ConditionRange .state Body.InMouth applied
 .ConditionRange 20           ' something on nipples, clamps or clothes pegs
 .ConditionRange 25           ' ankle cuffs may affect assuming the exact posture, however ankles cuffs are less likely visible than wrist restraints
 .ConditionRange 26           ' wrist cuffs may affect assuming the exact posture
+.ConditionRange .state Body.CantKneel applied
+.ConditionRange .state Body.OnPenis applied
 
 
 .range 1000
@@ -27,7 +29,7 @@
 .shouldnot 20           ' something on nipples
 .shouldnot 22           ' something in mouth
 .shouldnot 25           ' ankles tied
-.mustnot 33             ' Can't kneel
+.shouldnot .state Body.CantKneel applied
 .shouldnot 39           ' pussy clamps
 .shouldnot 400          ' prefer a position that hasn't been done before
 .range 9999
@@ -36,6 +38,7 @@
 [Action 1401]
 .shouldnot 20           ' something on nipples
 .shouldnot 22           ' something in mouth
+.should .state Body.OnPenis applied
 .shouldnot 25           ' ankles tied
 .shouldnot 26           ' wrists tied
 .shouldnot .state Body.AroundNeck applied
@@ -48,9 +51,10 @@
 [Action 1402]
 .shouldnot 20           ' something on nipples
 .shouldnot 22           ' something in mouth
+.should .state Body.OnPenis applied
 .shouldnot 25           ' ankles tied
 .mustnot 26             ' wrists tied
-.mustnot 33             ' Can't kneel
+.shouldnot .state Body.CantKneel applied
 .shouldnot 39           ' pussy clamps
 .shouldnot 402          ' prefer a position that hasn't been done before
 .range 9999
