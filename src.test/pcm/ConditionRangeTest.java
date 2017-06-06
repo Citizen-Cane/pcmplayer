@@ -1,6 +1,7 @@
 package pcm;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 import java.io.IOException;
 
@@ -11,9 +12,24 @@ import pcm.model.ActionRange;
 import pcm.model.ScriptExecutionException;
 import pcm.model.ScriptParsingException;
 import pcm.model.ValidationIssue;
+import pcm.state.persistence.ScriptState;
 import pcm.util.TestUtils;
 
 public class ConditionRangeTest {
+
+    @Test
+    public void testDefaultConditionRange()
+            throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
+        Player player = TestUtils.createPlayer(getClass());
+        player.loadScript(getClass().getSimpleName() + "ConditionsWithDefault");
+
+        TestUtils.play(player, 1000);
+        assertEquals(ScriptState.SET, player.state.get(1000));
+
+        TestUtils.play(player, new ActionRange(1001, 1002));
+        assertEquals(ScriptState.UNSET, player.state.get(1001));
+        assertEquals(ScriptState.SET, player.state.get(1002));
+    }
 
     @Test
     public void testRemoveAllAtOnceWithActionNumbers()

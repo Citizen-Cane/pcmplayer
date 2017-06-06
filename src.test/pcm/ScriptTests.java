@@ -33,11 +33,8 @@ import teaselib.hosts.DummyPersistence;
  *
  */
 public class ScriptTests {
-
-    Player player = new Player(
-            new TeaseLib(new DummyHost(), new DummyPersistence()),
-            new ResourceLoader(ScriptTests.class),
-            new Actor(Actor.Key.DominantFemale, Voice.Gender.Female, Locale.US),
+    Player player = new Player(new TeaseLib(new DummyHost(), new DummyPersistence()),
+            new ResourceLoader(ScriptTests.class), new Actor(Actor.Key.DominantFemale, Voice.Gender.Female, Locale.US),
             "pcm", null) {
 
         @Override
@@ -137,16 +134,15 @@ public class ScriptTests {
         player.range = r;
         player.play(r);
 
+        assertEquals(ScriptState.UNSET, player.state.get(1031));
         assertEquals(ScriptState.SET, player.state.get(1032));
     }
 
     @Test
-    public void testResetRange()
-            throws AllActionsSetException, ScriptExecutionException,
-            ScriptParsingException, ValidationIssue, IOException {
+    public void testResetRange() throws AllActionsSetException, ScriptExecutionException, ScriptParsingException,
+            ValidationIssue, IOException {
         Player player = TestUtils.createPlayer(getClass(), "ScriptTests");
-        TestUtils.play(player, new ActionRange(1040),
-                new ActionRange(1040, 1041));
+        TestUtils.play(player, new ActionRange(1040), new ActionRange(1040, 1041));
 
         assertEquals(ScriptState.UNSET, player.state.get(1040));
         assertEquals(ScriptState.UNSET, player.state.get(1041));
@@ -161,12 +157,10 @@ public class ScriptTests {
     }
 
     @Test
-    public void testMustNotAllOf()
-            throws AllActionsSetException, ScriptExecutionException,
-            ScriptParsingException, ValidationIssue, IOException {
+    public void testMustNotAllOf() throws AllActionsSetException, ScriptExecutionException, ScriptParsingException,
+            ValidationIssue, IOException {
         Player player = TestUtils.createPlayer(getClass(), "ScriptTests");
-        TestUtils.play(player, new ActionRange(1050),
-                new ActionRange(1050, 1059));
+        TestUtils.play(player, new ActionRange(1050), new ActionRange(1050, 1059));
 
         assertEquals(ScriptState.SET, player.state.get(1053));
         assertEquals(ScriptState.SET, player.state.get(1054));
@@ -174,12 +168,10 @@ public class ScriptTests {
     }
 
     @Test
-    public void testMustAnyOf()
-            throws AllActionsSetException, ScriptExecutionException,
-            ScriptParsingException, ValidationIssue, IOException {
+    public void testMustAnyOf() throws AllActionsSetException, ScriptExecutionException, ScriptParsingException,
+            ValidationIssue, IOException {
         Player player = TestUtils.createPlayer(getClass(), "ScriptTests");
-        TestUtils.play(player, new ActionRange(1060),
-                new ActionRange(1060, 1069));
+        TestUtils.play(player, new ActionRange(1060), new ActionRange(1060, 1069));
 
         assertEquals(ScriptState.SET, player.state.get(1062));
         assertEquals(ScriptState.SET, player.state.get(1064));

@@ -1,0 +1,37 @@
+' pcm test cases
+
+
+.define Body teaselib.Body
+.declare Body Enum
+
+
+.range 1000
+
+
+' testShouldnotWithDefaultConditionRange
+
+[action 1000]
+.state Body.OnNipples apply
+.state Body.OnBalls apply
+.range 9999
+
+[action 1001]
+.state Body.OnNipples applied
+.not .state Body.OnBalls applied
+.range 9999
+
+[action 1002]
+.state Body.OnNipples applied
+.shouldnot .state Body.OnBalls applied
+.should .not .state Body.OnBalls applied
+.range 9999
+
+
+
+
+' proper exit for all test cases
+[action 9999]
+.unset 9999
+.noimage
+.quit
+

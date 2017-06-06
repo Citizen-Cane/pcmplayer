@@ -193,4 +193,9 @@ public class StateTest {
         TestUtils.play(player, 1075);
     }
 
+    // TODO Remove multiple peers from object
+    // (Household.Clothes_Pegs used in Mine)
+
+    // TODO Test (again?) that removing single items is symetric (at least for
+    // injected peers)
 }
