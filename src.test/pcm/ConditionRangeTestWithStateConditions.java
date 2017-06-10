@@ -1,20 +1,63 @@
 package pcm;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
 import org.junit.Test;
 
+import pcm.controller.Declarations;
 import pcm.controller.Player;
+import pcm.controller.StateCommandLineParameters;
 import pcm.model.ActionRange;
+import pcm.model.ConditionRange;
 import pcm.model.ScriptExecutionException;
 import pcm.model.ScriptParsingException;
+import pcm.model.StatementConditionRange;
 import pcm.model.ValidationIssue;
+import pcm.state.Condition;
+import pcm.state.conditions.StateCondition;
 import pcm.util.TestUtils;
 import teaselib.Body;
 
 public class ConditionRangeTestWithStateConditions {
+
+    @Test
+    public void testConditionRangeIsCaseIndependent() throws ScriptParsingException {
+        Declarations declarations = new Declarations();
+        declarations.add("teaselib.Toys", Declarations.STRING);
+        declarations.add("teaselib.Body", Declarations.STRING);
+
+        Condition condition = new StateCondition(new StateCommandLineParameters(
+                new String[] { "teaselib.Toys.Chastity_Device", "applied" }, declarations));
+        Condition conditionWithDifferentCase = new StateCondition(new StateCommandLineParameters(
+                new String[] { "teaseliB.toyS.chastitY_devicE", "aPPlied" }, declarations));
+
+        Condition anotherCondition = new StateCondition(new StateCommandLineParameters(
+                new String[] { "teaseliB.toyS.Something_Else", "applied" }, declarations));
+
+        assertEquals(condition, conditionWithDifferentCase);
+
+        ConditionRange cr = new StatementConditionRange(condition);
+        ConditionRange crWithDifferentCase = new StatementConditionRange(conditionWithDifferentCase);
+
+        assertTrue(cr.contains(condition));
+        assertTrue(cr.contains(conditionWithDifferentCase));
+        assertTrue(crWithDifferentCase.contains(condition));
+        assertTrue(crWithDifferentCase.contains(conditionWithDifferentCase));
+
+        assertFalse(cr.contains(anotherCondition));
+        assertFalse(cr.contains(anotherCondition));
+        assertFalse(crWithDifferentCase.contains(anotherCondition));
+        assertFalse(crWithDifferentCase.contains(anotherCondition));
+
+        ConditionRange crOther = new StatementConditionRange(anotherCondition);
+        assertFalse(crOther.contains(condition));
+        assertFalse(crOther.contains(conditionWithDifferentCase));
+    }
 
     @Test
     public void testRemoveAllAtOnceWithActionNumbers()

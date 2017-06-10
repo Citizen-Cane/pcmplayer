@@ -168,13 +168,8 @@ public class Script extends AbstractAction {
             }
             String args[] = cmd.args();
             if (Statement.Lookup.containsKey(args[0].substring(1))) {
-                final Condition conditionRange = createConditionFrom(cmd.lineNumber, cmd.allArgs(), cmd.declarations);
-                conditionRanges.add(new ConditionRange() {
-                    @Override
-                    public boolean contains(Object condition) {
-                        return condition instanceof Condition && conditionRange.equals(condition);
-                    }
-                });
+                final Condition condition = createConditionFrom(cmd.lineNumber, cmd.allArgs(), cmd.declarations);
+                conditionRanges.add(new StatementConditionRange(condition));
             } else {
                 int start = Integer.parseInt(args[0]);
                 if (args.length > 1) {
