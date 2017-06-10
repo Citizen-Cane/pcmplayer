@@ -114,4 +114,31 @@ public class ConditionRangeTest {
 
         assertEquals(2, player.range(new ActionRange(1400, 1402)).size());
     }
+
+    @Test
+    public void demonstrateOrderingByRelaxingRangesBelowAndAbove()
+            throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
+        Player player = TestUtils.createPlayer(getClass());
+        player.loadScript(getClass().getSimpleName());
+
+        assertEquals(3, player.range(new ActionRange(1400, 1402)).size());
+
+        player.state.set(28);
+        assertEquals(2, player.range(new ActionRange(1400, 1402)).size());
+
+        // condition range below 28
+        player.state.set(20);
+        // also relaxes the collar since conditions must be relaxed until
+        // .shouldnot 20 is relaxed
+        assertEquals(3, player.range(new ActionRange(1400, 1402)).size());
+        player.state.unset(20);
+
+        // condition range above 28
+        player.state.set(39);
+        // Doesn't relax the collar because .shouldnot 39 is relaxed before
+        assertEquals(2, player.range(new ActionRange(1400, 1402)).size());
+        player.state.unset(39);
+
+        assertEquals(2, player.range(new ActionRange(1400, 1402)).size());
+    }
 }
