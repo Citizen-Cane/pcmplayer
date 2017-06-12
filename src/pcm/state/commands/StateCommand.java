@@ -2,6 +2,7 @@ package pcm.state.commands;
 
 import java.util.concurrent.TimeUnit;
 
+import pcm.controller.Player;
 import pcm.controller.StateCommandLineParameters;
 import pcm.controller.StateCommandLineParameters.Keyword;
 import pcm.model.AbstractAction.Statement;
@@ -11,6 +12,8 @@ import pcm.model.ScriptParsingException;
 import pcm.state.BasicCommand;
 import pcm.state.persistence.ScriptState;
 import teaselib.State;
+import teaselib.core.StateMaps;
+import teaselib.core.StateMaps.Attributes;
 
 public class StateCommand extends BasicCommand {
 
@@ -33,9 +36,11 @@ public class StateCommand extends BasicCommand {
                 return new ParameterizedStatement(STATE, args) {
                     @Override
                     public void run(ScriptState state) {
+                        Player player = state.player;
                         for (String item : items) {
-                            state.player.state(item).apply(state.player.script.scriptApplyAttribute);
-                            state.player.state(item).apply(state.player.namespaceApplyAttribute);
+                            Attributes attributeApplier = (StateMaps.Attributes) player.state(item);
+                            attributeApplier.applyAttributes(player.script.scriptApplyAttribute);
+                            attributeApplier.applyAttributes(player.namespaceApplyAttribute);
                             State.Options options = state.player.state(item).apply(attributes);
                             if (duration != null) {
                                 State.Persistence persistence = options.over(duration.toSeconds(), TimeUnit.SECONDS);

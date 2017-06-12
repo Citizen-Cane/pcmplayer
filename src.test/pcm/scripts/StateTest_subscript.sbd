@@ -32,12 +32,8 @@
 .range 1032
 
 [Action 1032]
-state toys.Collar is applied.by.StateTest
-.range 1033
-
-[Action 1033]
-.state Toys.Collar is Applied.by.StateTest
-.state Toys.Nipple_clamps is Applied.by.StateTest_subscript
+.state Toys.Collar is applied.by.StateTest
+.state Toys.Nipple_clamps is applied.by.StateTest_subscript
 .range 1035
 
 [Action 1035]

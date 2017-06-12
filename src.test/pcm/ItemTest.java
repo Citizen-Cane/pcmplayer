@@ -57,6 +57,29 @@ public class ItemTest {
     }
 
     @Test
+    public void testStateNamespaceAndApplyTagsInScript()
+            throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
+        Player player = TestUtils.createPlayer(getClass());
+        player.loadScript(getClass().getSimpleName());
+
+        Debugger debugger = new Debugger(player.teaseLib);
+        debugger.freezeTime();
+
+        assertFalse(player.item(Toys.Nipple_Clamps).applied());
+        assertTrue(player.item(Toys.Nipple_Clamps).expired());
+
+        TestUtils.play(player, 1030);
+
+        assertFalse(player.item(Toys.Nipple_Clamps).is(TestUtils.TEST_NAMESPACE));
+
+        assertFalse(player.item(Toys.Nipple_Clamps).applied());
+        assertTrue(player.item(Toys.Nipple_Clamps).expired());
+
+        assertFalse(player.item(Toys.Nipple_Clamps).is("Applied.by.StateTest"));
+        assertFalse(player.item(Toys.Nipple_Clamps).is("Applied.by.StateTest_subscript"));
+    }
+
+    @Test
     public void testRemainingDuration()
             throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
         Player player = TestUtils.createPlayer(getClass());

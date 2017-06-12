@@ -9,6 +9,8 @@
 .define Household teaselib.Household
 .declare Household Enum
 
+.declare Applied.by String
+
 
 ' testItem
 .range 1000
@@ -21,12 +23,16 @@
 .range 1001
 
 [Action 1001]
+.item Body.AroundNeck applied
+.item Body.AroundNeck expired
 .item Toys.Collar applied
 .item Toys.Collar expired
 .item Toys.Collar remove
 .range 1004
 
 [Action 1004]
+.not .item Body.AroundNeck applied
+.item Body.AroundNeck expired
 .not .item Toys.Collar applied
 .item Toys.Collar expired
 .range 1005
@@ -36,12 +42,16 @@
 .range 1006
 
 [Action 1006]
+.item Body.AroundNeck applied
+.not .item Body.AroundNeck expired
 .item Toys.Collar applied
 .not .item Toys.Collar expired
 .range 9999
 
 
 [Action 1008]
+.item Body.AroundNeck applied
+.item Body.AroundNeck expired
 .item Toys.Collar applied
 .item Toys.Collar expired
 .range 1009
@@ -60,6 +70,46 @@
 [Action 1011]
 .item Household.Clothes_Pegs applied
 .state Body.OnNipples applied
+.range 9999
+
+
+' testStateNamespaceAndApplyTagsInScript
+
+[Action 1030]
+.not .item Toys.Collar applied
+.not .item Body.AroundNeck applied
+.not .item Toys.Nipple_clamps applied
+.not .item Body.OnNipples applied
+.range 1031
+
+[Action 1031]
+.item Toys.Collar apply
+.range 1032
+
+[Action 1032]
+.loadsbd ItemTest_subscript.sbd 1030
+
+
+[Action 1035]
+.item Toys.Collar applied
+.item Toys.Nipple_clamps applied
+.range 1036
+
+[Action 1036]
+.item Toys.Collar is Applied.by.itemTest
+.item Toys.Nipple_clamps is Applied.by.itemTest_subscript
+.range 1037
+
+[Action 1037]
+.item Toys.Collar remove
+.item Toys.Nipple_clamps remove
+.range 1038
+
+[Action 1038]
+.not .item Toys.Collar applied
+.not .item Toys.Nipple_clamps applied
+.not .item Toys.Collar is applied.by.ItemTest
+.not .item Toys.Nipple_clamps is applied.by.ItemTest_subscript
 .range 9999
 
 

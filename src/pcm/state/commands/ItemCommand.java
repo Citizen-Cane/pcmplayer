@@ -1,5 +1,6 @@
 package pcm.state.commands;
 
+import pcm.controller.Player;
 import pcm.controller.StateCommandLineParameters;
 import pcm.controller.StateCommandLineParameters.Keyword;
 import pcm.model.AbstractAction;
@@ -10,6 +11,8 @@ import pcm.model.ScriptParsingException;
 import pcm.state.BasicCommand;
 import pcm.state.persistence.ScriptState;
 import teaselib.State;
+import teaselib.core.StateMaps;
+import teaselib.core.StateMaps.Attributes;
 
 public class ItemCommand extends BasicCommand {
     private static final Statement ITEM = AbstractAction.Statement.Item;
@@ -37,10 +40,12 @@ public class ItemCommand extends BasicCommand {
                 return new ParameterizedStatement(ITEM, args) {
                     @Override
                     public void run(ScriptState state) {
+                        Player player = state.player;
                         for (String item : items) {
-                            state.player.item(item).to(state.player.script.scriptApplyAttribute);
-                            state.player.item(item).to(state.player.namespaceApplyAttribute);
-                            State.Options options = state.player.item(item).to(peers);
+                            Attributes attributeApplier = (StateMaps.Attributes) player.item(item);
+                            attributeApplier.applyAttributes(player.script.scriptApplyAttribute);
+                            attributeApplier.applyAttributes(player.namespaceApplyAttribute);
+                            State.Options options = player.item(item).to(peers);
                             args.handleStateOptions(options, duration, remember);
                         }
                     }

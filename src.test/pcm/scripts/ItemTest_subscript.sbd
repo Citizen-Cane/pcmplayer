@@ -1,0 +1,61 @@
+' pcm test cases
+
+.define Toys teaselib.Toys
+.declare Toys Enum
+
+.define Body teaselib.Body
+.declare Body Enum
+
+.define Household teaselib.Household
+.declare Household Enum
+
+.declare Applied.by String
+
+
+' testState
+.range 1000
+
+
+' testStateNamespaceAndApplyTags
+
+[Action 1020]
+.not .item Toys.Nipple_clamps applied
+.not .item Toys.Nipple_clamps applied
+.item Toys.Nipple_clamps apply
+.range 1021
+
+[Action 1021]
+.loadsbd StateTest.sbd 1025
+
+
+' testStateNamespaceAndApplyTagsInScript
+
+[Action 1030]
+.item Toys.Collar applied
+.item Body.AroundNeck applied
+.range 1031
+
+[Action 1031]
+.item Toys.Nipple_clamps apply
+.range 1032
+
+[Action 1032]
+.item Toys.Collar is Applied.by.ItemTest
+.item Toys.Nipple_Clamps is Applied.by.ItemTest_subscript
+.range 1033
+
+[Action 1033]
+.item Body.AroundNeck is Applied.by.ItemTest
+.item Body.OnNipples is Applied.by.ItemTest_subscript
+.range 1035
+
+[Action 1035]
+.loadsbd ItemTest.sbd 1035
+
+
+' proper exit for all test cases
+[action 9999]
+.unset 9999
+.noimage
+.quit
+
