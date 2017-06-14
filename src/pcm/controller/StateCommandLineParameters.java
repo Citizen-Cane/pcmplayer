@@ -44,7 +44,7 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
 
         GreaterThan,
         LessOrEqualThan,
-        Equal,
+        Equals,
 
         ;
 
@@ -159,6 +159,13 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
                 @Override
                 public boolean isTrueFor(long arg0, long arg1) {
                     return arg0 <= arg1;
+                }
+            };
+        } else if (keyword == Keyword.Equals) {
+            return new Operator() {
+                @Override
+                public boolean isTrueFor(long arg0, long arg1) {
+                    return arg0 == arg1;
                 }
             };
         } else {
