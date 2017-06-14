@@ -108,6 +108,22 @@ public class StateCondition extends BasicCondition {
                         return true;
                     }
                 };
+            } else if (args.containsKey(StateCommandLineParameters.Keyword.Limit)) {
+                Keyword condition = args.getCondition();
+                final StateCommandLineParameters.Operator op = args.getOperator(condition);
+                final DurationFormat durationFormat = new DurationFormat(args.value(condition));
+                return new ParameterizedStatement(STATE, args) {
+                    @Override
+                    public boolean call(ScriptState state) {
+                        for (String item : items) {
+                            if (!(op.isTrueFor(state.player.state(item).duration().limit(TimeUnit.SECONDS),
+                                    durationFormat.toSeconds()))) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    }
+                };
             } else {
                 throw new IllegalStatementException(STATE, args);
             }

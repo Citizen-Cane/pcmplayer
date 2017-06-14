@@ -40,9 +40,11 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
         Expired,
         Remaining,
         Elapsed,
+        Limit,
 
         GreaterThan,
         LessOrEqualThan,
+        Equal,
 
         ;
 
