@@ -110,4 +110,12 @@ public class IfState extends BasicCondition {
         return false;
     }
 
+    public static boolean isExtendedIfClause(String[] args) {
+        for (String arg : args) {
+            if (isOperator(arg)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

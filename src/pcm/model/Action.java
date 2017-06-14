@@ -412,31 +412,35 @@ public class Action extends AbstractAction {
             if (args.isCommand()) {
                 addCommand(new StateCommand(args));
             } else {
-                addCondition(new StateCondition(args));
+                if (IfState.isExtendedIfClause(cmd.args())) {
+                    addCondition(new IfState(name, cmd.args(), new IfState.ConditionCreator() {
+                        @Override
+                        public Condition createCondition(StateCommandLineParameters firstParameters)
+                                throws ScriptParsingException {
+                            return new StateCondition(firstParameters);
+                        }
+                    }, cmd.declarations));
+                } else {
+                    addCondition(new StateCondition(args));
+                }
             }
         } else if (name == Statement.Item) {
             StateCommandLineParameters args = new StateCommandLineParameters(cmd.args(), cmd.declarations);
             if (args.isCommand()) {
                 addCommand(new ItemCommand(args));
             } else {
-                addCondition(new ItemCondition(args));
+                if (IfState.isExtendedIfClause(cmd.args())) {
+                    addCondition(new IfState(name, cmd.args(), new IfState.ConditionCreator() {
+                        @Override
+                        public Condition createCondition(StateCommandLineParameters firstParameters)
+                                throws ScriptParsingException {
+                            return new ItemCondition(firstParameters);
+                        }
+                    }, cmd.declarations));
+                } else {
+                    addCondition(new ItemCondition(args));
+                }
             }
-        } else if (name == Statement.IfState) {
-            addCondition(new IfState(name, cmd.args(), new IfState.ConditionCreator() {
-                @Override
-                public Condition createCondition(StateCommandLineParameters firstParameters)
-                        throws ScriptParsingException {
-                    return new StateCondition(firstParameters);
-                }
-            }, cmd.declarations));
-        } else if (name == Statement.IfItem) {
-            addCondition(new IfState(name, cmd.args(), new IfState.ConditionCreator() {
-                @Override
-                public Condition createCondition(StateCommandLineParameters firstParameters)
-                        throws ScriptParsingException {
-                    return new ItemCondition(firstParameters);
-                }
-            }, cmd.declarations));
         }
         // interactions
         else if (name == Statement.Range) {
