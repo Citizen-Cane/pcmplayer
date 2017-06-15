@@ -129,7 +129,7 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
     }
 
     public Keyword getCondition() {
-        Keyword[] conditionOperators = { Keyword.GreaterThan, Keyword.LessOrEqualThan };
+        Keyword[] conditionOperators = { Keyword.GreaterThan, Keyword.LessOrEqualThan, Keyword.Equals };
         for (Keyword keyword : conditionOperators) {
             if (containsKey(keyword)) {
                 if (values(keyword).length != 1) {
