@@ -88,7 +88,7 @@ public abstract class Player extends TeaseScript {
      * This range can be pushed onto the script range stack to tell the player
      * to hand over execution from the PCM script engine back to the player.
      * 
-     * Push it on the stack, and call {@link Player#play(ActionRange)}. The
+     * Push it on the stack, and call {@link Player#playFrom(ActionRange)}. The
      * current script is executed up to the next occurrence of a
      * {@link AbstractAction.Statement#Return} statement.
      */
@@ -208,35 +208,12 @@ public abstract class Player extends TeaseScript {
     }
 
     public void play(String name, ActionRange startRange) {
-        SpeechRecognitionRejectedScript srRejectedHandler = actor.speechRecognitionRejectedScript;
-        actor.speechRecognitionRejectedScript = new SpeechRecognitionRejectedScript(this) {
-            @Override
-            public boolean canRun() {
-                return script != null && script.onRecognitionRejected != null && !intentionalQuit;
-            }
+        play(name, startRange, null);
+    }
 
-            @Override
-            public void run() {
-                try {
-                    // The play(Range) method must end on return, not continue
-                    // somewhere else
-                    Player.this.scripts.stack.push(ReturnToPlayer);
-                    range = Player.this.script.onRecognitionRejected;
-                    Player.this.play(new ActionRange(0, Integer.MAX_VALUE));
-                    if (range == null) {
-                        // Intentional quit
-                        intentionalQuit = true;
-                        throw new ScriptInterruptedException();
-                        // TODO Interrupting the main script results in the
-                        // onClose handler to be triggered -> bad quit
-                    }
-                } catch (AllActionsSetException e) {
-                    logger.error(e.getMessage(), e);
-                } catch (ScriptExecutionException e) {
-                    logger.error(e.getMessage(), e);
-                }
-            }
-        };
+    public void play(String name, ActionRange startRange, ActionRange playRange) {
+        SpeechRecognitionRejectedScript srRejectedHandler = actor.speechRecognitionRejectedScript;
+        actor.speechRecognitionRejectedScript = pcmSpeechRecognitionRejectedScript();
         try {
             loadScript(name);
         } catch (ScriptException e) {
@@ -248,14 +225,7 @@ public abstract class Player extends TeaseScript {
         }
         if (script != null) {
             try {
-                if (startRange != null) {
-                    range = startRange;
-                } else {
-                    range = script.startRange;
-                }
-                while (range != null) {
-                    play((ActionRange) null);
-                }
+                play(startRange, playRange);
             } catch (ScriptInterruptedException e) {
                 if (!intentionalQuit) {
                     logger.error(e.getMessage(), e);
@@ -270,6 +240,55 @@ public abstract class Player extends TeaseScript {
                 actor.speechRecognitionRejectedScript = srRejectedHandler;
             }
         }
+    }
+
+    public void playFrom(ActionRange startRange) throws AllActionsSetException, ScriptExecutionException {
+        play(startRange, (ActionRange) null);
+    }
+
+    public void playOnly(ActionRange startRange) throws AllActionsSetException, ScriptExecutionException {
+        play(startRange, startRange);
+    }
+
+    public void play(ActionRange startRange, ActionRange playRange)
+            throws AllActionsSetException, ScriptExecutionException {
+        if (startRange != null) {
+            range = startRange;
+        } else {
+            range = script.startRange;
+        }
+        playRange(playRange);
+    }
+
+    private SpeechRecognitionRejectedScript pcmSpeechRecognitionRejectedScript() {
+        return new SpeechRecognitionRejectedScript(this) {
+            @Override
+            public boolean canRun() {
+                return script != null && script.onRecognitionRejected != null && !intentionalQuit;
+            }
+
+            @Override
+            public void run() {
+                try {
+                    // The play(Range) method must end on return, not continue
+                    // somewhere else
+                    Player.this.scripts.stack.push(ReturnToPlayer);
+                    range = Player.this.script.onRecognitionRejected;
+                    Player.this.playFrom(new ActionRange(0, Integer.MAX_VALUE));
+                    if (range == null) {
+                        // Intentional quit
+                        intentionalQuit = true;
+                        throw new ScriptInterruptedException();
+                        // TODO Interrupting the main script results in the
+                        // onClose handler to be triggered -> bad quit
+                    }
+                } catch (AllActionsSetException e) {
+                    logger.error(e.getMessage(), e);
+                } catch (ScriptExecutionException e) {
+                    logger.error(e.getMessage(), e);
+                }
+            }
+        };
     }
 
     public void loadScript(String name)
@@ -371,7 +390,7 @@ public abstract class Player extends TeaseScript {
      * @throws AllActionsSetException
      * @throws ScriptExecutionException
      */
-    public void play(ActionRange playRange) throws AllActionsSetException, ScriptExecutionException {
+    public void playRange(ActionRange playRange) throws AllActionsSetException, ScriptExecutionException {
         while (true) {
             // Choose action
             Action action = getAction();

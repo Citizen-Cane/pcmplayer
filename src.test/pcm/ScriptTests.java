@@ -64,15 +64,13 @@ public class ScriptTests {
     @Test
     public void testOutOfActions() throws Exception {
         ActionRange r = new ActionRange(1000, 1001);
-        player.range = r;
         player.state.set(9);
-        player.play(r);
+        player.playOnly(r);
         assertEquals(ScriptState.SET, player.state.get(1000));
         assertEquals(ScriptState.UNSET, player.state.get(1001));
         assertEquals(9999, player.range.start);
         try {
-            player.range = r;
-            player.play(r);
+            player.playOnly(r);
             assertTrue("Unexpected action available", false);
         } catch (AllActionsSetException e) {
             assertEquals(ScriptState.SET, player.state.get(9));
@@ -86,20 +84,16 @@ public class ScriptTests {
     public void testRepeatAdd() throws Exception {
         ActionRange r = new ActionRange(1010, 1011);
         assertEquals(ScriptState.UNSET, player.state.get(1010));
-        player.range = r;
-        player.play(r);
+        player.playOnly(r);
         assertEquals(ScriptState.SET, player.state.get(1010));
         // unset plus repeatAdd 1001 2 -> 3 times
         assertEquals(-2, player.state.get(1011).intValue());
-        player.range = r;
-        player.play(r);
+        player.playOnly(r);
         assertEquals(-1, player.state.get(1011).intValue());
-        player.range = r;
-        player.play(r);
+        player.playOnly(r);
         assertEquals(-0, player.state.get(1011).intValue());
         assertEquals(ScriptState.UNSET, player.state.get(1011));
-        player.range = r;
-        player.play(r);
+        player.playOnly(r);
         assertTrue(player.state.get(1011) == ScriptState.SET);
     }
 
@@ -107,18 +101,15 @@ public class ScriptTests {
     public void testRepeatDel() throws Exception {
         ActionRange r = new ActionRange(1020, 1023);
         assertEquals(ScriptState.UNSET, player.state.get(1020));
-        player.range = r;
-        player.play(r);
+        player.playOnly(r);
         assertEquals(ScriptState.SET, player.state.get(1020));
         // unset plus repeatAdd 1001 2 -> 3 times
         assertEquals(ScriptState.SET, player.state.get(1021));
         assertEquals(ScriptState.SET, player.state.get(1022));
         assertEquals(-3, player.state.get(1023).intValue());
-        player.range = r;
-        player.play(r);
+        player.playOnly(r);
         assertEquals(-1, player.state.get(1023).intValue());
-        player.range = r;
-        player.play(r);
+        player.playOnly(r);
         assertEquals(ScriptState.SET, player.state.get(1023));
     }
 
@@ -126,13 +117,11 @@ public class ScriptTests {
     public void testShouldnotWithDefaultConditionRange() throws Exception {
         ActionRange r = new ActionRange(1030, 1030);
         assertEquals(ScriptState.UNSET, player.state.get(1030));
-        player.range = r;
-        player.play(r);
+        player.playOnly(r);
         assertEquals(ScriptState.SET, player.state.get(1030));
 
         r = new ActionRange(1031, 1032);
-        player.range = r;
-        player.play(r);
+        player.playOnly(r);
 
         assertEquals(ScriptState.UNSET, player.state.get(1031));
         assertEquals(ScriptState.SET, player.state.get(1032));

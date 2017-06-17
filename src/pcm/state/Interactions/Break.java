@@ -42,27 +42,24 @@ public class Break extends AbstractInteractionWithRangeProvider {
 
     public static final String SuppressStackCorrectionOnBreak = "suppressStackCorrectionOnBreak";
 
-    private final ActionRange actionRange;
+    private final ActionRange breakRange;
     private final Map<Statement, ActionRange> choiceRanges;
     private final boolean supressStackCorrectionOnBreak;
 
-    public Break(ActionRange actionRange,
-            Map<Statement, ActionRange> choiceRanges,
+    public Break(ActionRange actionRange, Map<Statement, ActionRange> choiceRanges,
             boolean supressStackCorrectionOnBreak) {
-        this.actionRange = actionRange;
+        this.breakRange = actionRange;
         this.choiceRanges = choiceRanges;
         this.supressStackCorrectionOnBreak = supressStackCorrectionOnBreak;
     }
 
     @Override
-    public ActionRange getRange(final Script script, final Action action,
-            Runnable visuals, final Player player)
+    public ActionRange getRange(final Script script, final Action action, Runnable visuals, final Player player)
             throws ScriptExecutionException {
         int stackMemento = script.stack.size();
         visuals.run();
         List<String> choices = new ArrayList<String>(choiceRanges.size());
-        List<ActionRange> ranges = new ArrayList<ActionRange>(
-                choiceRanges.size());
+        List<ActionRange> ranges = new ArrayList<ActionRange>(choiceRanges.size());
         for (Statement key : choiceRanges.keySet()) {
             choices.add(action.getResponseText(key, script));
             ranges.add(choiceRanges.get(key));
@@ -71,9 +68,8 @@ public class Break extends AbstractInteractionWithRangeProvider {
             @Override
             public void run() {
                 try {
-                    player.range = rangeProvider.getRange(script, action,
-                            NoVisuals, player);
-                    player.play(actionRange);
+                    player.range = rangeProvider.getRange(script, action, NoVisuals, player);
+                    player.playRange(breakRange);
                     SpeechRecognition.completeSpeechRecognitionInProgress();
                 } catch (ScriptInterruptedException e) {
                     // Must be forwarded to script function task
@@ -85,8 +81,7 @@ public class Break extends AbstractInteractionWithRangeProvider {
                 return;
             }
         };
-        String result = player.reply(playRange, getConfidence(action).higher(),
-                choices);
+        String result = player.reply(playRange, getConfidence(action).higher(), choices);
         if (result == ScriptFunction.Timeout) {
             return player.range;
         } else {
@@ -109,15 +104,13 @@ public class Break extends AbstractInteractionWithRangeProvider {
         StringBuilder s = new StringBuilder();
         s.append(getClass().getSimpleName() + ": ");
         for (Statement statement : choiceRanges.keySet()) {
-            s.append(statement.toString() + "="
-                    + choiceRanges.get(statement).toString());
+            s.append(statement.toString() + "=" + choiceRanges.get(statement).toString());
         }
         return s.toString();
     }
 
     @Override
-    public void validate(Script script, Action action,
-            List<ValidationIssue> validationErrors)
+    public void validate(Script script, Action action, List<ValidationIssue> validationErrors)
             throws ScriptParsingException {
         try {
             for (Statement key : choiceRanges.keySet()) {
@@ -126,10 +119,9 @@ public class Break extends AbstractInteractionWithRangeProvider {
         } catch (ScriptExecutionException e) {
             validationErrors.add(new ValidationIssue(action, e, script));
         }
-        script.actions.validate(script, action, actionRange, validationErrors);
+        script.actions.validate(script, action, breakRange, validationErrors);
         for (Statement statement : choiceRanges.keySet()) {
-            script.actions.validate(script, action, choiceRanges.get(statement),
-                    validationErrors);
+            script.actions.validate(script, action, choiceRanges.get(statement), validationErrors);
         }
     }
 }

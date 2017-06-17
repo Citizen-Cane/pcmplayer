@@ -61,8 +61,7 @@ public class ScriptTimeMineExampleTest {
         debugger.freezeTime();
 
         ActionRange r = new ActionRange(1000);
-        player.range = r;
-        player.play(r);
+        player.playFrom(r);
         assertEquals(ScriptState.SET, player.state.get(1000));
 
         assertFalse(containsAction(1001));

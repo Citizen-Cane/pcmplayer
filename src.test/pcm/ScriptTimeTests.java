@@ -94,7 +94,7 @@ public class ScriptTimeTests {
     public void testTimeFromTo() throws Exception {
         ActionRange r = new ActionRange(1000);
         player.range = r;
-        player.play(r);
+        player.playFrom(r);
 
         assertEquals(ScriptState.SET, player.state.get(1000));
 
@@ -110,8 +110,7 @@ public class ScriptTimeTests {
     @Test
     public void testTimeFromToOffset() throws Exception {
         ActionRange r = new ActionRange(1010);
-        player.range = r;
-        player.play(r);
+        player.playFrom(r);
         assertEquals(ScriptState.SET, player.state.get(1010));
 
         debugger.advanceTime(2, TimeUnit.SECONDS);
@@ -130,7 +129,7 @@ public class ScriptTimeTests {
     public void testInfinityPlus() throws Exception {
         ActionRange r = new ActionRange(1020);
         player.range = r;
-        player.play(r);
+        player.playFrom(r);
         assertEquals(ScriptState.SET, player.state.get(1020));
         assertFalse(containsAction(1021));
         assertTrue(containsAction(1022));
@@ -142,7 +141,7 @@ public class ScriptTimeTests {
             throws AllActionsSetException, ScriptExecutionException {
         ActionRange r = new ActionRange(1025);
         player.range = r;
-        player.play(r);
+        player.playFrom(r);
         assertEquals(ScriptState.SET, player.state.get(1025));
         assertTrue(containsAction(1026));
         assertTrue(containsAction(1027));
@@ -156,7 +155,7 @@ public class ScriptTimeTests {
 
         ActionRange r = new ActionRange(1030);
         player.range = r;
-        player.play(r);
+        player.playFrom(r);
         assertEquals(ScriptState.SET, player.state.get(1030));
 
         assertFalse(containsAction(1031));
@@ -192,7 +191,7 @@ public class ScriptTimeTests {
 
         ActionRange r = new ActionRange(1040);
         player.range = r;
-        player.play(r);
+        player.playFrom(r);
         assertEquals(ScriptState.SET, player.state.get(1040));
 
         int setTImeFinite = 1041;

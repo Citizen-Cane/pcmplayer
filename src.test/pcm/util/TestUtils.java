@@ -60,7 +60,6 @@ public class TestUtils {
 
     public static void play(Player player, ActionRange start, ActionRange playRange)
             throws AllActionsSetException, ScriptExecutionException {
-        player.range = start;
-        player.play(playRange);
+        player.play(start, playRange);
     }
 }

@@ -16,20 +16,23 @@ import pcm.state.Condition;
 import pcm.state.persistence.ScriptState;
 
 public class IfState extends BasicCondition {
-
     private static final String AND = "AND";
     private static final String OR = "OR";
 
     public interface ConditionCreator {
         Condition createCondition(StateCommandLineParameters firstParameters) throws ScriptParsingException;
-
     }
 
     private static final Set<String> OPERATORS = new HashSet<String>(Arrays.asList(OR, AND));
 
+    private final Statement statement;
+    private final String[] args;
+
     public IfState(Statement statement, String[] args, ConditionCreator conditionCreator, Declarations declarations)
             throws ScriptParsingException {
         super(statement(statement, args, conditionCreator, declarations));
+        this.statement = statement;
+        this.args = args;
     }
 
     private static ParameterizedStatement statement(Statement statement, String[] args,
@@ -117,5 +120,15 @@ public class IfState extends BasicCondition {
             }
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder cmd = new StringBuilder();
+        for (String arg : args) {
+            cmd.append(" ");
+            cmd.append(arg);
+        }
+        return "." + statement + " " + cmd.toString();
     }
 }
