@@ -274,7 +274,7 @@ public abstract class Player extends TeaseScript {
                     // somewhere else
                     Player.this.scripts.stack.push(ReturnToPlayer);
                     range = Player.this.script.onRecognitionRejected;
-                    Player.this.playFrom(new ActionRange(0, Integer.MAX_VALUE));
+                    Player.this.playRange(new ActionRange(0, Integer.MAX_VALUE));
                     if (range == null) {
                         // Intentional quit
                         intentionalQuit = true;
