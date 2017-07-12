@@ -41,8 +41,6 @@ public class Script extends AbstractAction {
 
     public String mistressImages = null;
 
-    public int gag = 0;
-
     private final ScriptCache scriptCache;
     public final Stack<ActionRange> stack;
 
@@ -159,9 +157,6 @@ public class Script extends AbstractAction {
             onRecognitionRejected = args.length > 1
                     ? new ActionRange(Integer.parseInt(args[0]), Integer.parseInt(args[1]))
                     : new ActionRange(Integer.parseInt(args[0]));
-        } else if (name == Statement.Gag) {
-            String args[] = cmd.args();
-            gag = Integer.parseInt(args[0]);
         } else if (name == Statement.ConditionRange) {
             if (conditionRanges == null) {
                 conditionRanges = new ArrayList<ConditionRange>();

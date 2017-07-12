@@ -33,7 +33,6 @@ import pcm.state.Visual;
 import pcm.state.commands.ResetRange;
 import pcm.state.conditions.Should;
 import pcm.state.persistence.MappedScriptState;
-import pcm.state.persistence.ScriptState;
 import teaselib.Actor;
 import teaselib.Images;
 import teaselib.Message;
@@ -41,6 +40,7 @@ import teaselib.ScriptFunction;
 import teaselib.Sexuality;
 import teaselib.Sexuality.Gender;
 import teaselib.TeaseScript;
+import teaselib.Toys;
 import teaselib.core.ResourceLoader;
 import teaselib.core.ScriptInterruptedException;
 import teaselib.core.TeaseLib;
@@ -274,7 +274,7 @@ public abstract class Player extends TeaseScript {
                     // somewhere else
                     Player.this.scripts.stack.push(ReturnToPlayer);
                     range = Player.this.script.onRecognitionRejected;
-                    Player.this.playFrom(new ActionRange(0, Integer.MAX_VALUE));
+                    Player.this.playRange(new ActionRange(0, Integer.MAX_VALUE));
                     if (range == null) {
                         // Intentional quit
                         intentionalQuit = true;
@@ -647,8 +647,7 @@ public abstract class Player extends TeaseScript {
     protected String showChoices(ScriptFunction scriptFunction, Confidence recognitionConfidence,
             List<String> choices) {
         // Display text according to slave's level of articulateness
-        Long gag = script != null ? state.get(script.gag) : ScriptState.UNSET;
-        if (gag.equals(ScriptState.SET)) {
+        if (item(Toys.Gag).applied()) {
             // Slave is gagged
             final List<String> processedChoices = new ArrayList<String>(choices.size());
             for (String choice : choices) {

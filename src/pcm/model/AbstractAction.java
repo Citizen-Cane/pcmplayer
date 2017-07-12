@@ -140,13 +140,6 @@ public abstract class AbstractAction {
         IfUnset,
 
         /**
-         * Specifies the action that is used for tracking the usage of a gag.
-         * Controls display of prompts, as a gagged slave won't be able to use
-         * speech recognition.
-         */
-        Gag,
-
-        /**
          * Triggers if the specified number of actions in the given range are
          * set
          */
