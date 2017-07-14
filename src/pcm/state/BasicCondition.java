@@ -17,7 +17,7 @@ public class BasicCondition implements Condition {
             this.args = args;
         }
 
-        protected abstract boolean call(ScriptState state);
+        public abstract boolean call(ScriptState state);
 
         @Override
         public String toString() {

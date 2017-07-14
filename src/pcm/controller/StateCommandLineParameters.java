@@ -1,7 +1,6 @@
 package pcm.controller;
 
-import static pcm.controller.StateCommandLineParameters.Keyword.Over;
-import static pcm.controller.StateCommandLineParameters.Keyword.Remember;
+import static pcm.controller.StateCommandLineParameters.Keyword.*;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -46,7 +45,7 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
         LessOrEqualThan,
         Equals,
 
-        ;
+        Not,;
 
         static final Set<Keyword> COMMANDS = new HashSet<Keyword>(Arrays.asList(Apply, Remove, SetAvailable));
     }
@@ -105,7 +104,7 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
         if (items.size() == 1) {
             return items.get(0);
         } else {
-            throw new IllegalArgumentException(keyword + " requires a sinlge argument");
+            throw new IllegalArgumentException(keyword + " requires a single argument");
         }
     }
 

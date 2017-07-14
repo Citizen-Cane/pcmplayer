@@ -25,13 +25,11 @@ public class IfState extends BasicCondition {
 
     private static final Set<String> OPERATORS = new HashSet<String>(Arrays.asList(OR, AND));
 
-    private final Statement statement;
     private final String[] args;
 
     public IfState(Statement statement, String[] args, ConditionCreator conditionCreator, Declarations declarations)
             throws ScriptParsingException {
         super(statement(statement, args, conditionCreator, declarations));
-        this.statement = statement;
         this.args = args;
     }
 
@@ -81,7 +79,7 @@ public class IfState extends BasicCondition {
             final List<Condition> conditions) {
         return new ParameterizedStatement(statement, new StateCommandLineParameters(args, declarations)) {
             @Override
-            protected boolean call(ScriptState state) {
+            public boolean call(ScriptState state) {
                 for (Condition condition : conditions) {
                     if (!condition.isTrueFor(state))
                         return false;
@@ -95,7 +93,7 @@ public class IfState extends BasicCondition {
             final List<Condition> conditions) {
         return new ParameterizedStatement(statement, new StateCommandLineParameters(args, declarations)) {
             @Override
-            protected boolean call(ScriptState state) {
+            public boolean call(ScriptState state) {
                 for (Condition condition : conditions) {
                     if (condition.isTrueFor(state))
                         return true;
