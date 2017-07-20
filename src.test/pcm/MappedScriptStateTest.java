@@ -1,10 +1,7 @@
 package pcm;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static pcm.state.persistence.ScriptState.SET;
-import static pcm.state.persistence.ScriptState.UNSET;
+import static org.junit.Assert.*;
+import static pcm.state.persistence.ScriptState.*;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -23,6 +20,7 @@ import pcm.state.persistence.ScriptState;
 import pcm.util.TestUtils;
 import teaselib.Household;
 import teaselib.State;
+import teaselib.TeaseScriptPersistence;
 import teaselib.core.Debugger;
 
 public class MappedScriptStateTest {
@@ -105,7 +103,7 @@ public class MappedScriptStateTest {
         assertEquals(UNSET, pcm.get(ChastityCageAction));
         assertFalse(chastityCageState.applied());
         assertTrue(chastityCageState.expired());
-        assertTrue(chastityCageState.peers().isEmpty());
+        assertTrue(((TeaseScriptPersistence.StateProxy) chastityCageState).peers().isEmpty());
         assertEquals(State.REMOVED, pcm.getTime(ChastityCageAction));
     }
 
@@ -209,7 +207,7 @@ public class MappedScriptStateTest {
         assertEquals(UNSET, pcm.get(ChastityCageAction));
         assertFalse(chastityCageState.applied());
         assertTrue(chastityCageState.expired());
-        assertTrue(chastityCageState.peers().isEmpty());
+        assertTrue(((TeaseScriptPersistence.StateProxy) chastityCageState).peers().isEmpty());
 
         long seconds = pcm.getTime(ChastityCageAction);
         assertEquals(State.REMOVED, seconds);
