@@ -1,8 +1,6 @@
 package pcm;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -158,6 +156,28 @@ public class ItemTest {
         TestUtils.play(player, 1071);
         player.item(Toys.Nipple_Clamps).remove();
         TestUtils.play(player, 1075);
+    }
+
+    @Test
+    public void testCanApplyTo() throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
+        Player player = TestUtils.createPlayer(getClass());
+        player.loadScript(getClass().getSimpleName());
+
+        Debugger debugger = new Debugger(player.teaseLib);
+        debugger.freezeTime();
+
+        TestUtils.play(player, 1080);
+    }
+
+    @Test
+    public void testAppliedTo() throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
+        Player player = TestUtils.createPlayer(getClass());
+        player.loadScript(getClass().getSimpleName());
+
+        Debugger debugger = new Debugger(player.teaseLib);
+        debugger.freezeTime();
+
+        TestUtils.play(player, 1090);
     }
 
 }

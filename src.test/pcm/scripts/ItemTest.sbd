@@ -199,6 +199,77 @@
 
 
 
+' testCanApplyTo
+
+[Action 1080]
+.item Toys.Nipple_Clamps canApply
+.item Toys.Nipple_Clamps canApply to Body.OnBalls
+.range 1081
+
+[Action 1081]
+.state Body.OnBalls apply 
+.range 1082
+
+[Action 1082]
+.item Toys.Nipple_Clamps canApply
+.not .item Toys.Nipple_Clamps canApply to Body.OnBalls
+.state Body.OnNipples apply 
+.range 1083
+
+[Action 1083]
+.not .item Toys.Nipple_Clamps canApply
+.not .item Toys.Nipple_Clamps canApply to Body.OnBalls
+.range 1084
+
+[Action 1084]
+.state Body.OnBalls remove
+.range 1085
+
+[Action 1085]
+.not .item Toys.Nipple_Clamps canApply to Body.OnBalls
+.range 1086
+
+[Action 1086]
+.state Body.OnNipples remove
+.range 1087
+
+[Action 1087]
+.item Toys.Nipple_Clamps canApply to Body.OnBalls
+.range 9999
+
+
+
+' testCanApplyTo
+
+[Action 1090]
+.item Toys.Nipple_Clamps not applied
+.item Toys.Nipple_Clamps not applied to Body.OnBalls
+.range 1091
+
+[Action 1091]
+.item Toys.Nipple_Clamps apply 
+.range 1092
+
+[Action 1092]
+.item Toys.Nipple_Clamps applied
+.item Toys.Nipple_Clamps not applied to Body.OnBalls
+.item Toys.Nipple_Clamps apply to Body.OnBalls 
+.range 1093
+
+[Action 1093]
+.item Toys.Nipple_Clamps applied
+.item Toys.Nipple_Clamps applied to Body.OnBalls
+.range 1094
+
+[Action 1094]
+.item Toys.Nipple_Clamps remove
+.range 1095
+
+[Action 1095]
+.item Toys.Nipple_Clamps not applied
+.range 9999
+
+
 ' proper exit for all test cases
 [action 9999]
 .unset 9999

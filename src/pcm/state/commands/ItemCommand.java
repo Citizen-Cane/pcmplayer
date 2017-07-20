@@ -13,6 +13,7 @@ import pcm.state.persistence.ScriptState;
 import teaselib.State;
 import teaselib.core.StateMaps;
 import teaselib.core.StateMaps.Attributes;
+import teaselib.util.Item;
 
 public class ItemCommand extends BasicCommand {
     private static final Statement ITEM = AbstractAction.Statement.Item;
@@ -28,7 +29,7 @@ public class ItemCommand extends BasicCommand {
         try {
             final String[] items = args.items(Keyword.Item);
             if (args.containsKey(Keyword.Apply)) {
-                final String[] peers = args.items(Keyword.To);
+                final String[] peers = args.items(args.containsKey(Keyword.To) ? Keyword.To : Keyword.Apply);
                 if (args.containsKey(Keyword.To) && peers.length == 0) {
                     throw new IllegalArgumentException("Missing peers to apply the item to");
                 } else if (args.containsKey(Keyword.Apply) && args.items(Keyword.Apply).length > 0) {
@@ -42,16 +43,20 @@ public class ItemCommand extends BasicCommand {
                     public void run(ScriptState state) {
                         Player player = state.player;
                         for (String item : items) {
-                            Attributes attributeApplier = (StateMaps.Attributes) player.item(item);
+                            Item itemImpl = player.item(item);
+                            Attributes attributeApplier = (StateMaps.Attributes) itemImpl;
                             attributeApplier.applyAttributes(player.script.scriptApplyAttribute);
                             attributeApplier.applyAttributes(player.namespaceApplyAttribute);
-                            State.Options options = player.item(item).to(peers);
+                            State.Options options = peers.length == 0 ? itemImpl.apply() : itemImpl.to(peers);
                             args.handleStateOptions(options, duration, remember);
                         }
                     }
 
                 };
             } else if (args.containsKey(Keyword.Remove)) {
+                if (args.containsKey(Keyword.From) || args.containsKey(Keyword.To)) {
+                    throw new IllegalArgumentException(Keyword.Remove + " doesn't accept from/to peer list.");
+                }
                 return new ParameterizedStatement(ITEM, args) {
                     @Override
                     public void run(ScriptState state) {

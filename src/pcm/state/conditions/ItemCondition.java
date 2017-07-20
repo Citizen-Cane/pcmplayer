@@ -69,6 +69,7 @@ public class ItemCondition extends BasicCondition {
                 }
             };
         } else if (args.containsKey(StateCommandLineParameters.Keyword.CanApply)) {
+            final String[] peers = args.items(Keyword.To);
             return new ParameterizedStatement(ITEM, args) {
                 @Override
                 public boolean call(ScriptState state) {
@@ -76,17 +77,31 @@ public class ItemCondition extends BasicCondition {
                         if (!state.player.item(item).canApply()) {
                             return false;
                         }
+                        for (String peer : peers) {
+                            if (state.player.item(peer).applied()) {
+                                return false;
+                            }
+                        }
                     }
                     return true;
                 }
             };
         } else if (args.containsKey(StateCommandLineParameters.Keyword.Applied)) {
+            final String[] peers = args.items(Keyword.To);
             return new ParameterizedStatement(ITEM, args) {
                 @Override
                 public boolean call(ScriptState state) {
                     for (String item : items) {
-                        if (!state.player.item(item).applied()) {
-                            return false;
+                        if (peers.length == 0) {
+                            if (!state.player.item(item).applied()) {
+                                return false;
+                            }
+                        } else {
+                            for (String peer : peers) {
+                                if (!state.player.item(item).is(peer)) {
+                                    return false;
+                                }
+                            }
                         }
                     }
                     return true;

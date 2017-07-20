@@ -30,7 +30,10 @@ public class StateCommand extends BasicCommand {
         try {
             final String[] items = args.items(Keyword.Item);
             if (args.containsKey(StateCommandLineParameters.Keyword.Apply)) {
-                final Object[] attributes = args.items(Keyword.Apply);
+                final String[] peers = args.items(args.containsKey(Keyword.To) ? Keyword.To : Keyword.Apply);
+                if (args.containsKey(Keyword.To) && peers.length == 0) {
+                    throw new IllegalArgumentException("Missing peers to apply the item to");
+                }
                 final DurationFormat duration = args.durationOption();
                 final boolean remember = args.rememberOption();
                 return new ParameterizedStatement(STATE, args) {
@@ -41,7 +44,7 @@ public class StateCommand extends BasicCommand {
                             Attributes attributeApplier = (StateMaps.Attributes) player.state(item);
                             attributeApplier.applyAttributes(player.script.scriptApplyAttribute);
                             attributeApplier.applyAttributes(player.namespaceApplyAttribute);
-                            State.Options options = state.player.state(item).apply(attributes);
+                            State.Options options = state.player.state(item).apply(peers);
                             if (duration != null) {
                                 State.Persistence persistence = options.over(duration.toSeconds(), TimeUnit.SECONDS);
                                 if (remember) {
