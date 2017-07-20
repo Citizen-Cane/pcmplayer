@@ -37,7 +37,7 @@ public abstract class MappedScriptStateValue implements MappedScriptValue {
 
         @Override
         public void set() {
-            state.apply(peers);
+            state.applyTo(peers);
         }
 
         @Override
@@ -56,7 +56,7 @@ public abstract class MappedScriptStateValue implements MappedScriptValue {
 
         @Override
         public void set() {
-            state.apply(peers).remember();
+            state.applyTo(peers).remember();
         }
 
         @Override

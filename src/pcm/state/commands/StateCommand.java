@@ -44,7 +44,7 @@ public class StateCommand extends BasicCommand {
                             Attributes attributeApplier = (StateMaps.Attributes) player.state(item);
                             attributeApplier.applyAttributes(player.script.scriptApplyAttribute);
                             attributeApplier.applyAttributes(player.namespaceApplyAttribute);
-                            State.Options options = state.player.state(item).apply(peers);
+                            State.Options options = state.player.state(item).applyTo(peers);
                             if (duration != null) {
                                 State.Persistence persistence = options.over(duration.toSeconds(), TimeUnit.SECONDS);
                                 if (remember) {

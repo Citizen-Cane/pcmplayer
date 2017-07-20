@@ -121,7 +121,7 @@ public class StateTest {
         Debugger debugger = new Debugger(player.teaseLib);
         debugger.freezeTime();
 
-        player.state(Toys.Nipple_Clamps).apply().over(30, TimeUnit.MINUTES);
+        player.state(Toys.Nipple_Clamps).applyTo().over(30, TimeUnit.MINUTES);
         TestUtils.play(player, 1040);
 
         debugger.advanceTime(30, TimeUnit.MINUTES);
@@ -140,7 +140,7 @@ public class StateTest {
         Debugger debugger = new Debugger(player.teaseLib);
         debugger.freezeTime();
 
-        player.state(Toys.Nipple_Clamps).apply().over(30, TimeUnit.MINUTES);
+        player.state(Toys.Nipple_Clamps).applyTo().over(30, TimeUnit.MINUTES);
         assertEquals(0, player.state(Toys.Nipple_Clamps).duration().elapsed(TimeUnit.MINUTES));
         TestUtils.play(player, 1050);
 
@@ -168,7 +168,7 @@ public class StateTest {
 
         TestUtils.play(player, 1060);
         TestUtils.play(player, 1065);
-        player.state(Toys.Nipple_Clamps).apply().over(30, TimeUnit.MINUTES);
+        player.state(Toys.Nipple_Clamps).applyTo().over(30, TimeUnit.MINUTES);
         TestUtils.play(player, 1060);
         TestUtils.play(player, 1065);
     }
@@ -182,12 +182,12 @@ public class StateTest {
         Debugger debugger = new Debugger(player.teaseLib);
         debugger.freezeTime();
 
-        player.state(Toys.Nipple_Clamps).apply();
+        player.state(Toys.Nipple_Clamps).applyTo();
         TestUtils.play(player, 1070);
         player.state(Toys.Nipple_Clamps).remove();
         TestUtils.play(player, 1075);
 
-        player.state(Toys.Nipple_Clamps).apply().over(30, TimeUnit.MINUTES);
+        player.state(Toys.Nipple_Clamps).applyTo().over(30, TimeUnit.MINUTES);
         TestUtils.play(player, 1071);
         player.state(Toys.Nipple_Clamps).remove();
         TestUtils.play(player, 1075);

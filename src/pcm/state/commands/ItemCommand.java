@@ -47,7 +47,7 @@ public class ItemCommand extends BasicCommand {
                             Attributes attributeApplier = (StateMaps.Attributes) itemImpl;
                             attributeApplier.applyAttributes(player.script.scriptApplyAttribute);
                             attributeApplier.applyAttributes(player.namespaceApplyAttribute);
-                            State.Options options = peers.length == 0 ? itemImpl.apply() : itemImpl.to(peers);
+                            State.Options options = peers.length == 0 ? itemImpl.apply() : itemImpl.applyTo(peers);
                             args.handleStateOptions(options, duration, remember);
                         }
                     }

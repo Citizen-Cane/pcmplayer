@@ -65,12 +65,12 @@ public class ConditionRangeTestWithStateConditions {
         Player player = TestUtils.createPlayer(getClass());
         player.loadScript(getClass().getSimpleName());
 
-        player.state(Body.OnPenis).apply();
+        player.state(Body.OnPenis).applyTo();
         assertEquals(3, player.range(new ActionRange(1400, 1402)).size());
 
         player.state.set(20);
         assertEquals(3, player.range(new ActionRange(1400, 1402)).size());
-        player.state(Body.InMouth).apply();
+        player.state(Body.InMouth).applyTo();
         assertEquals(3, player.range(new ActionRange(1400, 1402)).size());
         player.state.set(25);
         assertEquals(3, player.range(new ActionRange(1400, 1402)).size());
@@ -89,7 +89,7 @@ public class ConditionRangeTestWithStateConditions {
         Player player = TestUtils.createPlayer(getClass());
         player.loadScript(getClass().getSimpleName());
 
-        player.state(Body.OnPenis).apply();
+        player.state(Body.OnPenis).applyTo();
         assertEquals(3, player.range(new ActionRange(1400, 1402)).size());
 
         player.state.set(400);
@@ -100,7 +100,7 @@ public class ConditionRangeTestWithStateConditions {
 
         // condition relaxed by condition range declaration
         assertEquals(3, player.range(new ActionRange(1400, 1402)).size());
-        player.state(Body.CantKneel).apply();
+        player.state(Body.CantKneel).applyTo();
         assertEquals(1, player.range(new ActionRange(1400, 1402)).size());
         assertEquals(1401, player.range(new ActionRange(1400, 1402)).get(0).number);
     }
@@ -111,15 +111,15 @@ public class ConditionRangeTestWithStateConditions {
         Player player = TestUtils.createPlayer(getClass());
         player.loadScript(getClass().getSimpleName());
 
-        player.state(Body.OnPenis).apply();
+        player.state(Body.OnPenis).applyTo();
         assertEquals(3, player.range(new ActionRange(1400, 1402)).size());
 
-        player.state(Body.AroundNeck).apply();
+        player.state(Body.AroundNeck).applyTo();
         assertEquals(2, player.range(new ActionRange(1400, 1402)).size());
         assertNotEquals(1401, player.range(new ActionRange(1400, 1402)).get(0).number);
         assertNotEquals(1401, player.range(new ActionRange(1400, 1402)).get(1).number);
 
-        player.state(Body.CantKneel).apply();
+        player.state(Body.CantKneel).applyTo();
         // 1401 is first block by .shouldnot 28
         // but 1400 and 1402 are blocked by 33
         // -> condition ranges are removed until .shouldnot 28 is removed
@@ -134,10 +134,10 @@ public class ConditionRangeTestWithStateConditions {
         Player player = TestUtils.createPlayer(getClass());
         player.loadScript(getClass().getSimpleName());
 
-        player.state(Body.OnPenis).apply();
+        player.state(Body.OnPenis).applyTo();
         assertEquals(3, player.range(new ActionRange(1400, 1402)).size());
 
-        player.state(Body.AroundNeck).apply();
+        player.state(Body.AroundNeck).applyTo();
         assertEquals(2, player.range(new ActionRange(1400, 1402)).size());
 
         player.state.set(400);
@@ -156,10 +156,10 @@ public class ConditionRangeTestWithStateConditions {
         assertEquals(1, player.range(new ActionRange(1400, 1402)).size());
         assertEquals(1400, player.range(new ActionRange(1400, 1402)).get(0).number);
 
-        player.state(Body.OnPenis).apply();
+        player.state(Body.OnPenis).applyTo();
         assertEquals(3, player.range(new ActionRange(1400, 1402)).size());
 
-        player.state(Body.AroundNeck).apply();
+        player.state(Body.AroundNeck).applyTo();
         assertEquals(2, player.range(new ActionRange(1400, 1402)).size());
         assertEquals(1400, player.range(new ActionRange(1400, 1402)).get(0).number);
         assertEquals(1402, player.range(new ActionRange(1400, 1402)).get(1).number);

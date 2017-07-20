@@ -86,7 +86,7 @@ public class ItemTest {
         Debugger debugger = new Debugger(player.teaseLib);
         debugger.freezeTime();
 
-        player.state(Toys.Nipple_Clamps).apply().over(30, TimeUnit.MINUTES);
+        player.state(Toys.Nipple_Clamps).applyTo().over(30, TimeUnit.MINUTES);
         TestUtils.play(player, 1040);
 
         debugger.advanceTime(30, TimeUnit.MINUTES);
