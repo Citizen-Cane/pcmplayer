@@ -54,14 +54,19 @@ public class ItemCommand extends BasicCommand {
 
                 };
             } else if (args.containsKey(Keyword.Remove)) {
-                if (args.containsKey(Keyword.From) || args.containsKey(Keyword.To)) {
+                if (args.containsKey(Keyword.To)) {
                     throw new IllegalArgumentException(Keyword.Remove + " doesn't accept from/to peer list.");
                 }
+                final String[] peers = args.items(args.containsKey(Keyword.To) ? Keyword.From : Keyword.Remove);
                 return new ParameterizedStatement(ITEM, args) {
                     @Override
                     public void run(ScriptState state) {
                         for (String item : items) {
-                            state.player.item(item).remove();
+                            if (peers.length == 0) {
+                                state.player.item(item).remove();
+                            } else {
+                                state.player.item(item).removeFrom(peers);
+                            }
                         }
                     }
                 };

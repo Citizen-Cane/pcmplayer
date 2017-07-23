@@ -70,7 +70,7 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
             if (items(Keyword.Item).length == 0) {
                 throw new IllegalArgumentException("Items must be specified first");
             } else if (items(Keyword.Remove).length > 0) {
-                throw new IllegalArgumentException("Remove can may only remove all items");
+                throw new IllegalArgumentException("Remove can only remove all items");
             }
         } catch (ClassNotFoundException e) {
             throw new IllegalArgumentException("Not an enum", e);

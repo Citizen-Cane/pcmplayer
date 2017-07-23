@@ -29,7 +29,7 @@ public class StateCommand extends BasicCommand {
             throws ScriptParsingException {
         try {
             final String[] items = args.items(Keyword.Item);
-            if (args.containsKey(StateCommandLineParameters.Keyword.Apply)) {
+            if (args.containsKey(Keyword.Apply)) {
                 final String[] peers = args.items(args.containsKey(Keyword.To) ? Keyword.To : Keyword.Apply);
                 if (args.containsKey(Keyword.To) && peers.length == 0) {
                     throw new IllegalArgumentException("Missing peers to apply the item to");
@@ -56,18 +56,16 @@ public class StateCommand extends BasicCommand {
                         }
                     }
                 };
-            } else if (args.containsKey(StateCommandLineParameters.Keyword.Remove)) {
-                final Object[] peers = args.items(Keyword.From);
+            } else if (args.containsKey(Keyword.Remove)) {
+                final String[] peers = args.items(Keyword.From);
                 return new ParameterizedStatement(STATE, args) {
                     @Override
                     public void run(ScriptState state) {
                         for (String item : items) {
-                            if (peers.length > 0) {
-                                for (Object peer : peers) {
-                                    state.player.state(item).remove(peer);
-                                }
-                            } else {
+                            if (peers.length == 0) {
                                 state.player.state(item).remove();
+                            } else {
+                                state.player.state(item).removeFrom(peers);
                             }
                         }
                     }
