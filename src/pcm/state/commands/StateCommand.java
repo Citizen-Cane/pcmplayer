@@ -71,7 +71,7 @@ public class StateCommand extends BasicCommand {
                     }
                 };
             } else {
-                throw new IllegalStatementException(STATE, args);
+                throw new IllegalStatementException("Keyword not found", args);
             }
         } catch (ClassNotFoundException e) {
             throw new ScriptParsingException(e);

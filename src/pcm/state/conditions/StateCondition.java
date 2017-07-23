@@ -145,7 +145,7 @@ public class StateCondition extends BasicCondition {
                 }
             };
         } else {
-            throw new IllegalStatementException(STATE, args);
+            throw new IllegalStatementException("Keyword not found", args);
         }
     }
 

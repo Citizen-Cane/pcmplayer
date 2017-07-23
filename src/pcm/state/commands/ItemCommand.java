@@ -81,7 +81,7 @@ public class ItemCommand extends BasicCommand {
                     }
                 };
             } else {
-                throw new IllegalStatementException(ITEM, args);
+                throw new IllegalStatementException("Keyword not found", args);
             }
         } catch (
 

@@ -6,8 +6,8 @@ import teaselib.core.util.CommandLineParameters;
 public class IllegalStatementException extends IllegalArgumentException {
     private static final long serialVersionUID = 1L;
 
-    public IllegalStatementException(Statement statement, CommandLineParameters<?> args) {
-        super("Illegal statement arguments ." + statement + " " + args.toString());
+    public IllegalStatementException(String message, CommandLineParameters<?> args) {
+        super(message + ": " + args.toString());
     }
 
     public IllegalStatementException(Statement statement, String args) {

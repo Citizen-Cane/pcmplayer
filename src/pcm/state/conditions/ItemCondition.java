@@ -180,7 +180,7 @@ public class ItemCondition extends BasicCondition {
                 }
             };
         } else {
-            throw new IllegalStatementException(ITEM, args);
+            throw new IllegalStatementException("Keyword not found", args);
         }
     }
 
