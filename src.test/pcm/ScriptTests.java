@@ -42,6 +42,9 @@ public class ScriptTests {
         }
     };
 
+    public ScriptTests() throws IOException {
+    }
+
     /**
      * @throws java.lang.Exception
      */

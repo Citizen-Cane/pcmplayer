@@ -5,6 +5,7 @@ package pcm;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.util.Locale;
 
 import org.junit.Before;
@@ -29,15 +30,16 @@ import teaselib.hosts.DummyPersistence;
  */
 public class MessageTests {
 
-    Player player = new Player(
-            new TeaseLib(new DummyHost(), new DummyPersistence()),
-            new ResourceLoader(this.getClass()),
-            new Actor("Test", Voice.Gender.Female, Locale.US), "pcm", null) {
+    Player player = new Player(new TeaseLib(new DummyHost(), new DummyPersistence()),
+            new ResourceLoader(this.getClass()), new Actor("Test", Voice.Gender.Female, Locale.US), "pcm", null) {
 
         @Override
         public void run() {
         }
     };
+
+    public MessageTests() throws IOException {
+    }
 
     /**
      * @throws java.lang.Exception
@@ -49,8 +51,7 @@ public class MessageTests {
 
     private Message getMessageOfAction(int n) {
         Action action = player.script.actions.get(n);
-        Message message = ((SpokenMessage) action.visuals
-                .get(Statement.Message)).getMessages().get(0);
+        Message message = ((SpokenMessage) action.visuals.get(Statement.Message)).getMessages().get(0);
         return message;
     }
 
@@ -136,11 +137,9 @@ public class MessageTests {
         assertEquals(
                 "It surely doesn't take so long to answer such a simple question and I've had enough of your lazy and sluggish attitude.",
                 message.getParts().get(1).value);
-        assertEquals(
-                "You can come back in an hour or so when you're ready to pay attention to your Mistress!",
+        assertEquals("You can come back in an hour or so when you're ready to pay attention to your Mistress!",
                 message.getParts().get(2).value);
-        assertEquals(
-                "And for your own good, you'll better stay bare naked that hour.",
+        assertEquals("And for your own good, you'll better stay bare naked that hour.",
                 message.getParts().get(3).value);
     }
 }

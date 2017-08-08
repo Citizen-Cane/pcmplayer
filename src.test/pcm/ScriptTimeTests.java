@@ -7,6 +7,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -36,10 +37,8 @@ import teaselib.hosts.DummyPersistence;
  */
 public class ScriptTimeTests {
 
-    private final Player player = new Player(
-            new TeaseLib(new DummyHost(), new DummyPersistence()),
-            new ResourceLoader(ScriptTimeTests.class),
-            new Actor("Test", Voice.Gender.Female, Locale.US), "pcm", null) {
+    private final Player player = new Player(new TeaseLib(new DummyHost(), new DummyPersistence()),
+            new ResourceLoader(ScriptTimeTests.class), new Actor("Test", Voice.Gender.Female, Locale.US), "pcm", null) {
 
         @Override
         public void run() {
@@ -47,6 +46,9 @@ public class ScriptTimeTests {
     };
 
     private final Debugger debugger = new Debugger(player.teaseLib);
+
+    public ScriptTimeTests() throws IOException {
+    }
 
     /**
      * @throws java.lang.Exception
@@ -58,8 +60,7 @@ public class ScriptTimeTests {
     }
 
     private boolean containsAction(int n) {
-        return player.range(new ActionRange(n))
-                .contains(player.script.actions.get(n));
+        return player.range(new ActionRange(n)).contains(player.script.actions.get(n));
     }
 
     @Test
@@ -72,22 +73,16 @@ public class ScriptTimeTests {
         assertEquals(-1, new DurationFormat("-00:00\"01").toSeconds());
         assertEquals(+1 * 30, new DurationFormat("+00:00\"30").toSeconds());
         assertEquals(-1 * 30, new DurationFormat("-00:00\"30").toSeconds());
-        assertEquals(+1 * 60 * 15,
-                new DurationFormat("+00:15\"00").toSeconds());
-        assertEquals(-1 * 60 * 15,
-                new DurationFormat("-00:15\"00").toSeconds());
-        assertEquals(+1 * 60 * 30 + 1 * 60 * 60,
-                new DurationFormat("+01:30\"00").toSeconds());
-        assertEquals(-1 * 60 * 30 - 1 * 60 * 60,
-                new DurationFormat("-01:30\"00").toSeconds());
+        assertEquals(+1 * 60 * 15, new DurationFormat("+00:15\"00").toSeconds());
+        assertEquals(-1 * 60 * 15, new DurationFormat("-00:15\"00").toSeconds());
+        assertEquals(+1 * 60 * 30 + 1 * 60 * 60, new DurationFormat("+01:30\"00").toSeconds());
+        assertEquals(-1 * 60 * 30 - 1 * 60 * 60, new DurationFormat("-01:30\"00").toSeconds());
 
         assertEquals(0, new DurationFormat("00:00").toSeconds());
         assertEquals(60 * 15, new DurationFormat("+00:15").toSeconds());
         assertEquals(-60 * 15, new DurationFormat("-00:15").toSeconds());
-        assertEquals(+60 * 30 + 60 * 60,
-                new DurationFormat("+01:30").toSeconds());
-        assertEquals(-60 * 30 - 60 * 60,
-                new DurationFormat("-01:30").toSeconds());
+        assertEquals(+60 * 30 + 60 * 60, new DurationFormat("+01:30").toSeconds());
+        assertEquals(-60 * 30 - 60 * 60, new DurationFormat("-01:30").toSeconds());
     }
 
     @Test
@@ -180,8 +175,7 @@ public class ScriptTimeTests {
         player.state.setTime(9, player.duration(10, TimeUnit.SECONDS));
         assertFalse(new TimeTo(9, "-INF").isTrueFor(player.state));
 
-        player.state.setTime(9,
-                player.duration(State.INDEFINITELY, TimeUnit.SECONDS));
+        player.state.setTime(9, player.duration(State.INDEFINITELY, TimeUnit.SECONDS));
         assertTrue(new TimeTo(9, "-INF").isTrueFor(player.state));
     }
 

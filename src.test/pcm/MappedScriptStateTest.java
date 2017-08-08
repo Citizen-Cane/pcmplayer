@@ -1,7 +1,10 @@
 package pcm;
 
-import static org.junit.Assert.*;
-import static pcm.state.persistence.ScriptState.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static pcm.state.persistence.ScriptState.SET;
+import static pcm.state.persistence.ScriptState.UNSET;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -50,7 +53,7 @@ public class MappedScriptStateTest {
         loadTestScript();
     }
 
-    private void initPlayer() {
+    private void initPlayer() throws IOException {
         player = TestUtils.createPlayer(getClass());
         chastityCageState = player.state(Toys.Chastity_Cage);
         pcm = player.state;

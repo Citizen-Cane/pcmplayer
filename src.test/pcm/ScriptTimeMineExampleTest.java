@@ -7,6 +7,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -30,10 +31,9 @@ import teaselib.hosts.DummyPersistence;
  */
 public class ScriptTimeMineExampleTest {
 
-    private final Player player = new Player(
-            new TeaseLib(new DummyHost(), new DummyPersistence()),
-            new ResourceLoader(ScriptTimeMineExampleTest.class),
-            new Actor("Test", Voice.Gender.Female, Locale.US), "pcm", null) {
+    private final Player player = new Player(new TeaseLib(new DummyHost(), new DummyPersistence()),
+            new ResourceLoader(ScriptTimeMineExampleTest.class), new Actor("Test", Voice.Gender.Female, Locale.US),
+            "pcm", null) {
 
         @Override
         public void run() {
@@ -41,6 +41,9 @@ public class ScriptTimeMineExampleTest {
     };
 
     private final Debugger debugger = new Debugger(player.teaseLib);
+
+    public ScriptTimeMineExampleTest() throws IOException {
+    }
 
     /**
      * @throws java.lang.Exception
@@ -52,8 +55,7 @@ public class ScriptTimeMineExampleTest {
     }
 
     private boolean containsAction(int n) {
-        return player.range(new ActionRange(n))
-                .contains(player.script.actions.get(n));
+        return player.range(new ActionRange(n)).contains(player.script.actions.get(n));
     }
 
     @Test

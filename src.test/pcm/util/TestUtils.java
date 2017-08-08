@@ -19,12 +19,12 @@ import teaselib.hosts.DummyPersistence;
 public class TestUtils {
     public static final String TEST_NAMESPACE = "Test_Namespace";
 
-    public static TeaseLib teaseLib() {
+    public static TeaseLib teaseLib() throws IOException {
         TeaseLib teaseLib = new TeaseLib(new DummyHost(), new DummyPersistence());
         return teaseLib;
     }
 
-    public static Player createPlayer(Class<?> scriptClass) {
+    public static Player createPlayer(Class<?> scriptClass) throws IOException {
         TeaseLib teaseLib = teaseLib();
         return createPlayer(teaseLib, scriptClass);
     }
