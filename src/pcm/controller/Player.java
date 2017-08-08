@@ -44,7 +44,7 @@ import teaselib.Toys;
 import teaselib.core.ResourceLoader;
 import teaselib.core.ScriptInterruptedException;
 import teaselib.core.TeaseLib;
-import teaselib.core.devices.remote.KeyRelease;
+import teaselib.core.devices.release.Actuator;
 import teaselib.core.media.MediaRenderer;
 import teaselib.core.speechrecognition.SpeechRecognitionResult.Confidence;
 import teaselib.core.texttospeech.ScriptScanner;
@@ -81,8 +81,7 @@ public abstract class Player extends TeaseScript {
     // TODO Enable key-release in both main and sub-scripts
     // TODO if started in main already, commands in sub script should be ignored
     // TODO if started in main, the key shouldn't be released in the sub script
-    public KeyRelease keyRelease = null;
-    public int keyReleaseActuator = -1;
+    public Actuator keyReleaseActuator = null;
 
     /**
      * This range can be pushed onto the script range stack to tell the player

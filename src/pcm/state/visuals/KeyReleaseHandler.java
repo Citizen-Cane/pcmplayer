@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import pcm.controller.Player;
 import pcm.state.Visual;
 import teaselib.core.devices.DeviceCache;
-import teaselib.core.devices.remote.KeyRelease;
+import teaselib.core.devices.release.KeyRelease;
 import teaselib.core.media.MediaRenderer;
 import teaselib.core.media.MediaRendererThread;
 
@@ -20,8 +20,7 @@ import teaselib.core.media.MediaRendererThread;
  *
  */
 public class KeyReleaseHandler implements Visual {
-    private static final Logger logger = LoggerFactory
-            .getLogger(KeyReleaseHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(KeyReleaseHandler.class);
     public static final String Prepare = "prepare";
     public static final String Start = "start";
     public static final String Sleep = "sleep";
@@ -46,35 +45,26 @@ public class KeyReleaseHandler implements Visual {
     public void render(final Player player) {
         MediaRenderer keyReleaseArm = new MediaRendererThread(player.teaseLib) {
             @Override
-            protected void renderMedia()
-                    throws InterruptedException, IOException {
-                logger.info(command
-                        + (durationMinutes > 0 ? " " + durationMinutes : ""));
+            protected void renderMedia() throws InterruptedException, IOException {
+                logger.info(command + (durationMinutes > 0 ? " " + durationMinutes : ""));
                 startCompleted();
                 if (command.equalsIgnoreCase(Prepare)) {
-                    player.keyRelease = null;
-                    player.keyReleaseActuator = -1;
-                    KeyRelease keyRelease = KeyRelease.Devices
-                            .getDefaultDevice();
+                    player.keyReleaseActuator = null;
+                    KeyRelease keyRelease = KeyRelease.Devices.getDefaultDevice();
                     mandatoryCompleted();
                     allCompleted();
                     if (DeviceCache.connect(keyRelease)) {
-                        player.keyRelease = keyRelease;
-                        player.keyReleaseActuator = keyRelease
-                                .getBestActuatorForTime(durationMinutes);
-                        keyRelease.arm(player.keyReleaseActuator);
+                        player.keyReleaseActuator = keyRelease.getBestActuatorForTime(durationMinutes);
+                        player.keyReleaseActuator.arm();
                     }
                 } else {
-                    if (player.keyRelease != null
-                            && player.keyReleaseActuator >= 0) {
+                    if (player.keyReleaseActuator != null) {
                         if (command.equalsIgnoreCase(Start)) {
-                            player.keyRelease.start(player.keyReleaseActuator,
-                                    durationMinutes);
+                            player.keyReleaseActuator.start(durationMinutes);
                         } else if (command.equalsIgnoreCase(Sleep)) {
-                            player.keyRelease.sleep(durationMinutes);
+                            player.keyReleaseActuator.sleep(durationMinutes);
                         } else if (command.equalsIgnoreCase(Release)) {
-                            player.keyRelease
-                                    .release(player.keyReleaseActuator);
+                            player.keyReleaseActuator.release();
                         }
                     }
                     mandatoryCompleted();
