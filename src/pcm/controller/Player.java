@@ -34,6 +34,7 @@ import pcm.state.commands.ResetRange;
 import pcm.state.conditions.Should;
 import pcm.state.persistence.MappedScriptState;
 import teaselib.Actor;
+import teaselib.Config;
 import teaselib.Images;
 import teaselib.Message;
 import teaselib.ScriptFunction;
@@ -50,6 +51,7 @@ import teaselib.core.speechrecognition.SpeechRecognitionResult.Confidence;
 import teaselib.core.texttospeech.ScriptScanner;
 import teaselib.core.texttospeech.TextToSpeechRecorder;
 import teaselib.core.texttospeech.Voice;
+import teaselib.core.util.QualifiedItem;
 import teaselib.util.RandomImages;
 import teaselib.util.SpeechRecognitionRejectedScript;
 import teaselib.util.TextVariables;
@@ -324,11 +326,16 @@ public abstract class Player extends TeaseScript {
         }
     }
 
-    private static void validateAspects(Script script, MappedScriptState state, ResourceLoader resources,
+    private void validateAspects(Script script, MappedScriptState state, ResourceLoader resources,
             List<ValidationIssue> validationErrors) throws ScriptParsingException {
         validateScript(script, validationErrors);
         validateMappings(script, state, validationErrors);
-        validateResources(script, resources, validationErrors);
+
+        boolean ignoreMissingResources = Boolean
+                .parseBoolean(teaseLib.config.get(QualifiedItem.of(Config.Debug.IgnoreMissingResources)));
+        if (!ignoreMissingResources) {
+            validateResources(script, resources, validationErrors);
+        }
     }
 
     private static void validateMappings(Script script, MappedScriptState state,
