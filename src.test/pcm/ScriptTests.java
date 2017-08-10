@@ -8,7 +8,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
-import java.util.Locale;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -21,26 +20,13 @@ import pcm.model.ScriptParsingException;
 import pcm.model.ValidationIssue;
 import pcm.state.persistence.ScriptState;
 import pcm.util.TestUtils;
-import teaselib.Actor;
-import teaselib.core.ResourceLoader;
-import teaselib.core.TeaseLib;
-import teaselib.core.texttospeech.Voice;
-import teaselib.hosts.DummyHost;
-import teaselib.hosts.DummyPersistence;
 
 /**
- * @author someone
+ * @author Citizen-Cane
  *
  */
 public class ScriptTests {
-    Player player = new Player(new TeaseLib(new DummyHost(), new DummyPersistence()),
-            new ResourceLoader(ScriptTests.class), new Actor(Actor.Key.DominantFemale, Voice.Gender.Female, Locale.US),
-            "pcm", null) {
-
-        @Override
-        public void run() {
-        }
-    };
+    Player player = TestUtils.createPlayer(getClass());
 
     public ScriptTests() throws IOException {
     }

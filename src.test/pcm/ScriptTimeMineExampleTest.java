@@ -8,7 +8,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
@@ -17,28 +16,15 @@ import org.junit.Test;
 import pcm.controller.Player;
 import pcm.model.ActionRange;
 import pcm.state.persistence.ScriptState;
-import teaselib.Actor;
+import pcm.util.TestUtils;
 import teaselib.core.Debugger;
-import teaselib.core.ResourceLoader;
-import teaselib.core.TeaseLib;
-import teaselib.core.texttospeech.Voice;
-import teaselib.hosts.DummyHost;
-import teaselib.hosts.DummyPersistence;
 
 /**
  * @author someone
  *
  */
 public class ScriptTimeMineExampleTest {
-
-    private final Player player = new Player(new TeaseLib(new DummyHost(), new DummyPersistence()),
-            new ResourceLoader(ScriptTimeMineExampleTest.class), new Actor("Test", Voice.Gender.Female, Locale.US),
-            "pcm", null) {
-
-        @Override
-        public void run() {
-        }
-    };
+    Player player = TestUtils.createPlayer(getClass());
 
     private final Debugger debugger = new Debugger(player.teaseLib);
 

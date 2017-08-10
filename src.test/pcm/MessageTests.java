@@ -6,7 +6,6 @@ package pcm;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
-import java.util.Locale;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -15,35 +14,21 @@ import pcm.controller.Player;
 import pcm.model.AbstractAction.Statement;
 import pcm.model.Action;
 import pcm.state.visuals.SpokenMessage;
-import teaselib.Actor;
+import pcm.util.TestUtils;
 import teaselib.Message;
 import teaselib.Mood;
-import teaselib.core.ResourceLoader;
-import teaselib.core.TeaseLib;
-import teaselib.core.texttospeech.Voice;
-import teaselib.hosts.DummyHost;
-import teaselib.hosts.DummyPersistence;
 
 /**
- * @author someone
+ * @author Citizen-Cane
  *
  */
 public class MessageTests {
 
-    Player player = new Player(new TeaseLib(new DummyHost(), new DummyPersistence()),
-            new ResourceLoader(this.getClass()), new Actor("Test", Voice.Gender.Female, Locale.US), "pcm", null) {
-
-        @Override
-        public void run() {
-        }
-    };
+    Player player = TestUtils.createPlayer(getClass());
 
     public MessageTests() throws IOException {
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
     @Before
     public void setUpBefore() throws Exception {
         player.loadScript("MessageTests");

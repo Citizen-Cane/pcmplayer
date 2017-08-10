@@ -15,12 +15,13 @@ import teaselib.core.TeaseLib;
 import teaselib.core.texttospeech.Voice.Gender;
 import teaselib.hosts.DummyHost;
 import teaselib.hosts.DummyPersistence;
+import teaselib.test.DebugSetup;
 
 public class TestUtils {
     public static final String TEST_NAMESPACE = "Test_Namespace";
 
     public static TeaseLib teaseLib() throws IOException {
-        TeaseLib teaseLib = new TeaseLib(new DummyHost(), new DummyPersistence());
+        TeaseLib teaseLib = new TeaseLib(new DummyHost(), new DummyPersistence(), new DebugSetup());
         return teaseLib;
     }
 
