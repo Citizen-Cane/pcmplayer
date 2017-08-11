@@ -331,9 +331,9 @@ public abstract class Player extends TeaseScript {
         validateScript(script, validationErrors);
         validateMappings(script, state, validationErrors);
 
-        boolean ignoreMissingResources = Boolean
-                .parseBoolean(teaseLib.config.get(QualifiedItem.of(Config.Debug.IgnoreMissingResources)));
-        if (!ignoreMissingResources) {
+        boolean validateAssets = Boolean
+                .parseBoolean(teaseLib.config.get(QualifiedItem.of(Config.Debug.StopOnAssetNotFound)));
+        if (validateAssets) {
             validateResources(script, resources, validationErrors);
         }
     }
