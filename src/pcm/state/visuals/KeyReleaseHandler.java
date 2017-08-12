@@ -4,6 +4,7 @@
 package pcm.state.visuals;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,16 +30,16 @@ public class KeyReleaseHandler implements Visual {
     public static final String[] Commands = { Prepare, Start, Sleep, Release };
 
     final String command;
-    final int durationMinutes;
+    final int duration;
 
     public KeyReleaseHandler(String command) {
         this(command, 0);
     }
 
-    public KeyReleaseHandler(String command, int durationSeconds) {
+    public KeyReleaseHandler(String command, int seconds) {
         super();
         this.command = command;
-        this.durationMinutes = durationSeconds / 60;
+        this.duration = seconds;
     }
 
     @Override
@@ -46,7 +47,7 @@ public class KeyReleaseHandler implements Visual {
         MediaRenderer keyReleaseArm = new MediaRendererThread(player.teaseLib) {
             @Override
             protected void renderMedia() throws InterruptedException, IOException {
-                logger.info(command + (durationMinutes > 0 ? " " + durationMinutes : ""));
+                logger.info(command + (duration > 0 ? " " + duration : ""));
                 startCompleted();
                 if (command.equalsIgnoreCase(Prepare)) {
                     player.keyReleaseActuator = null;
@@ -54,15 +55,15 @@ public class KeyReleaseHandler implements Visual {
                     mandatoryCompleted();
                     allCompleted();
                     if (DeviceCache.connect(keyRelease)) {
-                        player.keyReleaseActuator = keyRelease.getBestActuatorForTime(durationMinutes);
+                        player.keyReleaseActuator = keyRelease.getActuator(duration, TimeUnit.SECONDS);
                         player.keyReleaseActuator.arm();
                     }
                 } else {
                     if (player.keyReleaseActuator != null) {
                         if (command.equalsIgnoreCase(Start)) {
-                            player.keyReleaseActuator.start(durationMinutes);
+                            player.keyReleaseActuator.start(duration, TimeUnit.SECONDS);
                         } else if (command.equalsIgnoreCase(Sleep)) {
-                            player.keyReleaseActuator.sleep(durationMinutes);
+                            player.keyReleaseActuator.sleep(duration, TimeUnit.SECONDS);
                         } else if (command.equalsIgnoreCase(Release)) {
                             player.keyReleaseActuator.release();
                         }
