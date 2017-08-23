@@ -51,7 +51,6 @@ import teaselib.core.speechrecognition.SpeechRecognitionResult.Confidence;
 import teaselib.core.texttospeech.ScriptScanner;
 import teaselib.core.texttospeech.TextToSpeechRecorder;
 import teaselib.core.texttospeech.Voice;
-import teaselib.core.util.QualifiedItem;
 import teaselib.util.RandomImages;
 import teaselib.util.SpeechRecognitionRejectedScript;
 import teaselib.util.TextVariables;
@@ -86,12 +85,11 @@ public abstract class Player extends TeaseScript {
     public Actuator keyReleaseActuator = null;
 
     /**
-     * This range can be pushed onto the script range stack to tell the player
-     * to hand over execution from the PCM script engine back to the player.
+     * This range can be pushed onto the script range stack to tell the player to hand over execution from the PCM
+     * script engine back to the player.
      * 
-     * Push it on the stack, and call {@link Player#playFrom(ActionRange)}. The
-     * current script is executed up to the next occurrence of a
-     * {@link AbstractAction.Statement#Return} statement.
+     * Push it on the stack, and call {@link Player#playFrom(ActionRange)}. The current script is executed up to the
+     * next occurrence of a {@link AbstractAction.Statement#Return} statement.
      */
     public final static ActionRange ReturnToPlayer = new ActionRange(0);
 
@@ -331,8 +329,7 @@ public abstract class Player extends TeaseScript {
         validateScript(script, validationErrors);
         validateMappings(script, state, validationErrors);
 
-        boolean validateAssets = Boolean
-                .parseBoolean(teaseLib.config.get(QualifiedItem.of(Config.Debug.StopOnAssetNotFound)));
+        boolean validateAssets = Boolean.parseBoolean(teaseLib.config.get(Config.Debug.StopOnAssetNotFound));
         if (validateAssets) {
             validateResources(script, resources, validationErrors);
         }
@@ -386,10 +383,8 @@ public abstract class Player extends TeaseScript {
     }
 
     /**
-     * Plays the given range. Returns on {@code .quit}, if
-     * {@link Player#ReturnToPlayer} had been pushed on the stack and a return
-     * statement is executed, or if the the next action is not a member of the
-     * play range.
+     * Plays the given range. Returns on {@code .quit}, if {@link Player#ReturnToPlayer} had been pushed on the stack
+     * and a return statement is executed, or if the the next action is not a member of the play range.
      * 
      * @param playRange
      *            The range to play.
@@ -491,8 +486,8 @@ public abstract class Player extends TeaseScript {
         // Render visuals
         // It looks so much better with 1.8 ...
         /*
-         * Runnable visuals = () -> { if (action.visuals != null) { for (Visual
-         * visual : action.visuals.values()) { visual.render(this); } } };
+         * Runnable visuals = () -> { if (action.visuals != null) { for (Visual visual : action.visuals.values()) {
+         * visual.render(this); } } };
          */
 
         // One would think that we have to wait for all visuals to
