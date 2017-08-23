@@ -51,7 +51,7 @@ public class KeyReleaseHandler implements Visual {
                 startCompleted();
                 if (command.equalsIgnoreCase(Prepare)) {
                     player.keyReleaseActuator = null;
-                    KeyRelease keyRelease = KeyRelease.Devices.getDefaultDevice();
+                    KeyRelease keyRelease = teaseLib.devices.get(KeyRelease.class).getDefaultDevice();
                     mandatoryCompleted();
                     allCompleted();
                     if (DeviceCache.connect(keyRelease)) {
