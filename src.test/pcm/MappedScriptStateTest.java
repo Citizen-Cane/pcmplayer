@@ -23,8 +23,8 @@ import pcm.state.persistence.ScriptState;
 import pcm.util.TestUtils;
 import teaselib.Household;
 import teaselib.State;
-import teaselib.TeaseScriptPersistence;
 import teaselib.core.Debugger;
+import teaselib.core.state.StateProxy;
 
 public class MappedScriptStateTest {
     private static final String MAPPED_STATE_TEST_SCRIPT = "MappedScriptStateTest";
@@ -106,7 +106,7 @@ public class MappedScriptStateTest {
         assertEquals(UNSET, pcm.get(ChastityCageAction));
         assertFalse(chastityCageState.applied());
         assertTrue(chastityCageState.expired());
-        assertTrue(((TeaseScriptPersistence.StateProxy) chastityCageState).peers().isEmpty());
+        assertTrue(((StateProxy) chastityCageState).peers().isEmpty());
         assertEquals(State.REMOVED, pcm.getTime(ChastityCageAction));
     }
 
@@ -210,7 +210,7 @@ public class MappedScriptStateTest {
         assertEquals(UNSET, pcm.get(ChastityCageAction));
         assertFalse(chastityCageState.applied());
         assertTrue(chastityCageState.expired());
-        assertTrue(((TeaseScriptPersistence.StateProxy) chastityCageState).peers().isEmpty());
+        assertTrue(((StateProxy) chastityCageState).peers().isEmpty());
 
         long seconds = pcm.getTime(ChastityCageAction);
         assertEquals(State.REMOVED, seconds);
