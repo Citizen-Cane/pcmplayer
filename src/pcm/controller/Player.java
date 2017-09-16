@@ -60,22 +60,26 @@ public abstract class Player extends TeaseScript {
 
     public static final String ScriptFolder = "scripts/";
 
-    public Script script = null;
+    public final String namespaceApplyAttribute;
     public final MappedScriptState state;
+    public final BreakPoints breakPoints;
+
     private final ProbabilityModel probabilityModel = new ProbabilityModelBasedOnPossBucketSum() {
         @Override
         public double random(double from, double to) {
             return Player.this.random(from, to);
         }
     };
-    public ActionRange range = null;
 
-    private final ScriptCache scripts;
-    private final String mistressPath;
-    public final String namespaceApplyAttribute;
+    public Script script = null;
+    public ActionRange range = null;
 
     public boolean validateScripts = false;
     public boolean debugOutput = false;
+
+    private final ScriptCache scripts;
+    private final String mistressPath;
+
     private boolean invokedOnAllSet = false;
     private boolean intentionalQuit = false;
 
@@ -120,11 +124,14 @@ public abstract class Player extends TeaseScript {
 
     public Player(TeaseLib teaseLib, ResourceLoader resources, Actor actor, String namespace, String mistressPath) {
         super(teaseLib, resources, actor, namespace);
+        this.namespaceApplyAttribute = "Applied.by." + namespace;
+        this.state = new MappedScriptState(this);
+        this.breakPoints = new BreakPoints();
+
         this.scripts = new ScriptCache(resources, Player.ScriptFolder, createDominantSubmissiveSymbols());
         this.mistressPath = mistressPath;
-        this.namespaceApplyAttribute = "Applied.by." + namespace;
+
         this.invokedOnAllSet = false;
-        this.state = new MappedScriptState(this);
     }
 
     private Symbols createDominantSubmissiveSymbols() {
@@ -395,6 +402,12 @@ public abstract class Player extends TeaseScript {
         while (true) {
             // Choose action
             Action action = getAction();
+
+            if (breakPoints.getBreakPoint(script.name, action.number).suspend()) {
+                range = new ActionRange(action.number);
+                return;
+            }
+
             try {
                 if (playRange != null) {
                     if (!playRange.contains(action.number)) {
