@@ -19,20 +19,19 @@ public class Pause extends AbstractInteractionWithRangeProvider {
     private static final Logger logger = LoggerFactory.getLogger(Pause.class);
 
     @Override
-    public ActionRange getRange(Script script, Action action, Runnable visuals,
-            Player player) throws ScriptExecutionException {
+    public ActionRange getRange(Script script, Action action, Runnable visuals, Player player)
+            throws ScriptExecutionException {
         String resume = action.getResponseText(Statement.ResumeText, script);
-        logger.info("Pause: " + resume);
         List<String> choices = new ArrayList<String>(1);
         choices.add(resume);
         visuals.run();
+        logger.info("Pause: " + resume);
         player.reply(getConfidence(action), choices);
         return rangeProvider.getRange(script, action, NoVisuals, player);
     }
 
     @Override
-    public void validate(Script script, Action action,
-            List<ValidationIssue> validationErrors)
+    public void validate(Script script, Action action, List<ValidationIssue> validationErrors)
             throws ScriptParsingException {
         try {
             action.getResponseText(Statement.ResumeText, script);
