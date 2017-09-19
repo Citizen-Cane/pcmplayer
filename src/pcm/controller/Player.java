@@ -258,6 +258,10 @@ public abstract class Player extends TeaseScript {
 
     public void play(ActionRange startRange, ActionRange playRange)
             throws AllActionsSetException, ScriptExecutionException {
+        if (script == null) {
+            throw new ScriptExecutionException("No script loaded");
+        }
+
         if (startRange != null) {
             range = startRange;
         } else {
