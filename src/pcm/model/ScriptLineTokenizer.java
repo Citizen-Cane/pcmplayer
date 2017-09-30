@@ -1,9 +1,10 @@
 package pcm.model;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import pcm.controller.Declarations;
 import pcm.model.AbstractAction.Statement;
@@ -33,7 +34,7 @@ public class ScriptLineTokenizer {
 
     public String[] args() {
         if (argv == null) {
-            Vector<String> parsed = new Vector<String>();
+            List<String> parsed = new ArrayList<>();
             while (tokenizer.hasMoreTokens()) {
                 parsed.add(tokenizer.nextToken());
             }
@@ -98,9 +99,8 @@ public class ScriptLineTokenizer {
     }
 
     /**
-     * Returns all arguments of the statement. A comment is cut off, so this
-     * won't work for text messages. It's great however for retrieving file
-     * names.
+     * Returns all arguments of the statement. A comment is cut off, so this won't work for text messages. It's great
+     * however for retrieving file names.
      * 
      * @return All command line arguments
      */
@@ -121,8 +121,8 @@ public class ScriptLineTokenizer {
         }
     }
 
-    private static String[] toStringArray(Vector<String> collection) {
-        return Arrays.copyOf(collection.toArray(), collection.size(), String[].class);
+    private static String[] toStringArray(List<String> list) {
+        return Arrays.copyOf(list.toArray(), list.size(), String[].class);
     }
 
     @Override

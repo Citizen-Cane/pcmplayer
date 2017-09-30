@@ -3,7 +3,6 @@ package pcm.state.visuals;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Vector;
 
 import pcm.controller.Player;
 import pcm.state.ValidatableResources;
@@ -14,7 +13,7 @@ import teaselib.core.speechrecognition.SpeechRecognitionResult.Confidence;
 
 public class SpokenMessage implements Visual, ValidatableResources {
 
-    private final List<Entry> entries = new Vector<Entry>();
+    private final List<Entry> entries = new ArrayList<Entry>();
     private Message message = null;
     private final Actor actor;
 
@@ -76,8 +75,7 @@ public class SpokenMessage implements Visual, ValidatableResources {
         for (Entry entry : entries) {
             player.say(entry.message);
             if (entry.resumeText != null) {
-                player.reply(Confidence.Default.lower(),
-                        Collections.singletonList(entry.resumeText));
+                player.reply(Confidence.Default.lower(), Collections.singletonList(entry.resumeText));
             }
         }
     }

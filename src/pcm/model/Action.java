@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import pcm.controller.Declarations;
 import pcm.controller.StateCommandLineParameters;
@@ -68,8 +67,8 @@ public class Action extends AbstractAction {
     public final int number;
     public Integer poss = null;
 
-    public Vector<Condition> conditions = null;
-    public LinkedHashMap<Statement, Visual> visuals = null;
+    public List<Condition> conditions = null;
+    public Map<Statement, Visual> visuals = null;
 
     public Interaction interaction = null;
 
@@ -137,7 +136,7 @@ public class Action extends AbstractAction {
 
     public void addCondition(Condition condition) {
         if (this.conditions == null) {
-            this.conditions = new Vector<Condition>();
+            this.conditions = new ArrayList<>();
         }
         conditions.add(condition);
     }

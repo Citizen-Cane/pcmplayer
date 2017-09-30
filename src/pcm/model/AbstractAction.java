@@ -1,11 +1,11 @@
 package pcm.model;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.Vector;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -124,8 +124,7 @@ public abstract class AbstractAction {
         OnRecognitionRejected,
 
         /**
-         * The action is considered only if all other actions in the range are
-         * set or their conditions are all false
+         * The action is considered only if all other actions in the range are set or their conditions are all false
          */
         Else,
 
@@ -140,75 +139,64 @@ public abstract class AbstractAction {
         IfUnset,
 
         /**
-         * Triggers if the specified number of actions in the given range are
-         * set
+         * Triggers if the specified number of actions in the given range are set
          */
         NumberOfActionsSet,
 
         /**
-         * Triggers if the given range contains at least {@code n} executable
-         * actions.
+         * Triggers if the given range contains at least {@code n} executable actions.
          */
         NumActionsAvailable,
 
         /**
-         * Like {@code Must}, but if no action is available, the range is
-         * evaluated again, with the {@code Should} condition being ignored.
+         * Like {@code Must}, but if no action is available, the range is evaluated again, with the {@code Should}
+         * condition being ignored.
          * 
          * @see Statement#ConditionRange
          */
         Should,
 
         /**
-         * Like {@code MustNot}, but if no action is available, the range is
-         * evaluated again, with the {@code ShouldNot} condition being ignored.
+         * Like {@code MustNot}, but if no action is available, the range is evaluated again, with the {@code ShouldNot}
+         * condition being ignored.
          * 
          * @see Statement#ConditionRange
          */
         ShouldNot,
 
         /**
-         * Can be added multiple times to a script to define a list of ranges
-         * that are used when relaxing {@link Statement#Should} /
-         * {@link Statement#ShouldNot} conditions.
+         * Can be added multiple times to a script to define a list of ranges that are used when relaxing
+         * {@link Statement#Should} / {@link Statement#ShouldNot} conditions.
          * <p>
-         * Whenever an action contains {@link Statement#Should} /
-         * {@link Statement#ShouldNot}, and evaluating the range does not yield
-         * any executable actions, the evaluation is repeated with relaxable
-         * conditions ignored, starting with the first entry. Entries are added
-         * to the ignore list, and the evaluation is repeated until the
-         * evaluation yields executable actions or all relaxable conditions are
-         * ignored.
+         * Whenever an action contains {@link Statement#Should} / {@link Statement#ShouldNot}, and evaluating the range
+         * does not yield any executable actions, the evaluation is repeated with relaxable conditions ignored, starting
+         * with the first entry. Entries are added to the ignore list, and the evaluation is repeated until the
+         * evaluation yields executable actions or all relaxable conditions are ignored.
          * <p>
-         * Evaluation takes place in the order defined in the script,conditions
-         * in the first condition range are ignored first. Therefore, the most
-         * important condition ranges must be defined last.
+         * Evaluation takes place in the order defined in the script,conditions in the first condition range are ignored
+         * first. Therefore, the most important condition ranges must be defined last.
          */
         ConditionRange,
 
         /**
-         * Inverse of {@link TimeFrom}. Triggers if the duration in the second
-         * argument hasn't been reached yet.
+         * Inverse of {@link TimeFrom}. Triggers if the duration in the second argument hasn't been reached yet.
          */
         TimeTo,
 
         /**
-         * Control key release devices. This statement does nothing if the
-         * device isn't present, so it can safely be scattered all over the
-         * script when tying the slave up.
+         * Control key release devices. This statement does nothing if the device isn't present, so it can safely be
+         * scattered all over the script when tying the slave up.
          * <p>
-         * Just prepare the device when telling the slave to tie himself up.
-         * Then start the device, enter sleep as appropriate, release the key at
-         * the end of the script or wait until the device releases the key
+         * Just prepare the device when telling the slave to tie himself up. Then start the device, enter sleep as
+         * appropriate, release the key at the end of the script or wait until the device releases the key
          * automatically.
          */
         KeyRelease,
 
         /**
-         * Relax speech recognition confidence to longer prompts to be spoken
-         * and be recognized on the first try. As side effect the prompt might
-         * be dismissed by background noise, so be careful and avoid this
-         * statement if the user has to make final decisions.
+         * Relax speech recognition confidence to longer prompts to be spoken and be recognized on the first try. As
+         * side effect the prompt might be dismissed by background noise, so be careful and avoid this statement if the
+         * user has to make final decisions.
          * <p>
          * If used right, it's a good tool for creating realistic dialogs.
          */
@@ -272,7 +260,7 @@ public abstract class AbstractAction {
 
     public void addCommand(Command command) {
         if (this.commands == null) {
-            this.commands = new Vector<Command>();
+            this.commands = new ArrayList<Command>();
         }
         commands.add(command);
     }

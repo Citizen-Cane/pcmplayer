@@ -1,8 +1,9 @@
 package pcm.controller;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import pcm.model.AbstractAction.Statement;
 import pcm.model.Action;
@@ -26,7 +27,7 @@ public class PCMScriptScanner implements ScriptScanner {
 
     @Override
     public Iterator<Message> iterator() {
-        Vector<Message> r = new Vector<Message>();
+        List<Message> r = new ArrayList<>();
         for (Action action : script.actions.values()) {
             Map<Statement, Visual> visuals = action.visuals;
             if (visuals != null) {
