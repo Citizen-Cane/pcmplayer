@@ -21,30 +21,26 @@ import pcm.model.ScriptExecutionException;
 import teaselib.Duration;
 
 /**
- * Well, the original PCMistress likely used a single (long?) array for storing
- * values of any kind
+ * Well, the original PCMistress likely used a single (long?) array for storing values of any kind
  * <li>set/unset: 0 and -1
  * <li>RepeatAdd, RepeatDelete: a number, when 0 set() returns true
- * <li>setTime appears to have stored hours and minutes, but has missed to store
- * seconds - fixed, using the time format hh:mm'ss.
+ * <li>setTime appears to have stored hours and minutes, but has missed to store seconds - fixed, using the time format
+ * hh:mm'ss.
  * <p>
- * The storing scheme here looks weird at first, but ScriptState implements SET
- * as 1, and UNSET as 0. As a result, repeatAdd/Delete counts up with negative
- * numbers, and the repeat count evaluates to (-n)-1.
+ * The storing scheme here looks weird at first, but ScriptState implements SET as 1, and UNSET as 0. As a result,
+ * repeatAdd/Delete counts up with negative numbers, and the repeat count evaluates to (-n)-1.
  * <p>
- * Using this scheme adds some awkwardness to repeat -add/del, but only if
- * debugging it, and it allows the usual set/unset to be persisted as 1/0 (true,
- * false).
+ * Using this scheme adds some awkwardness to repeat -add/del, but only if debugging it, and it allows the usual
+ * set/unset to be persisted as 1/0 (true, false).
  * <p>
- * The set() and unset() methods actually set the value to either 1 or 0,
- * whereas resetRange() also removes the value from the storage.
+ * The set() and unset() methods actually set the value to either 1 or 0, whereas resetRange() also removes the value
+ * from the storage.
  * 
  * @author Citizen-Cane
  *
  */
 public class ScriptState {
-    private static final Logger logger = LoggerFactory
-            .getLogger(ScriptState.class);
+    private static final Logger logger = LoggerFactory.getLogger(ScriptState.class);
 
     public final Player player;
 
@@ -56,11 +52,9 @@ public class ScriptState {
     private Set<Integer> actions = new HashSet<Integer>();
 
     /**
-     * Data is never cleared when loading a script, but they're all cleared when
-     * the startup script is run.
+     * Data is never cleared when loading a script, but they're all cleared when the startup script is run.
      * 
-     * Instead, at script start the save range is restored, followed by
-     * additional .resetrange commands.
+     * Instead, at script start the save range is restored, followed by additional .resetrange commands.
      */
     private Map<Integer, Long> data = new HashMap<Integer, Long>();
 
@@ -110,14 +104,12 @@ public class ScriptState {
                 }
                 String timeKeys = read(TIMEKEYS);
                 if (timeKeys != null) {
-                    for (StringTokenizer keys = new StringTokenizer(timeKeys,
-                            " "); keys.hasMoreTokens();) {
+                    for (StringTokenizer keys = new StringTokenizer(timeKeys, " "); keys.hasMoreTokens();) {
                         String key = keys.nextToken();
                         String value = read(key);
                         if (value == null) {
-                            throw new NumberFormatException("Missing state "
-                                    + key
-                                    + " - Don't you dare to hack into my memories!");
+                            throw new NumberFormatException(
+                                    "Missing state " + key + " - Don't you dare to hack into my memories!");
                         }
                         long timeValue = Long.parseLong(value);
                         times.put(new Integer(key), timeValue);
@@ -170,7 +162,8 @@ public class ScriptState {
 
     private void saveTime(ActionRange range) {
         StringBuilder keys = null;
-        for (Integer n : times.keySet()) {
+        for (Map.Entry<Integer, Long> entry : times.entrySet()) {
+            Integer n = entry.getKey();
             if (range.contains(n)) {
                 String number = n.toString();
                 if (keys == null) {
@@ -180,7 +173,7 @@ public class ScriptState {
                     keys.append(number);
                 }
                 // Save seconds
-                write(number, Long.toString(times.get(n)));
+                write(number, Long.toString(entry.getValue()));
             }
         }
         if (keys != null) {
@@ -195,8 +188,7 @@ public class ScriptState {
     }
 
     private void write(String name, Object value) {
-        player.set(script.name + "." + name,
-                value != null ? value.toString() : null);
+        player.set(script.name + "." + name, value != null ? value.toString() : null);
     }
 
     public Long get(Integer n) {
@@ -241,8 +233,7 @@ public class ScriptState {
         if (times.containsKey(n)) {
             return times.get(n);
         } else {
-            throw new IllegalArgumentException(
-                    "Action " + n + " isn't a timer");
+            throw new IllegalArgumentException("Action " + n + " isn't a timer");
         }
     }
 
@@ -272,8 +263,7 @@ public class ScriptState {
     }
 
     public void resetRange(ActionRange actionRange) {
-        Collection<Integer> mustUnset = new ArrayList<Integer>(
-                actionRange.size());
+        Collection<Integer> mustUnset = new ArrayList<Integer>(actionRange.size());
 
         for (Entry<Integer, Long> entry : data.entrySet()) {
             Integer n = entry.getKey();
@@ -381,18 +371,15 @@ public class ScriptState {
     }
 
     /**
-     * Preset an action to a defined value. Applies to {@link ScriptState#get},
-     * {@link ScriptState#set} and {@link ScriptState#unset}. The original value
-     * is always preserved, Overridden values are not saved back.
+     * Preset an action to a defined value. Applies to {@link ScriptState#get}, {@link ScriptState#set} and
+     * {@link ScriptState#unset}. The original value is always preserved, Overridden values are not saved back.
      * <p>
-     * TODO Overrides apply to all scripts, so use it on common state only in
-     * order to avoid side effects.
+     * TODO Overrides apply to all scripts, so use it on common state only in order to avoid side effects.
      * 
      * @param n
      *            The action number
      * @param value
-     *            {@link ScriptState#SET}, {@link ScriptState#UNSET} or any
-     *            other value.
+     *            {@link ScriptState#SET}, {@link ScriptState#UNSET} or any other value.
      */
     public void overwrite(Integer n, Long value) {
         dataOverwrites.put(n, value);
