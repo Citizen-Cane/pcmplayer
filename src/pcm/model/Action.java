@@ -143,7 +143,7 @@ public class Action extends AbstractAction {
 
     public void addVisual(Statement statement, Visual visual) {
         if (this.visuals == null) {
-            this.visuals = new LinkedHashMap<Statement, Visual>();
+            this.visuals = new LinkedHashMap<>();
         }
         visuals.put(statement, visual);
     }

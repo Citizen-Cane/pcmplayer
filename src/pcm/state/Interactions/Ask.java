@@ -1,7 +1,6 @@
 package pcm.state.Interactions;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -62,10 +61,8 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
                     title = askItem.title;
                 } else {
                     int condition = askItem.condition;
-                    if (condition == AskItem.ALWAYS
-                            || state.get(condition).equals(ScriptState.SET)) {
-                        Boolean value = state.get(askItem.action) == ScriptState.SET ? Boolean.TRUE
-                                : Boolean.FALSE;
+                    if (condition == AskItem.ALWAYS || state.get(condition).equals(ScriptState.SET)) {
+                        Boolean value = state.get(askItem.action) == ScriptState.SET ? Boolean.TRUE : Boolean.FALSE;
                         values.add(value);
                         choices.add(askItem.title);
                         indices.add(new Integer(askItem.action));
@@ -87,8 +84,7 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
                 if (mappedState.hasScriptValueMapping(n)) {
                     Items items = mappedState.getMappedItems(n);
                     if (items.isEmpty()) {
-                        throw new ScriptExecutionException("Undefined items in mapping " + n,
-                                script);
+                        throw new ScriptExecutionException("Undefined items in mapping " + n, script);
                     } else if (items.size() == 1) {
                         // Just a single item - just set
                         state.set(n);
@@ -99,10 +95,9 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
                         // Execute action for selecting the mapped items
                         Action detailAction = script.actions.get(n);
                         if (detailAction == null) {
-                            throw new ScriptExecutionException("Missing mapping action for " + n,
-                                    script);
+                            throw new ScriptExecutionException("Missing mapping action for " + n, script);
                         }
-                        LinkedHashMap<Statement, Visual> detailVisuals = detailAction.visuals;
+                        Map<Statement, Visual> detailVisuals = detailAction.visuals;
                         if (detailVisuals != null) {
                             for (Visual visual : detailVisuals.values()) {
                                 player.render(visual);
