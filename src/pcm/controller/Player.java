@@ -98,7 +98,7 @@ public abstract class Player extends TeaseScript {
     public final static ActionRange ReturnToPlayer = new ActionRange(0);
 
     public static void recordVoices(Actor actor, String mainScript, File path, String resourcesRoot, String[] assets)
-            throws IOException, ValidationIssue, ScriptParsingException {
+            throws IOException, ValidationIssue, ScriptParsingException, InterruptedException {
         ResourceLoader resources = new ResourceLoader(path, resourcesRoot);
         resources.addAssets(assets);
         TextToSpeechRecorder recorder = new TextToSpeechRecorder(path, resourcesRoot, resources, new TextVariables());
