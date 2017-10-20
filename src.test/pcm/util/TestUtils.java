@@ -1,14 +1,19 @@
 package pcm.util;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import pcm.controller.AllActionsSetException;
 import pcm.controller.Player;
+import pcm.model.Action;
 import pcm.model.ActionRange;
 import pcm.model.ScriptExecutionException;
 import pcm.model.ScriptParsingException;
 import pcm.model.ValidationIssue;
+import pcm.state.Condition;
+import pcm.state.persistence.ScriptState;
 import teaselib.Actor;
 import teaselib.core.ResourceLoader;
 import teaselib.core.TeaseLib;
@@ -62,5 +67,28 @@ public class TestUtils {
     public static void play(Player player, ActionRange start, ActionRange playRange)
             throws AllActionsSetException, ScriptExecutionException {
         player.play(start, playRange);
+    }
+
+    public static List<Condition> umatchedConditions(Action action, ScriptState state) {
+        List<Condition> umatchedConditions = new ArrayList<>();
+        for (Condition condition : action.conditions) {
+            if (!condition.isTrueFor(state)) {
+                umatchedConditions.add(condition);
+            }
+        }
+        return umatchedConditions;
+    }
+
+    public static String toString(List<Condition> unmatchedconditions) {
+        StringBuilder string = new StringBuilder();
+        for (Condition condition : unmatchedconditions) {
+            if (string.length() == 0) {
+                string.append("[");
+            } else {
+                string.append(", ");
+            }
+            string.append(condition.getClass().getSimpleName() + "=" + condition.toString());
+        }
+        return string.toString();
     }
 }

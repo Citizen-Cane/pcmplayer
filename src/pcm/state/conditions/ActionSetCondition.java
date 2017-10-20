@@ -1,8 +1,6 @@
-/**
- * 
- */
 package pcm.state.conditions;
 
+import java.util.Arrays;
 import java.util.HashSet;
 
 import pcm.model.ConditionRange;
@@ -14,6 +12,10 @@ import pcm.state.Condition;
  */
 public abstract class ActionSetCondition extends HashSet<Integer> implements Condition {
     private static final long serialVersionUID = 1L;
+
+    public ActionSetCondition(Integer... values) {
+        addAll(Arrays.asList(values));
+    }
 
     @Override
     public boolean isInside(ConditionRange conditionRange) {
