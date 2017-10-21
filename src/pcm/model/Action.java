@@ -645,9 +645,7 @@ public class Action extends AbstractAction {
                 }
             }
         }
-        if (interaction != null)
-
-        {
+        if (interaction != null) {
             interaction.validate(script, this, validationErrors);
         } else {
             validationErrors.add(new ValidationIssue(this, "No interaction", script));

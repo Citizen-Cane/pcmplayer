@@ -16,8 +16,7 @@ import pcm.model.ValidationIssue;
 /**
  * @author someone
  *
- *         Calls a sub program specified by the range argument after rendering
- *         the visuals of the action.
+ *         Calls a sub program specified by the range argument after rendering the visuals of the action.
  * 
  */
 public class GoSub extends AbstractInteractionWithRangeProvider {
@@ -30,22 +29,19 @@ public class GoSub extends AbstractInteractionWithRangeProvider {
     }
 
     @Override
-    public ActionRange getRange(Script script, Action action, Runnable visuals,
-            Player player) throws ScriptExecutionException {
+    public ActionRange getRange(Script script, Action action, Runnable visuals, Player player)
+            throws ScriptExecutionException {
         logger.info(range.toString());
         visuals.run();
-        script.stack.push(
-                rangeProvider.getRange(script, action, NoVisuals, player));
+        script.stack.push(rangeProvider.getRange(script, action, NoVisuals, player));
         return range;
     }
 
     @Override
-    public void validate(Script script, Action action,
-            List<ValidationIssue> validationErrors)
+    public void validate(Script script, Action action, List<ValidationIssue> validationErrors)
             throws ScriptParsingException {
         range.validate();
-        if (rangeProvider != null) {
-            rangeProvider.validate(script, action, validationErrors);
-        }
+
+        super.validate(script, action, validationErrors);
     }
 }

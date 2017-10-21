@@ -38,8 +38,7 @@ public class Pause extends AbstractInteractionWithRangeProvider {
         } catch (ScriptExecutionException e) {
             validationErrors.add(new ValidationIssue(action, e, script));
         }
-        if (rangeProvider != null) {
-            rangeProvider.validate(script, action, validationErrors);
-        }
+
+        super.validate(script, action, validationErrors);
     }
 }

@@ -20,19 +20,14 @@ import teaselib.core.ScriptInterruptedException;
 import teaselib.core.speechrecognition.SpeechRecognition;
 
 /**
- * Displays prompts while playing a range. THe following should be considered
- * when using this statement:
- * <li>The stack is saved and restored, allowing for leaving the play range by
- * interrupting the script function.
- * <li>All gosub/return pairs must be contained in the play range. This
- * condition can't be validated, so be careful.
- * <li>If the break range is left by interrupting the script function within a
- * gosub-statement, the stack is restored, and execution continues at the exit
- * range.
- * <li>In the valid case that the break range is executed as part of a gosub
- * statement, and the play range contains a return statement that doesn't result
- * in exiting the play range, the "suppressStackCorrectionOnBreak" keyword must
- * be used to ensure a correct stack.
+ * Displays prompts while playing a range. THe following should be considered when using this statement:
+ * <li>The stack is saved and restored, allowing for leaving the play range by interrupting the script function.
+ * <li>All gosub/return pairs must be contained in the play range. This condition can't be validated, so be careful.
+ * <li>If the break range is left by interrupting the script function within a gosub-statement, the stack is restored,
+ * and execution continues at the exit range.
+ * <li>In the valid case that the break range is executed as part of a gosub statement, and the play range contains a
+ * return statement that doesn't result in exiting the play range, the "suppressStackCorrectionOnBreak" keyword must be
+ * used to ensure a correct stack.
  * 
  * @author Citizen-Cane
  *
@@ -123,5 +118,7 @@ public class Break extends AbstractInteractionWithRangeProvider {
         for (Statement statement : choiceRanges.keySet()) {
             script.actions.validate(script, action, choiceRanges.get(statement), validationErrors);
         }
+
+        super.validate(script, action, validationErrors);
     }
 }

@@ -29,37 +29,31 @@ public class Stop extends AbstractInteractionWithRangeProvider {
 
     public enum TimeoutType {
         /**
-         * Show buttons right at the start (in contrast to normal replies.
-         * Dismiss prompts when the duration is over.
+         * Show buttons right at the start (in contrast to normal replies. Dismiss prompts when the duration is over.
          */
         Terminate,
         /**
-         * Show prompts as if this was a normal button, and wait for input
-         * according to the timeout behavior.
+         * Show prompts as if this was a normal button, and wait for input according to the timeout behavior.
          */
         Confirm,
         /**
-         * Show prompts as in normal replies, but dismiss buttons when the
-         * duration is over.
+         * Show prompts as in normal replies, but dismiss buttons when the duration is over.
          */
         AutoConfirm
     }
 
-    public Stop(Map<Statement, ActionRange> choiceRanges,
-            TimeoutType timeoutType, TimeoutBehavior timeoutBehavior) {
+    public Stop(Map<Statement, ActionRange> choiceRanges, TimeoutType timeoutType, TimeoutBehavior timeoutBehavior) {
         this.choiceRanges = choiceRanges;
         this.timeoutType = timeoutType;
         this.timeoutBehavior = timeoutBehavior;
     }
 
     @Override
-    public ActionRange getRange(Script script, final Action action,
-            final Runnable visuals, final Player player)
+    public ActionRange getRange(Script script, final Action action, final Runnable visuals, final Player player)
             throws ScriptExecutionException {
         logger.info(getClass().getSimpleName() + " " + toString());
         List<String> choices = new ArrayList<String>(choiceRanges.size());
-        List<ActionRange> ranges = new ArrayList<ActionRange>(
-                choiceRanges.size());
+        List<ActionRange> ranges = new ArrayList<ActionRange>(choiceRanges.size());
         for (Statement key : choiceRanges.keySet()) {
             choices.add(action.getResponseText(key, script));
             ranges.add(choiceRanges.get(key));
@@ -84,14 +78,11 @@ public class Stop extends AbstractInteractionWithRangeProvider {
                     // Visuals are rendered in the main loop, and the timeout
                     // visual doesn't render a delay, allowing us to query and
                     // wait the timeout duration in the script function
-                    Timeout timeout = (Timeout) action.visuals
-                            .get(Statement.Delay);
+                    Timeout timeout = (Timeout) action.visuals.get(Statement.Delay);
                     if (timeoutType == TimeoutType.AutoConfirm) {
-                        timeoutFunction = player.timeoutWithAutoConfirmation(
-                                timeout.duration, timeoutBehavior);
+                        timeoutFunction = player.timeoutWithAutoConfirmation(timeout.duration, timeoutBehavior);
                     } else {
-                        timeoutFunction = player.timeoutWithConfirmation(
-                                timeout.duration, timeoutBehavior);
+                        timeoutFunction = player.timeoutWithConfirmation(timeout.duration, timeoutBehavior);
                     }
                 } else {
                     visuals.run();
@@ -114,8 +105,7 @@ public class Stop extends AbstractInteractionWithRangeProvider {
             }
 
         };
-        String result = player.reply(displayVisualsAndTimeout,
-                getConfidence(action).higher(), choices);
+        String result = player.reply(displayVisualsAndTimeout, getConfidence(action).higher(), choices);
         if (result != ScriptFunction.Timeout) {
             int index = choices.indexOf(result);
             logger.info("-> " + result);
@@ -137,8 +127,7 @@ public class Stop extends AbstractInteractionWithRangeProvider {
     }
 
     @Override
-    public void validate(Script script, Action action,
-            List<ValidationIssue> validationErrors)
+    public void validate(Script script, Action action, List<ValidationIssue> validationErrors)
             throws ScriptParsingException {
         try {
             for (Statement key : choiceRanges.keySet()) {
@@ -148,8 +137,9 @@ public class Stop extends AbstractInteractionWithRangeProvider {
             validationErrors.add(new ValidationIssue(action, e, script));
         }
         for (Statement statement : choiceRanges.keySet()) {
-            script.actions.validate(script, action, choiceRanges.get(statement),
-                    validationErrors);
+            script.actions.validate(script, action, choiceRanges.get(statement), validationErrors);
         }
+
+        super.validate(script, action, validationErrors);
     }
 }
