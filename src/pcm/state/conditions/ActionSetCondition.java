@@ -27,4 +27,17 @@ public abstract class ActionSetCondition extends HashSet<Integer> implements Con
         return false;
     }
 
+    @Override
+    public boolean equals(Object other) {
+        if (this.getClass() != other.getClass())
+            return false;
+        return super.equals(other);
+    }
+
+    @Override
+    public int hashCode() {
+        // TODO Auto-generated method stub
+        return super.hashCode();
+    }
+
 }
