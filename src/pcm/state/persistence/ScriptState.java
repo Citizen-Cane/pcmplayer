@@ -49,24 +49,24 @@ public class ScriptState {
     /**
      * Actions are set separately, they're reset each time a script is loaded.
      */
-    private Set<Integer> actions = new HashSet<Integer>();
+    private Set<Integer> actions = new HashSet<>();
 
     /**
      * Data is never cleared when loading a script, but they're all cleared when the startup script is run.
      * 
      * Instead, at script start the save range is restored, followed by additional .resetrange commands.
      */
-    private Map<Integer, Long> data = new HashMap<Integer, Long>();
+    private Map<Integer, Long> data = new HashMap<>();
 
-    private Map<Integer, Long> dataOverwrites = new HashMap<Integer, Long>();
+    private Map<Integer, Long> dataOverwrites = new HashMap<>();
 
     /**
      * Action may also contain a time stamp.
      */
-    private Map<Integer, Long> times = new HashMap<Integer, Long>();
+    private Map<Integer, Long> times = new HashMap<>();
 
     private int step = 0;
-    private Map<Integer, Integer> action2StepMap = new HashMap<Integer, Integer>();
+    private Map<Integer, Integer> action2StepMap = new HashMap<>();
 
     public static final Long SET = new Long(1);
     public static final Long UNSET = new Long(0);
@@ -262,8 +262,14 @@ public class ScriptState {
         times.remove(n);
     }
 
+    public void setRange(ActionRange actionRange) {
+        for (Integer n : actionRange) {
+            set(n);
+        }
+    }
+
     public void resetRange(ActionRange actionRange) {
-        Collection<Integer> mustUnset = new ArrayList<Integer>(actionRange.size());
+        Collection<Integer> mustUnset = new ArrayList<>(actionRange.size());
 
         for (Entry<Integer, Long> entry : data.entrySet()) {
             Integer n = entry.getKey();
