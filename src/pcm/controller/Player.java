@@ -450,8 +450,8 @@ public abstract class Player extends TeaseScript {
                 // It's kind of a hack, and leaves a small loop hole
                 // (placing the onClose range inside the play range),
                 // but saves us from creating a second player instance
-                boolean callOnClose = playRange == null
-                        || (playRange.contains(script.onClose.start) && playRange.contains(script.onClose.end));
+                boolean callOnClose = (playRange == null) || (script.onClose != null
+                        && playRange.contains(script.onClose.start) && playRange.contains(script.onClose.end));
                 if (script.onClose != null && callOnClose && !intentionalQuit) {
                     // Done automatically in reply(), otherwise we have to do it
                     endAll();
