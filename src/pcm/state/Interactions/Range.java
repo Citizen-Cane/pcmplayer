@@ -33,8 +33,8 @@ public class Range implements Interaction {
     }
 
     @Override
-    public ActionRange getRange(Script script, Action action, Runnable visuals,
-            Player player) {
+    public ActionRange getRange(Player player, Script script, Action action,
+            Runnable visuals) {
         visuals.run();
         ActionRange actionRange = new ActionRange(start, end);
         if (actionRange.start < actionRange.end) {

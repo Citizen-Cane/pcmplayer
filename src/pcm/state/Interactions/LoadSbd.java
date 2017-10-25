@@ -29,8 +29,8 @@ public class LoadSbd implements Interaction {
     }
 
     @Override
-    public ActionRange getRange(Script script, Action action, Runnable visuals,
-            Player player) throws ScriptExecutionException {
+    public ActionRange getRange(Player player, Script script, Action action,
+            Runnable visuals) throws ScriptExecutionException {
         visuals.run();
         Script loadSbd;
         try {

@@ -30,8 +30,8 @@ public class YesNo extends AbstractInteraction {
     }
 
     @Override
-    public ActionRange getRange(Script script, Action action, Runnable visuals,
-            final Player player) throws ScriptExecutionException {
+    public ActionRange getRange(final Player player, Script script, Action action,
+            Runnable visuals) throws ScriptExecutionException {
         String yes = action.getResponseText(Statement.YesText, script);
         String no = action.getResponseText(Statement.NoText, script);
         final List<String> choices = new ArrayList<String>();

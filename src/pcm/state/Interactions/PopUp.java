@@ -28,8 +28,8 @@ public class PopUp implements Interaction {
     }
 
     @Override
-    public ActionRange getRange(Script script, Action action,
-            Runnable visuals, Player player)
+    public ActionRange getRange(Player player, Script script,
+            Action action, Runnable visuals)
             throws ScriptExecutionException {
         List<MenuItem> items = new ArrayList<MenuItem>();
         List<String> choices = new ArrayList<String>();

@@ -21,8 +21,8 @@ public class Quit implements Interaction {
     public static final Quit instance = new Quit();
 
     @Override
-    public ActionRange getRange(Script script, Action action,
-            Runnable visuals, Player player) {
+    public ActionRange getRange(Player player, Script script,
+            Action action, Runnable visuals) {
         logger.info(getClass().getSimpleName());
         visuals.run();
         return null;

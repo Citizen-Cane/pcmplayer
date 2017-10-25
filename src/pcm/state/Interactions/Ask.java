@@ -46,7 +46,7 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
     }
 
     @Override
-    public ActionRange getRange(Script script, Action action, Runnable visuals, Player player)
+    public ActionRange getRange(Player player, Script script, Action action, Runnable visuals)
             throws ScriptExecutionException {
         List<Boolean> values = new ArrayList<Boolean>();
         List<String> choices = new ArrayList<String>();
@@ -120,7 +120,7 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
                 state.unset(n);
             }
         }
-        return rangeProvider.getRange(script, action, NoVisuals, player);
+        return rangeProvider.getRange(player, script, action, NoVisuals);
     }
 
     private static boolean checkDetailedItems(Player player, String title, Items items) {

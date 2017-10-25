@@ -29,11 +29,11 @@ public class GoSub extends AbstractInteractionWithRangeProvider {
     }
 
     @Override
-    public ActionRange getRange(Script script, Action action, Runnable visuals, Player player)
+    public ActionRange getRange(Player player, Script script, Action action, Runnable visuals)
             throws ScriptExecutionException {
         logger.info(range.toString());
         visuals.run();
-        script.stack.push(rangeProvider.getRange(script, action, NoVisuals, player));
+        script.stack.push(rangeProvider.getRange(player, script, action, NoVisuals));
         return range;
     }
 

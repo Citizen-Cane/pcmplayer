@@ -49,7 +49,7 @@ public class Break extends AbstractInteractionWithRangeProvider {
     }
 
     @Override
-    public ActionRange getRange(final Script script, final Action action, Runnable visuals, final Player player)
+    public ActionRange getRange(final Player player, final Script script, final Action action, Runnable visuals)
             throws ScriptExecutionException {
         int stackMemento = script.stack.size();
         visuals.run();
@@ -63,7 +63,7 @@ public class Break extends AbstractInteractionWithRangeProvider {
             @Override
             public void run() {
                 try {
-                    player.range = rangeProvider.getRange(script, action, NoVisuals, player);
+                    player.range = rangeProvider.getRange(player, script, action, NoVisuals);
                     player.playRange(breakRange);
                     SpeechRecognition.completeSpeechRecognitionInProgress();
                 } catch (ScriptInterruptedException e) {

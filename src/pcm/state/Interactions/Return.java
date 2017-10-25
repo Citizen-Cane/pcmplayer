@@ -17,8 +17,8 @@ public class Return implements Interaction {
     private static final Logger logger = LoggerFactory.getLogger(Return.class);
 
     @Override
-    public ActionRange getRange(Script script, Action action, Runnable visuals,
-            Player player) throws ScriptExecutionException {
+    public ActionRange getRange(Player player, Script script, Action action,
+            Runnable visuals) throws ScriptExecutionException {
         visuals.run();
         if (script.stack.size() > 0) {
             ActionRange range = script.stack.pop();

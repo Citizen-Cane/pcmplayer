@@ -42,6 +42,7 @@ import teaselib.Sexuality;
 import teaselib.Sexuality.Gender;
 import teaselib.TeaseScript;
 import teaselib.Toys;
+import teaselib.core.ResourceList;
 import teaselib.core.ResourceLoader;
 import teaselib.core.ScriptInterruptedException;
 import teaselib.core.TeaseLib;
@@ -109,6 +110,7 @@ public abstract class Player extends TeaseScript {
             ScriptCache scripts = new ScriptCache(resources, Player.ScriptFolder, dominantSubmissiveRelation);
             // Get the main script
             Script main = scripts.get(actor, mainScript);
+
             // and validate to load all the sub scripts
             // TODO load scripts explicitly
             validateScript(main, new ArrayList<ValidationIssue>());
@@ -159,12 +161,11 @@ public abstract class Player extends TeaseScript {
     public void play(String script) {
         StringTokenizer argv = parseDebugFile(script);
         String scriptName = argv.nextToken();
-        ActionRange range = parseStartRange(argv);
-        play(scriptName, range);
+        play(scriptName, parseStartRange(argv));
     }
 
     private StringTokenizer parseDebugFile(String script) {
-        String resourcePath = getClass().getSimpleName() + "/" + "debug.txt";
+        String resourcePath = getClass().getSimpleName() + ResourceList.PathDelimiter + "debug.txt";
         try {
             InputStream debugStream = resources.getResource(resourcePath);
             if (debugStream != null) {
@@ -193,8 +194,7 @@ public abstract class Player extends TeaseScript {
         } catch (Exception e) {
             logger.error(resourcePath, e);
         }
-        StringTokenizer argv = new StringTokenizer(script, " \t");
-        return argv;
+        return new StringTokenizer(script, " \t");
     }
 
     private static ActionRange parseStartRange(StringTokenizer argv) {
@@ -225,8 +225,8 @@ public abstract class Player extends TeaseScript {
         } catch (ScriptException e) {
             reportError(e);
             return;
-        } catch (Throwable t) {
-            reportError(t, name);
+        } catch (Exception e) {
+            reportError(e, name);
             return;
         }
         if (script != null) {
@@ -238,7 +238,7 @@ public abstract class Player extends TeaseScript {
                 }
             } catch (ScriptException e) {
                 reportError(e);
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 reportError(e, name);
             } finally {
                 teaseLib.host.setQuitHandler(null);
@@ -248,16 +248,15 @@ public abstract class Player extends TeaseScript {
         }
     }
 
-    public void playFrom(ActionRange startRange) throws AllActionsSetException, ScriptExecutionException {
+    public void playFrom(ActionRange startRange) throws ScriptExecutionException {
         play(startRange, (ActionRange) null);
     }
 
-    public void playOnly(ActionRange startRange) throws AllActionsSetException, ScriptExecutionException {
+    public void playOnly(ActionRange startRange) throws ScriptExecutionException {
         play(startRange, startRange);
     }
 
-    public void play(ActionRange startRange, ActionRange playRange)
-            throws AllActionsSetException, ScriptExecutionException {
+    public void play(ActionRange startRange, ActionRange playRange) throws ScriptExecutionException {
         if (script == null) {
             throw new ScriptExecutionException("No script loaded");
         }
@@ -311,25 +310,26 @@ public abstract class Player extends TeaseScript {
     }
 
     private void setScript(Script newScript) {
-        logger.info("Loading script " + newScript.name);
+        if (logger.isInfoEnabled())
+            logger.info("Loading script " + newScript.name);
         script = newScript;
         state.setScript(script);
     }
 
     private void validateProject() throws ScriptParsingException, ValidationIssue, IOException {
-        List<ValidationIssue> validationErrors = new ArrayList<ValidationIssue>();
+        List<ValidationIssue> validationErrors = new ArrayList<>();
         validateAspects(script, state, resources, validationErrors);
-        // TODO Loaded scripts explicitly - currently they're loaded by loading
-        // the main script
+        // TODO Loaded scripts explicitly - currently they're loaded by loading the main script
         for (String s : scripts.names()) {
             Script subScript = scripts.get(actor, s);
             if (subScript != script) {
                 validateAspects(subScript, state, resources, validationErrors);
             }
         }
-        if (validationErrors.size() > 0) {
+        if (!validationErrors.isEmpty()) {
             for (ScriptException scriptError : validationErrors) {
-                logger.info(errorMessage(scriptError));
+                if (logger.isInfoEnabled())
+                    logger.info(errorMessage(scriptError));
             }
             throw new ValidationIssue("Validation failed, " + validationErrors.size() + " issues", script);
         }
@@ -402,7 +402,7 @@ public abstract class Player extends TeaseScript {
      * @throws AllActionsSetException
      * @throws ScriptExecutionException
      */
-    public void playRange(ActionRange playRange) throws AllActionsSetException, ScriptExecutionException {
+    public void playRange(ActionRange playRange) throws ScriptExecutionException {
         while (true) {
             // Choose action
             Action action = getAction();
@@ -413,12 +413,11 @@ public abstract class Player extends TeaseScript {
             }
 
             try {
-                if (playRange != null) {
-                    if (!playRange.contains(action.number)) {
-                        range = new ActionRange(action.number);
-                        return;
-                    }
+                if (playRange != null && !playRange.contains(action.number)) {
+                    range = new ActionRange(action.number);
+                    return;
                 }
+
                 range = execute(action);
                 if (range == null) {
                     // Quit
@@ -464,10 +463,11 @@ public abstract class Player extends TeaseScript {
                 }
             } catch (ScriptExecutionException e) {
                 throw e;
-            } catch (Throwable t) {
-                throw new ScriptExecutionException(action, "Error executing script", t, script);
+            } catch (Exception e) {
+                throw new ScriptExecutionException(action, "Error executing script", e, script);
             }
         }
+
     }
 
     private Action getAction() throws AllActionsSetException {
@@ -481,7 +481,7 @@ public abstract class Player extends TeaseScript {
                 invokedOnAllSet = true;
                 range = script.onAllSet;
                 actions = range(script, range);
-                if (actions.size() == 0) {
+                if (actions.isEmpty()) {
                     throw new AllActionsSetException(script.actions.getAll(range),
                             new ActionRange(range.start, range.end), script);
                 } else {
@@ -500,12 +500,6 @@ public abstract class Player extends TeaseScript {
         state.set(action);
         // Perform commands
         action.execute(state);
-        // Render visuals
-        // It looks so much better with 1.8 ...
-        /*
-         * Runnable visuals = () -> { if (action.visuals != null) { for (Visual visual : action.visuals.values()) {
-         * visual.render(this); } } };
-         */
 
         // One would think that we have to wait for all visuals to
         // at least complete their mandatory part.
@@ -515,17 +509,13 @@ public abstract class Player extends TeaseScript {
         // Interactions that eventually call choose(...) do this
         // implicitly, but all other classes like Range have to call it
         // when suitable, to prevent text and messages appearing too fast
-        Runnable visuals = new Runnable() {
-            @Override
-            public void run() {
-                if (action.visuals != null) {
-                    for (Visual visual : action.visuals.values()) {
-                        render(visual);
-                    }
+        return action.interaction.getRange(this, script, action, () -> {
+            if (action.visuals != null) {
+                for (Visual visual : action.visuals.values()) {
+                    render(visual);
                 }
             }
-        };
-        return action.interaction.getRange(script, action, visuals, this);
+        });
     }
 
     public void render(Visual visual) {
@@ -549,13 +539,13 @@ public abstract class Player extends TeaseScript {
      * @param range
      * @return List of available actions.
      */
-    public List<Action> range(Script script, ActionRange range) {
+    private List<Action> range(Script script, ActionRange range) {
         // Get all available, e.g. those not set yet
         List<Action> candidates = script.actions.getUnset(range, state);
-        List<Action> selectable = new LinkedList<Action>();
+        List<Action> selectable = new LinkedList<>();
         List<ConditionRange> relaxedConditions;
         Iterator<ConditionRange> conditionsRanges;
-        relaxedConditions = new ArrayList<ConditionRange>(script.conditionRanges.size());
+        relaxedConditions = new ArrayList<>(script.conditionRanges.size());
         conditionsRanges = script.conditionRanges.iterator();
         while (true) {
             List<Action> poss0 = null;
@@ -567,12 +557,12 @@ public abstract class Player extends TeaseScript {
                     if (action.poss != null) {
                         if (action.poss == 0) {
                             if (poss0 == null) {
-                                poss0 = new LinkedList<Action>();
+                                poss0 = new LinkedList<>();
                             }
                             poss0.add(action);
                         } else if (action.poss == 100) {
                             if (poss100 == null) {
-                                poss100 = new LinkedList<Action>();
+                                poss100 = new LinkedList<>();
                             }
                             poss100.add(action);
                         } else {
@@ -587,7 +577,7 @@ public abstract class Player extends TeaseScript {
                 // poss == 100 overrides
                 logger.info("choosing poss100 - override");
                 return poss100;
-            } else if (selectable.size() > 0) {
+            } else if (!selectable.isEmpty()) {
                 // No poss null -> selectable
                 return selectable;
             } else if (poss0 != null) {
@@ -596,8 +586,8 @@ public abstract class Player extends TeaseScript {
                 return poss0;
             } else if (conditionsRanges.hasNext()) {
                 ConditionRange relaxed = conditionsRanges.next();
-                if (!relaxed.equals(Script.DefaultConditionRange)) {
-                    logger.info("Relaxing " + relaxed.toString());
+                if (!relaxed.equals(Script.DefaultConditionRange) && logger.isDebugEnabled()) {
+                    logger.debug("Relaxing " + relaxed.toString());
                 }
                 relaxedConditions.add(relaxed);
                 continue;
@@ -610,16 +600,11 @@ public abstract class Player extends TeaseScript {
     private boolean evalConditions(Action action, List<ConditionRange> conditionRanges) {
         if (action.conditions != null) {
             for (Condition condition : action.conditions) {
-                if (ignoreOptionalCondition(condition, conditionRanges)) {
-                    continue;
-                } else {
-                    if (condition.isTrueFor(state)) {
-                        continue;
-                    } else {
+                if (!ignoreOptionalCondition(condition, conditionRanges) && !condition.isTrueFor(state)) {
+                    if (logger.isInfoEnabled())
                         logger.info("Action " + action.number + ": " + condition.getClass().getSimpleName() + " "
                                 + condition.toString());
-                        return false;
-                    }
+                    return false;
                 }
             }
         }
@@ -646,11 +631,12 @@ public abstract class Player extends TeaseScript {
      * @return
      */
     public Action chooseAction(List<Action> actions) {
-        if (actions.size() == 0) {
+        if (actions.isEmpty()) {
             return null;
         } else if (actions.size() == 1) {
             Action action = actions.get(0);
-            logger.info("Action " + action.number);
+            if (logger.isInfoEnabled())
+                logger.info("Action " + action.number);
             return action;
         } else {
             return probabilityModel.chooseActionBasedOnPossValue(actions);
@@ -667,7 +653,7 @@ public abstract class Player extends TeaseScript {
         // Display text according to slave's level of articulateness
         if (item(Toys.Gag).applied()) {
             // Slave is gagged
-            final List<String> processedChoices = new ArrayList<String>(choices.size());
+            final List<String> processedChoices = new ArrayList<>(choices.size());
             for (String choice : choices) {
                 // The simple solution: replace vocals with consonants
                 choice = choice.replace("a", "m");

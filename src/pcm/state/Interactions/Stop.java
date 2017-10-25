@@ -49,7 +49,7 @@ public class Stop extends AbstractInteractionWithRangeProvider {
     }
 
     @Override
-    public ActionRange getRange(Script script, final Action action, final Runnable visuals, final Player player)
+    public ActionRange getRange(final Player player, Script script, final Action action, final Runnable visuals)
             throws ScriptExecutionException {
         logger.info(getClass().getSimpleName() + " " + toString());
         List<String> choices = new ArrayList<String>(choiceRanges.size());
@@ -111,7 +111,7 @@ public class Stop extends AbstractInteractionWithRangeProvider {
             logger.info("-> " + result);
             return ranges.get(index);
         } else {
-            return rangeProvider.getRange(script, action, NoVisuals, player);
+            return rangeProvider.getRange(player, script, action, NoVisuals);
         }
     }
 
