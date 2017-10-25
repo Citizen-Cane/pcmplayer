@@ -17,16 +17,16 @@ import pcm.state.persistence.ScriptState;
 import teaselib.Actor;
 import teaselib.core.ResourceLoader;
 import teaselib.core.TeaseLib;
+import teaselib.core.debug.DebugHost;
+import teaselib.core.debug.DebugPersistence;
 import teaselib.core.texttospeech.Voice.Gender;
-import teaselib.hosts.DummyHost;
-import teaselib.hosts.DummyPersistence;
 import teaselib.test.DebugSetup;
 
 public class TestUtils {
     public static final String TEST_NAMESPACE = "Test_Namespace";
 
     public static TeaseLib teaseLib() throws IOException {
-        TeaseLib teaseLib = new TeaseLib(new DummyHost(), new DummyPersistence(), new DebugSetup());
+        TeaseLib teaseLib = new TeaseLib(new DebugHost(), new DebugPersistence(), new DebugSetup());
         return teaseLib;
     }
 
