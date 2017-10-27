@@ -11,7 +11,6 @@ import org.junit.Test;
 
 import pcm.controller.Declarations;
 import pcm.controller.Player;
-import pcm.controller.StateCommandLineParameters;
 import pcm.model.ActionRange;
 import pcm.model.ConditionRange;
 import pcm.model.ScriptExecutionException;
@@ -19,6 +18,7 @@ import pcm.model.ScriptParsingException;
 import pcm.model.StatementConditionRange;
 import pcm.model.ValidationIssue;
 import pcm.state.Condition;
+import pcm.state.StateCommandLineParameters;
 import pcm.state.conditions.StateCondition;
 import pcm.util.TestUtils;
 import teaselib.Body;

@@ -2,14 +2,14 @@ package pcm.state.conditions;
 
 import java.util.concurrent.TimeUnit;
 
-import pcm.controller.StateCommandLineParameters;
-import pcm.controller.StateCommandLineParameters.Keyword;
 import pcm.model.AbstractAction;
 import pcm.model.AbstractAction.Statement;
 import pcm.model.DurationFormat;
 import pcm.model.IllegalStatementException;
 import pcm.model.ScriptParsingException;
 import pcm.state.BasicCondition;
+import pcm.state.StateCommandLineParameters;
+import pcm.state.StateCommandLineParameters.Keyword;
 import pcm.state.persistence.ScriptState;
 
 public class ItemCondition extends BasicCondition {

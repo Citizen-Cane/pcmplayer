@@ -3,13 +3,13 @@ package pcm.state.commands;
 import java.util.concurrent.TimeUnit;
 
 import pcm.controller.Player;
-import pcm.controller.StateCommandLineParameters;
-import pcm.controller.StateCommandLineParameters.Keyword;
 import pcm.model.AbstractAction.Statement;
 import pcm.model.DurationFormat;
 import pcm.model.IllegalStatementException;
 import pcm.model.ScriptParsingException;
 import pcm.state.BasicCommand;
+import pcm.state.StateCommandLineParameters;
+import pcm.state.StateCommandLineParameters.Keyword;
 import pcm.state.persistence.ScriptState;
 import teaselib.State;
 import teaselib.core.StateMaps;

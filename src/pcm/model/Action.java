@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import pcm.controller.Declarations;
-import pcm.controller.StateCommandLineParameters;
 import pcm.state.Command;
 import pcm.state.Condition;
 import pcm.state.Interaction;
 import pcm.state.Interaction.NeedsRangeProvider;
+import pcm.state.StateCommandLineParameters;
 import pcm.state.Validatable;
 import pcm.state.ValidatableResources;
 import pcm.state.Visual;
@@ -529,7 +529,7 @@ public class Action extends AbstractAction {
      * @return
      */
     private static Map<Statement, ActionRange> rangesFromArgv(String[] args, int index) {
-        Map<Statement, ActionRange> ranges = new LinkedHashMap<Statement, ActionRange>();
+        Map<Statement, ActionRange> ranges = new LinkedHashMap<>();
         while (index < args.length) {
             String keyword = args[index++];
             ActionRange actionRange;
@@ -555,8 +555,7 @@ public class Action extends AbstractAction {
     }
 
     private static Statement keywordToStatement(String keyword) {
-        Statement statement = Statement.KeywordToStatement.get(keyword.toLowerCase());
-        return statement;
+        return Statement.KeywordToStatement.get(keyword.toLowerCase());
     }
 
     private void setInteraction(Interaction interaction) {
@@ -653,7 +652,7 @@ public class Action extends AbstractAction {
     }
 
     public List<String> validateResources() {
-        List<String> resources = new ArrayList<String>();
+        List<String> resources = new ArrayList<>();
         if (visuals != null) {
             for (Visual visual : visuals.values()) {
                 if (visual instanceof ValidatableResources) {

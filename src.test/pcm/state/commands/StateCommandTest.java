@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import pcm.controller.Declarations;
 import pcm.controller.Player;
-import pcm.controller.StateCommandLineParameters;
+import pcm.state.StateCommandLineParameters;
 import pcm.util.TestUtils;
 import teaselib.Body;
 import teaselib.State;

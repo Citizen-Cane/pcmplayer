@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Set;
 
 import pcm.controller.Declarations;
-import pcm.controller.StateCommandLineParameters;
-import pcm.controller.StateCommandLineParameters.Keyword;
 import pcm.model.AbstractAction.Statement;
 import pcm.model.ScriptParsingException;
 import pcm.state.BasicCondition;
 import pcm.state.Condition;
+import pcm.state.StateCommandLineParameters;
+import pcm.state.StateCommandLineParameters.Keyword;
 import pcm.state.persistence.ScriptState;
 
 public class IfState extends BasicCondition {
