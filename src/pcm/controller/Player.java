@@ -38,8 +38,8 @@ import teaselib.Config;
 import teaselib.Images;
 import teaselib.Message;
 import teaselib.ScriptFunction;
-import teaselib.Sexuality;
 import teaselib.Sexuality.Gender;
+import teaselib.Sexuality.Sex;
 import teaselib.TeaseScript;
 import teaselib.Toys;
 import teaselib.core.ResourceList;
@@ -138,20 +138,25 @@ public abstract class Player extends TeaseScript {
 
     private Symbols createDominantSubmissiveSymbols() {
         StringBuilder dominantSubmissiveSymbol = new StringBuilder();
-        if (actor.gender == Voice.Gender.Male) {
+
+        if (actor.gender == Voice.Male) {
             dominantSubmissiveSymbol.append("M");
-        } else {
+        } else if (actor.gender == Voice.Female) {
             dominantSubmissiveSymbol.append("F");
+        } else {
+            throw new IllegalArgumentException(actor.toString());
         }
-        if (persistentEnum(Sexuality.Sex.class).value() == Sexuality.Sex.Female) {
+
+        if (persistentEnum(Sex.class).value() == Sex.Female) {
             dominantSubmissiveSymbol.append("f");
         } else {
-            if (persistentEnum(Sexuality.Gender.class).value() == Gender.Feminine) {
+            if (persistentEnum(Gender.class).value() == Gender.Feminine) {
                 dominantSubmissiveSymbol.append("tv");
             } else {
                 dominantSubmissiveSymbol.append("m");
             }
         }
+
         Symbols staticSymbols = new Symbols();
         staticSymbols.put(dominantSubmissiveSymbol.toString(), "true");
         return staticSymbols;

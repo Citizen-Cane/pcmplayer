@@ -15,11 +15,11 @@ import pcm.model.ValidationIssue;
 import pcm.state.Condition;
 import pcm.state.persistence.ScriptState;
 import teaselib.Actor;
+import teaselib.Sexuality.Gender;
 import teaselib.core.ResourceLoader;
 import teaselib.core.TeaseLib;
 import teaselib.core.debug.DebugHost;
 import teaselib.core.debug.DebugPersistence;
-import teaselib.core.texttospeech.Voice.Gender;
 import teaselib.test.DebugSetup;
 
 public class TestUtils {
@@ -36,7 +36,7 @@ public class TestUtils {
     }
 
     public static Player createPlayer(TeaseLib teaseLib, Class<?> scriptClass) {
-        return createPlayer(teaseLib, scriptClass, teaseLib.getDominant(Gender.Female, Locale.US));
+        return createPlayer(teaseLib, scriptClass, teaseLib.getDominant(Gender.Feminine, Locale.US));
     }
 
     public static Player createPlayer(TeaseLib teaseLib, Class<?> scriptClass, Actor dominant) {
