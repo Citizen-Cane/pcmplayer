@@ -96,7 +96,7 @@ public abstract class Player extends TeaseScript {
      * Push it on the stack, and call {@link Player#playFrom(ActionRange)}. The current script is executed up to the
      * next occurrence of a {@link AbstractAction.Statement#Return} statement.
      */
-    public final static ActionRange ReturnToPlayer = new ActionRange(0);
+    public static final ActionRange ReturnToPlayer = new ActionRange(0);
 
     public static void recordVoices(Actor actor, String mainScript, File path, String resourcesRoot, String[] assets)
             throws IOException, ValidationIssue, ScriptParsingException, InterruptedException {
@@ -296,8 +296,6 @@ public abstract class Player extends TeaseScript {
                         // TODO Interrupting the main script results in the
                         // onClose handler to be triggered -> bad quit
                     }
-                } catch (AllActionsSetException e) {
-                    logger.error(e.getMessage(), e);
                 } catch (ScriptExecutionException e) {
                     logger.error(e.getMessage(), e);
                 }
@@ -481,7 +479,7 @@ public abstract class Player extends TeaseScript {
         action = chooseAction(actions);
         if (action == null) {
             logger.info("All actions set");
-            if (script.onAllSet != null && invokedOnAllSet == false) {
+            if (script.onAllSet != null && !invokedOnAllSet) {
                 logger.info("Invoking OnAllSet handler");
                 invokedOnAllSet = true;
                 range = script.onAllSet;

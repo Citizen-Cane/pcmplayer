@@ -28,11 +28,10 @@ public class PopUp implements Interaction {
     }
 
     @Override
-    public ActionRange getRange(Player player, Script script,
-            Action action, Runnable visuals)
+    public ActionRange getRange(Player player, Script script, Action action, Runnable visuals)
             throws ScriptExecutionException {
-        List<MenuItem> items = new ArrayList<MenuItem>();
-        List<String> choices = new ArrayList<String>();
+        List<MenuItem> items = new ArrayList<>();
+        List<String> choices = new ArrayList<>();
         Map<Integer, MenuItem> menuItems = script.menuItems;
         for (int i = start; i <= end; i++) {
             Integer index = new Integer(i);
@@ -50,7 +49,6 @@ public class PopUp implements Interaction {
     }
 
     @Override
-    public void validate(Script script, Action action,
-            List<ValidationIssue> validationErrors) {
+    public void validate(Script script, Action action, List<ValidationIssue> validationErrors) {
     }
 }

@@ -23,7 +23,7 @@ public class IfState extends BasicCondition {
         Condition createCondition(StateCommandLineParameters firstParameters) throws ScriptParsingException;
     }
 
-    private static final Set<String> OPERATORS = new HashSet<String>(Arrays.asList(OR, AND));
+    private static final Set<String> OPERATORS = new HashSet<>(Arrays.asList(OR, AND));
 
     private final String[] args;
 
@@ -35,10 +35,10 @@ public class IfState extends BasicCondition {
 
     private static ParameterizedStatement statement(Statement statement, String[] args,
             ConditionCreator conditionCreator, Declarations declarations) throws ScriptParsingException {
-        final List<Condition> conditions = new ArrayList<Condition>();
+        final List<Condition> conditions = new ArrayList<>();
 
         int i = 0;
-        List<String> firstCondition = new ArrayList<String>();
+        List<String> firstCondition = new ArrayList<>();
         while (i < args.length && !isOperator(args[i])) {
             firstCondition.add(args[i++]);
         }
@@ -49,7 +49,7 @@ public class IfState extends BasicCondition {
         conditions.add(conditionCreator.createCondition(firstParameters));
 
         while (i < args.length) {
-            List<String> conditionArgs = new ArrayList<String>();
+            List<String> conditionArgs = new ArrayList<>();
             conditionArgs.addAll(Arrays.asList(firstParameters.values(Keyword.Item)));
             while (i < args.length && !isOperator(args[i])) {
                 conditionArgs.add(args[i++]);

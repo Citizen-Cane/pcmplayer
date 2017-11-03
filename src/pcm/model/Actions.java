@@ -9,14 +9,13 @@ import java.util.Map;
 import pcm.state.persistence.ScriptState;
 
 /**
- * Enumerate actions. - Find action by index - Enum action range and evaluate
- * conditions in order to choose next action
+ * Enumerate actions. - Find action by index - Enum action range and evaluate conditions in order to choose next action
  * 
  * @author someone
  *
  */
 public class Actions {
-    private Map<Integer, Action> actions = new LinkedHashMap<Integer, Action>();
+    private Map<Integer, Action> actions = new LinkedHashMap<>();
 
     public Action put(Integer n, Action action) {
         return actions.put(n, action);
@@ -31,7 +30,7 @@ public class Actions {
     }
 
     public List<Action> getAll() {
-        return new ArrayList<Action>(actions.values());
+        return new ArrayList<>(actions.values());
     }
 
     /**
@@ -41,7 +40,7 @@ public class Actions {
      * @return
      */
     public List<Action> getAll(ActionRange range) {
-        List<Action> actionRange = new ArrayList<Action>();
+        List<Action> actionRange = new ArrayList<>();
         for (int i = range.start; i <= range.end; i++) {
             Integer index = new Integer(i);
             if (actions.containsKey(index)) {
@@ -52,15 +51,14 @@ public class Actions {
     }
 
     /**
-     * Get all actions in the given range that are unset, e.g haven't been
-     * executed or set otherwise.
+     * Get all actions in the given range that are unset, e.g haven't been executed or set otherwise.
      * 
      * @param range
      * @param state
      * @return List of actions
      */
     public List<Action> getUnset(ActionRange range, ScriptState state) {
-        List<Action> actionRange = new ArrayList<Action>();
+        List<Action> actionRange = new ArrayList<>();
         for (int i = range.start; i <= range.end; i++) {
             Integer index = new Integer(i);
             if (actions.containsKey(index)) {
@@ -73,18 +71,14 @@ public class Actions {
         return actionRange;
     }
 
-    public void validate(Script script, Action action, ActionRange range,
-            List<ValidationIssue> validationErrors) {
+    public void validate(Script script, Action action, ActionRange range, List<ValidationIssue> validationErrors) {
         List<Action> actions = getAll(range);
         if (actions.isEmpty()) {
-            validationErrors.add(new ValidationIssue(action,
-                    "Range " + range.start + "-" + range.end + " is empty",
-                    script));
+            validationErrors
+                    .add(new ValidationIssue(action, "Range " + range.start + "-" + range.end + " is empty", script));
         } else if (actions.get(0).number != range.start) {
             validationErrors.add(new ValidationIssue(action,
-                    "Range " + range.start + "-" + range.end + " must start at "
-                            + range.start,
-                    script));
+                    "Range " + range.start + "-" + range.end + " must start at " + range.start, script));
         }
     }
 

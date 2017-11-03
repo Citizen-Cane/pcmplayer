@@ -26,7 +26,7 @@ public class ScriptCache {
     private static final Logger logger = LoggerFactory.getLogger(ScriptCache.class);
 
     private final Symbols staticSymbols;
-    private final Map<String, SoftReference<Script>> cache = new HashMap<String, SoftReference<Script>>();
+    private final Map<String, SoftReference<Script>> cache = new HashMap<>();
     private final ResourceLoader resourceLoader;
     private final String path;
 
@@ -36,7 +36,7 @@ public class ScriptCache {
         this.resourceLoader = resourceLoader;
         this.staticSymbols = staticSymbols;
         this.path = path;
-        stack = new Stack<ActionRange>();
+        stack = new Stack<>();
     }
 
     public Script get(Actor actor, String name) throws ScriptParsingException, ValidationIssue, IOException {
@@ -54,7 +54,7 @@ public class ScriptCache {
             } finally {
                 scriptReader.close();
             }
-            cache.put(name, new SoftReference<Script>(script));
+            cache.put(name, new SoftReference<>(script));
         }
         return script;
     }
@@ -70,6 +70,6 @@ public class ScriptCache {
     }
 
     private HashSet<String> avoidConcurrentModificationException() {
-        return new HashSet<String>(cache.keySet());
+        return new HashSet<>(cache.keySet());
     }
 }

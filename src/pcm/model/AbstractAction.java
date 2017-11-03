@@ -239,9 +239,8 @@ public abstract class AbstractAction {
 
         ;
 
-        public final static Map<String, Statement> Lookup = new TreeMap<String, Statement>(
-                String.CASE_INSENSITIVE_ORDER);
-        public final static Map<String, Statement> KeywordToStatement = new HashMap<String, Statement>();
+        public final static Map<String, Statement> Lookup = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        public final static Map<String, Statement> KeywordToStatement = new HashMap<>();
     }
 
     {
@@ -260,14 +259,14 @@ public abstract class AbstractAction {
 
     public void addCommand(Command command) {
         if (this.commands == null) {
-            this.commands = new ArrayList<Command>();
+            this.commands = new ArrayList<>();
         }
         commands.add(command);
     }
 
     void addResponse(Statement statement, String response) {
         if (responses == null) {
-            responses = new HashMap<Statement, String>();
+            responses = new HashMap<>();
         } else if (responses.containsKey(statement)) {
             throw new IllegalArgumentException("Duplicate default prompt: " + statement.toString());
         }

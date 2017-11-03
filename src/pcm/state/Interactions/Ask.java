@@ -48,9 +48,9 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
     @Override
     public ActionRange getRange(Player player, Script script, Action action, Runnable visuals)
             throws ScriptExecutionException {
-        List<Boolean> values = new ArrayList<Boolean>();
-        List<String> choices = new ArrayList<String>();
-        List<Integer> indices = new ArrayList<Integer>();
+        List<Boolean> values = new ArrayList<>();
+        List<String> choices = new ArrayList<>();
+        List<Integer> indices = new ArrayList<>();
         Map<Integer, AskItem> askItems = script.askItems;
         String title = null;
         for (int i = start; i <= end; i++) {
@@ -125,8 +125,8 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
 
     private static boolean checkDetailedItems(Player player, String title, Items items) {
         // Ask which items of the category have been set
-        List<Boolean> itemValues = new ArrayList<Boolean>();
-        List<String> itemChoices = new ArrayList<String>();
+        List<Boolean> itemValues = new ArrayList<>();
+        List<String> itemChoices = new ArrayList<>();
         for (Item item : items) {
             itemValues.add(item.isAvailable());
             itemChoices.add(item.displayName());

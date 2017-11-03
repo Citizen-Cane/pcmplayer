@@ -35,8 +35,8 @@ public class Script extends AbstractAction {
     public ActionRange startRange = null;
 
     public final Actions actions = new Actions();
-    public final Map<Integer, AskItem> askItems = new HashMap<Integer, AskItem>();
-    public final Map<Integer, MenuItem> menuItems = new HashMap<Integer, MenuItem>();
+    public final Map<Integer, AskItem> askItems = new HashMap<>();
+    public final Map<Integer, MenuItem> menuItems = new HashMap<>();
     public List<ConditionRange> conditionRanges = null;
 
     public String mistressImages = null;
@@ -45,10 +45,9 @@ public class Script extends AbstractAction {
     public final Stack<ActionRange> stack;
 
     /**
-     * The condition range used when the script doesn't define its own list of
-     * condition ranges.
+     * The condition range used when the script doesn't define its own list of condition ranges.
      */
-    public final static ConditionRange DefaultConditionRange = new ConditionRange() {
+    public static final ConditionRange DefaultConditionRange = new ConditionRange() {
         @Override
         public boolean contains(Object condition) {
             return true;
@@ -81,7 +80,7 @@ public class Script extends AbstractAction {
 
     private void completeScriptDefaults() {
         if (responses == null) {
-            responses = new HashMap<Statement, String>();
+            responses = new HashMap<>();
             // No defaults since hard-coded messages can't be translated
         }
     }
@@ -159,7 +158,7 @@ public class Script extends AbstractAction {
                     : new ActionRange(Integer.parseInt(args[0]));
         } else if (name == Statement.ConditionRange) {
             if (conditionRanges == null) {
-                conditionRanges = new ArrayList<ConditionRange>();
+                conditionRanges = new ArrayList<>();
             }
             String args[] = cmd.args();
             if (Statement.Lookup.containsKey(args[0].substring(1))) {

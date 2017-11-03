@@ -8,15 +8,14 @@ import java.util.Map.Entry;
 import pcm.model.Action;
 
 /**
- * This probability model calculates the poss value for unweighted actions, then
- * use the sum of all values in each bucket.
+ * This probability model calculates the poss value for unweighted actions, then use the sum of all values in each
+ * bucket.
  * 
  * @author Citizen-Cane
  *
  */
 @Deprecated
-public abstract class ProbabilityModelBasedOnPossBuckets
-        extends ProbabilityModel {
+public abstract class ProbabilityModelBasedOnPossBuckets extends ProbabilityModel {
     public ProbabilityModelBasedOnPossBuckets() {
         super();
     }
@@ -31,7 +30,7 @@ public abstract class ProbabilityModelBasedOnPossBuckets
         // -> all actions with poss n should together weight exactly n
         // so a single action of weight n counts as n/occurence(n)
         // and m unweighted actions as 100-sum(set(n))/m
-        Map<Integer, Double> weightMap = new HashMap<Integer, Double>();
+        Map<Integer, Double> weightMap = new HashMap<>();
         for (Action action : actions) {
             if (weightMap.containsKey(action.poss)) {
                 weightMap.put(action.poss, weightMap.get(action.poss) + 1.0);
@@ -73,8 +72,7 @@ public abstract class ProbabilityModelBasedOnPossBuckets
         for (int i = 0; i < accumulatedWeights.length; i++) {
             Action a = actions.get(i);
             Double occurences = weightMap.get(a.poss);
-            double d = (a.poss != null ? ((double) a.poss) : unweighted)
-                    / occurences * 100.0 / weightSum;
+            double d = (a.poss != null ? ((double) a.poss) : unweighted) / occurences * 100.0 / weightSum;
             sum += d;
             accumulatedWeights[i] = sum;
             addPossValueForLogging((int) d);

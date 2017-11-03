@@ -33,9 +33,9 @@ public class MappedScriptState extends ScriptState {
     public static final String Global = "";
 
     private static class ScriptMapping {
-        final Map<Integer, MappedScriptValue> scriptValueMapping = new HashMap<Integer, MappedScriptValue>();
-        final Map<Integer, teaselib.State> stateTimeMapping = new HashMap<Integer, teaselib.State>();
-        final Map<Integer, Enum<?>[]> peers = new HashMap<Integer, Enum<?>[]>();
+        final Map<Integer, MappedScriptValue> scriptValueMapping = new HashMap<>();
+        final Map<Integer, teaselib.State> stateTimeMapping = new HashMap<>();
+        final Map<Integer, Enum<?>[]> peers = new HashMap<>();
 
         public void putAll(ScriptMapping globalMapping) {
             scriptValueMapping.putAll(globalMapping.scriptValueMapping);
@@ -44,7 +44,7 @@ public class MappedScriptState extends ScriptState {
         }
     }
 
-    Map<String, ScriptMapping> scriptMappings = new HashMap<String, ScriptMapping>();
+    Map<String, ScriptMapping> scriptMappings = new HashMap<>();
     ScriptMapping scriptMapping = null;
 
     public MappedScriptState(Player player) {
@@ -75,21 +75,19 @@ public class MappedScriptState extends ScriptState {
 
         if (scriptMapping.scriptValueMapping.containsKey(mappedValue)
                 || scriptMapping.scriptValueMapping.containsValue(mappedValue)) {
-            throw new IllegalArgumentException(
-                    "Item " + mappedValue.toString() + " is already mapped to a value.");
+            throw new IllegalArgumentException("Item " + mappedValue.toString() + " is already mapped to a value.");
         }
 
         scriptMapping.scriptValueMapping.put(mappedValue.getNumber(), mappedValue);
     }
 
-    public <T extends Enum<?>> void addStateTimeMapping(String scriptName, Integer action,
-            teaselib.State state, T... peers) {
+    @SafeVarargs
+    public final <T extends Enum<?>> void addStateTimeMapping(String scriptName, Integer action, teaselib.State state,
+            T... peers) {
         ScriptMapping scriptMapping = getScriptMapping(scriptName);
 
-        if (scriptMapping.stateTimeMapping.containsKey(action)
-                || scriptMapping.stateTimeMapping.containsValue(state)) {
-            throw new IllegalArgumentException(
-                    "State " + state.toString() + " is already mapped to a timer.");
+        if (scriptMapping.stateTimeMapping.containsKey(action) || scriptMapping.stateTimeMapping.containsValue(state)) {
+            throw new IllegalArgumentException("State " + state.toString() + " is already mapped to a timer.");
         }
 
         scriptMapping.stateTimeMapping.put(action, state);
@@ -121,8 +119,7 @@ public class MappedScriptState extends ScriptState {
     public Items getMappedItems(Integer n) {
         if (scriptMapping == null) {
             // TODO throw
-            throw new IllegalStateException(
-                    "No script mapping set to retrieve mapped items for action " + n);
+            throw new IllegalStateException("No script mapping set to retrieve mapped items for action " + n);
             // return Items.None;
         }
         return scriptMapping.scriptValueMapping.get(n).items();
@@ -199,8 +196,7 @@ public class MappedScriptState extends ScriptState {
     }
 
     private Entry<Integer, MappedScriptValue> getEntry(Object item) {
-        for (Entry<Integer, MappedScriptValue> entry : getScriptMapping(Global).scriptValueMapping
-                .entrySet()) {
+        for (Entry<Integer, MappedScriptValue> entry : getScriptMapping(Global).scriptValueMapping.entrySet()) {
             Items items = entry.getValue().items();
             for (Item i : items) {
                 if (i.is(item)) {

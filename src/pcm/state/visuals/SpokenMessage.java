@@ -13,7 +13,7 @@ import teaselib.core.speechrecognition.SpeechRecognitionResult.Confidence;
 
 public class SpokenMessage implements Visual, ValidatableResources {
 
-    private final List<Entry> entries = new ArrayList<Entry>();
+    private final List<Entry> entries = new ArrayList<>();
     private Message message = null;
     private final Actor actor;
 
@@ -81,7 +81,7 @@ public class SpokenMessage implements Visual, ValidatableResources {
     }
 
     public List<Message> getMessages() {
-        List<Message> messages = new ArrayList<Message>(entries.size());
+        List<Message> messages = new ArrayList<>(entries.size());
         for (Entry entry : entries) {
             messages.add(entry.message);
         }
@@ -90,7 +90,7 @@ public class SpokenMessage implements Visual, ValidatableResources {
 
     @Override
     public List<String> resources() {
-        List<String> resources = new ArrayList<String>();
+        List<String> resources = new ArrayList<>();
         for (Entry entry : entries) {
             resources.addAll(entry.message.resources());
         }

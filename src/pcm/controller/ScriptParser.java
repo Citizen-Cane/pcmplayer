@@ -26,10 +26,10 @@ public class ScriptParser {
     private static final String DEFINE_ENDIF = "#endif";
 
     private final Symbols staticSymbols;
-    private final Stack<String[]> preprocessorScope = new Stack<String[]>();
+    private final Stack<String[]> preprocessorScope = new Stack<>();
     private final BufferedReader reader;
 
-    private final Map<String, String> defines = new LinkedHashMap<String, String>();
+    private final Map<String, String> defines = new LinkedHashMap<>();
     private final Declarations declarations;
 
     private String line = null;

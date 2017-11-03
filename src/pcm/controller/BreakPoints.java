@@ -12,7 +12,7 @@ public class BreakPoints {
         private static final long serialVersionUID = 1L;
     }
 
-    private Map<String, BreakPointMap> breakPoints = new HashMap<String, BreakPoints.BreakPointMap>();
+    private Map<String, BreakPointMap> breakPoints = new HashMap<>();
 
     public void add(String script, int action) {
         add(script, action, BreakPoint.STOP);

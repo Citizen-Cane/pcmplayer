@@ -12,7 +12,7 @@ public class Declarations {
     public static final String ENUM = "enum";
     public static final String STRING = "string";
 
-    final Map<String, String> declarations = new HashMap<String, String>();
+    final Map<String, String> declarations = new HashMap<>();
 
     public Declarations() {
     }

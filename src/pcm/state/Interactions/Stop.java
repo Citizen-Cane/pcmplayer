@@ -52,8 +52,8 @@ public class Stop extends AbstractInteractionWithRangeProvider {
     public ActionRange getRange(final Player player, Script script, final Action action, final Runnable visuals)
             throws ScriptExecutionException {
         logger.info(getClass().getSimpleName() + " " + toString());
-        List<String> choices = new ArrayList<String>(choiceRanges.size());
-        List<ActionRange> ranges = new ArrayList<ActionRange>(choiceRanges.size());
+        List<String> choices = new ArrayList<>(choiceRanges.size());
+        List<ActionRange> ranges = new ArrayList<>(choiceRanges.size());
         for (Statement key : choiceRanges.keySet()) {
             choices.add(action.getResponseText(key, script));
             ranges.add(choiceRanges.get(key));

@@ -53,8 +53,8 @@ public class Break extends AbstractInteractionWithRangeProvider {
             throws ScriptExecutionException {
         int stackMemento = script.stack.size();
         visuals.run();
-        List<String> choices = new ArrayList<String>(choiceRanges.size());
-        List<ActionRange> ranges = new ArrayList<ActionRange>(choiceRanges.size());
+        List<String> choices = new ArrayList<>(choiceRanges.size());
+        List<ActionRange> ranges = new ArrayList<>(choiceRanges.size());
         for (Statement key : choiceRanges.keySet()) {
             choices.add(action.getResponseText(key, script));
             ranges.add(choiceRanges.get(key));
