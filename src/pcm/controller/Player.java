@@ -175,7 +175,7 @@ public abstract class Player extends TeaseScript {
             InputStream debugStream = resources.getResource(resourcePath);
             if (debugStream != null) {
                 debugOutput = true;
-                validateScripts = true;
+                validateScripts = Boolean.parseBoolean(teaseLib.config.get(Config.Debug.StopOnAssetNotFound));
                 BufferedReader debugReader = new BufferedReader(new InputStreamReader(debugStream));
                 try {
                     String line;
