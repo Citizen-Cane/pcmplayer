@@ -30,11 +30,11 @@ public class YesNo extends AbstractInteraction {
     }
 
     @Override
-    public ActionRange getRange(final Player player, Script script, Action action,
-            Runnable visuals) throws ScriptExecutionException {
+    public ActionRange getRange(final Player player, Script script, Action action, Runnable visuals)
+            throws ScriptExecutionException {
         String yes = action.getResponseText(Statement.YesText, script);
         String no = action.getResponseText(Statement.NoText, script);
-        final List<String> choices = new ArrayList<String>();
+        final List<String> choices = new ArrayList<>();
         choices.add(yes);
         choices.add(no);
         visuals.run();
@@ -48,17 +48,14 @@ public class YesNo extends AbstractInteraction {
     }
 
     @Override
-    public void validate(Script script, Action action,
-            List<ValidationIssue> validationErrors) {
+    public void validate(Script script, Action action, List<ValidationIssue> validationErrors) {
         try {
             action.getResponseText(Statement.YesText, script);
             action.getResponseText(Statement.NoText, script);
         } catch (ScriptExecutionException e) {
             validationErrors.add(new ValidationIssue(action, e, script));
         }
-        script.actions.validate(script, action,
-                new ActionRange(startYes, endYes), validationErrors);
-        script.actions.validate(script, action, new ActionRange(startNo, endNo),
-                validationErrors);
+        script.actions.validate(script, action, new ActionRange(startYes, endYes), validationErrors);
+        script.actions.validate(script, action, new ActionRange(startNo, endNo), validationErrors);
     }
 }

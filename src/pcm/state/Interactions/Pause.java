@@ -22,7 +22,7 @@ public class Pause extends AbstractInteractionWithRangeProvider {
     public ActionRange getRange(Player player, Script script, Action action, Runnable visuals)
             throws ScriptExecutionException {
         String resume = action.getResponseText(Statement.ResumeText, script);
-        List<String> choices = new ArrayList<String>(1);
+        List<String> choices = new ArrayList<>(1);
         choices.add(resume);
         visuals.run();
         logger.info("Pause: " + resume);
