@@ -14,7 +14,7 @@ import pcm.model.ScriptParsingException;
 import pcm.model.ValidationIssue;
 
 /**
- * @author someone
+ * @author Citizen-Cane
  *
  *         Calls a sub program specified by the range argument after rendering the visuals of the action.
  * 
@@ -22,7 +22,7 @@ import pcm.model.ValidationIssue;
 public class GoSub extends AbstractInteractionWithRangeProvider {
     private static final Logger logger = LoggerFactory.getLogger(GoSub.class);
 
-    final private ActionRange range;
+    private final ActionRange range;
 
     public GoSub(ActionRange range) {
         this.range = range;

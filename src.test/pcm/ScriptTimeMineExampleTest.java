@@ -3,9 +3,7 @@
  */
 package pcm;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -20,15 +18,16 @@ import pcm.util.TestUtils;
 import teaselib.core.Debugger;
 
 /**
- * @author someone
+ * @author Citizen-Cane
  *
  */
 public class ScriptTimeMineExampleTest {
-    Player player = TestUtils.createPlayer(getClass());
-
-    private final Debugger debugger = new Debugger(player.teaseLib);
+    private final Player player;
+    private final Debugger debugger;
 
     public ScriptTimeMineExampleTest() throws IOException {
+        this.player = TestUtils.createPlayer(getClass());
+        this.debugger = new Debugger(player.teaseLib);
     }
 
     /**
@@ -36,7 +35,6 @@ public class ScriptTimeMineExampleTest {
      */
     @Before
     public void setUpBefore() throws Exception {
-        debugger.freezeTime();
         player.loadScript("ScriptTimeMineExampleTest");
     }
 

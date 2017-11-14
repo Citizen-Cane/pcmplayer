@@ -45,7 +45,9 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
         Limit,
 
         GreaterThan,
+        GreaterOrEqualThan,
         LessOrEqualThan,
+        LessThan,
         Equals,
 
         Not,;
@@ -192,7 +194,8 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
     }
 
     public Keyword getCondition() {
-        Keyword[] conditionOperators = { Keyword.GreaterThan, Keyword.LessOrEqualThan, Keyword.Equals };
+        Keyword[] conditionOperators = { Keyword.GreaterThan, Keyword.GreaterOrEqualThan, Keyword.LessOrEqualThan,
+                Keyword.LessThan, Keyword.Equals };
         for (Keyword keyword : conditionOperators) {
             if (containsKey(keyword)) {
                 if (values(keyword).length != 1) {
@@ -217,12 +220,25 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
                     return arg0 > arg1;
                 }
             };
+        } else if (keyword == Keyword.GreaterOrEqualThan) {
+            return new Operator() {
+                @Override
+                public boolean isTrueFor(long arg0, long arg1) {
+                    return arg0 >= arg1;
+                }
+            };
         } else if (keyword == Keyword.LessOrEqualThan) {
             return new Operator() {
-
                 @Override
                 public boolean isTrueFor(long arg0, long arg1) {
                     return arg0 <= arg1;
+                }
+            };
+        } else if (keyword == Keyword.LessThan) {
+            return new Operator() {
+                @Override
+                public boolean isTrueFor(long arg0, long arg1) {
+                    return arg0 < arg1;
                 }
             };
         } else if (keyword == Keyword.Equals) {
