@@ -1,6 +1,7 @@
 package pcm.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -14,16 +15,36 @@ public class BreakPoints {
 
     private Map<String, BreakPointMap> breakPoints = new HashMap<>();
 
-    public void add(String script, int action) {
-        add(script, action, BreakPoint.STOP);
+    public void add(String script, Trigger... triggers) {
+        for (Trigger trigger : triggers) {
+            add(script, trigger.action, trigger);
+        }
     }
 
-    public void add(String script, int action, BreakPoint condition) {
+    public void add(String script, List<Trigger> triggers) {
+        for (Trigger trigger : triggers) {
+            add(script, trigger.action, trigger);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends BreakPoint> T add(String script, int action) {
+        return add(script, action, (T) BreakPoint.STOP);
+    }
+
+    public <T extends Trigger> T add(String script, T trigger) {
+        return add(script, trigger.action, trigger);
+    }
+
+    public <T extends BreakPoint> T add(String script, int action, T breakPoint) {
         BreakPointMap bpm = breakPoints.get(script);
         if (bpm == null) {
-            breakPoints.put(script, bpm = new BreakPointMap());
+            bpm = new BreakPointMap();
+            breakPoints.put(script, bpm);
         }
-        bpm.put(action, condition);
+        bpm.put(action, breakPoint);
+
+        return breakPoint;
     }
 
     public BreakPoint getBreakPoint(String script, int action) {
@@ -31,10 +52,11 @@ public class BreakPoints {
         if (bpm == null) {
             return BreakPoint.NONE;
         }
-        BreakPoint condition = bpm.get(action);
-        if (condition == null) {
+        BreakPoint breakPoint = bpm.get(action);
+        if (breakPoint == null) {
             return BreakPoint.NONE;
         }
-        return condition;
+        return breakPoint;
     }
+
 }
