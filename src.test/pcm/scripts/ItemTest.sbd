@@ -116,17 +116,17 @@
 ' testRemainingDuration
 
 [Action 1040]
-.item Toys.Nipple_clamps remaining GreaterOrEqualThan 00:29"00
+.item Toys.Nipple_clamps remaining GreaterOrEqualThan 00:30"00
 .item Toys.Nipple_clamps remaining LessOrEqualThan 00:30"00
 .range 9999
 
 [Action 1041]
-.item Toys.Nipple_clamps remaining GreaterOrEqualThan -00:01"00
+.item Toys.Nipple_clamps remaining GreaterOrEqualThan -00:00"00
 .item Toys.Nipple_clamps remaining LessOrEqualThan 00:00"00
 .range 9999
 
 [Action 1042]
-.item Toys.Nipple_clamps remaining GreaterOrEqualThan -00:11"00
+.item Toys.Nipple_clamps remaining GreaterOrEqualThan -00:10"00
 .item Toys.Nipple_clamps remaining LessOrEqualThan -00:10"00
 .range 9999
 
@@ -137,29 +137,29 @@
 
 [Action 1050]
 .item Toys.Nipple_clamps elapsed GreaterOrEqualThan 00:00"00
-.item Toys.Nipple_clamps elapsed LessOrEqualThan 00:01"00
+.item Toys.Nipple_clamps elapsed LessOrEqualThan 00:00"00
 .range 9999
 
 [Action 1051]
 .item Toys.Nipple_clamps elapsed GreaterOrEqualThan 00:10"00
-.item Toys.Nipple_clamps elapsed LessOrEqualThan 00:11"00
+.item Toys.Nipple_clamps elapsed LessOrEqualThan 00:10"00
 .range 9999
 
 [Action 1052]
 .item Toys.Nipple_clamps elapsed GreaterOrEqualThan 00:30"00
-.item Toys.Nipple_clamps elapsed LessOrEqualThan 00:31"00
+.item Toys.Nipple_clamps elapsed LessOrEqualThan 00:30"00
 .range 9999
 
 [Action 1053]
 .item Toys.Nipple_clamps elapsed GreaterOrEqualThan 00:40"00
-.item Toys.Nipple_clamps elapsed LessOrEqualThan 00:41"00
+.item Toys.Nipple_clamps elapsed LessOrEqualThan 00:40"00
 .range 9999
 
 
 ' testIfStateConditionOr
 
 [Action 1060]
-.item Toys.Nipple_Clamps free or remaining LessOrEqualThan 00:30"00 OR remaining GreaterOrEqualThan 00:29"00
+.item Toys.Nipple_Clamps free or remaining LessOrEqualThan 00:30"00 OR remaining GreaterOrEqualThan 00:30"00
 .unset 1060
 .range 9999
 
@@ -178,7 +178,7 @@
 .item Toys.Nipple_Clamps is Body.OnNipples
 .state Body.OnNipples applied
 .item Toys.Nipple_Clamps remaining LessOrEqualThan 00:30"00
-.item Toys.Nipple_Clamps remaining GreaterOrEqualThan 00:29"00
+.item Toys.Nipple_Clamps remaining GreaterOrEqualThan 00:30"00
 .range 9999
 
 
@@ -189,7 +189,7 @@
 .range 9999
 
 [Action 1071]
-.state Toys.Nipple_Clamps applied AnD remaining LessOrEqualThan 00:30"00 aNd remaining GreaterOrEqualThan 00:29"00 AND is Body.OnNipples
+.state Toys.Nipple_Clamps applied AnD remaining LessOrEqualThan 00:30"00 aNd remaining GreaterOrEqualThan 00:30"00 AND is Body.OnNipples
 .range 9999
 
 [Action 1075]

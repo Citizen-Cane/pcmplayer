@@ -140,10 +140,11 @@ public class StateTest {
         Debugger debugger = new Debugger(player.teaseLib);
         debugger.freezeTime();
 
+        long start = player.teaseLib.getTime(TimeUnit.MILLISECONDS);
+
         player.state(Toys.Nipple_Clamps).applyTo().over(30, TimeUnit.MINUTES);
         assertEquals(0, player.state(Toys.Nipple_Clamps).duration().elapsed(TimeUnit.MINUTES));
 
-        // TODO Fails sporadically
         TestUtils.play(player, 1050);
 
         debugger.advanceTime(10, TimeUnit.MINUTES);
@@ -157,6 +158,9 @@ public class StateTest {
         debugger.advanceTime(10, TimeUnit.MINUTES);
         assertEquals(40, player.state(Toys.Nipple_Clamps).duration().elapsed(TimeUnit.MINUTES));
         TestUtils.play(player, 1053);
+
+        long end = player.teaseLib.getTime(TimeUnit.MILLISECONDS);
+        assertEquals(40 * 60 * 1000, end - start);
     }
 
     @Test
@@ -198,6 +202,5 @@ public class StateTest {
     // TODO Remove multiple peers from object
     // (Household.Clothes_Pegs used in Mine)
 
-    // TODO Test (again?) that removing single items is symetric (at least for
-    // injected peers)
+    // TODO Test (again?) that removing single items is symmetric (at least for injected peers)
 }
