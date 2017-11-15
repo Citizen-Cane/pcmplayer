@@ -22,6 +22,7 @@ import pcm.state.StateCommandLineParameters;
 import pcm.state.conditions.StateCondition;
 import pcm.util.TestUtils;
 import teaselib.Body;
+import teaselib.Posture;
 
 public class ConditionRangeTestWithStateConditions {
 
@@ -100,7 +101,7 @@ public class ConditionRangeTestWithStateConditions {
 
         // condition relaxed by condition range declaration
         assertEquals(3, player.range(new ActionRange(1400, 1402)).size());
-        player.state(Body.CantKneel).applyTo();
+        player.state(Posture.CantKneel).applyTo();
         assertEquals(1, player.range(new ActionRange(1400, 1402)).size());
         assertEquals(1401, player.range(new ActionRange(1400, 1402)).get(0).number);
     }
@@ -119,7 +120,7 @@ public class ConditionRangeTestWithStateConditions {
         assertNotEquals(1401, player.range(new ActionRange(1400, 1402)).get(0).number);
         assertNotEquals(1401, player.range(new ActionRange(1400, 1402)).get(1).number);
 
-        player.state(Body.CantKneel).applyTo();
+        player.state(Posture.CantKneel).applyTo();
         // 1401 is first block by .shouldnot 28
         // but 1400 and 1402 are blocked by 33
         // -> condition ranges are removed until .shouldnot 28 is removed

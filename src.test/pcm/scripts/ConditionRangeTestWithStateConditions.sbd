@@ -4,6 +4,9 @@
 .define Body teaselib.Body
 .declare Body Enum
 
+.define Posture teaselib.Posture
+.declare Posture Enum
+
 
 ' condition ranges for should/shouldnot:
 ' condition statements to be dropped one after another
@@ -15,7 +18,7 @@
 .ConditionRange 20           ' something on nipples, clamps or clothes pegs
 .ConditionRange 25           ' ankle cuffs may affect assuming the exact posture, however ankles cuffs are less likely visible than wrist restraints
 .ConditionRange 26           ' wrist cuffs may affect assuming the exact posture
-.ConditionRange .state Body.CantKneel applied
+.ConditionRange .state Posture.CantKneel applied
 .ConditionRange .state Body.OnPenis applied
 
 
@@ -29,7 +32,7 @@
 .shouldnot 20           ' something on nipples
 .shouldnot 22           ' something in mouth
 .shouldnot 25           ' ankles tied
-.shouldnot .state Body.CantKneel applied
+.shouldnot .state Posture.CantKneel applied
 .shouldnot 39           ' pussy clamps
 .shouldnot 400          ' prefer a position that hasn't been done before
 .range 9999
@@ -54,7 +57,7 @@
 .should .state Body.OnPenis applied
 .shouldnot 25           ' ankles tied
 .mustnot 26             ' wrists tied
-.shouldnot .state Body.CantKneel applied
+.shouldnot .state Posture.CantKneel applied
 .shouldnot 39           ' pussy clamps
 .shouldnot 402          ' prefer a position that hasn't been done before
 .range 9999
