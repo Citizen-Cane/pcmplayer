@@ -1,5 +1,7 @@
 package pcm.state.conditions;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import pcm.model.AbstractAction;
@@ -11,6 +13,7 @@ import pcm.state.BasicCondition;
 import pcm.state.StateCommandLineParameters;
 import pcm.state.StateCommandLineParameters.Keyword;
 import pcm.state.persistence.ScriptState;
+import teaselib.core.util.ExceptionUtil;
 
 public class ItemCondition extends BasicCondition {
     private static final Statement ITEM = AbstractAction.Statement.Item;
@@ -214,4 +217,11 @@ public class ItemCondition extends BasicCondition {
         return true;
     }
 
+    public List<String> items() {
+        try {
+            return Arrays.asList(args.items(Keyword.Item));
+        } catch (ClassNotFoundException e) {
+            throw ExceptionUtil.asRuntimeException(e);
+        }
+    }
 }
