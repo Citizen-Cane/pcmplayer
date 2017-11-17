@@ -1,0 +1,30 @@
+' pcm test cases
+
+
+.range 9999
+
+
+' testNumActionsSet
+
+[Action 1000]
+.range 1001
+
+
+[Action 1001]
+.unset 1001
+.range 1001 1004
+
+[Action 1002]
+.numactionsfrom 5025 10
+.range 1005
+
+
+[Action 1005]
+.range 9999
+
+
+' proper exit for all test cases
+[action 9999]
+.noimage
+.quit
+
