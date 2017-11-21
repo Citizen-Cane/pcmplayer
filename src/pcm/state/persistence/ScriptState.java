@@ -343,16 +343,14 @@ public class ScriptState {
             times.remove(n);
             rememberActionStep(n);
         } else {
-            // count up from n to UNSET == 0
+            // count up to 0 == UNSET
             repeatDel(n, 1);
             rememberActionStep(n);
         }
     }
 
     private void rememberActionStep(Integer n) {
-        if (!action2StepMap.containsKey(n)) {
-            action2StepMap.put(n, new Integer(step));
-        }
+        action2StepMap.put(n, step);
         step++;
     }
 
@@ -365,11 +363,7 @@ public class ScriptState {
     }
 
     public int getStep(Integer n) {
-        if (!action2StepMap.containsKey(n)) {
-            return 0;
-        } else {
-            return action2StepMap.get(n);
-        }
+        return action2StepMap.containsKey(n) ? action2StepMap.get(n) : Integer.MAX_VALUE;
     }
 
     public int getRandom(int min, int max) {

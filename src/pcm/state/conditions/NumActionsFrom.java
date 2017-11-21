@@ -22,8 +22,7 @@ public class NumActionsFrom implements Condition {
 
     @Override
     public boolean isTrueFor(ScriptState state) {
-        int n = state.getStep(action) + numActionsFrom;
-        return state.getStep() > n;
+        return state.getStep() > state.getStep(action) + numActionsFrom;
     }
 
     @Override
