@@ -273,7 +273,7 @@ public abstract class AbstractAction {
         responses.put(statement, response);
     }
 
-    public ActionRange execute(ScriptState state) throws ScriptExecutionException {
+    public void execute(ScriptState state) throws ScriptExecutionException {
         if (commands != null) {
             for (Command command : commands) {
                 Logger logger = LoggerFactory.getLogger(command.getClass());
@@ -281,7 +281,6 @@ public abstract class AbstractAction {
                 command.execute(state);
             }
         }
-        return null;
     }
 
     /**

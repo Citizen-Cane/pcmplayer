@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.StringTokenizer;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,6 +75,7 @@ public abstract class Player extends TeaseScript {
 
     public Script script = null;
     public ActionRange range = null;
+    public Action action = null;
 
     public boolean validateScripts = false;
     public boolean debugOutput = false;
@@ -407,8 +409,7 @@ public abstract class Player extends TeaseScript {
      */
     public void playRange(ActionRange playRange) throws ScriptExecutionException {
         while (true) {
-            // Choose action
-            Action action = getAction();
+            action = getAction();
 
             if (breakPoints.getBreakPoint(script.name, action.number).suspend()) {
                 range = new ActionRange(action.number);
@@ -498,7 +499,7 @@ public abstract class Player extends TeaseScript {
         return action;
     }
 
-    public ActionRange execute(final Action action) throws ScriptExecutionException {
+    public ActionRange execute(Action action) throws ScriptExecutionException {
         // Mark this action as executed
         state.set(action);
         // Perform commands
