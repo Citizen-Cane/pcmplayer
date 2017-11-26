@@ -12,7 +12,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.StringTokenizer;
-import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -411,7 +410,9 @@ public abstract class Player extends TeaseScript {
         while (true) {
             action = getAction();
 
-            if (breakPoints.getBreakPoint(script.name, action.number).suspend()) {
+            BreakPoint breakPoint = breakPoints.getBreakPoint(script.name, action.number);
+            breakPoint.reached();
+            if (breakPoint.suspend()) {
                 range = new ActionRange(action.number);
                 return;
             }

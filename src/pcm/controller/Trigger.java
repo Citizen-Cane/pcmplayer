@@ -1,25 +1,11 @@
 package pcm.controller;
 
-/**
- * @author Citizen-Cane
- *
- */
-public class Trigger implements BreakPoint {
-    public final String message;
-    public final int action;
-    public final boolean expected;
+public interface Trigger extends BreakPoint {
+    void reached();
 
-    public boolean actual = false;
+    boolean assertExpected() throws AssertionError;
 
-    public Trigger(String assertion, int action, boolean expected) {
-        this.message = assertion;
-        this.action = action;
-        this.expected = expected;
-    }
+    String getMessage();
 
-    @Override
-    public boolean suspend() {
-        actual = true;
-        return false;
-    }
+    int getAction();
 }

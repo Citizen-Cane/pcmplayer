@@ -17,13 +17,13 @@ public class BreakPoints {
 
     public void add(String script, Trigger... triggers) {
         for (Trigger trigger : triggers) {
-            add(script, trigger.action, trigger);
+            add(script, trigger.getAction(), trigger);
         }
     }
 
     public void add(String script, List<Trigger> triggers) {
         for (Trigger trigger : triggers) {
-            add(script, trigger.action, trigger);
+            add(script, trigger.getAction(), trigger);
         }
     }
 
@@ -33,7 +33,7 @@ public class BreakPoints {
     }
 
     public <T extends Trigger> T add(String script, T trigger) {
-        return add(script, trigger.action, trigger);
+        return add(script, trigger.getAction(), trigger);
     }
 
     public <T extends BreakPoint> T add(String script, int action, T breakPoint) {
