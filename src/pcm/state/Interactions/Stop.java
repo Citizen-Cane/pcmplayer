@@ -17,7 +17,6 @@ import pcm.model.ScriptParsingException;
 import pcm.model.ValidationIssue;
 import pcm.state.visuals.Timeout;
 import teaselib.ScriptFunction;
-import teaselib.core.ScriptInterruptedException;
 import teaselib.core.speechrecognition.SpeechRecognition.TimeoutBehavior;
 
 public class Stop extends AbstractInteractionWithRangeProvider {
@@ -58,54 +57,31 @@ public class Stop extends AbstractInteractionWithRangeProvider {
             choices.add(action.getResponseText(key, script));
             ranges.add(choiceRanges.get(key));
         }
-        // If the reply requires confirmation, then it's treated like a normal
-        // reply, and the buttons appear after all visuals have been rendered
-        final boolean normalPrompt = timeoutType != TimeoutType.Terminate;
-        if (normalPrompt) {
-            // Pretend to be a normal button and show after completing mandatory
-            // visuals
-            visuals.run();
-            // Now we don't want to wait for the delay to complete, we want to
-            // display the buttons after the message has been rendered, so let's
-            // special-case some more and ignore the delay renderer
-            player.completeMandatory();
-        }
-        ScriptFunction displayVisualsAndTimeout = new ScriptFunction() {
-            @Override
-            public void run() {
-                final ScriptFunction timeoutFunction;
-                if (normalPrompt) {
-                    // Visuals are rendered in the main loop, and the timeout
-                    // visual doesn't render a delay, allowing us to query and
-                    // wait the timeout duration in the script function
-                    Timeout timeout = (Timeout) action.visuals.get(Statement.Delay);
-                    if (timeoutType == TimeoutType.AutoConfirm) {
-                        timeoutFunction = player.timeoutWithAutoConfirmation(timeout.duration, timeoutBehavior);
-                    } else {
-                        timeoutFunction = player.timeoutWithConfirmation(timeout.duration, timeoutBehavior);
-                    }
-                } else {
-                    visuals.run();
-                    // Complete visuals and full delay
-                    player.completeMandatory();
-                    // At this point we're delayed already, since we've added a
-                    // delay renderer to the visuals of the action when parsing
-                    // the script, so we can just finish the script function
-                    // with the default timeout script function and complete
-                    // speech recognition with the default timeout function
-                    timeoutFunction = player.timeout(0, timeoutBehavior);
-                }
-                try {
-                    timeoutFunction.run();
-                } catch (ScriptInterruptedException e) {
-                    // pass the result to the outer script function
-                    result = timeoutFunction.result;
-                    throw e;
-                }
-            }
+        ScriptFunction timeoutFunction;
 
-        };
-        String result = player.reply(displayVisualsAndTimeout, getConfidence(action).higher(), choices);
+        // If the reply requires confirmation, then it's treated like a normal reply,
+        // and the prompt appears after all visuals have been rendered their mandatory part
+        if (timeoutType != TimeoutType.Terminate) {
+            // Render visuals directly, then display prompt with predefined timeout function
+            visuals.run();
+            Timeout timeout = (Timeout) action.visuals.get(Statement.Delay);
+            if (timeoutType == TimeoutType.AutoConfirm) {
+                timeoutFunction = player.timeoutWithAutoConfirmation(timeout.duration, timeoutBehavior);
+            } else {
+                timeoutFunction = player.timeoutWithConfirmation(timeout.duration, timeoutBehavior);
+            }
+        } else {
+            timeoutFunction = new ScriptFunction() {
+                @Override
+                public void run() {
+                    // Display the prompt together with the script function, all at once
+                    visuals.run();
+                    player.completeMandatory();
+                }
+            };
+        }
+
+        String result = player.reply(timeoutFunction, getConfidence(action).higher(), choices);
         if (result != ScriptFunction.Timeout) {
             int index = choices.indexOf(result);
             logger.info("-> " + result);
