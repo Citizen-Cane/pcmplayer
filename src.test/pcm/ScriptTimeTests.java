@@ -3,7 +3,9 @@
  */
 package pcm;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Date;
@@ -48,6 +50,17 @@ public class ScriptTimeTests {
     }
 
     @Test
+    public void testDurationShortFormat() {
+        assertEquals(0, new DurationFormat("00:0").toSeconds());
+        assertEquals(0, new DurationFormat("0:00").toSeconds());
+        assertEquals(0, new DurationFormat("0:0").toSeconds());
+        assertEquals(60, new DurationFormat("00:1").toSeconds());
+        assertEquals(60, new DurationFormat("00:01").toSeconds());
+        assertEquals(3600 + 60, new DurationFormat("1:01").toSeconds());
+        assertEquals(3600 + 60, new DurationFormat("1:1").toSeconds());
+    }
+
+    @Test
     public void testDuration() throws Exception {
         debugger.freezeTime();
 
@@ -55,6 +68,7 @@ public class ScriptTimeTests {
         Date date = new Date(now);
         assertEquals(now, date.getTime());
         assertEquals(0, new DurationFormat("00:00\"00").toSeconds());
+        assertEquals(0, new DurationFormat("0:0\"0").toSeconds());
         assertEquals(+1, new DurationFormat("+00:00\"01").toSeconds());
         assertEquals(-1, new DurationFormat("-00:00\"01").toSeconds());
         assertEquals(+1 * 30, new DurationFormat("+00:00\"30").toSeconds());
