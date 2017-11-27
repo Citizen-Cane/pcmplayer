@@ -58,6 +58,36 @@ And for your own good, you'll better stay bare naked that hour.
 .range 9999
 
 
+' testTextParts
+
+[Action 1005]
+image.jpg
+Foo,
+bar.
+.range 9999
+
+[Action 1006]
+image.jpg
+Foo
+bar.
+.range 9999
+
+
+
+' testTextPartsWithImage
+
+[Action 1007]
+Foo,
+image.jpg
+bar.
+.range 9999
+
+[Action 1008]
+Foo,
+image.jpg
+bar.
+.range 9999
+
 ' proper exit for all test cases
 [action 9999]
 .noimage

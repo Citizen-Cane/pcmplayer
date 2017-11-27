@@ -3,7 +3,7 @@
  */
 package pcm;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 
@@ -36,8 +36,7 @@ public class MessageTests {
 
     private Message getMessageOfAction(int n) {
         Action action = player.script.actions.get(n);
-        Message message = ((SpokenMessage) action.visuals.get(Statement.Message)).getMessages().get(0);
-        return message;
+        return ((SpokenMessage) action.visuals.get(Statement.Message)).getMessages().get(0);
     }
 
     @Test
@@ -126,5 +125,23 @@ public class MessageTests {
                 message.getParts().get(2).value);
         assertEquals("And for your own good, you'll better stay bare naked that hour.",
                 message.getParts().get(3).value);
+    }
+
+    @Test
+    public void testTextParts() {
+        Message message = getMessageOfAction(1005);
+        assertEquals(3, message.getParts().size());
+
+        Message message2 = getMessageOfAction(1006);
+        assertEquals(2, message2.getParts().size());
+    }
+
+    @Test
+    public void testTextPartsWithImage() {
+        Message message = getMessageOfAction(1007);
+        assertEquals(3, message.getParts().size());
+
+        Message message2 = getMessageOfAction(1008);
+        assertEquals(3, message2.getParts().size());
     }
 }
