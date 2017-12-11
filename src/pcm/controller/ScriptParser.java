@@ -2,10 +2,11 @@ package pcm.controller;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Stack;
 
 import pcm.model.AbstractAction.Statement;
 import pcm.model.Action;
@@ -26,7 +27,7 @@ public class ScriptParser {
     private static final String DEFINE_ENDIF = "#endif";
 
     private final Symbols staticSymbols;
-    private final Stack<String[]> preprocessorScope = new Stack<>();
+    private final Deque<String[]> preprocessorScope = new ArrayDeque<>();
     private final BufferedReader reader;
 
     private final Map<String, String> defines = new LinkedHashMap<>();

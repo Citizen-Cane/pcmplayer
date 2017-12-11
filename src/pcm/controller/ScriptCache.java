@@ -5,11 +5,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.ref.SoftReference;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,13 +31,13 @@ public class ScriptCache {
     private final ResourceLoader resourceLoader;
     private final String path;
 
-    public final Stack<ActionRange> stack;
+    public final Deque<ActionRange> stack;
 
     public ScriptCache(ResourceLoader resourceLoader, String path, Symbols staticSymbols) {
         this.resourceLoader = resourceLoader;
         this.staticSymbols = staticSymbols;
         this.path = path;
-        stack = new Stack<>();
+        stack = new ArrayDeque<>();
     }
 
     public Script get(Actor actor, String name) throws ScriptParsingException, ValidationIssue, IOException {

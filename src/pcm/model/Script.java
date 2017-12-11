@@ -4,10 +4,10 @@ import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +42,7 @@ public class Script extends AbstractAction {
     public String mistressImages = null;
 
     private final ScriptCache scriptCache;
-    public final Stack<ActionRange> stack;
+    public final Deque<ActionRange> stack;
 
     /**
      * The condition range used when the script doesn't define its own list of condition ranges.
