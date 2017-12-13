@@ -1,6 +1,7 @@
 package pcm.model;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -266,7 +267,7 @@ public abstract class AbstractAction {
 
     void addResponse(Statement statement, String response) {
         if (responses == null) {
-            responses = new HashMap<>();
+            responses = new EnumMap<>(Statement.class);
         } else if (responses.containsKey(statement)) {
             throw new IllegalArgumentException("Duplicate default prompt: " + statement.toString());
         }

@@ -65,7 +65,7 @@ public class ScriptLineTokenizer {
             s.append(" ");
             s.append(args[i]);
         }
-        return s.toString();
+        return s.toString().trim();
     }
 
     /**
@@ -76,7 +76,7 @@ public class ScriptLineTokenizer {
     public String allAsText() {
         int s = statement.toString().length();
         if (line.length() > s + 1) {
-            return line.substring(s + 2);
+            return line.substring(s + 2).trim();
         } else {
             return "";
         }
@@ -95,7 +95,7 @@ public class ScriptLineTokenizer {
             String arg = args[i];
             index = line.indexOf(arg, index) + arg.length() + 1;
         }
-        return line.substring(index);
+        return line.substring(index).trim();
     }
 
     /**
