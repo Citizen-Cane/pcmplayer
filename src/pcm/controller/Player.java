@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.StringTokenizer;
+import java.util.concurrent.ExecutionException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,7 +101,7 @@ public abstract class Player extends TeaseScript {
     public static final ActionRange ReturnToPlayer = new ActionRange(0);
 
     public static void recordVoices(Actor actor, String mainScript, File path, String resourcesRoot, String[] assets)
-            throws IOException, ValidationIssue, ScriptParsingException, InterruptedException {
+            throws IOException, ValidationIssue, ScriptParsingException, InterruptedException, ExecutionException {
         ResourceLoader resources = new ResourceLoader(path, resourcesRoot);
         resources.addAssets(assets);
         TextToSpeechRecorder recorder = new TextToSpeechRecorder(path, resourcesRoot, resources, new TextVariables());
