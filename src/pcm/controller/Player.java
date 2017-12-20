@@ -116,11 +116,11 @@ public abstract class Player extends TeaseScript {
             // and validate to load all the sub scripts
             // TODO load scripts explicitly
             validateScript(main, new ArrayList<ValidationIssue>());
-            recorder.preparePass(entry);
+            recorder.preparePass(entry.getKey(), entry.getValue());
             for (String scriptName : scripts.names()) {
                 Script script = scripts.get(actor, scriptName);
                 ScriptScanner scriptScanner = new PCMScriptScanner(script);
-                recorder.create(scriptScanner);
+                recorder.run(scriptScanner);
             }
         }
         recorder.finish();
