@@ -1,8 +1,6 @@
 package pcm;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -197,6 +195,48 @@ public class StateTest {
         TestUtils.play(player, 1071);
         player.state(Toys.Nipple_Clamps).remove();
         TestUtils.play(player, 1075);
+    }
+
+    @Test
+    public void testAppliedTo() throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
+        Player player = TestUtils.createPlayer(getClass());
+        player.loadScript(getClass().getSimpleName());
+
+        Debugger debugger = new Debugger(player.teaseLib);
+        debugger.freezeTime();
+
+        TestUtils.play(player, 1090);
+    }
+
+    @Test
+    public void testIfStateConditionOrMultipleItems()
+            throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
+        Player player = TestUtils.createPlayer(getClass());
+        player.loadScript(getClass().getSimpleName());
+
+        Debugger debugger = new Debugger(player.teaseLib);
+        debugger.freezeTime();
+
+        player.state(Toys.Nipple_Clamps).remove();
+        player.state(Toys.Gag).apply();
+        TestUtils.play(player, 1101);
+        TestUtils.play(player, 1102);
+
+        player.state(Toys.Nipple_Clamps).apply();
+        player.state(Toys.Gag).remove();
+        TestUtils.play(player, 1101);
+        TestUtils.play(player, 1102);
+
+        player.state(Toys.Nipple_Clamps).apply();
+        player.state(Toys.Gag).apply();
+        TestUtils.play(player, 1100);
+        TestUtils.play(player, 1101);
+        TestUtils.play(player, 1102);
+
+        player.state(Toys.Nipple_Clamps).remove();
+        player.state(Toys.Gag).remove();
+        TestUtils.play(player, 1103);
+
     }
 
     // TODO Remove multiple peers from object

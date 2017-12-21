@@ -3,6 +3,9 @@
 .define Toys teaselib.Toys
 .declare Toys Enum
 
+.define Body teaselib.Body
+.declare Body Enum
+
 .declare Applied.by String
 .declare Test_Namespace String
 
@@ -185,6 +188,68 @@
 [Action 1075]
 .state Toys.Nipple_Clamps expired and free
 .unset 1075
+.range 9999
+
+
+' testCanApplyTo doens't apply to state
+
+
+' testAppliedTo
+
+[Action 1090]
+.state Toys.Nipple_Clamps not applied
+.state Toys.Nipple_Clamps not applied to Body.OnBalls
+.range 1091
+
+[Action 1091]
+.state Toys.Nipple_Clamps apply 
+.range 1092
+
+[Action 1092]
+.state Toys.Nipple_Clamps applied
+.state Toys.Nipple_Clamps not applied to Body.OnBalls
+' TODO fails
+.state Body.OnBalls not applied
+.state Body.OnBalls not applied to Toys.Nipple_Clamps
+'
+.state Toys.Nipple_Clamps apply to Body.OnBalls 
+.range 1093
+
+[Action 1093]
+.state Toys.Nipple_Clamps applied
+.state Toys.Nipple_Clamps applied to Body.OnBalls
+.range 1094
+
+[Action 1094]
+.state Toys.Nipple_Clamps remove
+.range 1095
+
+[Action 1095]
+.state Toys.Nipple_Clamps not applied
+.range 9999
+
+
+' testIfStateConditionOrMultipleItems
+
+[Action 1100]
+.state Toys.Nipple_Clamps applied AND Toys.Gag applied
+.unset 1100
+.range 9999
+
+[Action 1101]
+.state Toys.Nipple_Clamps applied OR Toys.Gag applied
+.unset 1101
+.range 9999
+
+[Action 1102]
+.state Toys.Gag applied OR Toys.Nipple_Clamps applied
+.unset 1102
+.range 9999
+
+[Action 1103]
+.state Toys.Nipple_Clamps not applied
+.state Toys.Gag not applied
+.unset 1103
 .range 9999
 
 
