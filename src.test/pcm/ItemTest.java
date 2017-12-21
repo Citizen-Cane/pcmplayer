@@ -123,7 +123,7 @@ public class ItemTest {
     }
 
     @Test
-    public void testIfStateConditionOr()
+    public void testIfItemConditionOr()
             throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
         Player player = TestUtils.createPlayer(getClass());
         player.loadScript(getClass().getSimpleName());
@@ -180,4 +180,34 @@ public class ItemTest {
         TestUtils.play(player, 1090);
     }
 
+    @Test
+    public void testIfItemConditionOrMultipleItems()
+            throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
+        Player player = TestUtils.createPlayer(getClass());
+        player.loadScript(getClass().getSimpleName());
+
+        Debugger debugger = new Debugger(player.teaseLib);
+        debugger.freezeTime();
+
+        player.item(Toys.Nipple_Clamps).remove();
+        player.item(Toys.Gag).apply();
+        TestUtils.play(player, 1101);
+        TestUtils.play(player, 1102);
+
+        player.item(Toys.Nipple_Clamps).apply();
+        player.item(Toys.Gag).remove();
+        TestUtils.play(player, 1101);
+        TestUtils.play(player, 1102);
+
+        player.item(Toys.Nipple_Clamps).apply();
+        player.item(Toys.Gag).apply();
+        TestUtils.play(player, 1100);
+        TestUtils.play(player, 1101);
+        TestUtils.play(player, 1102);
+
+        player.item(Toys.Nipple_Clamps).remove();
+        player.item(Toys.Gag).remove();
+        TestUtils.play(player, 1103);
+
+    }
 }

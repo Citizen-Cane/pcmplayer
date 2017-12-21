@@ -156,7 +156,7 @@
 .range 9999
 
 
-' testIfStateConditionOr
+' testIfItemConditionOr
 
 [Action 1060]
 .item Toys.Nipple_Clamps free or remaining LessOrEqualThan 00:30"00 OR remaining GreaterOrEqualThan 00:30"00
@@ -185,15 +185,15 @@
 ' testIfStateConditionAnd
 
 [Action 1070]
-.state Toys.Nipple_Clamps applied AND expired AND is Body.OnNipples
+.item Toys.Nipple_Clamps applied AND expired AND is Body.OnNipples
 .range 9999
 
 [Action 1071]
-.state Toys.Nipple_Clamps applied AnD remaining LessOrEqualThan 00:30"00 aNd remaining GreaterOrEqualThan 00:30"00 AND is Body.OnNipples
+.item Toys.Nipple_Clamps applied AnD remaining LessOrEqualThan 00:30"00 aNd remaining GreaterOrEqualThan 00:30"00 AND is Body.OnNipples
 .range 9999
 
 [Action 1075]
-.state Toys.Nipple_Clamps expired and free
+.item Toys.Nipple_Clamps expired and free
 .unset 1075
 .range 9999
 
@@ -239,7 +239,7 @@
 
 
 
-' testCanApplyTo
+' testAppliedTo
 
 [Action 1090]
 .item Toys.Nipple_Clamps not applied
@@ -267,6 +267,30 @@
 
 [Action 1095]
 .item Toys.Nipple_Clamps not applied
+.range 9999
+
+
+' testIfItemConditionOrMultipleItems
+
+[Action 1100]
+.item Toys.Nipple_Clamps applied AND Toys.Gag applied
+.unset 1100
+.range 9999
+
+[Action 1101]
+.item Toys.Nipple_Clamps applied OR Toys.Gag applied
+.unset 1101
+.range 9999
+
+[Action 1102]
+.item Toys.Gag applied OR Toys.Nipple_Clamps applied
+.unset 1102
+.range 9999
+
+[Action 1103]
+.item Toys.Nipple_Clamps not applied
+.item Toys.Gag not applied
+.unset 1103
 .range 9999
 
 

@@ -12,7 +12,7 @@ public class BasicCondition implements Condition {
         private final Statement statement;
         private final CommandLineParameters<?> args;
 
-        public <T extends Enum<?>> ParameterizedStatement(Statement statement, CommandLineParameters<T> args) {
+        public <T extends Enum<T>> ParameterizedStatement(Statement statement, CommandLineParameters<T> args) {
             this.statement = statement;
             this.args = args;
         }

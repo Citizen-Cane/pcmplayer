@@ -64,13 +64,23 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
         return false;
     }
 
+    public StateCommandLineParameters(CommandLineParameters<Keyword> args, Declarations declarations) {
+        super(args, Keyword.class);
+        this.declarations = declarations;
+        validateArgs();
+    }
+
     public StateCommandLineParameters(String[] args, Declarations declarations) {
         this(Arrays.asList(args), declarations);
     }
 
     public StateCommandLineParameters(List<String> args, Declarations declarations) {
-        super(normalizedArgs(args), Keyword.values());
+        super(normalizedArgs(args), Keyword.values(), Keyword.class);
         this.declarations = declarations;
+        validateArgs();
+    }
+
+    private void validateArgs() {
         try {
             if (items(Keyword.Item).length == 0) {
                 throw new IllegalArgumentException("Items must be specified first");
@@ -80,10 +90,9 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
         } catch (ClassNotFoundException e) {
             throw new IllegalArgumentException("Not an enum", e);
         }
-
     }
 
-    static List<String> normalizedArgs(List<String> args) {
+    public static List<String> normalizedArgs(List<String> args) {
         List<String> normalizedArgs = new ArrayList<>(args.size());
 
         for (int i = 0; i < args.size(); i++) {
@@ -209,48 +218,21 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
     }
 
     public interface Operator {
-        boolean isTrueFor(long arg0, long arg1);
+        boolean isTrueFor(long n, long m);
     }
 
     public Operator getOperator(Keyword keyword) {
         if (keyword == Keyword.GreaterThan) {
-            return new Operator() {
-                @Override
-                public boolean isTrueFor(long arg0, long arg1) {
-                    return arg0 > arg1;
-                }
-            };
+            return (n, m) -> n > m;
         } else if (keyword == Keyword.GreaterOrEqualThan) {
-            return new Operator() {
-                @Override
-                public boolean isTrueFor(long arg0, long arg1) {
-                    return arg0 >= arg1;
-                }
-            };
+            return (n, m) -> n >= m;
         } else if (keyword == Keyword.LessOrEqualThan) {
-            return new Operator() {
-                @Override
-                public boolean isTrueFor(long arg0, long arg1) {
-                    return arg0 <= arg1;
-                }
-            };
+            return (n, m) -> n <= m;
         } else if (keyword == Keyword.LessThan) {
-            return new Operator() {
-                @Override
-                public boolean isTrueFor(long arg0, long arg1) {
-                    return arg0 < arg1;
-                }
-            };
+            return (n, m) -> n < m;
         } else if (keyword == Keyword.Equals) {
-            return new Operator() {
-                @Override
-                public boolean isTrueFor(long arg0, long arg1) {
-                    return arg0 == arg1;
-                }
-            };
-        } else
-
-        {
+            return (n, m) -> n == m;
+        } else {
             throw new IllegalArgumentException("Operator " + keyword.toString() + " not supported");
         }
     }

@@ -14,6 +14,7 @@ import pcm.state.Condition;
 import pcm.state.StateCommandLineParameters;
 import pcm.state.StateCommandLineParameters.Keyword;
 import pcm.state.persistence.ScriptState;
+import teaselib.core.util.CommandLineParameters;
 
 public class IfState extends BasicCondition {
     private static final String AND = "AND";
@@ -50,7 +51,7 @@ public class IfState extends BasicCondition {
 
         while (i < args.length) {
             List<String> conditionArgs = new ArrayList<>();
-            conditionArgs.addAll(Arrays.asList(firstParameters.values(Keyword.Item)));
+
             while (i < args.length && !isOperator(args[i])) {
                 conditionArgs.add(args[i++]);
             }
@@ -62,8 +63,15 @@ public class IfState extends BasicCondition {
 
             i++;
 
-            StateCommandLineParameters conditionParameters = new StateCommandLineParameters(conditionArgs,
-                    declarations);
+            CommandLineParameters<Keyword> condition = new CommandLineParameters<>(
+                    StateCommandLineParameters.normalizedArgs(conditionArgs),
+                    StateCommandLineParameters.Keyword.values(), Keyword.class);
+            if (condition.getItems().isEmpty()) {
+                condition.put(StateCommandLineParameters.Keyword.Item,
+                        Arrays.asList(firstParameters.values(Keyword.Item)));
+            }
+
+            StateCommandLineParameters conditionParameters = new StateCommandLineParameters(condition, declarations);
             conditions.add(conditionCreator.createCondition(conditionParameters));
         }
         if (alwaysTheSameOperator.equalsIgnoreCase(AND)) {
