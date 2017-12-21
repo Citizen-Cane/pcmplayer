@@ -100,11 +100,11 @@ public abstract class Player extends TeaseScript {
      */
     public static final ActionRange ReturnToPlayer = new ActionRange(0);
 
-    public static void recordVoices(Actor actor, String mainScript, File path, String resourcesRoot, String[] assets)
+    public static void recordVoices(Actor actor, String mainScript, File path, String projectName, String[] assets)
             throws IOException, ValidationIssue, ScriptParsingException, InterruptedException, ExecutionException {
-        ResourceLoader resources = new ResourceLoader(path, resourcesRoot);
+        ResourceLoader resources = new ResourceLoader(path, projectName);
         resources.addAssets(assets);
-        TextToSpeechRecorder recorder = new TextToSpeechRecorder(path, resourcesRoot, resources, new TextVariables());
+        TextToSpeechRecorder recorder = new TextToSpeechRecorder(path, projectName, resources, new TextVariables());
         Symbols dominantSubmissiveRelations = Symbols.getDominantSubmissiveRelations();
         for (Entry<String, String> entry : dominantSubmissiveRelations.entrySet()) {
             Symbols dominantSubmissiveRelation = new Symbols();
