@@ -57,13 +57,21 @@ public class StateCondition extends BasicCondition {
                 }
             };
         } else if (args.containsKey(StateCommandLineParameters.Keyword.Applied)) {
+            String[] peers = args.items(Keyword.To);
             return new ParameterizedStatement(STATE, args) {
-
                 @Override
                 public boolean call(ScriptState state) {
                     for (String item : items) {
-                        if (!state.player.state(item).applied()) {
-                            return false;
+                        if (peers.length == 0) {
+                            if (!state.player.state(item).applied()) {
+                                return false;
+                            }
+                        } else {
+                            for (String peer : peers) {
+                                if (!state.player.state(item).is(peer)) {
+                                    return false;
+                                }
+                            }
                         }
                     }
                     return true;
