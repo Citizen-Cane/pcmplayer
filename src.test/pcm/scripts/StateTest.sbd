@@ -208,10 +208,6 @@
 [Action 1092]
 .state Toys.Nipple_Clamps applied
 .state Toys.Nipple_Clamps not applied to Body.OnBalls
-' TODO fails
-.state Body.OnBalls not applied
-.state Body.OnBalls not applied to Toys.Nipple_Clamps
-'
 .state Toys.Nipple_Clamps apply to Body.OnBalls 
 .range 1093
 
