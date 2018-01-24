@@ -53,6 +53,8 @@ import teaselib.core.speechrecognition.SpeechRecognitionResult.Confidence;
 import teaselib.core.texttospeech.ScriptScanner;
 import teaselib.core.texttospeech.TextToSpeechRecorder;
 import teaselib.core.texttospeech.Voice;
+import teaselib.core.ui.Choice;
+import teaselib.core.ui.Choices;
 import teaselib.util.RandomImages;
 import teaselib.util.SpeechRecognitionRejectedScript;
 import teaselib.util.TextVariables;
@@ -321,10 +323,10 @@ public abstract class Player extends TeaseScript {
         state.setScript(script);
     }
 
-    private void validateProject() throws ScriptParsingException, ValidationIssue, IOException {
+    public void validateProject() throws ScriptParsingException, ValidationIssue, IOException {
         List<ValidationIssue> validationErrors = new ArrayList<>();
         validateAspects(script, state, resources, validationErrors);
-        // TODO Loaded scripts explicitly - currently they're loaded by loading the main script
+        // TODO Load scripts explicitly - currently they're loaded by loading the main script
         for (String s : scripts.names()) {
             Script subScript = scripts.get(actor, s);
             if (subScript != script) {
@@ -654,32 +656,31 @@ public abstract class Player extends TeaseScript {
     }
 
     @Override
-    protected String showChoices(ScriptFunction scriptFunction, Confidence recognitionConfidence,
-            List<String> choices) {
+    protected String showChoices(Choices choices, ScriptFunction scriptFunction, Confidence recognitionConfidence) {
         // Display text according to slave's level of articulateness
         if (item(Toys.Gag).applied()) {
-            // Slave is gagged
-            final List<String> processedChoices = new ArrayList<>(choices.size());
-            for (String choice : choices) {
+            Choices processedChoices = new Choices(choices.size());
+            for (Choice choice : choices) {
                 // The simple solution: replace vocals with consonants
-                choice = choice.replace("a", "m");
-                choice = choice.replace("e", "m");
-                choice = choice.replace("i", "m");
-                choice = choice.replace("o", "m");
-                choice = choice.replace("u", "m");
-                processedChoices.add(choice);
+                String display = choice.display.replace("a", "m");
+                display = display.replace("e", "m");
+                display = display.replace("i", "m");
+                display = display.replace("o", "m");
+                display = display.replace("u", "m");
+                processedChoices.add(new Choice(choice.gesture, choice.text, display));
             }
-            final String processedChoice = super.showChoices(scriptFunction, recognitionConfidence, processedChoices);
+
+            String processedChoice = super.showChoices(processedChoices, scriptFunction, recognitionConfidence);
             // Return the original choice instance
             int index = processedChoices.indexOf(processedChoice);
             if (index < 0) {
                 // Timeout
                 return processedChoice;
             } else {
-                return choices.get(index);
+                return choices.get(index).text;
             }
         } else {
-            return super.showChoices(scriptFunction, recognitionConfidence, choices);
+            return super.showChoices(choices, scriptFunction, recognitionConfidence);
         }
     }
 
