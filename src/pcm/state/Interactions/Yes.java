@@ -1,6 +1,5 @@
 package pcm.state.Interactions;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -22,9 +21,9 @@ public class Yes extends AbstractInteractionWithRangeProvider {
     @Override
     public ActionRange getRange(Player player, Script script, Action action, Runnable visuals)
             throws ScriptExecutionException {
-        String resume = action.getResponseText(Statement.ResumeText, script);
-        logger.info("Pause: " + resume);
-        player.reply(Arrays.asList(Answer.yes(resume)), null, getConfidence(action));
+        String yes = action.getResponseText(Statement.YesText, script);
+        logger.info("Pause: " + yes);
+        player.reply(getConfidence(action), Answer.yes(yes));
         return rangeProvider.getRange(player, script, action, NoVisuals);
     }
 
@@ -32,7 +31,7 @@ public class Yes extends AbstractInteractionWithRangeProvider {
     public void validate(Script script, Action action, List<ValidationIssue> validationErrors)
             throws ScriptParsingException {
         try {
-            action.getResponseText(Statement.ResumeText, script);
+            action.getResponseText(Statement.YesText, script);
         } catch (ScriptExecutionException e) {
             validationErrors.add(new ValidationIssue(action, e, script));
         }
