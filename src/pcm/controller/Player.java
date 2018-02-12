@@ -38,23 +38,18 @@ import teaselib.Actor;
 import teaselib.Config;
 import teaselib.Images;
 import teaselib.Message;
-import teaselib.ScriptFunction;
 import teaselib.Sexuality.Gender;
 import teaselib.Sexuality.Sex;
 import teaselib.TeaseScript;
-import teaselib.Toys;
 import teaselib.core.ResourceList;
 import teaselib.core.ResourceLoader;
 import teaselib.core.ScriptInterruptedException;
 import teaselib.core.TeaseLib;
 import teaselib.core.devices.release.Actuator;
 import teaselib.core.media.MediaRenderer;
-import teaselib.core.speechrecognition.SpeechRecognitionResult.Confidence;
 import teaselib.core.texttospeech.ScriptScanner;
 import teaselib.core.texttospeech.TextToSpeechRecorder;
 import teaselib.core.texttospeech.Voice;
-import teaselib.core.ui.Choice;
-import teaselib.core.ui.Choices;
 import teaselib.util.RandomImages;
 import teaselib.util.SpeechRecognitionRejectedScript;
 import teaselib.util.TextVariables;
@@ -653,35 +648,6 @@ public abstract class Player extends TeaseScript {
 
     public void render(MediaRenderer mediaRenderer) {
         queueRenderer(mediaRenderer);
-    }
-
-    @Override
-    protected String showChoices(Choices choices, ScriptFunction scriptFunction, Confidence recognitionConfidence) {
-        // Display text according to slave's level of articulateness
-        if (item(Toys.Gag).applied()) {
-            Choices processedChoices = new Choices(choices.size());
-            for (Choice choice : choices) {
-                // The simple solution: replace vocals with consonants
-                String display = choice.display.replace("a", "m");
-                display = display.replace("e", "m");
-                display = display.replace("i", "m");
-                display = display.replace("o", "m");
-                display = display.replace("u", "m");
-                processedChoices.add(new Choice(choice.gesture, choice.text, display));
-            }
-
-            String processedChoice = super.showChoices(processedChoices, scriptFunction, recognitionConfidence);
-            // Return the original choice instance
-            int index = processedChoices.indexOf(processedChoice);
-            if (index < 0) {
-                // Timeout
-                return processedChoice;
-            } else {
-                return choices.get(index).text;
-            }
-        } else {
-            return super.showChoices(choices, scriptFunction, recognitionConfidence);
-        }
     }
 
     public static void validateScript(Script script, List<ValidationIssue> validationErrors)
