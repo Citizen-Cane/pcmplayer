@@ -18,6 +18,7 @@ import pcm.state.Interactions.Ask;
 import pcm.state.Interactions.Break;
 import pcm.state.Interactions.GoSub;
 import pcm.state.Interactions.LoadSbd;
+import pcm.state.Interactions.No;
 import pcm.state.Interactions.Pause;
 import pcm.state.Interactions.PopUp;
 import pcm.state.Interactions.Quit;
@@ -25,6 +26,7 @@ import pcm.state.Interactions.Range;
 import pcm.state.Interactions.Return;
 import pcm.state.Interactions.Stop;
 import pcm.state.Interactions.Stop.TimeoutType;
+import pcm.state.Interactions.Yes;
 import pcm.state.Interactions.YesNo;
 import pcm.state.commands.ItemCommand;
 import pcm.state.commands.Repeat;
@@ -457,6 +459,18 @@ public class Action extends AbstractAction {
                 addResponse(Statement.ResumeText, resumeText);
             }
             setInteraction(new Pause());
+        } else if (name == Statement.Yes) {
+            String yesText = cmd.allAsText();
+            if (!yesText.isEmpty()) {
+                addResponse(Statement.YesText, yesText);
+            }
+            setInteraction(new Yes());
+        } else if (name == Statement.No) {
+            String noText = cmd.allAsText();
+            if (!noText.isEmpty()) {
+                addResponse(Statement.NoText, noText);
+            }
+            setInteraction(new No());
         } else if (name == Statement.YesNo) {
             String args[] = cmd.args();
             setInteraction(new YesNo(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]),

@@ -234,9 +234,13 @@ public abstract class AbstractAction {
         Not,
 
         /**
-         * Declare a name space to prevent spelling mistakes of qualified items
+         * Declare a name space for qualified items
          */
         Declare,
+
+        Yes,
+
+        No,
 
         ;
 
