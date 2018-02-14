@@ -111,7 +111,7 @@ public class Break extends AbstractInteractionWithRangeProvider {
             for (Statement key : choiceRanges.keySet()) {
                 action.getResponseText(key, script);
             }
-        } catch (ScriptExecutionException e) {
+        } catch (Exception e) {
             validationErrors.add(new ValidationIssue(action, e, script));
         }
         script.actions.validate(script, action, breakRange, validationErrors);

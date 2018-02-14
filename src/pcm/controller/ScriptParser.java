@@ -15,6 +15,7 @@ import pcm.model.ScriptLineTokenizer;
 import pcm.model.ScriptParsingException;
 import pcm.model.Symbols;
 import pcm.model.ValidationIssue;
+import pcm.state.Interactions.AbstractPause;
 import pcm.state.visuals.SpokenMessage;
 import pcm.state.visuals.Txt;
 
@@ -50,7 +51,7 @@ public class ScriptParser {
                 return;
             } else if (line.startsWith(".")) {
                 try {
-                    ScriptLineTokenizer cmd = new ScriptLineTokenizer(l, applyDefines(line), declarations);
+                    ScriptLineTokenizer cmd = new ScriptLineTokenizer(l, applyDefines(line), script, declarations);
                     if (cmd.statement == Statement.Define) {
                         defines.put(cmd.args()[0], cmd.argsFrom(1));
                     } else if (cmd.statement == Statement.Declare) {
@@ -83,12 +84,8 @@ public class ScriptParser {
         } else {
             Action action = null;
             try {
-                // Start new action
-                if (n > 0) {
-                    n = 0;
-                }
                 int start = ACTIONMATCH.length();
-                int end = line.indexOf("]");
+                int end = line.indexOf(']');
                 if (end < start) {
                     throw new ScriptParsingException(l, 0, line, "Invalid action number", script);
                 }
@@ -104,85 +101,105 @@ public class ScriptParser {
                         // Start of a new action
                         if (line.toLowerCase().startsWith(ACTIONMATCH)) {
                             break;
-                        }
-                        // another message
-                        else if (line.startsWith("[]")) {
-                            if (message != null) {
-                                message.completeSection();
-                                message.startNewSection();
-                            }
-                        }
-                        // inline reply
-                        else if (line.startsWith("[") && line.endsWith("]")) {
-                            if (message != null) {
-                                message.completeSection(line.substring(1, line.length() - 1));
-                                message.startNewSection();
-                            }
-                        }
-                        // Other statements
-                        else if (line.startsWith(".")) {
-                            // .txt messages must be executed last,
-                            // so this has to be added last
-                            ScriptLineTokenizer cmd = new ScriptLineTokenizer(l, applyDefines(line), declarations);
-                            if (cmd.statement == Statement.Txt) {
-                                String text = line.substring(Statement.Txt.toString().length() + 1);
-                                // Trim one leading space
-                                if (!text.isEmpty()) {
-                                    text = text.substring(1);
-                                }
-                                if (txt == null) {
-                                    txt = new Txt(script.actor);
-                                }
-                                txt.add(text);
-                            } else {
-                                try {
-                                    action.add(cmd);
-                                } catch (ScriptParsingException e) {
-                                    if (e.getCause() != null) {
-                                        throw new ScriptParsingException(l, n, line, e.getCause(), script);
-                                    } else {
-                                        throw new ScriptParsingException(l, n, line, e.getMessage(), script);
-                                    }
-                                }
-                            }
-                        }
-                        // spoken Message
-                        else {
-                            if (message == null) {
-                                message = new SpokenMessage(script.actor);
-                            }
-                            message.add(line);
+                        } else if (line.startsWith("[]")) {
+                            completeMessageSectionAndStartNew(script, action, message);
+                        } else if (line.startsWith("[") && line.endsWith("]")) {
+                            handleDeprecatedInlineReply();
+                        } else if (line.startsWith(".")) {
+                            txt = handleOtherStatements(script, action, txt);
+                        } else {
+                            message = handleMessageBuilding(script, message);
                         }
                     }
-                    // Add message to visuals as the last item, because
-                    // rendering the message triggers rendering of all other
-                    // visuals
-                    if (message != null) {
-                        message.completeMessage();
-                        action.addVisual(Statement.Message, message);
-                    }
-                    if (txt != null) {
-                        txt.end();
-                        action.addVisual(Statement.Txt, txt);
-                    }
-                    action.finalizeParsing(script);
+                    finalizeActionParsing(script, action, message, txt);
                 }
-            } catch (ScriptParsingException e) {
+            } catch (ScriptParsingException | ValidationIssue e) {
                 if (e.script == null) {
                     e.script = script;
                 }
                 throw e;
-            } catch (ValidationIssue e) {
-                if (e.script == null) {
-                    e.script = script;
-                }
-                throw e;
-            } catch (Throwable t) {
-                // TODO Collect these in list
-                throw new ScriptParsingException(l, n, line, t, script);
+            } catch (Exception e) {
+                throw new ScriptParsingException(l, n, line, e, script);
             }
             return action;
         }
+    }
+
+    private void completeMessageSectionAndStartNew(Script script, Action action, SpokenMessage message)
+            throws ScriptParsingException {
+        if (message != null) {
+            if (action.interaction instanceof AbstractPause) {
+                AbstractPause pause = (AbstractPause) action.interaction;
+                message.completeSection(pause.answer);
+                action.interaction = null;
+            } else if (action.interaction == null) {
+                message.completeSection();
+            } else {
+                throw new ScriptParsingException(l, n, line, "Interaction "
+                        + action.interaction.getClass().getSimpleName() + " not supported for in-action prompts",
+                        script);
+            }
+            message.startNewSection();
+        } else {
+            throw new ScriptParsingException(l, n, line, "No message before answer", script);
+        }
+    }
+
+    private void handleDeprecatedInlineReply() {
+        throw new IllegalArgumentException(line + " -> "
+                + "Brackets may only contain action identifiers, or be empty to continue action messages: ");
+    }
+
+    private Txt handleOtherStatements(Script script, Action action, Txt txt) throws ScriptParsingException {
+        // .txt messages must be executed last,
+        // so this has to be added last
+        ScriptLineTokenizer cmd = new ScriptLineTokenizer(l, applyDefines(line), script, declarations);
+        if (cmd.statement == Statement.Txt) {
+            String text = line.substring(Statement.Txt.toString().length() + 1);
+            // Trim one leading space
+            if (!text.isEmpty()) {
+                text = text.substring(1);
+            }
+            if (txt == null) {
+                txt = new Txt(script.actor);
+            }
+            txt.add(text);
+        } else {
+            try {
+                action.add(cmd);
+            } catch (ScriptParsingException e) {
+                if (e.getCause() != null) {
+                    throw new ScriptParsingException(l, n, line, e.getCause(), script);
+                } else {
+                    throw new ScriptParsingException(l, n, line, e.getMessage(), script);
+                }
+            }
+        }
+        return txt;
+    }
+
+    private SpokenMessage handleMessageBuilding(Script script, SpokenMessage message) {
+        if (message == null) {
+            message = new SpokenMessage(script.actor);
+        }
+        message.add(line);
+        return message;
+    }
+
+    private void finalizeActionParsing(Script script, Action action, SpokenMessage message, Txt txt)
+            throws ValidationIssue {
+        // Add message to visuals as the last item, because
+        // rendering the message triggers rendering of all other
+        // visuals
+        if (message != null) {
+            message.completeMessage();
+            action.addVisual(Statement.Message, message);
+        }
+        if (txt != null) {
+            txt.end();
+            action.addVisual(Statement.Txt, txt);
+        }
+        action.finalizeParsing(script);
     }
 
     private String readLine() throws IOException {

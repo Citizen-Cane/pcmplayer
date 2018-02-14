@@ -268,7 +268,8 @@ public class Action extends AbstractAction {
         } else if (name == Statement.Should) {
             String arg0 = cmd.args()[0];
             if (AbstractAction.Statement.Lookup.containsKey(cmd.args()[0].substring(1))) {
-                Condition condition = createConditionFrom(cmd.lineNumber, cmd.argsFrom(0), cmd.declarations);
+                Condition condition = createConditionFrom(cmd.lineNumber, cmd.argsFrom(0), cmd.script,
+                        cmd.declarations);
                 Condition should = new Should(condition);
                 addCondition(should);
             } else if (isNumeric(arg0)) {
@@ -282,7 +283,8 @@ public class Action extends AbstractAction {
         } else if (name == Statement.ShouldNot) {
             String arg0 = cmd.args()[0];
             if (AbstractAction.Statement.Lookup.containsKey(cmd.args()[0].substring(1))) {
-                Condition condition = createConditionFrom(cmd.lineNumber, cmd.argsFrom(0), cmd.declarations);
+                Condition condition = createConditionFrom(cmd.lineNumber, cmd.argsFrom(0), cmd.script,
+                        cmd.declarations);
                 Condition not = new Not(condition);
                 Condition should = new Should(not);
                 addCondition(should);
@@ -341,7 +343,7 @@ public class Action extends AbstractAction {
             }
             addCondition(numActionsAvailable);
         } else if (name == Statement.Not) {
-            Condition conditional = createConditionFrom(cmd.lineNumber, cmd.argsFrom(0), cmd.declarations);
+            Condition conditional = createConditionFrom(cmd.lineNumber, cmd.argsFrom(0), cmd.script, cmd.declarations);
             Condition not = new Not(conditional);
             addCondition(not);
         } else if (name == Statement.Repeat) {
@@ -399,13 +401,13 @@ public class Action extends AbstractAction {
         } else if (name == Statement.IfSet) {
             String args[] = cmd.args();
             int n = new Integer(args[0]);
-            Command conditional = createCommandFrom(cmd.lineNumber, cmd.argsFrom(1), cmd.declarations);
+            Command conditional = createCommandFrom(cmd.lineNumber, cmd.argsFrom(1), cmd.script, cmd.declarations);
             Command ifSet = new IfSet(n, conditional);
             addCommand(ifSet);
         } else if (name == Statement.IfUnset) {
             String args[] = cmd.args();
             int n = new Integer(args[0]);
-            Command conditional = createCommandFrom(cmd.lineNumber, cmd.argsFrom(1), cmd.declarations);
+            Command conditional = createCommandFrom(cmd.lineNumber, cmd.argsFrom(1), cmd.script, cmd.declarations);
             Command ifUnset = new IfUnset(n, conditional);
             addCommand(ifUnset);
         } else if (name == Statement.State) {
@@ -455,22 +457,22 @@ public class Action extends AbstractAction {
             }
         } else if (name == Statement.Pause) {
             String resumeText = cmd.allAsText();
-            if (!resumeText.isEmpty()) {
-                addResponse(Statement.ResumeText, resumeText);
+            if (resumeText.isEmpty()) {
+                resumeText = getResponseText(Statement.ResumeText, cmd.script);
             }
-            setInteraction(new Pause());
+            setInteraction(new Pause(resumeText));
         } else if (name == Statement.Yes) {
             String yesText = cmd.allAsText();
-            if (!yesText.isEmpty()) {
-                addResponse(Statement.YesText, yesText);
+            if (yesText.isEmpty()) {
+                yesText = getResponseText(Statement.YesText, cmd.script);
             }
-            setInteraction(new Yes());
+            setInteraction(new Yes(yesText));
         } else if (name == Statement.No) {
             String noText = cmd.allAsText();
-            if (!noText.isEmpty()) {
-                addResponse(Statement.NoText, noText);
+            if (noText.isEmpty()) {
+                noText = getResponseText(Statement.NoText, cmd.script);
             }
-            setInteraction(new No());
+            setInteraction(new No(noText));
         } else if (name == Statement.YesNo) {
             String args[] = cmd.args();
             setInteraction(new YesNo(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]),
@@ -525,9 +527,9 @@ public class Action extends AbstractAction {
         return string.matches("[0-9]+");
     }
 
-    private static Command createCommandFrom(int lineNumber, String line, Declarations declarations)
+    private static Command createCommandFrom(int lineNumber, String line, Script script, Declarations declarations)
             throws ScriptParsingException {
-        ScriptLineTokenizer cmd = new ScriptLineTokenizer(lineNumber, line, declarations);
+        ScriptLineTokenizer cmd = new ScriptLineTokenizer(lineNumber, line, script, declarations);
         Action action = new Action(0);
         action.add(cmd);
         return action.commands.get(0);
@@ -595,7 +597,7 @@ public class Action extends AbstractAction {
         }
     }
 
-    public String getResponseText(Statement name, Script script) throws ScriptExecutionException {
+    public String getResponseText(Statement name, Script script) {
         if (responses != null) {
             if (responses.containsKey(name)) {
                 return responses.get(name);

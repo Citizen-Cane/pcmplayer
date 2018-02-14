@@ -1,13 +1,14 @@
 package pcm.state.visuals;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import pcm.controller.Player;
 import pcm.state.ValidatableResources;
 import pcm.state.Visual;
 import teaselib.Actor;
+import teaselib.Answer;
 import teaselib.Message;
 import teaselib.core.speechrecognition.SpeechRecognitionResult.Confidence;
 
@@ -17,14 +18,20 @@ public class SpokenMessage implements Visual, ValidatableResources {
     private Message message = null;
     private final Actor actor;
 
-    private static class Entry {
-        final Message message;
-        final String resumeText;
+    public static class Entry {
+        public final Message message;
+        public final Optional<Answer> answer;
 
-        public Entry(Message message, String resumeText) {
+        public Entry(Message message) {
             super();
             this.message = message;
-            this.resumeText = resumeText;
+            this.answer = Optional.empty();
+        }
+
+        public Entry(Message message, Answer answer) {
+            super();
+            this.message = message;
+            this.answer = Optional.of(answer);
         }
     }
 
@@ -49,11 +56,11 @@ public class SpokenMessage implements Visual, ValidatableResources {
     }
 
     public void completeSection() {
-        entries.add(new Entry(message, null));
+        entries.add(new Entry(message));
     }
 
-    public void completeSection(String resumeText) {
-        entries.add(new Entry(message, resumeText));
+    public void completeSection(Answer answer) {
+        entries.add(new Entry(message, answer));
         message = null;
     }
 
@@ -63,7 +70,7 @@ public class SpokenMessage implements Visual, ValidatableResources {
 
     public void completeMessage() {
         if (message != null) {
-            entries.add(new Entry(message, null));
+            entries.add(new Entry(message));
         }
         for (Entry entry : entries) {
             entry.message.joinSentences().readAloud();
@@ -74,8 +81,8 @@ public class SpokenMessage implements Visual, ValidatableResources {
     public void render(Player player) {
         for (Entry entry : entries) {
             player.say(entry.message);
-            if (entry.resumeText != null) {
-                player.reply(Confidence.Default.lower(), Collections.singletonList(entry.resumeText));
+            if (entry.answer.isPresent()) {
+                player.reply(Confidence.Default.lower(), entry.answer.get());
             }
         }
     }
@@ -95,5 +102,9 @@ public class SpokenMessage implements Visual, ValidatableResources {
             resources.addAll(entry.message.resources());
         }
         return resources;
+    }
+
+    public List<Entry> entries() {
+        return entries;
     }
 }

@@ -8,6 +8,7 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -162,7 +163,8 @@ public class Script extends AbstractAction {
             }
             String args[] = cmd.args();
             if (Statement.Lookup.containsKey(args[0].substring(1))) {
-                final Condition condition = createConditionFrom(cmd.lineNumber, cmd.allArgs(), cmd.declarations);
+                final Condition condition = createConditionFrom(cmd.lineNumber, cmd.allArgs(), cmd.script,
+                        cmd.declarations);
                 conditionRanges.add(new StatementConditionRange(condition));
             } else {
                 int start = Integer.parseInt(args[0]);
@@ -178,11 +180,11 @@ public class Script extends AbstractAction {
         }
     }
 
-    public String getResponseText(Statement name) throws ScriptExecutionException {
+    public String getResponseText(Statement name) {
         if (responses.containsKey(name)) {
             return responses.get(name);
         } else {
-            throw new ScriptExecutionException("Default text missing for " + name, this);
+            throw new NoSuchElementException("Default text missing for " + name);
         }
     }
 

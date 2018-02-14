@@ -109,7 +109,7 @@ public class Stop extends AbstractInteractionWithRangeProvider {
             for (Statement key : choiceRanges.keySet()) {
                 action.getResponseText(key, script);
             }
-        } catch (ScriptExecutionException e) {
+        } catch (Exception e) {
             validationErrors.add(new ValidationIssue(action, e, script));
         }
         for (Statement statement : choiceRanges.keySet()) {

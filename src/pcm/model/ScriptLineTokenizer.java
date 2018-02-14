@@ -10,6 +10,7 @@ import pcm.controller.Declarations;
 import pcm.model.AbstractAction.Statement;
 
 public class ScriptLineTokenizer {
+    final Script script;
     public final int lineNumber;
     public final String line;
     private final StringTokenizer tokenizer;
@@ -19,12 +20,13 @@ public class ScriptLineTokenizer {
 
     private String argv[];
 
-    public ScriptLineTokenizer(int lineNumber, String line, Declarations declarations) {
+    public ScriptLineTokenizer(int lineNumber, String line, Script script, Declarations declarations) {
+        this.script = script;
         this.lineNumber = lineNumber;
         this.line = line;
         this.declarations = declarations;
         // Cut off comment at the end of the line
-        int commentStart = line.indexOf("'");
+        int commentStart = line.indexOf('\'');
         line = (commentStart > 0 ? line.substring(0, commentStart) : line).trim();
         tokenizer = new StringTokenizer(line, " \t");
         String token = tokenizer.nextToken().toLowerCase();

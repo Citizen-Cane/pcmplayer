@@ -311,9 +311,9 @@ public abstract class AbstractAction {
         }
     }
 
-    static Condition createConditionFrom(int lineNumber, String line, Declarations declarations)
+    static Condition createConditionFrom(int lineNumber, String line, Script script, Declarations declarations)
             throws ScriptParsingException {
-        ScriptLineTokenizer cmd = new ScriptLineTokenizer(lineNumber, line, declarations);
+        ScriptLineTokenizer cmd = new ScriptLineTokenizer(lineNumber, line, script, declarations);
         Action action = new Action(0);
         action.add(cmd);
         return action.conditions.get(0);

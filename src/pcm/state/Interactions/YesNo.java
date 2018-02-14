@@ -52,7 +52,7 @@ public class YesNo extends AbstractInteraction {
         try {
             action.getResponseText(Statement.YesText, script);
             action.getResponseText(Statement.NoText, script);
-        } catch (ScriptExecutionException e) {
+        } catch (Exception e) {
             validationErrors.add(new ValidationIssue(action, e, script));
         }
         script.actions.validate(script, action, new ActionRange(startYes, endYes), validationErrors);

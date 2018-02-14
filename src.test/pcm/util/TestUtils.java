@@ -26,8 +26,7 @@ public class TestUtils {
     public static final String TEST_NAMESPACE = "Test_Namespace";
 
     public static TeaseLib teaseLib() throws IOException {
-        TeaseLib teaseLib = new TeaseLib(new DebugHost(), new DebugPersistence(), new DebugSetup());
-        return teaseLib;
+        return new TeaseLib(new DebugHost(), new DebugPersistence(), new DebugSetup());
     }
 
     public static Player createPlayer(Class<?> scriptClass) throws IOException {
@@ -40,12 +39,11 @@ public class TestUtils {
     }
 
     public static Player createPlayer(TeaseLib teaseLib, Class<?> scriptClass, Actor dominant) {
-        Player player = new Player(teaseLib, new ResourceLoader(scriptClass), dominant, TEST_NAMESPACE, null) {
+        return new Player(teaseLib, new ResourceLoader(scriptClass), dominant, TEST_NAMESPACE, null) {
             @Override
-            public void run() {
+            public void run() { //
             }
         };
-        return player;
     }
 
     public static Player createPlayer(Class<?> scriptClass, String script)
@@ -60,12 +58,11 @@ public class TestUtils {
         play(player, new ActionRange(start), null);
     }
 
-    public static void play(Player player, ActionRange start) throws AllActionsSetException, ScriptExecutionException {
+    public static void play(Player player, ActionRange start) throws ScriptExecutionException {
         play(player, start, null);
     }
 
-    public static void play(Player player, ActionRange start, ActionRange playRange)
-            throws AllActionsSetException, ScriptExecutionException {
+    public static void play(Player player, ActionRange start, ActionRange playRange) throws ScriptExecutionException {
         player.play(start, playRange);
     }
 
