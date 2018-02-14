@@ -146,8 +146,7 @@ public class ScriptParser {
     }
 
     private void handleDeprecatedInlineReply() {
-        throw new IllegalArgumentException(line + " -> "
-                + "Brackets may only contain action identifiers, or be empty to continue action messages: ");
+        throw new IllegalArgumentException("Deprecated bracket prompt");
     }
 
     private Txt handleOtherStatements(Script script, Action action, Txt txt) throws ScriptParsingException {
