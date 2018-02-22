@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import pcm.controller.AllActionsSetException;
 import pcm.controller.Player;
 import pcm.model.Action;
 import pcm.model.ActionRange;
@@ -39,10 +38,8 @@ public class TestUtils {
     }
 
     public static Player createPlayer(TeaseLib teaseLib, Class<?> scriptClass, Actor dominant) {
-        return new Player(teaseLib, new ResourceLoader(scriptClass), dominant, TEST_NAMESPACE, null) {
-            @Override
-            public void run() { //
-            }
+        return new Player(teaseLib, new ResourceLoader(scriptClass), dominant, TEST_NAMESPACE, null,
+                scriptClass.getSimpleName()) {
         };
     }
 
@@ -54,7 +51,7 @@ public class TestUtils {
         return player;
     }
 
-    public static void play(Player player, int start) throws AllActionsSetException, ScriptExecutionException {
+    public static void play(Player player, int start) throws ScriptExecutionException {
         play(player, new ActionRange(start), null);
     }
 

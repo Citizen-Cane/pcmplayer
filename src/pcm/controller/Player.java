@@ -37,6 +37,7 @@ import pcm.state.persistence.MappedScriptState;
 import teaselib.Actor;
 import teaselib.Config;
 import teaselib.Images;
+import teaselib.MainScript;
 import teaselib.Message;
 import teaselib.Sexuality.Gender;
 import teaselib.Sexuality.Sex;
@@ -54,7 +55,7 @@ import teaselib.util.RandomImages;
 import teaselib.util.SpeechRecognitionRejectedScript;
 import teaselib.util.TextVariables;
 
-public abstract class Player extends TeaseScript {
+public class Player extends TeaseScript implements MainScript {
     private static final Logger logger = LoggerFactory.getLogger(Player.class);
 
     public static final String ScriptFolder = "scripts/";
@@ -79,6 +80,7 @@ public abstract class Player extends TeaseScript {
 
     private final ScriptCache scripts;
     private final String mistressPath;
+    private final String mainScript;
 
     private boolean invokedOnAllSet = false;
     private boolean intentionalQuit = false;
@@ -123,7 +125,8 @@ public abstract class Player extends TeaseScript {
         recorder.finish();
     }
 
-    public Player(TeaseLib teaseLib, ResourceLoader resources, Actor actor, String namespace, String mistressPath) {
+    public Player(TeaseLib teaseLib, ResourceLoader resources, Actor actor, String namespace, String mistressPath,
+            String mainscript) {
         super(teaseLib, resources, actor, namespace);
         this.namespaceApplyAttribute = "Applied.by." + namespace;
         this.state = new MappedScriptState(this);
@@ -131,6 +134,7 @@ public abstract class Player extends TeaseScript {
 
         this.scripts = new ScriptCache(resources, Player.ScriptFolder, createDominantSubmissiveSymbols());
         this.mistressPath = mistressPath;
+        mainScript = mainscript;
 
         this.invokedOnAllSet = false;
     }
@@ -162,13 +166,17 @@ public abstract class Player extends TeaseScript {
 
     }
 
-    public void play(String script) {
-        StringTokenizer argv = parseDebugFile(script);
-        String scriptName = argv.nextToken();
+    public void run() {
+        play(mainScript);
+    }
+
+    public void play(String scriptName) {
+        StringTokenizer argv = parseDebugFile(scriptName);
+        scriptName = argv.nextToken();
         play(scriptName, parseStartRange(argv));
     }
 
-    private StringTokenizer parseDebugFile(String script) {
+    private StringTokenizer parseDebugFile(String scriptName) {
         String resourcePath = getClass().getSimpleName() + ResourceList.PathDelimiter + "debug.txt";
         try {
             InputStream debugStream = resources.getResource(resourcePath);
@@ -187,7 +195,7 @@ public abstract class Player extends TeaseScript {
                             line = line.substring(0, comment - 1);
                         }
                         if (!line.isEmpty()) {
-                            script = line;
+                            scriptName = line;
                             break;
                         }
                     }
@@ -198,7 +206,7 @@ public abstract class Player extends TeaseScript {
         } catch (Exception e) {
             logger.error(resourcePath, e);
         }
-        return new StringTokenizer(script, " \t");
+        return new StringTokenizer(scriptName, " \t");
     }
 
     private static ActionRange parseStartRange(StringTokenizer argv) {
@@ -381,7 +389,7 @@ public abstract class Player extends TeaseScript {
         invokedOnAllSet = false;
         if (script.onClose != null) {
             final Thread scriptThread = Thread.currentThread();
-            teaseLib.host.setQuitHandler(new TeaseScript(this) {
+            teaseLib.host.setQuitHandler(new Runnable() {
                 @Override
                 public void run() {
                     logger.info("Interrupting script thread '" + scriptThread.getName() + "'");
