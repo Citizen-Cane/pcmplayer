@@ -1,6 +1,5 @@
 package pcm.state.Interactions;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -13,6 +12,7 @@ import pcm.model.ActionRange;
 import pcm.model.Script;
 import pcm.model.ScriptExecutionException;
 import pcm.model.ValidationIssue;
+import teaselib.Answer;
 
 public class YesNo extends AbstractInteraction {
     private static final Logger logger = LoggerFactory.getLogger(YesNo.class);
@@ -32,13 +32,10 @@ public class YesNo extends AbstractInteraction {
     @Override
     public ActionRange getRange(final Player player, Script script, Action action, Runnable visuals)
             throws ScriptExecutionException {
+        visuals.run();
         String yes = action.getResponseText(Statement.YesText, script);
         String no = action.getResponseText(Statement.NoText, script);
-        final List<String> choices = new ArrayList<>();
-        choices.add(yes);
-        choices.add(no);
-        visuals.run();
-        if (player.reply(getConfidence(action), choices) == yes) {
+        if (player.reply(getConfidence(action), new Answer[] { Answer.yes(yes), Answer.no(no) }) == yes) {
             logger.info("-> Yes");
             return new ActionRange(startYes, endYes);
         } else {

@@ -1,0 +1,41 @@
+' pcm test cases
+
+
+' testScriptStructureWithFinalInteraction
+
+[Action 1000]
+Foo.
+.No No Foo
+[]
+Bar.
+.yestext YesNo Yes Foo
+.notext YesNo No Bar
+.yesno 9990 9991 9992 9993
+
+
+' testScriptStructureWithFinalBrackets
+
+[Action 1010]
+Foo.
+.No No Foo
+[]
+Bar.
+.yes Yes Bar
+[]
+.yestext YesNo Yes Foo
+.notext YesNo No Bar
+.yesno 9990 9991 9992 9993
+
+
+[action 9990]
+.range 9999
+
+[action 9992]
+.range 9999
+
+' proper exit for all test cases
+[action 9999]
+.unset 9999
+.noimage
+.quit
+
