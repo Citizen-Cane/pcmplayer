@@ -1,5 +1,7 @@
 package pcm.model;
 
+import static java.lang.Integer.parseInt;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -50,9 +52,9 @@ import pcm.state.interactions.Quit;
 import pcm.state.interactions.Range;
 import pcm.state.interactions.Return;
 import pcm.state.interactions.Stop;
+import pcm.state.interactions.Stop.TimeoutType;
 import pcm.state.interactions.Yes;
 import pcm.state.interactions.YesNo;
-import pcm.state.interactions.Stop.TimeoutType;
 import pcm.state.visuals.Args;
 import pcm.state.visuals.Delay;
 import pcm.state.visuals.Exec;
@@ -170,22 +172,21 @@ public class Action extends AbstractAction {
             throw new IllegalStateException(name.toString());
         } else if (name == Statement.Txt) {
             throw new IllegalStateException(name.toString());
-            // addTxt(cmd.all());
         } else if (name == Statement.Delay || name == Statement.ActionDelay) {
             String args[] = cmd.args();
             if (args.length == 1) {
                 // delay
-                int delay = Integer.parseInt(args[0]);
+                int delay = parseInt(args[0]);
                 addVisual(Statement.Delay, new Delay(delay));
             } else if (args.length == 2) {
                 // delay range
-                int from = Integer.parseInt(args[0]);
-                int to = Integer.parseInt(args[1]);
+                int from = parseInt(args[0]);
+                int to = parseInt(args[1]);
                 addVisual(Statement.Delay, new Delay(from, to));
             } else if (args.length >= 4) {
                 // delay range & stop
-                int from = Integer.parseInt(args[0]);
-                int to = Integer.parseInt(args[1]);
+                int from = parseInt(args[0]);
+                int to = parseInt(args[1]);
                 // Type
                 TimeoutType timeoutType = null;
                 final String arg2 = args[2].toLowerCase();
@@ -233,7 +234,7 @@ public class Action extends AbstractAction {
                         keyRelease = new KeyReleaseHandler(command);
                         break;
                     } else if (args.length == 2) {
-                        keyRelease = new KeyReleaseHandler(command, Integer.parseInt(args[1]));
+                        keyRelease = new KeyReleaseHandler(command, parseInt(args[1]));
                         break;
                     } else {
                         throw new IllegalArgumentException(cmd.line);
@@ -307,62 +308,51 @@ public class Action extends AbstractAction {
         } else if (name == Statement.SetTime) {
             String args[] = cmd.args();
             if (args.length == 1) {
-                addCommand(new SetTime(Integer.parseInt(args[0])));
+                addCommand(new SetTime(parseInt(args[0])));
             } else {
-                addCommand(new SetTime(Integer.parseInt(args[0]), args[1]));
+                addCommand(new SetTime(parseInt(args[0]), args[1]));
             }
         } else if (name == Statement.SetRange) {
             throw new IllegalStateException("Validate functionality of SetRange in PCMistress first");
         } else if (name == Statement.TimeFrom) {
             String args[] = cmd.args();
-            addCondition(new TimeFrom(Integer.parseInt(args[0]), args[1]));
+            addCondition(new TimeFrom(parseInt(args[0]), args[1]));
         } else if (name == Statement.TimeTo) {
             String args[] = cmd.args();
-            addCondition(new TimeTo(Integer.parseInt(args[0]), args[1]));
+            addCondition(new TimeTo(parseInt(args[0]), args[1]));
         } else if (name == Statement.NumActionsFrom) {
             String args[] = cmd.args();
-            addCondition(new NumActionsFrom(Integer.parseInt(args[0]), Integer.parseInt(args[1])));
+            addCondition(new NumActionsFrom(parseInt(args[0]), parseInt(args[1])));
         } else if (name == Statement.NumberOfActionsSet) {
-            final Condition numberOfActionsSet;
             String args[] = cmd.args();
             if (args.length == 3) {
-                numberOfActionsSet = new NumberOfActionsSet(Integer.parseInt(args[0]), Integer.parseInt(args[1]),
-                        Integer.parseInt(args[2]));
+                addCondition(new NumberOfActionsSet(parseInt(args[0]), parseInt(args[1]), parseInt(args[2])));
             } else {
                 throw new IllegalArgumentException(cmd.line);
             }
-            addCondition(numberOfActionsSet);
         } else if (name == Statement.NumActionsAvailable) {
-            final Condition numActionsAvailable;
             String args[] = cmd.args();
             if (args.length == 3) {
-                numActionsAvailable = new NumActionsAvailable(Integer.parseInt(args[0]), Integer.parseInt(args[1]),
-                        Integer.parseInt(args[2]));
+                addCondition(new NumActionsAvailable(parseInt(args[0]), parseInt(args[1]), parseInt(args[2])));
             } else {
                 throw new IllegalArgumentException(cmd.line);
             }
-            addCondition(numActionsAvailable);
         } else if (name == Statement.Not) {
-            Condition conditional = createConditionFrom(cmd.lineNumber, cmd.argsFrom(0), cmd.script, cmd.declarations);
-            Condition not = new Not(conditional);
-            addCondition(not);
+            addCondition(new Not(createConditionFrom(cmd.lineNumber, cmd.argsFrom(0), cmd.script, cmd.declarations)));
         } else if (name == Statement.Repeat) {
-            final Command repeat;
             String args[] = cmd.args();
             if (args.length == 1) {
-                repeat = new Repeat(number, Integer.parseInt(args[0]));
+                addCommand(new Repeat(number, parseInt(args[0])));
             } else {
                 throw new IllegalArgumentException(cmd.line);
             }
-            addCommand(repeat);
         } else if (name == Statement.RepeatAdd) {
             final Command repeatAdd;
             String args[] = cmd.args();
             if (args.length == 1) {
-                repeatAdd = new RepeatAdd(Integer.parseInt(args[0]));
+                repeatAdd = new RepeatAdd(parseInt(args[0]));
             } else if (args.length == 3) {
-                repeatAdd = new RepeatAdd(Integer.parseInt(args[0]), Integer.parseInt(args[1]),
-                        Integer.parseInt(args[2]));
+                repeatAdd = new RepeatAdd(parseInt(args[0]), parseInt(args[1]), parseInt(args[2]));
             } else {
                 throw new IllegalArgumentException(cmd.line);
             }
@@ -371,17 +361,16 @@ public class Action extends AbstractAction {
             final Command repeatDel;
             String args[] = cmd.args();
             if (args.length == 1) {
-                repeatDel = new RepeatDel(Integer.parseInt(args[0]));
+                repeatDel = new RepeatDel(parseInt(args[0]));
             } else if (args.length == 3) {
-                repeatDel = new RepeatDel(Integer.parseInt(args[0]), Integer.parseInt(args[1]),
-                        Integer.parseInt(args[2]));
+                repeatDel = new RepeatDel(parseInt(args[0]), parseInt(args[1]), parseInt(args[2]));
             } else {
                 throw new IllegalArgumentException(cmd.line);
             }
             addCommand(repeatDel);
         } else if (name == Statement.Save) {
             String args[] = cmd.args();
-            addCommand(new Save(Integer.parseInt(args[0]), Integer.parseInt(args[1])));
+            addCommand(new Save(parseInt(args[0]), parseInt(args[1])));
         } else if (name == Statement.Poss) {
             if (poss != null) {
                 throw new IllegalArgumentException(".poss and .else statements cannot be used simultanously");
@@ -400,13 +389,13 @@ public class Action extends AbstractAction {
             }
         } else if (name == Statement.IfSet) {
             String args[] = cmd.args();
-            int n = new Integer(args[0]);
+            int n = parseInt(args[0]);
             Command conditional = createCommandFrom(cmd.lineNumber, cmd.argsFrom(1), cmd.script, cmd.declarations);
             Command ifSet = new IfSet(n, conditional);
             addCommand(ifSet);
         } else if (name == Statement.IfUnset) {
             String args[] = cmd.args();
-            int n = new Integer(args[0]);
+            int n = parseInt(args[0]);
             Command conditional = createCommandFrom(cmd.lineNumber, cmd.argsFrom(1), cmd.script, cmd.declarations);
             Command ifUnset = new IfUnset(n, conditional);
             addCommand(ifUnset);
@@ -448,9 +437,9 @@ public class Action extends AbstractAction {
         // interactions
         else if (name == Statement.Range) {
             String args[] = cmd.args();
-            int start = Integer.parseInt(args[0]);
+            int start = parseInt(args[0]);
             if (args.length > 1) {
-                int end = Integer.parseInt(args[1]);
+                int end = parseInt(args[1]);
                 setInteraction(new Range(start, end));
             } else {
                 setInteraction(new Range(start));
@@ -475,21 +464,20 @@ public class Action extends AbstractAction {
             setInteraction(new No(noText));
         } else if (name == Statement.YesNo) {
             String args[] = cmd.args();
-            setInteraction(new YesNo(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]),
-                    Integer.parseInt(args[3])));
+            setInteraction(new YesNo(parseInt(args[0]), parseInt(args[1]), parseInt(args[2]), parseInt(args[3])));
         } else if (name == Statement.LoadSbd) {
             String args[] = cmd.args();
             String arg0 = args[0];
             int endIndex = arg0.lastIndexOf('.');
             String script = endIndex < 0 ? arg0 : arg0.substring(0, endIndex);
-            setInteraction(args.length > 2 ? new LoadSbd(script, Integer.parseInt(args[1]), Integer.parseInt(args[2]))
-                    : new LoadSbd(script, Integer.parseInt(args[1])));
+            setInteraction(args.length > 2 ? new LoadSbd(script, parseInt(args[1]), parseInt(args[2]))
+                    : new LoadSbd(script, parseInt(args[1])));
         } else if (name == Statement.PopUp) {
             String args[] = cmd.args();
-            setInteraction(new PopUp(Integer.parseInt(args[0]), Integer.parseInt(args[1])));
+            setInteraction(new PopUp(parseInt(args[0]), parseInt(args[1])));
         } else if (name == Statement.Ask) {
             String args[] = cmd.args();
-            Ask ask = new Ask(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
+            Ask ask = new Ask(parseInt(args[0]), parseInt(args[1]));
             // Ask must also be a command, in order to pick up the state
             addCommand(ask);
             setInteraction(ask);
@@ -497,7 +485,7 @@ public class Action extends AbstractAction {
             setInteraction(Quit.instance);
         } else if (name == Statement.Break) {
             String args[] = cmd.args();
-            ActionRange playRange = new ActionRange(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
+            ActionRange playRange = new ActionRange(parseInt(args[0]), parseInt(args[1]));
             if (args[2].equalsIgnoreCase(Break.SuppressStackCorrectionOnBreak)) {
                 setInteraction(new Break(playRange, rangesFromArgv(args, 3), true));
             } else {
@@ -505,9 +493,9 @@ public class Action extends AbstractAction {
             }
         } else if (name == Statement.GoSub) {
             String args[] = cmd.args();
-            int start = Integer.parseInt(args[0]);
+            int start = parseInt(args[0]);
             if (args.length > 1) {
-                int end = Integer.parseInt(args[1]);
+                int end = parseInt(args[1]);
                 setInteraction(new GoSub(new ActionRange(start, end)));
             } else {
                 setInteraction(new GoSub(new ActionRange(start)));
@@ -549,11 +537,11 @@ public class Action extends AbstractAction {
         while (index < args.length) {
             String keyword = args[index++];
             ActionRange actionRange;
-            int start = Integer.parseInt(args[index++]);
+            int start = parseInt(args[index++]);
             if (index < args.length) {
                 // More parameters
                 try {
-                    int end = Integer.parseInt(args[index]);
+                    int end = parseInt(args[index]);
                     index++;
                     actionRange = new ActionRange(start, end);
                 } catch (NumberFormatException e) {
