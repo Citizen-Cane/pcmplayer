@@ -16,7 +16,7 @@ import pcm.model.Action;
 import pcm.model.ScriptExecutionException;
 import pcm.model.ScriptParsingException;
 import pcm.model.ValidationIssue;
-import pcm.state.Interactions.YesNo;
+import pcm.state.interactions.YesNo;
 import pcm.state.visuals.SpokenMessage;
 import pcm.state.visuals.SpokenMessage.Entry;
 import pcm.util.TestUtils;

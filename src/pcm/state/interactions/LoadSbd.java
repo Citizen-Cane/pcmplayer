@@ -1,4 +1,4 @@
-package pcm.state.Interactions;
+package pcm.state.interactions;
 
 import java.io.IOException;
 import java.util.List;

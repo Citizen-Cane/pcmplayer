@@ -15,7 +15,7 @@ import pcm.model.ScriptLineTokenizer;
 import pcm.model.ScriptParsingException;
 import pcm.model.Symbols;
 import pcm.model.ValidationIssue;
-import pcm.state.Interactions.AbstractPause;
+import pcm.state.interactions.AbstractPause;
 import pcm.state.visuals.SpokenMessage;
 import pcm.state.visuals.Txt;
 

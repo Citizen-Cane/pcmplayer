@@ -1,4 +1,4 @@
-package pcm.state.Interactions;
+package pcm.state.interactions;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

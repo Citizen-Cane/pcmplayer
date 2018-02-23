@@ -1,4 +1,4 @@
-package pcm.state.Interactions;
+package pcm.state.interactions;
 
 import java.util.ArrayList;
 import java.util.List;
