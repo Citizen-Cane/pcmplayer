@@ -99,7 +99,7 @@ public class Player extends TeaseScript implements MainScript {
      */
     public static final ActionRange ReturnToPlayer = new ActionRange(0);
 
-    public static void recordVoices(Actor actor, String mainScript, File path, String projectName, String[] assets)
+    public static void recordVoices(Actor actor, File path, String projectName, String[] scriptNames, String[] assets)
             throws IOException, ValidationIssue, ScriptParsingException, InterruptedException, ExecutionException {
         ResourceLoader resources = new ResourceLoader(path, projectName);
         resources.addAssets(assets);
@@ -109,14 +109,8 @@ public class Player extends TeaseScript implements MainScript {
             Symbols dominantSubmissiveRelation = new Symbols();
             dominantSubmissiveRelation.put(entry.getKey(), entry.getValue());
             ScriptCache scripts = new ScriptCache(resources, Player.ScriptFolder, dominantSubmissiveRelation);
-            // Get the main script
-            Script main = scripts.get(actor, mainScript);
-
-            // and validate to load all the sub scripts
-            // TODO load scripts explicitly
-            validateScript(main, new ArrayList<ValidationIssue>());
             recorder.startPass(entry.getKey(), entry.getValue());
-            for (String scriptName : scripts.names()) {
+            for (String scriptName : scriptNames) {
                 Script script = scripts.get(actor, scriptName);
                 ScriptScanner scriptScanner = new PCMScriptScanner(script);
                 recorder.run(scriptScanner);
