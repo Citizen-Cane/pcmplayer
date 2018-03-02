@@ -10,6 +10,7 @@ import pcm.state.Visual;
 import teaselib.Actor;
 import teaselib.Answer;
 import teaselib.Message;
+import teaselib.MessagePart;
 import teaselib.core.speechrecognition.SpeechRecognitionResult.Confidence;
 
 public class SpokenMessage implements Visual, ValidatableResources {
@@ -43,7 +44,7 @@ public class SpokenMessage implements Visual, ValidatableResources {
         if (message == null) {
             message = new Message(actor);
         }
-        Message.Part part = new Message.Part(line);
+        MessagePart part = new MessagePart(line);
         if (part.type == Message.Type.Image) {
             message.add(part.type, Image.IMAGES + part.value);
         } else if (Message.Type.AudioTypes.contains(part.type)) {
