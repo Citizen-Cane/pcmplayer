@@ -45,7 +45,8 @@ public class SpokenMessage implements Visual, ValidatableResources {
             message = new Message(actor);
         }
         MessagePart part = new MessagePart(line);
-        if (part.type == Message.Type.Image) {
+        if (part.type == Message.Type.Image && !Message.ActorImage.equalsIgnoreCase(part.value)
+                && !Message.NoImage.equalsIgnoreCase(part.value)) {
             message.add(part.type, Image.IMAGES + part.value);
         } else if (Message.Type.AudioTypes.contains(part.type)) {
             message.add(part.type, Sound.SOUNDS + part.value);
