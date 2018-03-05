@@ -47,13 +47,13 @@ public class YesNoTest {
         List<Entry> entries = spokenMessage.entries();
         assertEquals(2, entries.size());
 
-        assertEquals("Foo.", entries.get(0).message.getParts().get(0).value);
+        assertEquals("Foo.", entries.get(0).message.get(0).value);
 
         assertTrue(entries.get(0).answer.isPresent());
         assertEquals(Answer.Meaning.NO, entries.get(0).answer.get().meaning);
         assertEquals("No Foo", entries.get(0).answer.get().text);
 
-        assertEquals("Bar.", entries.get(1).message.getParts().get(0).value);
+        assertEquals("Bar.", entries.get(1).message.get(0).value);
         assertFalse(entries.get(1).answer.isPresent());
 
         testYesNo(action);
@@ -77,13 +77,13 @@ public class YesNoTest {
     private void testChat(Action action, List<Entry> entries) {
         assertEquals(2, entries.size());
 
-        assertEquals("Foo.", entries.get(0).message.getParts().get(0).value);
+        assertEquals("Foo.", entries.get(0).message.get(0).value);
 
         assertTrue(entries.get(0).answer.isPresent());
         assertEquals(Answer.Meaning.NO, entries.get(0).answer.get().meaning);
         assertEquals("No Foo", entries.get(0).answer.get().text);
 
-        assertEquals("Bar.", entries.get(1).message.getParts().get(0).value);
+        assertEquals("Bar.", entries.get(1).message.get(0).value);
 
         assertTrue(entries.get(1).answer.isPresent());
         assertEquals(Answer.Meaning.YES, entries.get(1).answer.get().meaning);
