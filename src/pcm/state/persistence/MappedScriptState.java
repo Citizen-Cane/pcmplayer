@@ -71,27 +71,27 @@ public class MappedScriptState extends ScriptState {
     }
 
     public void addScriptValueMapping(String scriptName, MappedScriptValue mappedValue) {
-        ScriptMapping scriptMapping = getScriptMapping(scriptName);
+        ScriptMapping mapping = getScriptMapping(scriptName);
 
-        if (scriptMapping.scriptValueMapping.containsKey(mappedValue)
-                || scriptMapping.scriptValueMapping.containsValue(mappedValue)) {
+        if (mapping.scriptValueMapping.containsKey(mappedValue.getNumber())
+                || mapping.scriptValueMapping.containsValue(mappedValue)) {
             throw new IllegalArgumentException("Item " + mappedValue.toString() + " is already mapped to a value.");
         }
 
-        scriptMapping.scriptValueMapping.put(mappedValue.getNumber(), mappedValue);
+        mapping.scriptValueMapping.put(mappedValue.getNumber(), mappedValue);
     }
 
     @SafeVarargs
     public final <T extends Enum<?>> void addStateTimeMapping(String scriptName, Integer action, teaselib.State state,
             T... peers) {
-        ScriptMapping scriptMapping = getScriptMapping(scriptName);
+        ScriptMapping mapping = getScriptMapping(scriptName);
 
-        if (scriptMapping.stateTimeMapping.containsKey(action) || scriptMapping.stateTimeMapping.containsValue(state)) {
+        if (mapping.stateTimeMapping.containsKey(action) || mapping.stateTimeMapping.containsValue(state)) {
             throw new IllegalArgumentException("State " + state.toString() + " is already mapped to a timer.");
         }
 
-        scriptMapping.stateTimeMapping.put(action, state);
-        scriptMapping.peers.put(action, peers);
+        mapping.stateTimeMapping.put(action, state);
+        mapping.peers.put(action, peers);
     }
 
     @Override
@@ -118,9 +118,7 @@ public class MappedScriptState extends ScriptState {
 
     public Items getMappedItems(Integer n) {
         if (scriptMapping == null) {
-            // TODO throw
             throw new IllegalStateException("No script mapping set to retrieve mapped items for action " + n);
-            // return Items.None;
         }
         return scriptMapping.scriptValueMapping.get(n).items();
     }
@@ -164,8 +162,7 @@ public class MappedScriptState extends ScriptState {
         if (hasStateTimeMapping(n)) {
             teaselib.State state = scriptMapping.stateTimeMapping.get(n);
             Duration duration = state.duration();
-            long timeSeconds = duration.end(TimeUnit.SECONDS);
-            return timeSeconds;
+            return duration.end(TimeUnit.SECONDS);
         } else {
             return super.getTime(n);
         }
