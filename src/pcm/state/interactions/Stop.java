@@ -50,7 +50,7 @@ public class Stop extends AbstractInteractionWithRangeProvider {
     @Override
     public ActionRange getRange(final Player player, Script script, final Action action, final Runnable visuals)
             throws ScriptExecutionException {
-        logger.info(getClass().getSimpleName() + " " + toString());
+        logger.info(toString());
         List<String> choices = new ArrayList<>(choiceRanges.size());
         List<ActionRange> ranges = new ArrayList<>(choiceRanges.size());
         for (Statement key : choiceRanges.keySet()) {
@@ -66,29 +66,37 @@ public class Stop extends AbstractInteractionWithRangeProvider {
             visuals.run();
             Timeout timeout = (Timeout) action.visuals.get(Statement.Delay);
             if (timeoutType == TimeoutType.AutoConfirm) {
-                timeoutFunction = player.timeoutWithAutoConfirmation(timeout.duration, timeoutBehavior);
+                timeoutFunction = timeoutWithAutoConfirmation(player, timeout);
             } else {
-                timeoutFunction = player.timeoutWithConfirmation(timeout.duration, timeoutBehavior);
+                timeoutFunction = timeoutWithConfirmation(player, timeout);
             }
         } else {
-            timeoutFunction = new ScriptFunction() {
-                @Override
-                public void run() {
-                    // Display the prompt together with the script function, all at once
-                    visuals.run();
-                    player.completeMandatory();
-                }
-            };
+            timeoutFunction = displayPromptTogetherWithScriptFunction(player, visuals);
         }
 
         String result = player.reply(timeoutFunction, getConfidence(action).higher(), choices);
         if (result != ScriptFunction.Timeout) {
             int index = choices.indexOf(result);
-            logger.info("-> " + result);
+            logger.info("-> {}", result);
             return ranges.get(index);
         } else {
             return rangeProvider.getRange(player, script, action, NoVisuals);
         }
+    }
+
+    private ScriptFunction timeoutWithAutoConfirmation(final Player player, Timeout timeout) {
+        return player.timeoutWithAutoConfirmation(timeout.duration, timeoutBehavior);
+    }
+
+    private ScriptFunction timeoutWithConfirmation(final Player player, Timeout timeout) {
+        return player.timeoutWithConfirmation(timeout.duration, timeoutBehavior);
+    }
+
+    private static ScriptFunction displayPromptTogetherWithScriptFunction(final Player player, final Runnable visuals) {
+        return new ScriptFunction(() -> {
+            visuals.run();
+            player.completeMandatory();
+        });
     }
 
     @Override

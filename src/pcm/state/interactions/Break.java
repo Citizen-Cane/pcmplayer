@@ -59,23 +59,20 @@ public class Break extends AbstractInteractionWithRangeProvider {
             choices.add(action.getResponseText(key, script));
             ranges.add(choiceRanges.get(key));
         }
-        ScriptFunction playRange = new ScriptFunction() {
-            @Override
-            public void run() {
-                try {
-                    player.range = rangeProvider.getRange(player, script, action, NoVisuals);
-                    player.playRange(breakRange);
-                    SpeechRecognition.completeSpeechRecognitionInProgress();
-                } catch (ScriptInterruptedException e) {
-                    // Must be forwarded to script function task
-                    // in order to clean up
-                    throw e;
-                } catch (Throwable t) {
-                    logger.error(t.getMessage(), t);
-                }
-                return;
+        ScriptFunction playRange = new ScriptFunction(() -> {
+            try {
+                player.range = rangeProvider.getRange(player, script, action, NoVisuals);
+                player.playRange(breakRange);
+                SpeechRecognition.completeSpeechRecognitionInProgress();
+            } catch (ScriptInterruptedException e) {
+                // Must be forwarded to script function task
+                // in order to clean up
+                throw e;
+            } catch (Throwable t) {
+                logger.error(t.getMessage(), t);
             }
-        };
+            return;
+        });
         String result = player.reply(playRange, getConfidence(action).higher(), choices);
         if (result == ScriptFunction.Timeout) {
             return player.range;
