@@ -18,7 +18,7 @@ public class Sound implements Visual, ValidatableResources {
 
     @Override
     public void render(Player player) {
-        player.setBackgroundSound(path);
+        player.setSound(path);
     }
 
     @Override
