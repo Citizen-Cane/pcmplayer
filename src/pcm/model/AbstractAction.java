@@ -195,15 +195,6 @@ public abstract class AbstractAction {
         KeyRelease,
 
         /**
-         * Relax speech recognition confidence to longer prompts to be spoken and be recognized on the first try. As
-         * side effect the prompt might be dismissed by background noise, so be careful and avoid this statement if the
-         * user has to make final decisions.
-         * <p>
-         * If used right, it's a good tool for creating realistic dialogs.
-         */
-        relaxedSpeechRecognitionConfidence,
-
-        /**
          * True if at least one of the actions is unset.
          */
         MustNotAllOf,
@@ -241,6 +232,8 @@ public abstract class AbstractAction {
         Yes,
 
         No,
+
+        Chat,
 
         ;
 

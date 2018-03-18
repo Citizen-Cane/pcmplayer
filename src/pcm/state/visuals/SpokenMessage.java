@@ -11,7 +11,6 @@ import teaselib.Actor;
 import teaselib.Answer;
 import teaselib.Message;
 import teaselib.MessagePart;
-import teaselib.core.speechrecognition.SpeechRecognitionResult.Confidence;
 
 public class SpokenMessage implements Visual, ValidatableResources {
 
@@ -84,7 +83,7 @@ public class SpokenMessage implements Visual, ValidatableResources {
         for (Entry entry : entries) {
             player.say(entry.message);
             if (entry.answer.isPresent()) {
-                player.reply(Confidence.Default.lower(), entry.answer.get());
+                player.chat(entry.answer.get());
             }
         }
     }

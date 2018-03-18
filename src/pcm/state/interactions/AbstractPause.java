@@ -10,7 +10,7 @@ import pcm.model.Script;
 import pcm.model.ScriptExecutionException;
 import teaselib.Answer;
 
-public class AbstractPause extends AbstractInteractionWithRangeProvider {
+public abstract class AbstractPause extends AbstractInteractionWithRangeProvider {
     private static final Logger logger = LoggerFactory.getLogger(AbstractPause.class);
 
     public final Answer answer;
@@ -24,8 +24,10 @@ public class AbstractPause extends AbstractInteractionWithRangeProvider {
             throws ScriptExecutionException {
         visuals.run();
 
-        logger.info(getClass().getSimpleName() + ": " + answer);
-        player.reply(getConfidence(action), answer);
+        logger.info("{}: {}", getClass().getSimpleName(), answer);
+        reply(player);
         return rangeProvider.getRange(player, script, action, NoVisuals);
     }
+
+    protected abstract void reply(Player player);
 }

@@ -50,7 +50,7 @@ public class Stop extends AbstractInteractionWithRangeProvider {
     @Override
     public ActionRange getRange(final Player player, Script script, final Action action, final Runnable visuals)
             throws ScriptExecutionException {
-        logger.info(toString());
+        logger.info("{}", this);
         List<String> choices = new ArrayList<>(choiceRanges.size());
         List<ActionRange> ranges = new ArrayList<>(choiceRanges.size());
         for (Statement key : choiceRanges.keySet()) {
@@ -74,7 +74,7 @@ public class Stop extends AbstractInteractionWithRangeProvider {
             timeoutFunction = displayPromptTogetherWithScriptFunction(player, visuals);
         }
 
-        String result = player.reply(timeoutFunction, getConfidence(action).higher(), choices);
+        String result = player.reply(timeoutFunction, choices);
         if (result != ScriptFunction.Timeout) {
             int index = choices.indexOf(result);
             logger.info("-> {}", result);

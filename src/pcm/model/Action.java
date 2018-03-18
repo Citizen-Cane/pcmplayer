@@ -1,6 +1,6 @@
 package pcm.model;
 
-import static java.lang.Integer.parseInt;
+import static java.lang.Integer.*;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -55,7 +55,6 @@ import pcm.state.interactions.Stop;
 import pcm.state.interactions.Stop.TimeoutType;
 import pcm.state.interactions.Yes;
 import pcm.state.interactions.YesNo;
-import pcm.state.visuals.Args;
 import pcm.state.visuals.Delay;
 import pcm.state.visuals.Exec;
 import pcm.state.visuals.Image;
@@ -462,6 +461,12 @@ public class Action extends AbstractAction {
                 noText = getResponseText(Statement.NoText, cmd.script);
             }
             setInteraction(new No(noText));
+        } else if (name == Statement.Pause) {
+            String resumeText = cmd.allAsText();
+            if (resumeText.isEmpty()) {
+                resumeText = getResponseText(Statement.ResumeText, cmd.script);
+            }
+            setInteraction(new Pause(resumeText));
         } else if (name == Statement.YesNo) {
             String args[] = cmd.args();
             setInteraction(new YesNo(parseInt(args[0]), parseInt(args[1]), parseInt(args[2]), parseInt(args[3])));
@@ -502,10 +507,6 @@ public class Action extends AbstractAction {
             }
         } else if (name == Statement.Return) {
             setInteraction(new Return());
-        }
-        // Modifiers
-        else if (name == Statement.relaxedSpeechRecognitionConfidence) {
-            addVisual(name, Args.None);
         } else {
             super.add(cmd);
         }

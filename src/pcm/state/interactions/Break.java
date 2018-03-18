@@ -73,7 +73,7 @@ public class Break extends AbstractInteractionWithRangeProvider {
             }
             return;
         });
-        String result = player.reply(playRange, getConfidence(action).higher(), choices);
+        String result = player.reply(playRange, choices);
         if (result == ScriptFunction.Timeout) {
             return player.range;
         } else {
