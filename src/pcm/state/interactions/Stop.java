@@ -14,16 +14,13 @@ import pcm.model.Action;
 import pcm.model.ActionRange;
 import pcm.model.Script;
 import pcm.model.ScriptExecutionException;
-import pcm.model.ScriptParsingException;
-import pcm.model.ValidationIssue;
 import pcm.state.visuals.Timeout;
 import teaselib.ScriptFunction;
 import teaselib.core.speechrecognition.SpeechRecognition.TimeoutBehavior;
 
-public class Stop extends AbstractInteractionWithRangeProvider {
+public class Stop extends AbstractBreakInteraction {
     private static final Logger logger = LoggerFactory.getLogger(Stop.class);
 
-    private final Map<Statement, ActionRange> choiceRanges;
     private final TimeoutType timeoutType;
     private final TimeoutBehavior timeoutBehavior;
 
@@ -43,11 +40,7 @@ public class Stop extends AbstractInteractionWithRangeProvider {
     }
 
     public Stop(Map<Statement, ActionRange> choiceRanges, TimeoutType timeoutType, TimeoutBehavior timeoutBehavior) {
-        if (choiceRanges.containsKey(Statement.Chat) && choiceRanges.size() > 1) {
-            throw new IllegalArgumentException(Statement.Chat.toString());
-        }
-
-        this.choiceRanges = choiceRanges;
+        super(choiceRanges);
         this.timeoutType = timeoutType;
         this.timeoutBehavior = timeoutBehavior;
     }
@@ -56,14 +49,15 @@ public class Stop extends AbstractInteractionWithRangeProvider {
     public ActionRange getRange(final Player player, Script script, final Action action, final Runnable visuals)
             throws ScriptExecutionException {
         logger.info("{}", this);
+
         List<String> choices = new ArrayList<>(choiceRanges.size());
         List<ActionRange> ranges = new ArrayList<>(choiceRanges.size());
         for (Entry<Statement, ActionRange> entry : choiceRanges.entrySet()) {
             choices.add(action.getResponseText(entry.getKey(), script));
             ranges.add(entry.getValue());
         }
-        ScriptFunction timeoutFunction;
 
+        ScriptFunction timeoutFunction;
         // If the reply requires confirmation, then it's treated like a normal reply,
         // and the prompt appears after all visuals have been rendered their mandatory part
         if (timeoutType != TimeoutType.Terminate) {
@@ -102,36 +96,5 @@ public class Stop extends AbstractInteractionWithRangeProvider {
             visuals.run();
             player.completeMandatory();
         });
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder s = new StringBuilder();
-        s.append(getClass().getSimpleName() + ": ");
-        for (Entry<Statement, ActionRange> entry : choiceRanges.entrySet()) {
-            s.append(entry.getKey());
-            s.append("=");
-            s.append(entry.getValue());
-            s.append(" ");
-        }
-        return s.toString();
-    }
-
-    @Override
-    public void validate(Script script, Action action, List<ValidationIssue> validationErrors)
-            throws ScriptParsingException {
-        try {
-            for (Entry<Statement, ActionRange> entry : choiceRanges.entrySet()) {
-                action.getResponseText(entry.getKey(), script);
-            }
-        } catch (Exception e) {
-            validationErrors.add(new ValidationIssue(action, e, script));
-        }
-
-        for (Entry<Statement, ActionRange> entry : choiceRanges.entrySet()) {
-            script.actions.validate(script, action, entry.getValue(), validationErrors);
-        }
-
-        super.validate(script, action, validationErrors);
     }
 }

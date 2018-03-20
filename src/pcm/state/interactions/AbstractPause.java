@@ -10,7 +10,7 @@ import pcm.model.Script;
 import pcm.model.ScriptExecutionException;
 import teaselib.Answer;
 
-public abstract class AbstractPause extends AbstractInteractionWithRangeProvider {
+public abstract class AbstractPause extends AbstractInteraction {
     private static final Logger logger = LoggerFactory.getLogger(AbstractPause.class);
 
     public final Answer answer;

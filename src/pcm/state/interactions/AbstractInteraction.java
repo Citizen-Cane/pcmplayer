@@ -9,7 +9,7 @@ import pcm.model.ValidationIssue;
 import pcm.state.Interaction;
 import pcm.state.Interaction.NeedsRangeProvider;
 
-public abstract class AbstractInteractionWithRangeProvider implements Interaction, NeedsRangeProvider {
+public abstract class AbstractInteraction implements Interaction, NeedsRangeProvider {
 
     protected Interaction rangeProvider = null;
 

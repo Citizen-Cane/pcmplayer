@@ -14,11 +14,9 @@ import pcm.model.Action;
 import pcm.model.ActionRange;
 import pcm.model.Script;
 import pcm.model.ScriptExecutionException;
-import pcm.model.ScriptParsingException;
-import pcm.model.ValidationIssue;
 import teaselib.ScriptFunction;
-import teaselib.core.ScriptInterruptedException;
 import teaselib.core.speechrecognition.SpeechRecognition;
+import teaselib.core.util.ExceptionUtil;
 
 /**
  * Displays prompts while playing a range. THe following should be considered when using this statement:
@@ -33,23 +31,18 @@ import teaselib.core.speechrecognition.SpeechRecognition;
  * @author Citizen-Cane
  *
  */
-public class Break extends AbstractInteractionWithRangeProvider {
+public class Break extends AbstractBreakInteraction {
     private static final Logger logger = LoggerFactory.getLogger(Break.class);
 
     public static final String SuppressStackCorrectionOnBreak = "suppressStackCorrectionOnBreak";
 
     private final ActionRange breakRange;
-    private final Map<Statement, ActionRange> choiceRanges;
     private final boolean supressStackCorrectionOnBreak;
 
     public Break(ActionRange actionRange, Map<Statement, ActionRange> choiceRanges,
             boolean supressStackCorrectionOnBreak) {
-        if (choiceRanges.containsKey(Statement.Chat) && choiceRanges.size() > 1) {
-            throw new IllegalArgumentException(Statement.Chat.toString());
-        }
-
+        super(choiceRanges);
         this.breakRange = actionRange;
-        this.choiceRanges = choiceRanges;
         this.supressStackCorrectionOnBreak = supressStackCorrectionOnBreak;
     }
 
@@ -64,20 +57,17 @@ public class Break extends AbstractInteractionWithRangeProvider {
             choices.add(action.getResponseText(entry.getKey(), script));
             ranges.add(entry.getValue());
         }
+
         ScriptFunction playRange = new ScriptFunction(() -> {
             try {
                 player.range = rangeProvider.getRange(player, script, action, NoVisuals);
                 player.playRange(breakRange);
-                SpeechRecognition.completeSpeechRecognitionInProgress();
-            } catch (ScriptInterruptedException e) {
-                // Must be forwarded to script function task
-                // in order to clean up
-                throw e;
-            } catch (Throwable t) {
-                logger.error(t.getMessage(), t);
+            } catch (ScriptExecutionException e) {
+                throw ExceptionUtil.asRuntimeException(e);
             }
-            return;
+            SpeechRecognition.completeSpeechRecognitionInProgress();
         });
+
         String result = player.reply(playRange, choices);
         if (result == ScriptFunction.Timeout) {
             return player.range;
@@ -94,36 +84,5 @@ public class Break extends AbstractInteractionWithRangeProvider {
         while (script.stack.size() > stackMemento) {
             script.stack.pop();
         }
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder s = new StringBuilder();
-        s.append(getClass().getSimpleName() + ": ");
-        for (Entry<Statement, ActionRange> entry : choiceRanges.entrySet()) {
-            s.append(entry.getKey());
-            s.append("=");
-            s.append(entry.getValue());
-            s.append(" ");
-        }
-        return s.toString();
-    }
-
-    @Override
-    public void validate(Script script, Action action, List<ValidationIssue> validationErrors)
-            throws ScriptParsingException {
-        try {
-            for (Entry<Statement, ActionRange> entry : choiceRanges.entrySet()) {
-                action.getResponseText(entry.getKey(), script);
-            }
-        } catch (Exception e) {
-            validationErrors.add(new ValidationIssue(action, e, script));
-        }
-
-        for (Entry<Statement, ActionRange> entry : choiceRanges.entrySet()) {
-            script.actions.validate(script, action, entry.getValue(), validationErrors);
-        }
-
-        super.validate(script, action, validationErrors);
     }
 }

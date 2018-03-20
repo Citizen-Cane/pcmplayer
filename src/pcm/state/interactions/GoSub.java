@@ -19,7 +19,7 @@ import pcm.model.ValidationIssue;
  *         Calls a sub program specified by the range argument after rendering the visuals of the action.
  * 
  */
-public class GoSub extends AbstractInteractionWithRangeProvider {
+public class GoSub extends AbstractInteraction {
     private static final Logger logger = LoggerFactory.getLogger(GoSub.class);
 
     private final ActionRange range;
