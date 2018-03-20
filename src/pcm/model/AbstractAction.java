@@ -57,6 +57,7 @@ public abstract class AbstractAction {
         YesText,
         NoText,
         ResumeText,
+        ChatText,
 
         // Visual
         NoImage,
@@ -248,6 +249,7 @@ public abstract class AbstractAction {
         Statement.KeywordToStatement.put("cum", Statement.CumText);
         Statement.KeywordToStatement.put("no", Statement.NoText);
         Statement.KeywordToStatement.put("resume", Statement.ResumeText);
+        Statement.KeywordToStatement.put("chat", Statement.ChatText);
         Statement.KeywordToStatement.put("stop", Statement.StopText);
         Statement.KeywordToStatement.put("yes", Statement.YesText);
     }
@@ -291,6 +293,8 @@ public abstract class AbstractAction {
         } else if (name == Statement.NoText) {
             addResponse(name, cmd.allAsText());
         } else if (name == Statement.ResumeText) {
+            addResponse(name, cmd.allAsText());
+        } else if (name == Statement.ChatText) {
             addResponse(name, cmd.allAsText());
         } else if (name == Statement.StopText) {
             addResponse(name, cmd.allAsText());

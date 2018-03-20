@@ -1,6 +1,6 @@
 package pcm.model;
 
-import static java.lang.Integer.*;
+import static java.lang.Integer.parseInt;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -43,6 +43,7 @@ import pcm.state.conditions.TimeFrom;
 import pcm.state.conditions.TimeTo;
 import pcm.state.interactions.Ask;
 import pcm.state.interactions.Break;
+import pcm.state.interactions.Chat;
 import pcm.state.interactions.GoSub;
 import pcm.state.interactions.LoadSbd;
 import pcm.state.interactions.No;
@@ -178,48 +179,9 @@ public class Action extends AbstractAction {
                 int delay = parseInt(args[0]);
                 addVisual(Statement.Delay, new Delay(delay));
             } else if (args.length == 2) {
-                // delay range
-                int from = parseInt(args[0]);
-                int to = parseInt(args[1]);
-                addVisual(Statement.Delay, new Delay(from, to));
+                addDelay(args);
             } else if (args.length >= 4) {
-                // delay range & stop
-                int from = parseInt(args[0]);
-                int to = parseInt(args[1]);
-                // Type
-                TimeoutType timeoutType = null;
-                final String arg2 = args[2].toLowerCase();
-                if (arg2.equals("confirm")) {
-                    timeoutType = Stop.TimeoutType.Confirm;
-                } else if (arg2.equals("autoconfirm")) {
-                    timeoutType = Stop.TimeoutType.AutoConfirm;
-                } else if (arg2.equals("terminate")) {
-                    timeoutType = TimeoutType.Terminate;
-                }
-                // Behavior
-                TimeoutBehavior timeoutBehavior = null;
-                final String arg3 = args[3].toLowerCase();
-                if (arg3.equals("indubiomitius")) {
-                    timeoutBehavior = TimeoutBehavior.InDubioMitius;
-                } else if (arg3.equals("indubioproduriore")) {
-                    timeoutBehavior = TimeoutBehavior.InDubioProDuriore;
-                } else if (arg3.equals("indubiocontrareum")) {
-                    timeoutBehavior = TimeoutBehavior.InDubioContraReum;
-                }
-                // Build the statement
-                if (timeoutType != null && timeoutBehavior != null) {
-                    addVisual(Statement.Delay, new Timeout(from, to));
-                    setInteraction(new Stop(rangesFromArgv(args, 4), timeoutType, timeoutBehavior));
-                } else if (timeoutType != null && timeoutBehavior == null) {
-                    addVisual(Statement.Delay, new Timeout(from, to));
-                    setInteraction(new Stop(rangesFromArgv(args, 3), timeoutType, TimeoutBehavior.InDubioProDuriore));
-                } else if (timeoutType == null && timeoutBehavior == null) {
-                    addVisual(Statement.Delay, new Delay(from, to));
-                    setInteraction(new Stop(rangesFromArgv(args, 2), Stop.TimeoutType.Terminate,
-                            TimeoutBehavior.InDubioProDuriore));
-                } else {
-                    throw new IllegalArgumentException(cmd.line);
-                }
+                addDelayAndReplies(cmd, args);
             } else {
                 throw new IllegalArgumentException(cmd.line);
             }
@@ -461,12 +423,12 @@ public class Action extends AbstractAction {
                 noText = getResponseText(Statement.NoText, cmd.script);
             }
             setInteraction(new No(noText));
-        } else if (name == Statement.Pause) {
-            String resumeText = cmd.allAsText();
-            if (resumeText.isEmpty()) {
-                resumeText = getResponseText(Statement.ResumeText, cmd.script);
+        } else if (name == Statement.Chat) {
+            String chatText = cmd.allAsText();
+            if (chatText.isEmpty()) {
+                chatText = getResponseText(Statement.ChatText, cmd.script);
             }
-            setInteraction(new Pause(resumeText));
+            setInteraction(new Chat(chatText));
         } else if (name == Statement.YesNo) {
             String args[] = cmd.args();
             setInteraction(new YesNo(parseInt(args[0]), parseInt(args[1]), parseInt(args[2]), parseInt(args[3])));
@@ -510,6 +472,51 @@ public class Action extends AbstractAction {
         } else {
             super.add(cmd);
         }
+    }
+
+    private void addDelayAndReplies(ScriptLineTokenizer cmd, String[] args) {
+        int from = parseInt(args[0]);
+        int to = parseInt(args[1]);
+        // Type
+        TimeoutType timeoutType = null;
+        final String arg2 = args[2].toLowerCase();
+        if (arg2.equals("confirm")) {
+            timeoutType = Stop.TimeoutType.Confirm;
+        } else if (arg2.equals("autoconfirm")) {
+            timeoutType = Stop.TimeoutType.AutoConfirm;
+        } else if (arg2.equals("terminate")) {
+            timeoutType = TimeoutType.Terminate;
+        }
+        // Behavior
+        TimeoutBehavior timeoutBehavior = null;
+        final String arg3 = args[3].toLowerCase();
+        if (arg3.equals("indubiomitius")) {
+            timeoutBehavior = TimeoutBehavior.InDubioMitius;
+        } else if (arg3.equals("indubioproduriore")) {
+            timeoutBehavior = TimeoutBehavior.InDubioProDuriore;
+        } else if (arg3.equals("indubiocontrareum")) {
+            timeoutBehavior = TimeoutBehavior.InDubioContraReum;
+        }
+        // Build the statement
+        if (timeoutType != null && timeoutBehavior != null) {
+            addVisual(Statement.Delay, new Timeout(from, to));
+            setInteraction(new Stop(rangesFromArgv(args, 4), timeoutType, timeoutBehavior));
+        } else if (timeoutType != null && timeoutBehavior == null) {
+            addVisual(Statement.Delay, new Timeout(from, to));
+            setInteraction(new Stop(rangesFromArgv(args, 3), timeoutType, TimeoutBehavior.InDubioProDuriore));
+        } else if (timeoutType == null && timeoutBehavior == null) {
+            addVisual(Statement.Delay, new Delay(from, to));
+            setInteraction(
+                    new Stop(rangesFromArgv(args, 2), Stop.TimeoutType.Terminate, TimeoutBehavior.InDubioProDuriore));
+        } else {
+            throw new IllegalArgumentException(cmd.line);
+        }
+    }
+
+    private void addDelay(String[] args) {
+        int from = parseInt(args[0]);
+        int to = parseInt(args[1]);
+        addVisual(Statement.Delay, new Delay(from, to));
     }
 
     private static boolean isNumeric(String string) {

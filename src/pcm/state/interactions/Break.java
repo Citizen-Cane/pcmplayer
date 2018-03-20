@@ -3,6 +3,7 @@ package pcm.state.interactions;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +44,10 @@ public class Break extends AbstractInteractionWithRangeProvider {
 
     public Break(ActionRange actionRange, Map<Statement, ActionRange> choiceRanges,
             boolean supressStackCorrectionOnBreak) {
+        if (choiceRanges.containsKey(Statement.Chat) && choiceRanges.size() > 1) {
+            throw new IllegalArgumentException(Statement.Chat.toString());
+        }
+
         this.breakRange = actionRange;
         this.choiceRanges = choiceRanges;
         this.supressStackCorrectionOnBreak = supressStackCorrectionOnBreak;
@@ -55,9 +60,9 @@ public class Break extends AbstractInteractionWithRangeProvider {
         visuals.run();
         List<String> choices = new ArrayList<>(choiceRanges.size());
         List<ActionRange> ranges = new ArrayList<>(choiceRanges.size());
-        for (Statement key : choiceRanges.keySet()) {
-            choices.add(action.getResponseText(key, script));
-            ranges.add(choiceRanges.get(key));
+        for (Entry<Statement, ActionRange> entry : choiceRanges.entrySet()) {
+            choices.add(action.getResponseText(entry.getKey(), script));
+            ranges.add(entry.getValue());
         }
         ScriptFunction playRange = new ScriptFunction(() -> {
             try {
@@ -95,8 +100,11 @@ public class Break extends AbstractInteractionWithRangeProvider {
     public String toString() {
         StringBuilder s = new StringBuilder();
         s.append(getClass().getSimpleName() + ": ");
-        for (Statement statement : choiceRanges.keySet()) {
-            s.append(statement.toString() + "=" + choiceRanges.get(statement).toString());
+        for (Entry<Statement, ActionRange> entry : choiceRanges.entrySet()) {
+            s.append(entry.getKey());
+            s.append("=");
+            s.append(entry.getValue());
+            s.append(" ");
         }
         return s.toString();
     }
@@ -105,15 +113,15 @@ public class Break extends AbstractInteractionWithRangeProvider {
     public void validate(Script script, Action action, List<ValidationIssue> validationErrors)
             throws ScriptParsingException {
         try {
-            for (Statement key : choiceRanges.keySet()) {
-                action.getResponseText(key, script);
+            for (Entry<Statement, ActionRange> entry : choiceRanges.entrySet()) {
+                action.getResponseText(entry.getKey(), script);
             }
         } catch (Exception e) {
             validationErrors.add(new ValidationIssue(action, e, script));
         }
-        script.actions.validate(script, action, breakRange, validationErrors);
-        for (Statement statement : choiceRanges.keySet()) {
-            script.actions.validate(script, action, choiceRanges.get(statement), validationErrors);
+
+        for (Entry<Statement, ActionRange> entry : choiceRanges.entrySet()) {
+            script.actions.validate(script, action, entry.getValue(), validationErrors);
         }
 
         super.validate(script, action, validationErrors);
