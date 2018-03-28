@@ -1,9 +1,6 @@
 package pcm.state.interactions;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -16,7 +13,6 @@ import pcm.model.Action;
 import pcm.model.ScriptExecutionException;
 import pcm.model.ScriptParsingException;
 import pcm.model.ValidationIssue;
-import pcm.state.interactions.YesNo;
 import pcm.state.visuals.SpokenMessage;
 import pcm.state.visuals.SpokenMessage.Entry;
 import pcm.util.TestUtils;
@@ -70,11 +66,11 @@ public class YesNoTest {
         assertEquals(2, spokenMessage.getMessages().size());
 
         List<Entry> entries = spokenMessage.entries();
-        testChat(action, entries);
+        testChat(entries);
         testYesNo(action);
     }
 
-    private void testChat(Action action, List<Entry> entries) {
+    private static void testChat(List<Entry> entries) {
         assertEquals(2, entries.size());
 
         assertEquals("Foo.", entries.get(0).message.get(0).value);
@@ -90,7 +86,7 @@ public class YesNoTest {
         assertEquals("Yes Bar", entries.get(1).answer.get().text);
     }
 
-    private void testYesNo(Action action) {
+    private static void testYesNo(Action action) {
         assertTrue(action.interaction instanceof YesNo);
         assertEquals("YesNo Yes Foo", action.getResponseText(Statement.YesText, null));
         assertEquals("YesNo No Bar", action.getResponseText(Statement.NoText, null));

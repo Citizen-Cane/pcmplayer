@@ -5,9 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import pcm.controller.Player;
 import pcm.model.AbstractAction.Statement;
 import pcm.model.Action;
@@ -32,8 +29,6 @@ import teaselib.core.util.ExceptionUtil;
  *
  */
 public class Break extends AbstractBreakInteraction {
-    private static final Logger logger = LoggerFactory.getLogger(Break.class);
-
     public static final String SuppressStackCorrectionOnBreak = "suppressStackCorrectionOnBreak";
 
     private final ActionRange breakRange;

@@ -145,7 +145,7 @@ public class ScriptParser {
         }
     }
 
-    private void handleDeprecatedInlineReply() {
+    private static void handleDeprecatedInlineReply() {
         throw new IllegalArgumentException("Deprecated bracket prompt");
     }
 

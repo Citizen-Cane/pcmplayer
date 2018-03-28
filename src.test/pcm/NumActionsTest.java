@@ -1,6 +1,6 @@
 package pcm;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 
@@ -49,7 +49,8 @@ public class NumActionsTest {
         assertEquals(ScriptState.SET, player.state.get(1013));
     }
 
-    private void assertThatNumActionsFromWorks(Player player) throws AllActionsSetException, ScriptExecutionException {
+    private static void assertThatNumActionsFromWorks(Player player)
+            throws AllActionsSetException, ScriptExecutionException {
         TestUtils.play(player, 1010);
         assertEquals(ScriptState.UNSET, player.state.get(1013));
 

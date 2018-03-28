@@ -160,6 +160,7 @@ public class Player extends TeaseScript implements MainScript {
 
     }
 
+    @Override
     public void run() {
         play(mainScript);
     }
@@ -177,8 +178,7 @@ public class Player extends TeaseScript implements MainScript {
             if (debugStream != null) {
                 debugOutput = true;
                 validateScripts = Boolean.parseBoolean(teaseLib.config.get(Config.Debug.StopOnAssetNotFound));
-                BufferedReader debugReader = new BufferedReader(new InputStreamReader(debugStream));
-                try {
+                try (BufferedReader debugReader = new BufferedReader(new InputStreamReader(debugStream));) {
                     String line;
                     while ((line = debugReader.readLine()) != null) {
                         line = line.trim();
@@ -193,8 +193,6 @@ public class Player extends TeaseScript implements MainScript {
                             break;
                         }
                     }
-                } finally {
-                    debugReader.close();
                 }
             }
         } catch (Exception e) {
@@ -457,12 +455,9 @@ public class Player extends TeaseScript implements MainScript {
                 boolean callOnClose = (playRange == null) || (script.onClose != null
                         && playRange.contains(script.onClose.start) && playRange.contains(script.onClose.end));
                 if (script.onClose != null && callOnClose && !intentionalQuit) {
-                    // Done automatically in reply(), otherwise we have to do it
+                    Thread.interrupted();
                     endAll();
                     range = script.onClose;
-                    // clear interrupted state
-                    Thread.interrupted();
-                    // Continue with onClose range
                 } else {
                     throw e;
                 }
