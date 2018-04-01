@@ -1,6 +1,3 @@
-/**
- * 
- */
 package pcm.state.visuals;
 
 import java.io.IOException;
@@ -22,6 +19,7 @@ import teaselib.core.media.MediaRendererThread;
  */
 public class KeyReleaseHandler implements Visual {
     private static final Logger logger = LoggerFactory.getLogger(KeyReleaseHandler.class);
+
     public static final String Prepare = "prepare";
     public static final String Start = "start";
     public static final String Sleep = "sleep";
@@ -47,7 +45,7 @@ public class KeyReleaseHandler implements Visual {
         MediaRenderer keyReleaseArm = new MediaRendererThread(player.teaseLib) {
             @Override
             protected void renderMedia() throws InterruptedException, IOException {
-                logger.info(command + (duration > 0 ? " " + duration : ""));
+                logger.info("{} {}", command, (duration > 0 ? duration : ""));
                 startCompleted();
                 if (command.equalsIgnoreCase(Prepare)) {
                     player.keyReleaseActuator = null;
@@ -71,11 +69,6 @@ public class KeyReleaseHandler implements Visual {
                     mandatoryCompleted();
                     allCompleted();
                 }
-            }
-
-            @Override
-            public void interrupt() {
-                super.interrupt();
             }
         };
         player.render(keyReleaseArm);
