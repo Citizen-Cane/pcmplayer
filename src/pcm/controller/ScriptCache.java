@@ -46,14 +46,11 @@ public class ScriptCache {
             script = cache.get(name).get();
         }
         if (script != null) {
-            logger.debug("Using cached script " + name);
+            logger.debug("Using cached script {}", name);
         } else {
             String location = path + name;
-            BufferedReader scriptReader = script(location);
-            try {
+            try (BufferedReader scriptReader = script(location);) {
                 script = new Script(actor, name, this, new ScriptParser(scriptReader, staticSymbols));
-            } finally {
-                scriptReader.close();
             }
             cache.put(name, new SoftReference<>(script));
         }
@@ -61,8 +58,7 @@ public class ScriptCache {
     }
 
     public BufferedReader script(String name) throws IOException {
-        String path = name + ".sbd";
-        InputStream inputStream = resourceLoader.getResource(path);
+        InputStream inputStream = resourceLoader.getResource(name + ".sbd");
         return new BufferedReader(new InputStreamReader(inputStream));
     }
 
