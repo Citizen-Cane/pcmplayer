@@ -15,6 +15,8 @@ import pcm.model.ActionRange;
 import pcm.model.Script;
 import pcm.model.ScriptExecutionException;
 import pcm.state.visuals.Timeout;
+import teaselib.Answer;
+import teaselib.Answers;
 import teaselib.ScriptFunction;
 import teaselib.core.speechrecognition.SpeechRecognition.TimeoutBehavior;
 
@@ -50,10 +52,17 @@ public class Stop extends AbstractBreakInteraction {
             throws ScriptExecutionException {
         logger.info("{}", this);
 
-        List<String> choices = new ArrayList<>(choiceRanges.size());
+        Answers answers = new Answers(choiceRanges.size());
         List<ActionRange> ranges = new ArrayList<>(choiceRanges.size());
         for (Entry<Statement, ActionRange> entry : choiceRanges.entrySet()) {
-            choices.add(action.getResponseText(entry.getKey(), script));
+            String choice = action.getResponseText(entry.getKey(), script);
+            if (entry.getKey() == Statement.YesText) {
+                answers.add(Answer.yes(choice));
+            } else if (entry.getKey() == Statement.NoText) {
+                answers.add(Answer.no(choice));
+            } else {
+                answers.add(Answer.resume(choice));
+            }
             ranges.add(entry.getValue());
         }
 
@@ -73,9 +82,9 @@ public class Stop extends AbstractBreakInteraction {
             timeoutFunction = displayPromptTogetherWithScriptFunction(player, visuals);
         }
 
-        String result = player.reply(timeoutFunction, choices);
+        String result = player.reply(timeoutFunction, answers);
         if (result != ScriptFunction.Timeout) {
-            int index = choices.indexOf(result);
+            int index = answers.indexOf(result);
             logger.info("-> {}", result);
             return ranges.get(index);
         } else {
