@@ -29,7 +29,7 @@ public class StateCommandTest {
 
     @Before
     public void initPlayer() throws Exception {
-        player = TestUtils.createPlayer(StateCommandTest.class, "../StateCommandTest");
+        player = TestUtils.createPlayer(StateCommandTest.class, "StateCommandTest");
     }
 
     @Test
@@ -112,8 +112,9 @@ public class StateCommandTest {
         testStateApplyToIndefinitelyAndRemember(new Callable<Void>() {
             @Override
             public Void call() throws Exception {
-                new StateCommand(new StateCommandLineParameters(new String[] { "teaselib.Toys.Chastity_Device", "Apply", "to",
-                        "teaselib.Body.OnPenis", "over", "inf", "remember" }, declarations)).execute(player.state);
+                new StateCommand(new StateCommandLineParameters(new String[] { "teaselib.Toys.Chastity_Device", "Apply",
+                        "to", "teaselib.Body.OnPenis", "over", "inf", "remember" }, declarations))
+                                .execute(player.state);
                 return null;
             }
         });

@@ -25,7 +25,7 @@ public class ItemCommandTest {
 
     @Before
     public void initPlayer() throws Exception {
-        player = TestUtils.createPlayer(StateCommandTest.class, "../ItemCommandTest");
+        player = TestUtils.createPlayer(StateCommandTest.class, "ItemCommandTest");
     }
 
     public ItemCommandTest() {

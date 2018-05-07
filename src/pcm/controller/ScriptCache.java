@@ -58,7 +58,7 @@ public class ScriptCache {
     }
 
     public BufferedReader script(String name) throws IOException {
-        InputStream inputStream = resourceLoader.getResource(name + ".sbd");
+        InputStream inputStream = resourceLoader.get(name + ".sbd");
         return new BufferedReader(new InputStreamReader(inputStream));
     }
 

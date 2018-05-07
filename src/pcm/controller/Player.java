@@ -174,7 +174,7 @@ public class Player extends TeaseScript implements MainScript {
     private StringTokenizer parseDebugFile(String scriptName) {
         String resourcePath = getClass().getSimpleName() + ResourceList.PathDelimiter + "debug.txt";
         try {
-            InputStream debugStream = resources.getResource(resourcePath);
+            InputStream debugStream = resources.get(resourcePath);
             if (debugStream != null) {
                 debugOutput = true;
                 validateScripts = Boolean.parseBoolean(teaseLib.config.get(Config.Debug.StopOnAssetNotFound));
@@ -672,7 +672,7 @@ public class Player extends TeaseScript implements MainScript {
         for (String resource : action.validateResources()) {
             InputStream stream = null;
             try {
-                stream = resourceLoader.getResource(resource);
+                stream = resourceLoader.get(resource);
                 if (stream != null) {
                     stream.close();
                 }

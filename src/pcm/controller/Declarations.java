@@ -14,9 +14,6 @@ public class Declarations {
 
     final Map<String, String> declarations = new HashMap<>();
 
-    public Declarations() {
-    }
-
     public void add(String namespace, String type) {
         declarations.put(namespace, type);
     }
@@ -33,7 +30,7 @@ public class Declarations {
         for (String value : qualifiedNames) {
             boolean valueChecked = false;
             for (java.util.Map.Entry<String, String> entry : entries()) {
-                QualifiedItem<?> qualifiedItem = QualifiedItem.of(value);
+                QualifiedItem qualifiedItem = QualifiedItem.of(value);
                 boolean isDeclared = qualifiedItem.namespace().equalsIgnoreCase(entry.getKey());
                 if (isDeclared) {
                     if (isKeyword(entry, Declarations.ENUM)) {
