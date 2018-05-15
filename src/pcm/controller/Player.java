@@ -42,7 +42,6 @@ import teaselib.Message;
 import teaselib.Sexuality.Gender;
 import teaselib.Sexuality.Sex;
 import teaselib.TeaseScript;
-import teaselib.core.ResourceList;
 import teaselib.core.ResourceLoader;
 import teaselib.core.ScriptInterruptedException;
 import teaselib.core.TeaseLib;
@@ -172,7 +171,7 @@ public class Player extends TeaseScript implements MainScript {
     }
 
     private StringTokenizer parseDebugFile(String scriptName) {
-        String resourcePath = getClass().getSimpleName() + ResourceList.PathDelimiter + "debug.txt";
+        String resourcePath = getClass().getSimpleName() + ResourceLoader.separator + "debug.txt";
         try {
             InputStream debugStream = resources.get(resourcePath);
             if (debugStream != null) {
