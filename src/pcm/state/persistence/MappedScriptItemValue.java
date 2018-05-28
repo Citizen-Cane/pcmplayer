@@ -34,7 +34,7 @@ public class MappedScriptItemValue implements MappedScriptValue {
 
     @Override
     public boolean isSet() {
-        return items.available().size() > 0;
+        return !items.getAvailable().isEmpty();
     }
 
     @Override
@@ -43,8 +43,8 @@ public class MappedScriptItemValue implements MappedScriptValue {
             // 1:1 mapping
             items.get(0).setAvailable(true);
         } else {
-            throw new IllegalStateException(n + "(" + items.toString() + ")"
-                    + ": Multiple-mapped values can only be unset");
+            throw new IllegalStateException(
+                    n + "(" + items.toString() + ")" + ": Multiple-mapped values can only be unset");
         }
     }
 

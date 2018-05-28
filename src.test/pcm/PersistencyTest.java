@@ -1,8 +1,6 @@
 package pcm;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 
@@ -34,7 +32,7 @@ public class PersistencyTest {
         // user list
         player.item(Toys.Collar).setAvailable(true);
 
-        assertEquals(1, player.items(Toys.Collar).available().size());
+        assertEquals(1, player.items(Toys.Collar).getAvailable().size());
         assertEquals(ScriptState.UNSET, player.state.get(365));
 
         player.validateScripts = false;
@@ -43,7 +41,7 @@ public class PersistencyTest {
         // Correct because the optimized .resetrange only clears previously
         // restored items,
         // and thus won't clear the toy anymore
-        assertEquals(1, player.items(Toys.Collar).available().size());
+        assertEquals(1, player.items(Toys.Collar).getAvailable().size());
         assertEquals(ScriptState.SET, player.state.get(365));
 
         player.state.unset(100);
@@ -67,11 +65,11 @@ public class PersistencyTest {
                 new MappedScriptItemValue(365, player.items(Toys.Collar)));
         player.item(Toys.Collar).setAvailable(true);
 
-        assertEquals(1, player.items(Toys.Collar).available().size());
+        assertEquals(1, player.items(Toys.Collar).getAvailable().size());
         assertEquals(ScriptState.UNSET, player.state.get(365));
         player.validateScripts = true;
         player.loadScript("PersistencyTest_ScriptRestoreWorks_MainScript");
-        assertEquals(1, player.items(Toys.Collar).available().size());
+        assertEquals(1, player.items(Toys.Collar).getAvailable().size());
         assertEquals(ScriptState.SET, player.state.get(365));
 
         player.state.unset(100);

@@ -54,7 +54,7 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
         Map<Integer, AskItem> askItems = script.askItems;
         String title = null;
         for (int i = start; i <= end; i++) {
-            Integer index = new Integer(i);
+            Integer index = i;
             if (askItems.containsKey(index)) {
                 AskItem askItem = askItems.get(index);
                 if (askItem.action == 0) {
@@ -65,12 +65,12 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
                         Boolean value = state.get(askItem.action) == ScriptState.SET ? Boolean.TRUE : Boolean.FALSE;
                         values.add(value);
                         choices.add(askItem.title);
-                        indices.add(new Integer(askItem.action));
+                        indices.add(askItem.action);
                     }
                 }
             }
         }
-        logger.info(getClass().getSimpleName() + " " + choices.toString());
+        logger.info("{} {}", getClass().getSimpleName(), choices);
         visuals.run();
         player.completeMandatory();
         // Don't wait, display checkboxes while displaying the message
@@ -79,7 +79,7 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
         MappedScriptState mappedState = (MappedScriptState) state;
         for (int i = 0; i < indices.size(); i++) {
             Integer n = indices.get(i);
-            if (results.get(i) == true) {
+            if (results.get(i)) {
                 // Handle mapped values
                 if (mappedState.hasScriptValueMapping(n)) {
                     Items items = mappedState.getMappedItems(n);
@@ -88,7 +88,7 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
                     } else if (items.size() == 1) {
                         // Just a single item - just set
                         state.set(n);
-                    } else if (items.available().size() > 0) {
+                    } else if (!items.getAvailable().isEmpty()) {
                         // Update, cache result
                         mappedState.setOverride(n);
                     } else {
