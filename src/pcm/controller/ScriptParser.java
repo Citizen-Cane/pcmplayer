@@ -185,7 +185,7 @@ public class ScriptParser {
         return message;
     }
 
-    private void finalizeActionParsing(Script script, Action action, SpokenMessage message, Txt txt)
+    private static void finalizeActionParsing(Script script, Action action, SpokenMessage message, Txt txt)
             throws ValidationIssue {
         // Add message to visuals as the last item, because
         // rendering the message triggers rendering of all other

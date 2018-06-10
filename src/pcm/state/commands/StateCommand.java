@@ -44,7 +44,7 @@ public class StateCommand extends BasicCommand {
 
     private static ParameterizedStatement apply(final StateCommandLineParameters args, final String[] items)
             throws ClassNotFoundException {
-        String[] peers = args.items(args.containsKey(Keyword.To) ? Keyword.To : Keyword.Apply);
+        Object[] peers = args.items(args.containsKey(Keyword.To) ? Keyword.To : Keyword.Apply);
         if (args.containsKey(Keyword.To) && peers.length == 0) {
             throw new IllegalArgumentException("Missing peers to apply the item to");
         }
@@ -74,7 +74,7 @@ public class StateCommand extends BasicCommand {
 
     private static ParameterizedStatement remove(final StateCommandLineParameters args, final String[] items)
             throws ClassNotFoundException {
-        String[] peers = args.items(Keyword.From);
+        Object[] peers = args.items(Keyword.From);
         return new ParameterizedStatement(STATE, args) {
             @Override
             public void run(ScriptState state) {

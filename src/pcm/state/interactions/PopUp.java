@@ -34,14 +34,14 @@ public class PopUp implements Interaction {
         List<String> choices = new ArrayList<>();
         Map<Integer, MenuItem> menuItems = script.menuItems;
         for (int i = start; i <= end; i++) {
-            Integer index = new Integer(i);
+            Integer index = Integer.valueOf(i);
             if (menuItems.containsKey(index)) {
                 MenuItem menuItem = menuItems.get(index);
                 items.add(menuItem);
                 choices.add(menuItem.message);
             }
         }
-        logger.info(getClass().getSimpleName() + " " + choices.toString());
+        logger.info("{} {}", getClass().getSimpleName(), choices);
         visuals.run();
         player.completeMandatory();
         String result = player.reply(choices);
@@ -50,5 +50,6 @@ public class PopUp implements Interaction {
 
     @Override
     public void validate(Script script, Action action, List<ValidationIssue> validationErrors) {
+        // TODO Add validation
     }
 }

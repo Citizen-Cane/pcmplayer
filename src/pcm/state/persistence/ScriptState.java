@@ -68,8 +68,8 @@ public class ScriptState {
     private int step = 0;
     private Map<Integer, Integer> action2StepMap = new HashMap<>();
 
-    public static final Long SET = new Long(1);
-    public static final Long UNSET = new Long(0);
+    public static final Long SET = Long.valueOf(1);
+    public static final Long UNSET = Long.valueOf(0);
 
     private static final String TIMEKEYS = "TimeKeys";
 
@@ -85,7 +85,7 @@ public class ScriptState {
     }
 
     public void restore() {
-        logger.info("Restoring script " + script.toString());
+        logger.info("Restoring script {}", script);
         // Restore restores:
         // - nothing if nothing has been saved before
         // - The range last saved
@@ -112,7 +112,7 @@ public class ScriptState {
                                     "Missing state " + key + " - Don't you dare to hack into my memories!");
                         }
                         long timeValue = Long.parseLong(value);
-                        times.put(new Integer(key), timeValue);
+                        times.put(Integer.valueOf(key), timeValue);
                     }
                 }
             }
@@ -135,7 +135,7 @@ public class ScriptState {
     }
 
     private void restoreValue(int i, String value) {
-        Long v = new Long(value);
+        Long v = Long.valueOf(value);
         if (v.equals(SET)) {
             data.put(i, SET);
         } else if (v.equals(UNSET)) {
@@ -305,7 +305,7 @@ public class ScriptState {
     public void repeatAdd(Integer n, int m) {
         Long v = data.containsKey(n) ? data.get(n) : UNSET;
         Long w = v.equals(SET) ? -m : v - m;
-        logger.info("Increasing " + n + " from " + v + " to " + w);
+        logger.info("Increasing {} from {} to {}", n, v, w);
         data.put(n, w);
         actions.remove(n);
         times.remove(n);
@@ -313,8 +313,8 @@ public class ScriptState {
 
     public void repeatDel(Integer n, int m) {
         long v = data.containsKey(n) ? data.get(n) : UNSET;
-        Long w = v + m < SET ? new Long(v) + m : SET;
-        logger.info("Decreasing " + n + " from " + v + " to " + w);
+        Long w = v + m < SET ? Long.valueOf(v) + m : SET;
+        logger.info("Decreasing  {} from {}  to {}", n, v, w);
         data.put(n, w);
         actions.remove(n);
         times.remove(n);

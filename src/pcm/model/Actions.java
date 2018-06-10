@@ -23,7 +23,7 @@ public class Actions {
 
     public Action get(int n) {
         if (actions.containsKey(n)) {
-            return actions.get(new Integer(n));
+            return actions.get(Integer.valueOf(n));
         } else {
             return null;
         }
@@ -42,7 +42,7 @@ public class Actions {
     public List<Action> getAll(ActionRange range) {
         List<Action> actionRange = new ArrayList<>();
         for (int i = range.start; i <= range.end; i++) {
-            Integer index = new Integer(i);
+            Integer index = Integer.valueOf(i);
             if (actions.containsKey(index)) {
                 actionRange.add(actions.get(index));
             }
@@ -60,10 +60,10 @@ public class Actions {
     public List<Action> getUnset(ActionRange range, ScriptState state) {
         List<Action> actionRange = new ArrayList<>();
         for (int i = range.start; i <= range.end; i++) {
-            Integer index = new Integer(i);
+            Integer index = Integer.valueOf(i);
             if (actions.containsKey(index)) {
                 Action action = actions.get(index);
-                if (!state.get(new Integer(action.number)).equals(ScriptState.SET)) {
+                if (!state.get(Integer.valueOf(action.number)).equals(ScriptState.SET)) {
                     actionRange.add(actions.get(index));
                 }
             }

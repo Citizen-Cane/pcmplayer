@@ -1,6 +1,6 @@
 package pcm.model;
 
-import static java.lang.Integer.parseInt;
+import static java.lang.Integer.*;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -337,7 +337,7 @@ public class Action extends AbstractAction {
                 throw new IllegalArgumentException(".poss and .else statements cannot be used simultanously");
             } else {
                 String args[] = cmd.args();
-                poss = new Integer(args[0]);
+                poss = Integer.valueOf(args[0]);
                 if (poss < 1 || poss > 100) {
                     throw new IllegalArgumentException(cmd.line);
                 }

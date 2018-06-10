@@ -46,7 +46,7 @@ public class ItemCommand extends BasicCommand {
 
     private static ParameterizedStatement apply(final StateCommandLineParameters args, final String[] items)
             throws ClassNotFoundException {
-        String[] peers = args.items(args.containsKey(Keyword.To) ? Keyword.To : Keyword.Apply);
+        Object[] peers = args.items(args.containsKey(Keyword.To) ? Keyword.To : Keyword.Apply);
         if (args.containsKey(Keyword.To) && peers.length == 0) {
             throw new IllegalArgumentException("Missing peers to apply the item to");
         } else if (args.containsKey(Keyword.Apply) && args.items(Keyword.Apply).length > 0) {
@@ -77,7 +77,7 @@ public class ItemCommand extends BasicCommand {
         if (args.containsKey(Keyword.To)) {
             throw new IllegalArgumentException(Keyword.Remove + " doesn't accept from/to peer list.");
         }
-        String[] peers = args.items(args.containsKey(Keyword.To) ? Keyword.From : Keyword.Remove);
+        Object[] peers = args.items(args.containsKey(Keyword.To) ? Keyword.From : Keyword.Remove);
         return new ParameterizedStatement(ITEM, args) {
             @Override
             public void run(ScriptState state) {
