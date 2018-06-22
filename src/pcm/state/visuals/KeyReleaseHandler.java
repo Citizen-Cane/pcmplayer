@@ -51,7 +51,7 @@ public class KeyReleaseHandler implements Visual {
                     player.keyReleaseActuator = null;
                     KeyRelease keyRelease = teaseLib.devices.get(KeyRelease.class).getDefaultDevice();
                     mandatoryCompleted();
-                    allCompleted();
+
                     if (DeviceCache.connect(keyRelease)) {
                         player.keyReleaseActuator = keyRelease.getActuator(duration, TimeUnit.SECONDS);
                         player.keyReleaseActuator.arm();
@@ -67,7 +67,6 @@ public class KeyReleaseHandler implements Visual {
                         }
                     }
                     mandatoryCompleted();
-                    allCompleted();
                 }
             }
         };
