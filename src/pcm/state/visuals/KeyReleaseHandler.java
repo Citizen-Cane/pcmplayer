@@ -53,7 +53,7 @@ public class KeyReleaseHandler implements Visual {
                     mandatoryCompleted();
 
                     if (DeviceCache.connect(keyRelease)) {
-                        player.keyReleaseActuator = keyRelease.getActuator(duration, TimeUnit.SECONDS);
+                        player.keyReleaseActuator = keyRelease.actuators().get(duration, TimeUnit.SECONDS);
                         player.keyReleaseActuator.arm();
                     }
                 } else {
