@@ -17,9 +17,9 @@ import teaselib.Actor;
 import teaselib.Sexuality.Gender;
 import teaselib.core.ResourceLoader;
 import teaselib.core.TeaseLib;
+import teaselib.core.configuration.DebugSetup;
 import teaselib.core.debug.DebugHost;
 import teaselib.core.debug.DebugPersistence;
-import teaselib.test.DebugSetup;
 
 public class TestUtils {
     public static final String TEST_NAMESPACE = "Test_Namespace";
