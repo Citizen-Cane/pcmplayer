@@ -193,8 +193,14 @@
 .range 9999
 
 [Action 1075]
-.item Toys.Nipple_Clamps expired and free
+.item Toys.Nipple_Clamps not expired
+.item Toys.Nipple_Clamps free
 .unset 1075
+.range 9999
+
+[Action 1076]
+.item Toys.Nipple_Clamps expired and free
+.unset 1076
 .range 9999
 
 

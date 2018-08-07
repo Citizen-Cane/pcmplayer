@@ -60,12 +60,13 @@ public class StateCommand extends BasicCommand {
                     attributeApplier.applyAttributes(player.namespaceApplyAttribute);
                     State.Options options = state.player.state(item).applyTo(peers);
                     if (duration != null) {
-                        State.Persistence persistence = options.over(duration.toSeconds(), TimeUnit.SECONDS);
+                        State persistence = options.over(duration.toSeconds(), TimeUnit.SECONDS);
                         if (remember) {
-                            persistence.remember();
+                            throw new UnsupportedOperationException();
+                            // persistence.remember();
                         }
                     } else if (remember) {
-                        options.remember();
+                        // options.remember();
                     }
                 }
             }

@@ -37,26 +37,7 @@ public abstract class MappedScriptStateValue implements MappedScriptValue {
 
         @Override
         public void set() {
-            state.applyTo(peers);
-        }
-
-        @Override
-        public void unset() {
-            state.remove();
-        }
-    }
-
-    public static class Indefinitely extends MappedScriptStateValue {
-        private final Enum<?>[] peers;
-
-        public Indefinitely(int n, State state, Enum<?>... peers) {
-            super(n, state);
-            this.peers = peers;
-        }
-
-        @Override
-        public void set() {
-            state.applyTo(peers).remember();
+            state.applyTo((Object[]) peers);
         }
 
         @Override

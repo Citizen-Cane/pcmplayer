@@ -193,12 +193,12 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
 
     public void handleStateOptions(State.Options options, final DurationFormat duration, final boolean remember) {
         if (duration != null) {
-            State.Persistence persistence = options.over(duration.toSeconds(), TimeUnit.SECONDS);
+            State persistence = options.over(duration.toSeconds(), TimeUnit.SECONDS);
             if (remember) {
-                persistence.remember();
+                // persistence.remember();
             }
         } else if (remember) {
-            options.remember();
+            // options.remember();
         }
     }
 

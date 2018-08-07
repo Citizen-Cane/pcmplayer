@@ -189,12 +189,14 @@ public class StateTest {
         player.state(Toys.Nipple_Clamps).applyTo();
         TestUtils.play(player, 1070);
         player.state(Toys.Nipple_Clamps).remove();
-        TestUtils.play(player, 1075);
+        TestUtils.play(player, 1076);
 
         player.state(Toys.Nipple_Clamps).applyTo().over(30, TimeUnit.MINUTES);
         TestUtils.play(player, 1071);
         player.state(Toys.Nipple_Clamps).remove();
         TestUtils.play(player, 1075);
+        debugger.advanceTime(30, TimeUnit.MINUTES);
+        TestUtils.play(player, 1076);
     }
 
     @Test

@@ -2,7 +2,6 @@ package pcm.state.commands;
 
 import static org.junit.Assert.*;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
@@ -15,7 +14,6 @@ import pcm.util.TestUtils;
 import teaselib.Body;
 import teaselib.State;
 import teaselib.Toys;
-import teaselib.core.TeaseLib;
 import teaselib.util.Item;
 
 public class ItemCommandTest {
@@ -50,26 +48,10 @@ public class ItemCommandTest {
         assertTrue(somethingOnPenisState.applied());
         assertTrue(somethingOnPenisState.expired());
 
-        ItemCommand rememberFoo = new ItemCommand(new StateCommandLineParameters(
-                new String[] { "teaselib.Toys.Chastity_Device", "Apply", "Remember" }, declarations));
-        rememberFoo.execute(player.state);
-
-        assertTrue(chastityDeviceItem.applied());
-        assertTrue(chastityDeviceItem.expired());
-
-        assertTrue(somethingOnPenisState.applied());
-        assertTrue(somethingOnPenisState.expired());
-
-        TeaseLib.PersistentString stateStorage = player.teaseLib.new PersistentString(TeaseLib.DefaultDomain,
-                Toys.class.getName(), Toys.Chastity_Device.name() + ".state.duration");
-
-        assertTrue(stateStorage.available());
-
         ItemCommand clearFoo = new ItemCommand(new StateCommandLineParameters(
                 new String[] { "teaselib.Toys.Chastity_Device", "Remove" }, declarations));
         clearFoo.execute(player.state);
 
-        assertFalse(stateStorage.available());
         assertFalse(chastityDeviceItem.applied());
         assertTrue(chastityDeviceItem.expired());
 
@@ -108,61 +90,7 @@ public class ItemCommandTest {
                 declarations)).execute(player.state);
 
         assertFalse(chastityDeviceItem.applied());
-        assertTrue(chastityDeviceItem.expired());
-
-        assertFalse(somethingOnPenisState.applied());
-        assertTrue(somethingOnPenisState.expired());
-    }
-
-    @Test
-    public void testItemApplyDefaultsIndefinitelyAndRemember() throws Exception {
-        testItemApplyIndefinitelyAndRemember(new Callable<Void>() {
-            @Override
-            public Void call() throws Exception {
-                new ItemCommand(new StateCommandLineParameters(
-                        new String[] { "teaselib.Toys.Chastity_Device", "Apply", "over", "inf", "remember" },
-                        declarations)).execute(player.state);
-                return null;
-            }
-        });
-    }
-
-    @Test
-    public void testItemApplyToIndefinitelyAndRemember() throws Exception {
-        testItemApplyIndefinitelyAndRemember(new Callable<Void>() {
-            @Override
-            public Void call() throws Exception {
-                new ItemCommand(new StateCommandLineParameters(new String[] { "teaselib.Toys.Chastity_Device", "Apply",
-                        "to", "teaselib.Body.OnPenis", "over", "inf", "remember" }, declarations))
-                                .execute(player.state);
-                return null;
-            }
-        });
-    }
-
-    public void testItemApplyIndefinitelyAndRemember(Callable<Void> applyAction) throws Exception {
-        Item chastityDeviceItem = player.item(Toys.Chastity_Device);
-        State somethingOnPenisState = player.state(Body.OnPenis);
-
-        TeaseLib.PersistentString stateStorage = player.teaseLib.new PersistentString(TeaseLib.DefaultDomain,
-                Toys.class.getName(), Toys.Chastity_Device.name() + ".state.duration");
-
-        applyAction.call();
-
-        assertTrue(stateStorage.available());
-        assertTrue(chastityDeviceItem.applied());
-        assertFalse(chastityDeviceItem.expired());
-        assertTrue(player.state(Toys.Chastity_Device).duration().limit(TimeUnit.SECONDS) == Long.MAX_VALUE);
-
-        assertTrue(somethingOnPenisState.applied());
-        assertFalse(somethingOnPenisState.expired());
-
-        new StateCommand(new StateCommandLineParameters(new String[] { "teaselib.Toys.Chastity_Device", "Remove" },
-                declarations)).execute(player.state);
-
-        assertFalse(stateStorage.available());
-        assertFalse(chastityDeviceItem.applied());
-        assertTrue(chastityDeviceItem.expired());
+        assertFalse(chastityDeviceItem.expired()); // Item never expires
 
         assertFalse(somethingOnPenisState.applied());
         assertTrue(somethingOnPenisState.expired());

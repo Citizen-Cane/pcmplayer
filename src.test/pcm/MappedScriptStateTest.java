@@ -1,10 +1,7 @@
 package pcm;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static pcm.state.persistence.ScriptState.SET;
-import static pcm.state.persistence.ScriptState.UNSET;
+import static org.junit.Assert.*;
+import static pcm.state.persistence.ScriptState.*;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -60,7 +57,7 @@ public class MappedScriptStateTest {
     }
 
     private void installMapping() {
-        pcm.addScriptValueMapping(MappedScriptState.Global, new MappedScriptStateValue.Indefinitely(ChastityCageAction,
+        pcm.addScriptValueMapping(MappedScriptState.Global, new MappedScriptStateValue.ForSession(ChastityCageAction,
                 chastityCageState, Body.SomethingOnPenis, Body.CannotJerkOff));
 
         pcm.addStateTimeMapping(MappedScriptState.Global, ChastityCageAction, chastityCageState, Body.SomethingOnPenis,
@@ -92,9 +89,13 @@ public class MappedScriptStateTest {
 
     @Test
     public void testThatMultiMappedValuesBehaveAsExpected() {
-        assertThatUninitializedMultiMappedStateDefaultsToRemove();
+        assertThatUninitializedMultiMappedStateDefaultsToTemporary();
         assertThatMultiMappedSetTimeSetsFlag();
-        assertThatUnsetFlagResetsStateToRemoved();
+        assertThatUnsetFlagDoesntResetDuration(10);
+        long chastityActionRemoveTime = pcm.getTime(ChastityCageAction);
+        // pcm.getTime() gets duration end
+        assertEquals(player.state(Toys.Chastity_Cage).duration().start(TimeUnit.SECONDS), chastityActionRemoveTime);
+        assertEquals(player.teaseLib.getTime(TimeUnit.SECONDS), chastityActionRemoveTime);
         assertThatSetMultiMappedFlagSetsStateToAppliedTemporary();
 
         chastityCageState.remove();
@@ -102,12 +103,12 @@ public class MappedScriptStateTest {
     }
 
     @Test
-    public void assertThatUninitializedMultiMappedStateDefaultsToRemove() {
+    public void assertThatUninitializedMultiMappedStateDefaultsToTemporary() {
         assertEquals(UNSET, pcm.get(ChastityCageAction));
         assertFalse(chastityCageState.applied());
         assertTrue(chastityCageState.expired());
         assertTrue(((StateProxy) chastityCageState).peers().isEmpty());
-        assertEquals(State.REMOVED, pcm.getTime(ChastityCageAction));
+        assertEquals(0, pcm.getTime(ChastityCageAction));
     }
 
     @Test
@@ -117,10 +118,8 @@ public class MappedScriptStateTest {
 
         assertEquals(UNSET, pcm.get(ChastityCageAction));
 
-        int expectedSeconds = 10;
-        pcm.setTime(ChastityCageAction, player.duration(expectedSeconds, TimeUnit.SECONDS));
-
-        assertEquals(expectedSeconds, chastityCageState.duration().remaining(TimeUnit.SECONDS));
+        pcm.setTime(ChastityCageAction, player.duration(10, TimeUnit.SECONDS));
+        assertEquals(10, chastityCageState.duration().remaining(TimeUnit.SECONDS));
         assertTrue(chastityCageState.applied());
         assertFalse(chastityCageState.expired());
         assertTrue(chastityCageState.is(Body.SomethingOnPenis));
@@ -138,7 +137,11 @@ public class MappedScriptStateTest {
     }
 
     @Test
-    public void assertThatUnsetFlagResetsStateToRemoved() {
+    public void assertThatUnsetFlagDoesntResetDuration() {
+        assertThatUnsetFlagDoesntResetDuration(State.TEMPORARY);
+    }
+
+    public void assertThatUnsetFlagDoesntResetDuration(long duration) {
         Debugger debugger = new Debugger(player.teaseLib);
         debugger.freezeTime();
 
@@ -146,13 +149,12 @@ public class MappedScriptStateTest {
         assertEquals(UNSET, pcm.get(ChastityCageAction));
         assertFalse(chastityCageState.applied());
         assertTrue(chastityCageState.expired());
+        assertEquals(duration, chastityCageState.duration().limit(TimeUnit.SECONDS));
 
-        assertEquals(State.REMOVED, chastityCageState.duration().limit(TimeUnit.SECONDS));
-        long chastityActionRemoveTime = pcm.getTime(ChastityCageAction);
+        // Mapping isn't allowed anymore since TeaseLib doesn't allow infinite states anymore
+        pcm.set(ChastityCageAction);
         long time = player.teaseLib.getTime(TimeUnit.SECONDS);
-        // assertEquals(State.REMOVED, chastityActionRemoveTime);
-
-        assertEquals(State.REMOVED, chastityActionRemoveTime - time);
+        assertEquals(time, chastityCageState.duration().end(TimeUnit.SECONDS));
     }
 
     @Test
@@ -167,8 +169,9 @@ public class MappedScriptStateTest {
         assertTrue(chastityCageState.is(Body.SomethingOnPenis));
         assertTrue(chastityCageState.is(Body.CannotJerkOff));
 
-        long time = pcm.getTime(ChastityCageAction);
-        assertEquals(player.teaseLib.getTime(TimeUnit.SECONDS), time);
+        long time = player.teaseLib.getTime(TimeUnit.SECONDS);
+        long durationEnd = pcm.getTime(ChastityCageAction);
+        assertEquals(time, durationEnd);
     }
 
     @Test
@@ -213,7 +216,7 @@ public class MappedScriptStateTest {
         assertTrue(((StateProxy) chastityCageState).peers().isEmpty());
 
         long seconds = pcm.getTime(ChastityCageAction);
-        assertEquals(State.REMOVED, seconds);
+        assertEquals(State.TEMPORARY, seconds);
     }
 
     private static void assertThatScriptTimeFuctionsWork(ScriptState scriptState) {
@@ -229,14 +232,14 @@ public class MappedScriptStateTest {
         assertThatUninitializedStateHasCorrectDefaultValues();
 
         State condomState = player.state(Household.Condoms);
-        pcm.addScriptValueMapping(MappedScriptState.Global, new MappedScriptStateValue.Indefinitely(CondomsAction,
+        pcm.addScriptValueMapping(MappedScriptState.Global, new MappedScriptStateValue.ForSession(CondomsAction,
                 condomState, Household.Condoms, Body.SomethingOnPenis));
 
         pcm.addStateTimeMapping(MappedScriptState.Global, CondomsAction, condomState, Household.Condoms,
                 Body.SomethingOnPenis);
 
         pcm.addScriptValueMapping(MappedScriptState.Global,
-                new MappedScriptStateValue.Indefinitely(SomethingOnPenisAction, condomState, Body.SomethingOnPenis));
+                new MappedScriptStateValue.ForSession(SomethingOnPenisAction, condomState, Body.SomethingOnPenis));
 
         loadTestScript();
 
@@ -249,14 +252,14 @@ public class MappedScriptStateTest {
         assertThatUninitializedStateHasCorrectDefaultValues();
 
         State condomState = player.state(Household.Condoms);
-        pcm.addScriptValueMapping(MappedScriptState.Global, new MappedScriptStateValue.Indefinitely(CondomsAction,
+        pcm.addScriptValueMapping(MappedScriptState.Global, new MappedScriptStateValue.ForSession(CondomsAction,
                 condomState, Household.Condoms, Body.SomethingOnPenis));
 
         pcm.addStateTimeMapping(MappedScriptState.Global, CondomsAction, condomState, Household.Condoms,
                 Body.SomethingOnPenis);
 
         pcm.addScriptValueMapping(MappedScriptState.Global,
-                new MappedScriptStateValue.Indefinitely(SomethingOnPenisAction, condomState, Body.SomethingOnPenis));
+                new MappedScriptStateValue.ForSession(SomethingOnPenisAction, condomState, Body.SomethingOnPenis));
 
         // Load test script to actually select the mapping
         loadTestScript();

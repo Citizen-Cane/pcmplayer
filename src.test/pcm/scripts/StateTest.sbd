@@ -185,10 +185,18 @@
 .state Toys.Nipple_Clamps applied AnD remaining LessOrEqualThan 00:30"00 aNd remaining GreaterOrEqualThan 00:30"00
 .range 9999
 
+
 [Action 1075]
-.state Toys.Nipple_Clamps expired and free
+.state Toys.Nipple_Clamps not expired
+.state Toys.Nipple_Clamps free
 .unset 1075
 .range 9999
+
+[Action 1076]
+.state Toys.Nipple_Clamps expired and free
+.unset 1076
+.range 9999
+
 
 
 ' testCanApplyTo doens't apply to state

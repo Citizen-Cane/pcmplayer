@@ -172,7 +172,7 @@ public class MappedScriptState extends ScriptState {
     public void setTime(Integer n, Duration duration) {
         if (hasStateTimeMapping(n)) {
             teaselib.State state = scriptMapping.stateTimeMapping.get(n);
-            state.applyTo(scriptMapping.peers.get(n)).over(duration).remember();
+            state.applyTo(scriptMapping.peers.get(n)).over(duration);
         }
         super.setTime(n, duration);
     }

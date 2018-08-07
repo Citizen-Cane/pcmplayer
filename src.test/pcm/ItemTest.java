@@ -150,12 +150,14 @@ public class ItemTest {
         player.item(Toys.Nipple_Clamps).apply();
         TestUtils.play(player, 1070);
         player.item(Toys.Nipple_Clamps).remove();
-        TestUtils.play(player, 1075);
+        TestUtils.play(player, 1076);
 
         player.item(Toys.Nipple_Clamps).apply().over(30, TimeUnit.MINUTES);
         TestUtils.play(player, 1071);
         player.item(Toys.Nipple_Clamps).remove();
         TestUtils.play(player, 1075);
+        debugger.advanceTime(30, TimeUnit.MINUTES);
+        TestUtils.play(player, 1076);
     }
 
     @Test

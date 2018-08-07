@@ -84,16 +84,19 @@ public class PersistencyTest {
         MappedScriptState state = player.state;
 
         state.addScriptValueMapping(mainScript,
-                new MappedScriptStateValue.Indefinitely(267, player.state(Body.Chastified), Toys.Chastity_Device));
+                new MappedScriptStateValue.ForSession(267, player.state(Body.Chastified), Toys.Chastity_Device));
 
         player.loadScript(mainScript);
-
+        assertFalse(player.state(Body.Chastified).applied());
+        assertFalse(player.state(Toys.Chastity_Device).applied());
         pcm.util.TestUtils.play(player, new ActionRange(1000), null);
+        assertTrue(player.state(Body.Chastified).applied());
+        assertTrue(player.state(Toys.Chastity_Device).applied());
 
+        // Not persisted because not remembered
         TeaseLib.PersistentString chastifiedState = player.teaseLib.new PersistentString(TeaseLib.DefaultDomain,
                 "pcm.PersistencyTest", "Body.Chastified.state.duration");
-
-        assertTrue(chastifiedState.available());
+        assertFalse(chastifiedState.available());
     }
 
     @Test
@@ -110,7 +113,7 @@ public class PersistencyTest {
         pcm.util.TestUtils.play(player, new ActionRange(1000), null);
 
         TeaseLib.PersistentString enemaState = player.teaseLib.new PersistentString(TeaseLib.DefaultDomain,
-                "pcm.PersistencyTest", "Assignments.Enema.state");
+                "pcm.PersistencyTest", "Body.Chastified.state.duration");
 
         assertFalse(enemaState.available());
     }
@@ -133,7 +136,7 @@ public class PersistencyTest {
     }
 
     @Test
-    public void testThatTimeMappingPersists_SetTime_00_00_00() throws Exception {
+    public void testThatTimeMappingDoesntPersist_SetTime_00_00_00() throws Exception {
         Player player = TestUtils.createPlayer(getClass());
         String mainScript = "PersistencyTest_testThatMappedStateIsPersisted";
         MappedScriptState state = player.state;
@@ -146,11 +149,11 @@ public class PersistencyTest {
 
         TeaseLib.PersistentString chastifiedState = player.teaseLib.new PersistentString(TeaseLib.DefaultDomain,
                 "pcm.PersistencyTest", "Body.Chastified.state.duration");
-        assertTrue(chastifiedState.available());
+        assertFalse(chastifiedState.available());
     }
 
-    @Test
-    public void testThatTimeMappingPersistsNegativeValues() throws Exception {
+    @Test(expected = IllegalArgumentException.class)
+    public void testThatTimeMappingDoesntPersistNegativeValues() throws Exception {
         Player player = TestUtils.createPlayer(getClass());
         String mainScript = "PersistencyTest_testThatMappedStateIsPersisted";
         MappedScriptState state = player.state;
