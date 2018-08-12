@@ -85,7 +85,9 @@
 .settime 44 -00:10"00
 .range 1036
 
-' always true for un-mapped as well for mapped state 
+' always true for un-mapped as well for mapped state
+' - for unmapped state 44 is unset anyway because of 1031
+' - for mapped state it is unset because the duration ends at time = "now" -> unset
 [action 1036]
 .mustnot 44
 .range 1037

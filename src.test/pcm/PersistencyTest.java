@@ -152,7 +152,7 @@ public class PersistencyTest {
         assertFalse(chastifiedState.available());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testThatTimeMappingDoesntPersistNegativeValues() throws Exception {
         Player player = TestUtils.createPlayer(getClass());
         String mainScript = "PersistencyTest_testThatMappedStateIsPersisted";
@@ -161,7 +161,6 @@ public class PersistencyTest {
         state.addStateTimeMapping(MappedScriptState.Global, 45, player.state(Body.Chastified), Toys.Chastity_Device);
 
         player.loadScript(mainScript);
-
         pcm.util.TestUtils.play(player, new ActionRange(1020), null);
 
         TeaseLib.PersistentString chastifiedState = player.teaseLib.new PersistentString(TeaseLib.DefaultDomain,
