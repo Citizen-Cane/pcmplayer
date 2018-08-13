@@ -3,7 +3,6 @@ package pcm.state.commands;
 import pcm.controller.Player;
 import pcm.model.AbstractAction;
 import pcm.model.AbstractAction.Statement;
-import pcm.model.DurationFormat;
 import pcm.model.IllegalStatementException;
 import pcm.model.ScriptParsingException;
 import pcm.state.BasicCommand;
@@ -13,6 +12,7 @@ import pcm.state.persistence.ScriptState;
 import teaselib.State;
 import teaselib.core.StateMaps;
 import teaselib.core.StateMaps.Attributes;
+import teaselib.util.DurationFormat;
 import teaselib.util.Item;
 
 public class ItemCommand extends BasicCommand {

@@ -16,13 +16,13 @@ import org.junit.Test;
 
 import pcm.controller.Player;
 import pcm.model.ActionRange;
-import pcm.model.DurationFormat;
 import pcm.model.ScriptExecutionException;
 import pcm.state.conditions.TimeTo;
 import pcm.state.persistence.ScriptState;
 import pcm.util.TestUtils;
 import teaselib.State;
 import teaselib.core.Debugger;
+import teaselib.util.DurationFormat;
 
 /**
  * @author Citizen-Cane

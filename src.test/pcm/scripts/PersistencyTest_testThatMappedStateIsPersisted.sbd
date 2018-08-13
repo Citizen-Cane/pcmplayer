@@ -22,14 +22,6 @@
 .range 9999
 
 
-' testThatTimeMappingPersistsNegativeValue
-
-[action 1020]
-.settime 45 -01:00"00
-.save 90 799
-.range 9999
-
-
 ' proper exit for all test cases
 [action 9999]
 .quit

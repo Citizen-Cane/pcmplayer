@@ -6,6 +6,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
+import teaselib.util.DurationFormat;
+
 public class DurationTest {
     @Test
     public void testDurationToStringPositiveValues() throws Exception {

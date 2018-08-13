@@ -4,13 +4,13 @@ import java.util.concurrent.TimeUnit;
 
 import pcm.model.AbstractAction;
 import pcm.model.AbstractAction.Statement;
-import pcm.model.DurationFormat;
 import pcm.model.IllegalStatementException;
 import pcm.model.ScriptParsingException;
 import pcm.state.BasicCondition;
 import pcm.state.StateCommandLineParameters;
 import pcm.state.StateCommandLineParameters.Keyword;
 import pcm.state.persistence.ScriptState;
+import teaselib.util.DurationFormat;
 
 public class StateCondition extends BasicCondition {
     private static final Statement STATE = AbstractAction.Statement.State;

@@ -7,9 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pcm.model.ConditionRange;
-import pcm.model.DurationFormat;
 import pcm.state.Condition;
 import pcm.state.persistence.ScriptState;
+import teaselib.util.DurationFormat;
 
 public abstract class TimeCondition implements Condition {
     private static final Logger logger = LoggerFactory.getLogger(TimeCondition.class);
@@ -27,19 +27,21 @@ public abstract class TimeCondition implements Condition {
     @Override
     public boolean isTrueFor(ScriptState state) {
         long nowSeconds = state.getTimeMillis() / 1000;
+        long currentTimeMillis = state.getTimeMillis();
         long setTimeSeconds = state.getTime(n);
         long elapsedSeconds = nowSeconds - setTimeSeconds;
         long durationSeconds = duration.toSeconds();
         boolean result = predicate(setTimeSeconds, elapsedSeconds, durationSeconds);
-        log(setTimeSeconds, elapsedSeconds, durationSeconds, result);
+        log(currentTimeMillis, setTimeSeconds, elapsedSeconds, result);
         return result;
     }
 
-    protected void log(long time, long elapsedSeconds, long durationSeconds, boolean result) {
-        logger.info(getClass().getSimpleName() + " " + n + ": setTime = " + new Date(time * 1000).toString()
-                + ", duration = " + duration.toString() + "(" + durationSeconds + ") , now = "
-                + new Date(System.currentTimeMillis()) + ", elapsed = "
-                + DurationFormat.toString(elapsedSeconds, TimeUnit.SECONDS) + "(" + elapsedSeconds + ") -> " + result);
+    protected void log(long currentTimeMillis, long setTimeSeconds, long elapsedSeconds, boolean result) {
+        if (logger.isInfoEnabled()) {
+            logger.info("{} {}: setTime={}, duration={} , now={}, elapsed ={} -> {}", getClass().getSimpleName(), n,
+                    new Date(setTimeSeconds * 1000), duration, new Date(currentTimeMillis),
+                    DurationFormat.toString(elapsedSeconds, TimeUnit.SECONDS), result);
+        }
     }
 
     @Override
@@ -49,6 +51,6 @@ public abstract class TimeCondition implements Condition {
 
     @Override
     public String toString() {
-        return " " + n + " " + duration.toString();
+        return " " + n + " " + duration;
     }
 }

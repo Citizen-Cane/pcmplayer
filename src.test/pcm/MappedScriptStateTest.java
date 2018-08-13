@@ -31,6 +31,7 @@ public class MappedScriptStateTest {
     static final int CondomsAction = 46;
 
     private Player player;
+    private Debugger debugger;
     private State chastityCageState;
     private MappedScriptState pcm;
 
@@ -52,6 +53,9 @@ public class MappedScriptStateTest {
 
     private void initPlayer() throws IOException {
         player = TestUtils.createPlayer(getClass());
+        debugger = new Debugger(player.teaseLib);
+        debugger.freezeTime();
+
         chastityCageState = player.state(Toys.Chastity_Cage);
         pcm = player.state;
     }
@@ -113,9 +117,6 @@ public class MappedScriptStateTest {
 
     @Test
     public void assertThatMultiMappedSetTimeSetsFlag() {
-        Debugger debugger = new Debugger(player.teaseLib);
-        debugger.freezeTime();
-
         assertEquals(UNSET, pcm.get(ChastityCageAction));
 
         pcm.setTime(ChastityCageAction, player.duration(10, TimeUnit.SECONDS));
@@ -142,9 +143,6 @@ public class MappedScriptStateTest {
     }
 
     public void assertThatUnsetFlagDoesntResetDuration(long duration) {
-        Debugger debugger = new Debugger(player.teaseLib);
-        debugger.freezeTime();
-
         pcm.unset(ChastityCageAction);
         assertEquals(UNSET, pcm.get(ChastityCageAction));
         assertFalse(chastityCageState.applied());
@@ -159,9 +157,6 @@ public class MappedScriptStateTest {
 
     @Test
     public void assertThatSetMultiMappedFlagSetsStateToAppliedTemporary() {
-        Debugger debugger = new Debugger(player.teaseLib);
-        debugger.freezeTime();
-
         pcm.set(ChastityCageAction);
         assertTrue(chastityCageState.applied());
         assertTrue(chastityCageState.expired());
@@ -178,6 +173,8 @@ public class MappedScriptStateTest {
     public void testThatScriptHandlesUnmappedTimeValuesCorrectly() throws AllActionsSetException,
             ScriptExecutionException, ScriptParsingException, ValidationIssue, IOException {
         Player testScript = TestUtils.createPlayer(getClass(), MAPPED_STATE_TEST_SCRIPT);
+        Debugger debugger = new Debugger(testScript.teaseLib);
+        debugger.freezeTime();
 
         TestUtils.play(testScript, 1025);
         TestUtils.play(testScript, 1039);
@@ -223,7 +220,6 @@ public class MappedScriptStateTest {
         assertEquals(ScriptState.SET, scriptState.get(1025));
         assertEquals(ScriptState.SET, scriptState.get(1027));
         assertEquals(ScriptState.SET, scriptState.get(1029));
-
     }
 
     @Test
@@ -285,9 +281,6 @@ public class MappedScriptStateTest {
     @Test
     public void testThatScriptHandlesAppliedAndExpiredCorrectly()
             throws AllActionsSetException, ScriptExecutionException {
-        Debugger debugger = new Debugger(player.teaseLib);
-        debugger.freezeTime();
-
         assertThatUninitializedStateHasCorrectDefaultValues();
 
         TestUtils.play(player, 1060);

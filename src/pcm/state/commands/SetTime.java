@@ -1,54 +1,48 @@
 package pcm.state.commands;
 
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pcm.model.DurationFormat;
 import pcm.state.Command;
 import pcm.state.persistence.ScriptState;
 import teaselib.Duration;
+import teaselib.util.DurationFormat;
 
 public class SetTime implements Command {
     private static final Logger logger = LoggerFactory.getLogger(SetTime.class);
 
     final int n;
-    final String offset;
+    final long limit;
 
-    final static String NOW = "00:00\"00";
+    static final String NOW = "00:00\"00";
 
     public SetTime(int n) {
         this.n = n;
-        this.offset = NOW;
+        this.limit = 0;
     }
 
     public SetTime(int n, String offset) {
         this.n = n;
-        this.offset = offset;
+        if (offset.toLowerCase().startsWith("inf") || offset.toLowerCase().startsWith("+inf")) {
+            limit = Long.MAX_VALUE;
+        } else if (offset.toLowerCase().startsWith("-inf")) {
+            throw new IllegalArgumentException("offset must be equal or greater than " + NOW);
+        } else {
+            limit = new DurationFormat(offset).toSeconds();
+        }
+
+        if (limit < 0) {
+            throw new IllegalArgumentException("Duration limit must be 0 or positive: " + Long.toString(limit));
+        }
     }
 
     @Override
     public void execute(ScriptState state) {
-        if (offset.toLowerCase().startsWith("inf")
-                || offset.toLowerCase().startsWith("+inf")) {
-            logger.info("Setting time " + n + " to +INF (" + offset + ")");
-            state.setTime(n,
-                    state.player.duration(Long.MAX_VALUE, TimeUnit.SECONDS));
-        } else if (offset.toLowerCase().startsWith("-inf")) {
-            throw new IllegalArgumentException(
-                    "offset must be equal or greater than " + NOW);
-        } else {
-            DurationFormat offset = new DurationFormat(this.offset);
-            Duration duration = state.player.duration(offset.toSeconds(),
-                    TimeUnit.SECONDS);
-            logger.info("Setting time " + n + " to "
-                    + new Date(duration.start(TimeUnit.MILLISECONDS)).toString()
-                    + (this.offset != NOW
-                            ? " + " + this.offset + " = " + this.offset : ""));
-            state.setTime(n, duration);
-        }
+        Duration duration = state.player.duration(limit, TimeUnit.SECONDS);
+        logger.info("Setting time {} to {}", n, duration);
+        state.setTime(n, duration);
     }
 
     @Override

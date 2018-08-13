@@ -10,9 +10,9 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import pcm.controller.Declarations;
-import pcm.model.DurationFormat;
 import teaselib.State;
 import teaselib.core.util.CommandLineParameters;
+import teaselib.util.DurationFormat;
 
 public class StateCommandLineParameters extends CommandLineParameters<StateCommandLineParameters.Keyword> {
     private static final long serialVersionUID = 1L;
