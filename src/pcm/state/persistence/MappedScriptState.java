@@ -172,7 +172,8 @@ public class MappedScriptState extends ScriptState {
     public void setTime(Integer n, Duration duration) {
         if (hasStateTimeMapping(n)) {
             teaselib.State state = scriptMapping.stateTimeMapping.get(n);
-            state.applyTo(scriptMapping.peers.get(n)).over(duration);
+            Enum<?>[] items = scriptMapping.peers.get(n);
+            state.applyTo((Object[]) items).over(duration);
         }
         super.setTime(n, duration);
     }

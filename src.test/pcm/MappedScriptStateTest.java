@@ -177,12 +177,28 @@ public class MappedScriptStateTest {
         debugger.freezeTime();
 
         TestUtils.play(testScript, 1025);
-        TestUtils.play(testScript, 1039);
+        TestUtils.play(testScript, 1038);
 
         assertEquals(ScriptState.SET, testScript.state.get(1025));
         assertThatScriptTimeFuctionsWork(testScript.state);
         assertEquals(ScriptState.SET, testScript.state.get(1031));
-        assertEquals(ScriptState.SET, testScript.state.get(1039));
+        assertEquals(ScriptState.SET, testScript.state.get(1038));
+    }
+
+    @Test
+    public void testThatSettimeOnMultiMappedTimeValuesAppliesToPeers()
+            throws AllActionsSetException, ScriptExecutionException {
+        assertThatUninitializedStateHasCorrectDefaultValues();
+
+        TestUtils.play(player, 1034);
+        TestUtils.play(player, 1037);
+        TestUtils.play(player, 1039);
+        assertEquals(ScriptState.SET, pcm.get(1034));
+        assertEquals(ScriptState.SET, pcm.get(1036));
+        assertEquals(ScriptState.SET, pcm.get(1037));
+        assertEquals(ScriptState.SET, pcm.get(1039));
+
+        assertThatSettingTheMappedActionSetsTheStateToTemporary();
     }
 
     @Test
@@ -191,13 +207,17 @@ public class MappedScriptStateTest {
         assertThatUninitializedStateHasCorrectDefaultValues();
 
         TestUtils.play(player, 1020);
-        TestUtils.play(player, 1038);
-
         assertEquals(ScriptState.SET, pcm.get(1020));
         assertEquals(ScriptState.SET, pcm.get(1022));
         assertThatScriptTimeFuctionsWork(pcm);
         assertEquals(ScriptState.SET, pcm.get(1030));
-        assertEquals(ScriptState.SET, pcm.get(1038));
+        assertEquals(ScriptState.SET, pcm.get(1036));
+
+        TestUtils.play(player, 1037);
+        TestUtils.play(player, 1039);
+
+        assertEquals(ScriptState.SET, pcm.get(1037));
+        assertEquals(ScriptState.SET, pcm.get(1039));
 
         assertThatSettingTheMappedActionSetsTheStateToTemporary();
     }

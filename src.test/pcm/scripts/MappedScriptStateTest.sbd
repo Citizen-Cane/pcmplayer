@@ -73,38 +73,44 @@
 ' true - for mapped state
 [action 1030]
 .must 44
-.range 1035
+.range 1034
 
 ' true - for unmapped state
 [action 1031]
 .mustnot 44
-.range 1035
+.range 1034
 
 
+' settime on a mapped item applies to its mapped peers
+[action 1034]
+.settime 44 00:00"00
+.range 1035 1036
+
+
+' false for un-mapped state - just sets the time
 [action 1035]
-.settime 44 -00:10"00
-.range 1036
-
-' always true for un-mapped as well for mapped state
-' - for unmapped state 44 is unset anyway because of 1031
-' - for mapped state it is unset because the duration ends at time = "now" -> unset
-[action 1036]
 .mustnot 44
-.range 1037
+.range 9999
 
-
-[action 1037]
-.set 44
+' 44 set for mapped state because the mapped item is applied to its peers
+[action 1036]
+.must 44
 .range 9999
 
 
 ' true - for mapped states, throws for unmapped states
-[action 1038]
+
+[action 1037]
 .timefrom 44 00:00"00
 .timeto 44 00:00"01
 .range 9999
 
-' true - for unmapped states
+' false - for unmapped states
+[action 1038]
+.mustnot 44
+.range 9999
+
+' true - for mapped states
 [action 1039]
 .must 44
 .range 9999
