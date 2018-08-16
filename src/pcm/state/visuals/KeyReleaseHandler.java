@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import pcm.controller.Player;
 import pcm.state.Visual;
 import teaselib.core.devices.DeviceCache;
+import teaselib.core.devices.release.Actuator;
 import teaselib.core.devices.release.KeyRelease;
 import teaselib.core.media.MediaRenderer;
 import teaselib.core.media.MediaRendererThread;
@@ -28,13 +29,13 @@ public class KeyReleaseHandler implements Visual {
     public static final String[] Commands = { Prepare, Start, Sleep, Release };
 
     final String command;
-    final int duration;
+    final long duration;
 
     public KeyReleaseHandler(String command) {
         this(command, 0);
     }
 
-    public KeyReleaseHandler(String command, int seconds) {
+    public KeyReleaseHandler(String command, long seconds) {
         super();
         this.command = command;
         this.duration = seconds;
@@ -42,34 +43,46 @@ public class KeyReleaseHandler implements Visual {
 
     @Override
     public void render(final Player player) {
-        MediaRenderer keyReleaseArm = new MediaRendererThread(player.teaseLib) {
+        MediaRenderer keyReleaseHandler = new MediaRendererThread(player.teaseLib) {
             @Override
             protected void renderMedia() throws InterruptedException, IOException {
                 logger.info("{} {}", command, (duration > 0 ? duration : ""));
                 startCompleted();
                 if (command.equalsIgnoreCase(Prepare)) {
-                    player.keyReleaseActuator = null;
-                    KeyRelease keyRelease = teaseLib.devices.get(KeyRelease.class).getDefaultDevice();
-                    mandatoryCompleted();
-
-                    if (DeviceCache.connect(keyRelease)) {
-                        player.keyReleaseActuator = keyRelease.actuators().get(duration, TimeUnit.SECONDS);
-                        player.keyReleaseActuator.arm();
-                    }
+                    prepare(player);
                 } else {
-                    if (player.keyReleaseActuator != null) {
-                        if (command.equalsIgnoreCase(Start)) {
-                            player.keyReleaseActuator.start(duration, TimeUnit.SECONDS);
-                        } else if (command.equalsIgnoreCase(Sleep)) {
-                            player.keyReleaseActuator.sleep(duration, TimeUnit.SECONDS);
-                        } else if (command.equalsIgnoreCase(Release)) {
-                            player.keyReleaseActuator.release();
-                        }
-                    }
-                    mandatoryCompleted();
+                    handleKey(player);
                 }
             }
+
+            private void prepare(final Player player) {
+                player.keyReleaseActuator = null;
+                KeyRelease keyRelease = teaseLib.devices.get(KeyRelease.class).getDefaultDevice();
+                mandatoryCompleted();
+
+                if (DeviceCache.connect(keyRelease)) {
+                    player.keyReleaseActuator = findActuatorForHoldingDuration(keyRelease);
+                    player.keyReleaseActuator.arm();
+                }
+            }
+
+            private Actuator findActuatorForHoldingDuration(KeyRelease keyRelease) {
+                return keyRelease.actuators().get(duration, TimeUnit.SECONDS);
+            }
+
+            private void handleKey(Player player) {
+                if (player.keyReleaseActuator != null) {
+                    if (command.equalsIgnoreCase(Start)) {
+                        player.keyReleaseActuator.start(duration, TimeUnit.SECONDS);
+                    } else if (command.equalsIgnoreCase(Sleep)) {
+                        player.keyReleaseActuator.sleep(duration, TimeUnit.SECONDS);
+                    } else if (command.equalsIgnoreCase(Release)) {
+                        player.keyReleaseActuator.release();
+                    }
+                }
+                mandatoryCompleted();
+            }
         };
-        player.render(keyReleaseArm);
+        player.render(keyReleaseHandler);
     }
 }

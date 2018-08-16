@@ -195,7 +195,16 @@ public class Action extends AbstractAction {
                         keyRelease = new KeyReleaseHandler(command);
                         break;
                     } else if (args.length == 2) {
-                        keyRelease = new KeyReleaseHandler(command, parseInt(args[1]));
+                        String durationArg = args[1];
+                        long duration;
+                        if ("min".equalsIgnoreCase(durationArg)) {
+                            duration = Long.MIN_VALUE;
+                        } else if ("max".equalsIgnoreCase(durationArg)) {
+                            duration = Long.MAX_VALUE;
+                        } else {
+                            duration = parseInt(durationArg);
+                        }
+                        keyRelease = new KeyReleaseHandler(command, duration);
                         break;
                     } else {
                         throw new IllegalArgumentException(cmd.line);
@@ -384,6 +393,7 @@ public class Action extends AbstractAction {
             } else {
                 if (IfState.isExtendedIfClause(cmd.args())) {
                     addCondition(new IfState(name, cmd.args(), new IfState.ConditionCreator() {
+
                         @Override
                         public Condition createCondition(StateCommandLineParameters firstParameters)
                                 throws ScriptParsingException {
@@ -397,6 +407,7 @@ public class Action extends AbstractAction {
         }
         // interactions
         else if (name == Statement.Range) {
+
             String args[] = cmd.args();
             int start = parseInt(args[0]);
             if (args.length > 1) {
@@ -410,8 +421,11 @@ public class Action extends AbstractAction {
             if (resumeText.isEmpty()) {
                 resumeText = getResponseText(Statement.ResumeText, cmd.script);
             }
+
             setInteraction(new Pause(resumeText));
-        } else if (name == Statement.Yes) {
+        } else if (name == Statement.Yes)
+
+        {
             String yesText = cmd.allAsText();
             if (yesText.isEmpty()) {
                 yesText = getResponseText(Statement.YesText, cmd.script);
