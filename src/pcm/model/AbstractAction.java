@@ -111,7 +111,13 @@ public abstract class AbstractAction {
         AskCheck2,
 
         /**
-         * Execute a range as a sub program
+         * Execute a range as a sub program.
+         * <p>
+         * This command effectively pushes the action range onto the stack, and executes the gosub range. On return,
+         * execution continues with the action range of this action.
+         * <p>
+         * The gosub-statement effectively works as an action range provider, and is executed after all other statements
+         * in the current action have been processed.
          */
         GoSub,
 
@@ -186,12 +192,14 @@ public abstract class AbstractAction {
         TimeTo,
 
         /**
-         * Control key release devices. This statement does nothing if the device isn't present, so it can safely be
-         * scattered all over the script when tying the slave up.
+         * KeyRelease command [duration] Control key release devices. This statement does nothing if the device isn't
+         * present, so it can safely be scattered all over the script when tying the slave up.
          * <p>
          * Just prepare the device when telling the slave to tie himself up. Then start the device, enter sleep as
          * appropriate, release the key at the end of the script or wait until the device releases the key
          * automatically.
+         * <p>
+         * Valid comamnds are: Prepare, Start, Sleep, Release
          */
         KeyRelease,
 

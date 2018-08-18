@@ -31,7 +31,7 @@ public class GoSub extends AbstractInteraction {
     @Override
     public ActionRange getRange(Player player, Script script, Action action, Runnable visuals)
             throws ScriptExecutionException {
-        logger.info(range.toString());
+        logger.info("{}", range);
         visuals.run();
         script.stack.push(rangeProvider.getRange(player, script, action, NoVisuals));
         return range;
