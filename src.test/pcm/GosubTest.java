@@ -10,6 +10,7 @@ import pcm.model.ScriptExecutionException;
 import pcm.model.ScriptParsingException;
 import pcm.model.ValidationIssue;
 import pcm.util.TestUtils;
+import teaselib.core.Debugger;
 
 public class GosubTest {
 
@@ -22,6 +23,12 @@ public class GosubTest {
             throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
         Player player = TestUtils.createPlayer(getClass());
         player.loadScript(getClass().getSimpleName());
+
+        Debugger debugger = new Debugger(player.teaseLib);
+        debugger.addResponse("Interaction", () -> {
+            player.state.set(3);
+            return Debugger.Response.Choose;
+        });
 
         pcm.util.TestUtils.play(player, new ActionRange(1000), null);
     }

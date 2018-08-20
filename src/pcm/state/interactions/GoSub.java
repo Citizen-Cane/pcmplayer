@@ -41,7 +41,7 @@ public class GoSub extends AbstractInteraction {
     public void validate(Script script, Action action, List<ValidationIssue> validationErrors)
             throws ScriptParsingException {
         range.validate();
-
+        script.actions.validate(script, action, range, validationErrors);
         super.validate(script, action, validationErrors);
     }
 }

@@ -7,20 +7,28 @@
 ' testGosubIsExecutedAfterActionCommands
 
 [Action 1000]
-.unset 1 2
+.unset 1 2 3
 .range 1001
 
 
 [Action 1001]
-.mustnot 1 2
+.mustnot 1 2 3
 .set 1
+.yes Interaction
 .gosub 1002
 .range 1003
 
+
 [Action 1002]
 .must 1
+' 3 is set by a debugger response action in the unit test
+' - set here already since gosub has to complete the calling action first before invoking this one
+' - completing includes processing all interactions and range providers
+' - therefore the sub-action is effectively invoked after all interactions and range providers have been executed
+.must 3
 .set 2
 .range 9999
+
 
 [Action 1003]
 .must 1 2
