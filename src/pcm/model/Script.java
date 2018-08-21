@@ -196,6 +196,15 @@ public class Script extends AbstractAction {
         return Optional.ofNullable(keyReleaseActuator);
     }
 
+    public String releaseAction() {
+        Optional<Actuator> actuator = getKeyReleaseActuator();
+        if (actuator.isPresent()) {
+            return actuator.get().releaseAction();
+        } else {
+            return null;
+        }
+    }
+
     public String getResponseText(Statement name) {
         if (responses.containsKey(name)) {
             return responses.get(name);

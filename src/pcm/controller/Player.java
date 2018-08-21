@@ -7,12 +7,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.StringTokenizer;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Supplier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +44,7 @@ import teaselib.MainScript;
 import teaselib.Message;
 import teaselib.Sexuality.Gender;
 import teaselib.Sexuality.Sex;
+import teaselib.State;
 import teaselib.TeaseScript;
 import teaselib.core.ResourceLoader;
 import teaselib.core.ScriptInterruptedException;
@@ -49,6 +53,7 @@ import teaselib.core.media.MediaRenderer;
 import teaselib.core.texttospeech.ScriptScanner;
 import teaselib.core.texttospeech.TextToSpeechRecorder;
 import teaselib.core.texttospeech.Voice;
+import teaselib.util.Item;
 import teaselib.util.RandomImages;
 import teaselib.util.SpeechRecognitionRejectedScript;
 import teaselib.util.TextVariables;
@@ -82,6 +87,8 @@ public class Player extends TeaseScript implements MainScript {
 
     private boolean invokedOnAllSet = false;
     private boolean intentionalQuit = false;
+
+    private final Map<String, Supplier<String>> runtimeStates = new HashMap<>();
 
     /**
      * This range can be pushed onto the script range stack to tell the player to hand over execution from the PCM
@@ -119,11 +126,12 @@ public class Player extends TeaseScript implements MainScript {
         this.state = new MappedScriptState(this);
         this.breakPoints = new BreakPoints();
 
-        this.scripts = new ScriptCache(resources, Player.ScriptFolder, createDominantSubmissiveSymbols());
+        Symbols symbols = createDominantSubmissiveSymbols();
+        this.scripts = new ScriptCache(resources, Player.ScriptFolder, symbols);
         this.mistressPath = mistressPath;
         mainScript = mainscript;
 
-        this.invokedOnAllSet = false;
+        initializeRuntimeStates();
     }
 
     private Symbols createDominantSubmissiveSymbols() {
@@ -150,7 +158,10 @@ public class Player extends TeaseScript implements MainScript {
         Symbols staticSymbols = new Symbols();
         staticSymbols.put(dominantSubmissiveSymbol.toString(), "true");
         return staticSymbols;
+    }
 
+    private void initializeRuntimeStates() {
+        runtimeStates.put("Key_Release.Action", () -> script != null ? script.releaseAction() : null);
     }
 
     @Override
@@ -638,6 +649,33 @@ public class Player extends TeaseScript implements MainScript {
 
     public void render(MediaRenderer mediaRenderer) {
         queueRenderer(mediaRenderer);
+    }
+
+    @Override
+    public State state(String name) {
+        if (isRuntimeState(name)) {
+            String runtimeState = runtimeStates.get(strip(name)).get();
+            if (runtimeState != null) {
+                return state(runtimeState);
+            } else {
+                return Item.NotFound;
+            }
+        } else {
+            return super.state(name);
+        }
+    }
+
+    private static boolean isRuntimeState(String name) {
+        return name.startsWith("$(") && name.endsWith(")");
+    }
+
+    /**
+     * @param variable
+     *            String with the format $(name)
+     * @return strinpped name
+     */
+    private static String strip(String variable) {
+        return variable.substring(2, variable.length() - 1);
     }
 
     public static void validateScript(Script script, List<ValidationIssue> validationErrors)
