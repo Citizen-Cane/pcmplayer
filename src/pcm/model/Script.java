@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,7 @@ import pcm.controller.ScriptParser;
 import pcm.state.Condition;
 import pcm.state.commands.Restore;
 import teaselib.Actor;
+import teaselib.core.devices.release.Actuator;
 
 public class Script extends AbstractAction {
     private static final Logger logger = LoggerFactory.getLogger(Script.class);
@@ -44,6 +46,8 @@ public class Script extends AbstractAction {
 
     private final ScriptCache scriptCache;
     public final Deque<ActionRange> stack;
+
+    private Actuator keyReleaseActuator = null;
 
     /**
      * The condition range used when the script doesn't define its own list of condition ranges.
@@ -178,6 +182,18 @@ public class Script extends AbstractAction {
         } else {
             super.add(cmd);
         }
+    }
+
+    public void clearKeyReleaseActuator() {
+        keyReleaseActuator = null;
+    }
+
+    public void setKeyReleaseActuator(Actuator actuator) {
+        keyReleaseActuator = actuator;
+    }
+
+    public Optional<Actuator> getKeyReleaseActuator() {
+        return Optional.ofNullable(keyReleaseActuator);
     }
 
     public String getResponseText(Statement name) {

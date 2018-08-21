@@ -1,6 +1,7 @@
 package pcm.state.visuals;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -56,13 +57,16 @@ public class KeyReleaseHandler implements Visual {
             }
 
             private void prepare(final Player player) {
-                player.keyReleaseActuator = null;
+                player.script.clearKeyReleaseActuator();
                 KeyRelease keyRelease = teaseLib.devices.get(KeyRelease.class).getDefaultDevice();
                 mandatoryCompleted();
 
                 if (DeviceCache.connect(keyRelease)) {
-                    player.keyReleaseActuator = findActuatorForHoldingDuration(keyRelease);
-                    player.keyReleaseActuator.arm();
+                    player.script.setKeyReleaseActuator(findActuatorForHoldingDuration(keyRelease));
+                    Optional<Actuator> actuator = player.script.getKeyReleaseActuator();
+                    if (actuator.isPresent()) {
+                        actuator.get().arm();
+                    }
                 }
             }
 
@@ -71,13 +75,14 @@ public class KeyReleaseHandler implements Visual {
             }
 
             private void handleKey(Player player) {
-                if (player.keyReleaseActuator != null) {
+                Optional<Actuator> actuator = player.script.getKeyReleaseActuator();
+                if (actuator.isPresent()) {
                     if (command.equalsIgnoreCase(Start)) {
-                        player.keyReleaseActuator.start(duration, TimeUnit.SECONDS);
+                        actuator.get().start(duration, TimeUnit.SECONDS);
                     } else if (command.equalsIgnoreCase(Sleep)) {
-                        player.keyReleaseActuator.sleep(duration, TimeUnit.SECONDS);
+                        actuator.get().sleep(duration, TimeUnit.SECONDS);
                     } else if (command.equalsIgnoreCase(Release)) {
-                        player.keyReleaseActuator.release();
+                        actuator.get().release();
                     }
                 }
                 mandatoryCompleted();

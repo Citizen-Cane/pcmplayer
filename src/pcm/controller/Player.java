@@ -45,7 +45,6 @@ import teaselib.TeaseScript;
 import teaselib.core.ResourceLoader;
 import teaselib.core.ScriptInterruptedException;
 import teaselib.core.TeaseLib;
-import teaselib.core.devices.release.Actuator;
 import teaselib.core.media.MediaRenderer;
 import teaselib.core.texttospeech.ScriptScanner;
 import teaselib.core.texttospeech.TextToSpeechRecorder;
@@ -83,11 +82,6 @@ public class Player extends TeaseScript implements MainScript {
 
     private boolean invokedOnAllSet = false;
     private boolean intentionalQuit = false;
-
-    // TODO Enable key-release in both main and sub-scripts
-    // TODO if started in main already, commands in sub script should be ignored
-    // TODO if started in main, the key shouldn't be released in the sub script
-    public Actuator keyReleaseActuator = null;
 
     /**
      * This range can be pushed onto the script range stack to tell the player to hand over execution from the PCM
