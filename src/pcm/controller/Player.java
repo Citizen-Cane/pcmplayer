@@ -7,15 +7,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.StringTokenizer;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Supplier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,7 +85,7 @@ public class Player extends TeaseScript implements MainScript {
     private boolean invokedOnAllSet = false;
     private boolean intentionalQuit = false;
 
-    private final Map<String, Supplier<String>> runtimeStates = new HashMap<>();
+    private final RuntimeVariables runtimeVariables = new RuntimeVariables();
 
     /**
      * This range can be pushed onto the script range stack to tell the player to hand over execution from the PCM
@@ -131,7 +128,7 @@ public class Player extends TeaseScript implements MainScript {
         this.mistressPath = mistressPath;
         mainScript = mainscript;
 
-        initializeRuntimeStates();
+        initializeRuntimeVariables();
     }
 
     private Symbols createDominantSubmissiveSymbols() {
@@ -160,8 +157,8 @@ public class Player extends TeaseScript implements MainScript {
         return staticSymbols;
     }
 
-    private void initializeRuntimeStates() {
-        runtimeStates.put("Key_Release.Action", () -> script != null ? script.releaseAction() : null);
+    private void initializeRuntimeVariables() {
+        runtimeVariables.add("Key_Release.Action", () -> script != null ? script.releaseAction() : null);
     }
 
     @Override
@@ -653,8 +650,8 @@ public class Player extends TeaseScript implements MainScript {
 
     @Override
     public State state(String name) {
-        if (isRuntimeState(name)) {
-            String runtimeState = runtimeStates.get(strip(name)).get();
+        if (RuntimeVariable.isVariable(name)) {
+            String runtimeState = runtimeVariables.get(name).value();
             if (runtimeState != null) {
                 return state(runtimeState);
             } else {
@@ -663,10 +660,6 @@ public class Player extends TeaseScript implements MainScript {
         } else {
             return super.state(name);
         }
-    }
-
-    private static boolean isRuntimeState(String name) {
-        return name.startsWith("$(") && name.endsWith(")");
     }
 
     /**
