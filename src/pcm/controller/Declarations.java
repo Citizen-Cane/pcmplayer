@@ -12,18 +12,22 @@ public class Declarations {
     public static final String ENUM = "enum";
     public static final String STRING = "string";
 
-    private final Map<String, String> declarations = new HashMap<>();
+    private final Map<String, String> entries;
+
+    public Declarations() {
+        this.entries = new HashMap<>();
+    }
 
     public void add(String namespace, String type) {
-        declarations.put(namespace, type);
+        entries.put(namespace, type);
     }
 
     public boolean available() {
-        return !declarations.isEmpty();
+        return !entries.isEmpty();
     }
 
     public Set<Map.Entry<String, String>> entries() {
-        return declarations.entrySet();
+        return entries.entrySet();
     }
 
     public List<String> checked(List<String> qualifiedNames) throws ClassNotFoundException {

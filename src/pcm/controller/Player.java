@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.StringTokenizer;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Supplier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,11 +47,11 @@ import teaselib.TeaseScript;
 import teaselib.core.ResourceLoader;
 import teaselib.core.ScriptInterruptedException;
 import teaselib.core.TeaseLib;
+import teaselib.core.devices.ActionState;
 import teaselib.core.media.MediaRenderer;
 import teaselib.core.texttospeech.ScriptScanner;
 import teaselib.core.texttospeech.TextToSpeechRecorder;
 import teaselib.core.texttospeech.Voice;
-import teaselib.util.Item;
 import teaselib.util.RandomImages;
 import teaselib.util.SpeechRecognitionRejectedScript;
 import teaselib.util.TextVariables;
@@ -158,7 +159,13 @@ public class Player extends TeaseScript implements MainScript {
     }
 
     private void initializeRuntimeVariables() {
-        runtimeVariables.add("Key_Release.Action", () -> script != null ? script.releaseAction() : null);
+        runtimeVariables.add("Key_Release.Action", supplyReleaseAction());
+    }
+
+    protected Supplier<String> supplyReleaseAction() {
+        return () -> script != null ? script.releaseAction()
+                : ActionState.persistedInstance(ActionState.None.class, TeaseLib.DefaultDomain,
+                        "ReleaseAction.NotAvailable");
     }
 
     @Override
@@ -635,10 +642,9 @@ public class Player extends TeaseScript implements MainScript {
         if (actions.isEmpty()) {
             return null;
         } else if (actions.size() == 1) {
-            Action action = actions.get(0);
-            if (logger.isInfoEnabled())
-                logger.info("Action " + action.number);
-            return action;
+            Action chosenAction = actions.get(0);
+            logger.info("Action {}", chosenAction.number);
+            return chosenAction;
         } else {
             return probabilityModel.chooseActionBasedOnPossValue(actions);
         }
@@ -651,24 +657,19 @@ public class Player extends TeaseScript implements MainScript {
     @Override
     public State state(String name) {
         if (RuntimeVariable.isVariable(name)) {
-            String runtimeState = runtimeVariables.get(name).value();
-            if (runtimeState != null) {
-                return state(runtimeState);
+            RuntimeVariable runtimeVariable = runtimeVariables.get(name);
+            if (runtimeVariable == null) {
+                throw new IllegalArgumentException("Undefined Runtime variable " + name);
+            }
+            String runtimeState = runtimeVariable.value();
+            if (runtimeState == null) {
+                throw new NullPointerException("Runtime variable value " + name);
             } else {
-                return Item.NotFound;
+                return state(runtimeState);
             }
         } else {
             return super.state(name);
         }
-    }
-
-    /**
-     * @param variable
-     *            String with the format $(name)
-     * @return strinpped name
-     */
-    private static String strip(String variable) {
-        return variable.substring(2, variable.length() - 1);
     }
 
     public static void validateScript(Script script, List<ValidationIssue> validationErrors)
