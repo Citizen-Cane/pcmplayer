@@ -73,7 +73,7 @@ public class Action extends AbstractAction {
 
     public List<Condition> conditions = null;
     public Map<Statement, Visual> visuals = null;
-
+    public Visual message = null;
     public Interaction interaction = null;
 
     public Action(int n) {
@@ -83,36 +83,35 @@ public class Action extends AbstractAction {
     public void finalizeParsing(Script script) throws ValidationIssue {
         if (visuals != null) {
             // Get delay
-            final Visual visual;
+            Visual visual;
             if (visuals.containsKey(Statement.Delay) == true) {
                 visual = visuals.get(Statement.Delay);
             } else if (visuals.containsKey(Statement.ActionDelay) == true) {
-                // ActionDelay is mapped to Delay statement, and may not appear
-                // in action visuals
+                // ActionDelay is mapped to Delay statement, and may not appear in action visuals
                 throw new IllegalStateException(Statement.ActionDelay.toString());
             } else {
                 visual = null;
             }
-            // Message or txt?
-            final boolean hasMessageStatement = visuals.containsKey(Statement.Message);
-            final boolean hasTxt = visuals.containsKey(Statement.Txt);
-            if (hasMessageStatement && hasTxt)
-                throw new ValidationIssue(this,
-                        "Spoken messages and .txt are exclusive because PCMPlayer/TeaseLib supports only one text area",
-                        script);
-            final boolean hasMessage = hasMessageStatement || hasTxt;
-            final boolean hasDelay;
+
+            // TODO Re-enable check
+            // if (hasMessageStatement && hasTxt)
+            // throw new ValidationIssue(this,
+            // "Spoken messages and .txt are exclusive because PCMPlayer/TeaseLib supports only one text area",
+            // script);
+
+            boolean hasMessage = message != null;
+
+            boolean hasDelay;
             if (visual instanceof Delay) {
                 hasDelay = ((Delay) visual).from > 0;
             } else {
-                // Since the script ends with Quit, the delay is actually
-                // infinite
+                // Since the script ends with Quit, the delay is actually infinite
                 hasDelay = hasMessage;
             }
             if (hasDelay) {
                 // Add empty message in order to render NoImage + NoMessage
-                if (!hasMessage && !hasTxt) {
-                    addVisual(Statement.Txt, NoMessage.instance);
+                if (!hasMessage) {
+                    message = NoMessage.instance;
                 }
             } else {
                 if (visuals.containsKey(Statement.NoImage)) {
@@ -219,7 +218,7 @@ public class Action extends AbstractAction {
         } else if (name == Statement.Say) {
             // Ignore, because message are spoken per default
         }
-        // Commands
+        // Conditions
         else if (name == Statement.Must) {
             Must must = new Must();
             cmd.addArgsTo(must);
@@ -267,7 +266,9 @@ public class Action extends AbstractAction {
             } else {
                 throw new IllegalStatementException(name, cmd.allArgs());
             }
-        } else if (name == Statement.Set) {
+        }
+        // Commands
+        else if (name == Statement.Set) {
             Set set = new Set();
             cmd.addArgsTo(set);
             addCommand(set);
@@ -483,6 +484,12 @@ public class Action extends AbstractAction {
             }
         } else if (name == Statement.Return) {
             setInteraction(new Return());
+        } else if (name == Statement.Append) {
+            // TODO
+        } else if (name == Statement.Prepend) {
+            // TODO
+        } else if (name == Statement.Replace) {
+            // TODO
         } else {
             super.add(cmd);
         }
@@ -631,7 +638,13 @@ public class Action extends AbstractAction {
                 }
             }
 
-            if (!visuals.containsKey(Statement.Message) && !visuals.containsKey(Statement.Txt)) {
+            if (visuals.containsKey(Statement.Message)) {
+                addMessageValidationIssue(script, validationErrors, Statement.Message);
+            } else if (visuals.containsKey(Statement.Txt)) {
+                addMessageValidationIssue(script, validationErrors, Statement.Txt);
+            }
+
+            if (message == null) {
                 Statement[] requiresMessage = { Statement.Image, Statement.Delay };
                 for (Statement statement : requiresMessage) {
                     if (visuals.containsKey(statement)) {
@@ -639,9 +652,8 @@ public class Action extends AbstractAction {
                                 "Message without .txt or speech part won't render images or other media", script));
                     }
                 }
-            } else if (visuals.containsKey(Statement.Message)) {
-                SpokenMessage message = (SpokenMessage) visuals.get(Statement.Message);
-                if (message.getMessages().size() > 1) {
+            } else if (message instanceof SpokenMessage) {
+                if (((SpokenMessage) message).getMessages().size() > 1) {
                     Statement[] requiresSinglePageMessage = { Statement.Image, Statement.Delay };
                     for (Statement statement : requiresSinglePageMessage) {
                         if (visuals.containsKey(statement)) {
@@ -651,9 +663,11 @@ public class Action extends AbstractAction {
                         }
                     }
                 }
-            } else if (visuals.containsKey(Statement.Txt) && visuals.containsKey(Statement.Message)) {
-                validationErrors.add(new ValidationIssue(this, "Both .txt and message is supported", script));
             }
+
+            // TODO Move this check to collectors
+            // } else if (visuals.containsKey(Statement.Txt) && visuals.containsKey(Statement.Message)) {
+            // validationErrors.add(new ValidationIssue(this, "Both .txt and message is not supported", script));
 
             // .delay 0 & .noimage
             if (visuals.containsKey(Statement.Delay) && visuals.containsKey(Statement.NoImage)) {
@@ -675,6 +689,11 @@ public class Action extends AbstractAction {
         } else {
             validationErrors.add(new ValidationIssue(this, "No interaction", script));
         }
+    }
+
+    private void addMessageValidationIssue(Script script, List<ValidationIssue> validationErrors, Statement special) {
+        validationErrors
+                .add(new ValidationIssue(this, special + " is must be rendered last - remove it from visuals", script));
     }
 
     public List<String> validateResources() {

@@ -244,10 +244,26 @@ public abstract class AbstractAction {
 
         Chat,
 
+        /**
+         * The message will be appended to the previous message.
+         */
+        Append,
+
+        /**
+         * The next message will be appended to the current message.
+         */
+        Prepend,
+
+        /**
+         * The next message will replace the previous message. If a message has effectively been appended, only the last
+         * message will be replaced.
+         */
+        Replace,
+
         ;
 
-        public final static Map<String, Statement> Lookup = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        public final static Map<String, Statement> KeywordToStatement = new HashMap<>();
+        public static final Map<String, Statement> Lookup = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        public static final Map<String, Statement> KeywordToStatement = new HashMap<>();
     }
 
     {

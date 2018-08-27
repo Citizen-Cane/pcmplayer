@@ -12,6 +12,7 @@ import pcm.model.AbstractAction.Statement;
 public class ScriptLineTokenizer {
     final Script script;
     public final int lineNumber;
+    public final String originalLine;
     public final String line;
     private final StringTokenizer tokenizer;
 
@@ -20,18 +21,32 @@ public class ScriptLineTokenizer {
 
     private String argv[];
 
+    // TODO Split into statement parsing and line arguments parsing -> speed up message creation
     public ScriptLineTokenizer(int lineNumber, String line, Script script, Declarations declarations) {
         this.script = script;
         this.lineNumber = lineNumber;
-        this.line = line;
+        this.originalLine = line;
         this.declarations = declarations;
         // Cut off comment at the end of the line
         int commentStart = line.indexOf('\'');
-        line = (commentStart > 0 ? line.substring(0, commentStart) : line).trim();
-        tokenizer = new StringTokenizer(line, " \t");
+        this.line = (commentStart > 0 ? line.substring(0, commentStart) : line).trim();
+
+        this.tokenizer = new StringTokenizer(this.line, " \t");
         String token = tokenizer.nextToken().toLowerCase();
         String statementString = token.substring(1);
-        statement = parseStatement(statementString);
+        this.statement = parseStatement(statementString);
+    }
+
+    public ScriptLineTokenizer(Statement statement, int lineNumber, String line, Script script,
+            Declarations declarations) {
+        this.script = script;
+        this.lineNumber = lineNumber;
+        this.originalLine = line;
+        this.declarations = declarations;
+        this.line = line;
+
+        this.tokenizer = null;
+        this.statement = statement;
     }
 
     public String[] args() {
@@ -107,7 +122,7 @@ public class ScriptLineTokenizer {
      * @return All command line arguments
      */
     public String asFilename() {
-        final int indexOfCommentStart = line.indexOf("'");
+        final int indexOfCommentStart = line.indexOf('\'');
         if (indexOfCommentStart < 0) {
             return allAsText();
         } else {

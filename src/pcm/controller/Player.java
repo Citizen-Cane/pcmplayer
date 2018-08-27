@@ -517,13 +517,18 @@ public class Player extends TeaseScript implements MainScript {
         // Interactions that eventually call choose(...) do this
         // implicitly, but all other classes like Range have to call it
         // when suitable, to prevent text and messages appearing too fast
-        return action.interaction.getRange(this, script, action, () -> {
-            if (action.visuals != null) {
-                for (Visual visual : action.visuals.values()) {
-                    render(visual);
-                }
+        return action.interaction.getRange(this, script, action, () -> render(action));
+    }
+
+    private void render(Action action) {
+        if (action.visuals != null) {
+            for (Visual visual : action.visuals.values()) {
+                render(visual);
             }
-        });
+        }
+        if (action.message != null) {
+            render(action.message);
+        }
     }
 
     public void render(Visual visual) {

@@ -7,19 +7,16 @@ import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.Supplier;
 
 import pcm.model.AbstractAction.Statement;
 import pcm.model.Action;
 import pcm.model.Script;
 import pcm.model.ScriptLineTokenizer;
 import pcm.model.ScriptParsingException;
+import pcm.model.StatementCollector;
+import pcm.model.StatementCollectors;
 import pcm.model.Symbols;
 import pcm.model.ValidationIssue;
-import pcm.state.interactions.AbstractPause;
-import pcm.state.visuals.SpokenMessage;
-import pcm.state.visuals.Txt;
-import teaselib.Actor;
 
 public class ScriptParser {
     private final static String ACTIONMATCH = "[action ";
@@ -34,7 +31,7 @@ public class ScriptParser {
     private final BufferedReader reader;
 
     private final Map<String, String> defines = new LinkedHashMap<>();
-    private final Declarations declarations;
+    private final Declarations declarations = new Declarations();
 
     private String line = null;
     private int l = 0;
@@ -44,9 +41,11 @@ public class ScriptParser {
     public ScriptParser(BufferedReader reader, Symbols staticSymbols) {
         this.reader = reader;
         this.staticSymbols = staticSymbols;
-        this.declarations = new Declarations();
     }
 
+    // TODO Script must be a final variable because the reader is also final -> can parse only once
+    // TODO Refactor ScriptCache to create new script, then parse with ScriptParser instance
+    // - otherwise create script instance here
     public void parse(Script script) throws ScriptParsingException, IOException {
         while ((line = readLine()) != null) {
             if (line.toLowerCase().startsWith(ACTIONMATCH)) {
@@ -70,7 +69,6 @@ public class ScriptParser {
                 throw new ScriptParsingException(l, n, line, "Unexpected script input", script);
             }
         }
-        return;
     }
 
     private String applyDefines(String string) {
@@ -98,25 +96,26 @@ public class ScriptParser {
                     action = new Action(n);
                     previousActionNumber = action.number;
 
-                    StatementCollectors.Factory collectorFactory = getCollectorFactory(script.actor);
-                    StatementCollectors collectors = new StatementCollectors(collectorFactory);
+                    StatementCollectors collectors = new StatementCollectors(script.collectorFactory);
 
-                    SpokenMessage message = null;
                     while ((line = readLine()) != null) {
                         // Start of a new action
-                        if (line.toLowerCase().startsWith(ACTIONMATCH)) {
+                        if (line.startsWith(".")) {
+                            parseStatement(script, action, collectors);
+                        } else if (line.toLowerCase().startsWith(ACTIONMATCH)) {
                             break;
                         } else if (line.startsWith("[]")) {
-                            completeMessageSectionAndStartNew(script, action, message);
+                            for (StatementCollector statementCollector : collectors) {
+                                statementCollector.nextSection(action);
+                            }
                         } else if (line.startsWith("[") && line.endsWith("]")) {
                             handleDeprecatedInlineReply();
-                        } else if (line.startsWith(".")) {
-                            parseStatement(script, action, collectors);
                         } else {
-                            message = parseMessage(script, message);
+                            collectors.get(Statement.Message)
+                                    .parse(new ScriptLineTokenizer(Statement.Message, l, line, script, declarations));
                         }
                     }
-                    finalizeActionParsing(script, action, message, collectors);
+                    finalizeActionParsing(script, action, collectors);
                 }
             } catch (ScriptParsingException | ValidationIssue e) {
                 if (e.script == null) {
@@ -130,61 +129,13 @@ public class ScriptParser {
         }
     }
 
-    protected StatementCollectors.Factory getCollectorFactory(Actor actor) {
-        StatementCollectors.Factory collectorFactory = new StatementCollectors.Factory();
-        Supplier<StatementCollector> txtCollector = () -> {
-            return new StatementCollector() {
-                Txt txt;
-
-                @Override
-                public void init() {
-                    txt = new Txt(actor);
-                }
-
-                @Override
-                public void parse(ScriptLineTokenizer cmd) {
-                    String text = cmd.line.substring(Statement.Txt.toString().length() + 1);
-                    txt.add(text.trim());
-                }
-
-                @Override
-                public void applyTo(Action action) {
-                    txt.end();
-                    action.addVisual(Statement.Txt, txt);
-                }
-            };
-        };
-        collectorFactory.add(Statement.Txt, txtCollector);
-        return collectorFactory;
-    }
-
-    private void completeMessageSectionAndStartNew(Script script, Action action, SpokenMessage message)
-            throws ScriptParsingException {
-        if (message != null) {
-            if (action.interaction instanceof AbstractPause) {
-                AbstractPause pause = (AbstractPause) action.interaction;
-                message.completeSection(pause.answer);
-                action.interaction = null;
-            } else if (action.interaction == null) {
-                message.completeSection();
-            } else {
-                throw new ScriptParsingException(l, n, line, "Interaction "
-                        + action.interaction.getClass().getSimpleName() + " not supported for in-action prompts",
-                        script);
-            }
-            message.startNewSection();
-        } else {
-            throw new ScriptParsingException(l, n, line, "No message before answer", script);
-        }
-    }
-
     private static void handleDeprecatedInlineReply() {
         throw new IllegalArgumentException("Deprecated bracket prompt");
     }
 
     private void parseStatement(Script script, Action action, StatementCollectors collectors)
             throws ScriptParsingException {
-        ScriptLineTokenizer cmd = new ScriptLineTokenizer(l, applyDefines(line), script, declarations);
+        ScriptLineTokenizer cmd = getScriptLineTokenizer(script);
         if (collectors.contains(cmd.statement)) {
             StatementCollector collector = collectors.get(cmd.statement);
             collector.parse(cmd);
@@ -201,25 +152,13 @@ public class ScriptParser {
         }
     }
 
-    private SpokenMessage parseMessage(Script script, SpokenMessage message) {
-        if (message == null) {
-            message = new SpokenMessage(script.actor);
-        }
-        message.add(line);
-        return message;
+    protected ScriptLineTokenizer getScriptLineTokenizer(Script script) {
+        ScriptLineTokenizer cmd = new ScriptLineTokenizer(l, applyDefines(line), script, declarations);
+        return cmd;
     }
 
-    private static void finalizeActionParsing(Script script, Action action, SpokenMessage message,
-            StatementCollectors collectors) throws ValidationIssue {
-        // Add message to visuals as the last item, because
-        // rendering the message triggers rendering of all other
-        // visuals
-        if (message != null) {
-            message.completeMessage();
-            action.addVisual(Statement.Message, message);
-        }
-        // .txt messages must be executed last,
-        // so this has to be added last
+    private static void finalizeActionParsing(Script script, Action action, StatementCollectors collectors)
+            throws ValidationIssue {
         for (StatementCollector collector : collectors) {
             collector.applyTo(action);
         }

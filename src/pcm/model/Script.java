@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,9 @@ import pcm.controller.ScriptCache;
 import pcm.controller.ScriptParser;
 import pcm.state.Condition;
 import pcm.state.commands.Restore;
+import pcm.state.interactions.AbstractPause;
+import pcm.state.visuals.SpokenMessage;
+import pcm.state.visuals.Txt;
 import teaselib.Actor;
 import teaselib.core.devices.release.Actuator;
 
@@ -49,6 +53,8 @@ public class Script extends AbstractAction {
 
     private Actuator keyReleaseActuator = null;
 
+    public final StatementCollectors.Factory collectorFactory;
+
     /**
      * The condition range used when the script doesn't define its own list of condition ranges.
      */
@@ -66,7 +72,12 @@ public class Script extends AbstractAction {
         this.scriptApplyAttribute = "Applied.by." + name;
         this.scriptCache = scriptCache;
         this.stack = scriptCache.stack;
-        logger.info("Parsing script " + name);
+
+        collectorFactory = new StatementCollectors.Factory();
+        collectorFactory.add(Statement.Txt, txtCollector());
+        collectorFactory.add(Statement.Message, messageCollector());
+
+        logger.info("Parsing script {}", name);
         try {
             parser.parse(this);
             Action action = null;
@@ -81,6 +92,76 @@ public class Script extends AbstractAction {
         }
         completeScriptDefaults();
         completeConditionRanges();
+
+    }
+
+    private Supplier<StatementCollector> txtCollector() {
+        return () -> {
+            return new StatementCollector() {
+                Txt txt;
+
+                @Override
+                public void init() {
+                    txt = new Txt(actor);
+                }
+
+                @Override
+                public void parse(ScriptLineTokenizer cmd) {
+                    String text = cmd.line.substring(Statement.Txt.toString().length() + 1);
+                    txt.add(text.trim());
+                }
+
+                @Override
+                public void nextSection(Action action) { // Nothing to do
+                }
+
+                @Override
+                public void applyTo(Action action) {
+                    txt.end();
+                    action.message = txt;
+                }
+            };
+        };
+    }
+
+    private Supplier<StatementCollector> messageCollector() {
+        return (Supplier<StatementCollector>) () -> {
+            return new StatementCollector() {
+                SpokenMessage message;
+
+                @Override
+                public void init() { // Nothing to do
+                    message = new SpokenMessage(actor);
+                }
+
+                @Override
+                public void parse(ScriptLineTokenizer cmd) {
+                    message.add(cmd.line);
+                }
+
+                @Override
+                public void nextSection(Action action) {
+                    if (action.interaction instanceof AbstractPause) {
+                        AbstractPause pause = (AbstractPause) action.interaction;
+                        message.completeSection(pause.answer);
+                        action.interaction = null;
+                    } else if (action.interaction == null) {
+                        message.completeSection();
+                    } else {
+                        throw new IllegalArgumentException("Action " + action.number + ": " + "Interaction "
+                                + action.interaction.getClass().getSimpleName()
+                                + " not allowed as message section prompt");
+                    }
+                    message.startNewSection();
+                }
+
+                @Override
+                public void applyTo(Action action) {
+                    message.completeMessage();
+                    action.message = message;
+                }
+            };
+        };
     }
 
     private void completeScriptDefaults() {
@@ -112,11 +193,9 @@ public class Script extends AbstractAction {
         if (name == Statement.Restore) {
             addCommand(new Restore());
         } else if (name == Statement.BackColor) {
-            String args[] = cmd.args();
-            backColor = new Color(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+            backColor = color(cmd.args());
         } else if (name == Statement.TextColor) {
-            String args[] = cmd.args();
-            backColor = new Color(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+            textColor = color(cmd.args());
         } else if (name == Statement.SsDir) {
             imageDirectory = cmd.allArgs().replace('\\', '/');
             mistressImages = imageDirectory + "/*.jpg";
@@ -182,6 +261,10 @@ public class Script extends AbstractAction {
         } else {
             super.add(cmd);
         }
+    }
+
+    private static Color color(String[] args) {
+        return new Color(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
     }
 
     public void clearKeyReleaseActuator() {

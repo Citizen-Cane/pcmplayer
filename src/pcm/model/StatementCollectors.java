@@ -1,13 +1,14 @@
-package pcm.controller;
+package pcm.model;
 
 import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import pcm.model.AbstractAction.Statement;
 
-final class StatementCollectors implements Iterable<StatementCollector> {
+public class StatementCollectors implements Iterable<StatementCollector> {
     static final class Factory {
         private final Map<Statement, Supplier<StatementCollector>> collectors = new EnumMap<>(Statement.class);
 
@@ -32,11 +33,12 @@ final class StatementCollectors implements Iterable<StatementCollector> {
     }
 
     public StatementCollector get(Statement statement) {
-        StatementCollector collector = entries.get(statement);
-        if (collector == null) {
-            collector = factory.get(statement).get();
-            collector.init();
-        }
+        return entries.computeIfAbsent(statement, this::newCollector);
+    }
+
+    private StatementCollector newCollector(Statement statement) {
+        StatementCollector collector = factory.get(statement).get();
+        collector.init();
         return collector;
     }
 
@@ -45,4 +47,7 @@ final class StatementCollectors implements Iterable<StatementCollector> {
         return entries.values().iterator();
     }
 
+    public Stream<StatementCollector> stream() {
+        return entries.values().stream();
+    }
 }
