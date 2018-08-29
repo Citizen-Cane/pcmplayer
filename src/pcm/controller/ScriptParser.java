@@ -136,7 +136,7 @@ public class ScriptParser {
     private void parseStatement(Script script, Action action, StatementCollectors collectors)
             throws ScriptParsingException {
         ScriptLineTokenizer cmd = getScriptLineTokenizer(script);
-        if (collectors.contains(cmd.statement)) {
+        if (collectors.canParse(cmd.statement)) {
             StatementCollector collector = collectors.get(cmd.statement);
             collector.parse(cmd);
         } else {
@@ -153,13 +153,12 @@ public class ScriptParser {
     }
 
     protected ScriptLineTokenizer getScriptLineTokenizer(Script script) {
-        ScriptLineTokenizer cmd = new ScriptLineTokenizer(l, applyDefines(line), script, declarations);
-        return cmd;
+        return new ScriptLineTokenizer(l, applyDefines(line), script, declarations);
     }
 
     private static void finalizeActionParsing(Script script, Action action, StatementCollectors collectors)
             throws ValidationIssue {
-        if (collectors.contains(Statement.Message) && collectors.contains(Statement.Txt)) {
+        if (collectors.hasParsed(Statement.Message) && collectors.hasParsed(Statement.Txt)) {
             throw new ValidationIssue(action,
                     "Spoken messages and .txt are exclusive because the TeaseLib PCMPlayer supports only one text area",
                     script);

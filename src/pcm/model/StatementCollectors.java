@@ -19,6 +19,10 @@ public class StatementCollectors implements Iterable<StatementCollector> {
         Supplier<StatementCollector> get(Statement stateent) {
             return collectors.get(stateent);
         }
+
+        boolean contains(Statement statement) {
+            return collectors.containsKey(statement);
+        }
     }
 
     private final Map<Statement, StatementCollector> entries = new EnumMap<>(Statement.class);
@@ -28,8 +32,12 @@ public class StatementCollectors implements Iterable<StatementCollector> {
         this.factory = factory;
     }
 
-    public boolean contains(Statement statement) {
-        return factory.get(statement) != null;
+    public boolean canParse(Statement statement) {
+        return factory.contains(statement);
+    }
+
+    public boolean hasParsed(Statement statement) {
+        return entries.containsKey(statement);
     }
 
     public StatementCollector get(Statement statement) {
