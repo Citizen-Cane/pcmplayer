@@ -93,21 +93,9 @@ public class Action extends AbstractAction {
                 visual = null;
             }
 
-            // TODO Re-enable check
-            // if (hasMessageStatement && hasTxt)
-            // throw new ValidationIssue(this,
-            // "Spoken messages and .txt are exclusive because PCMPlayer/TeaseLib supports only one text area",
-            // script);
-
             boolean hasMessage = message != null;
+            boolean hasDelay = visual instanceof Delay ? ((Delay) visual).from > 0 : hasMessage;
 
-            boolean hasDelay;
-            if (visual instanceof Delay) {
-                hasDelay = ((Delay) visual).from > 0;
-            } else {
-                // Since the script ends with Quit, the delay is actually infinite
-                hasDelay = hasMessage;
-            }
             if (hasDelay) {
                 // Add empty message in order to render NoImage + NoMessage
                 if (!hasMessage) {
@@ -664,10 +652,6 @@ public class Action extends AbstractAction {
                     }
                 }
             }
-
-            // TODO Move this check to collectors
-            // } else if (visuals.containsKey(Statement.Txt) && visuals.containsKey(Statement.Message)) {
-            // validationErrors.add(new ValidationIssue(this, "Both .txt and message is not supported", script));
 
             // .delay 0 & .noimage
             if (visuals.containsKey(Statement.Delay) && visuals.containsKey(Statement.NoImage)) {

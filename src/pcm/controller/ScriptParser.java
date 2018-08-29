@@ -159,6 +159,12 @@ public class ScriptParser {
 
     private static void finalizeActionParsing(Script script, Action action, StatementCollectors collectors)
             throws ValidationIssue {
+        if (collectors.contains(Statement.Message) && collectors.contains(Statement.Txt)) {
+            throw new ValidationIssue(action,
+                    "Spoken messages and .txt are exclusive because the TeaseLib PCMPlayer supports only one text area",
+                    script);
+        }
+
         for (StatementCollector collector : collectors) {
             collector.applyTo(action);
         }
