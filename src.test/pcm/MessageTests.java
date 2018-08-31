@@ -3,7 +3,7 @@
  */
 package pcm;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 
@@ -11,7 +11,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import pcm.controller.Player;
-import pcm.model.AbstractAction.Statement;
 import pcm.model.Action;
 import pcm.state.visuals.SpokenMessage;
 import pcm.util.TestUtils;
@@ -36,7 +35,7 @@ public class MessageTests {
 
     private Message getMessageOfAction(int n) {
         Action action = player.script.actions.get(n);
-        return ((SpokenMessage) action.visuals.get(Statement.Message)).getMessages().get(0);
+        return ((SpokenMessage) action.message).getMessages().get(0);
     }
 
     @Test

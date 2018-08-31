@@ -36,7 +36,7 @@ public class YesNoTest {
         Action action = createPlayer().script.actions.get(1000);
         assertNotNull(action);
 
-        SpokenMessage spokenMessage = (SpokenMessage) action.visuals.get(Statement.Message);
+        SpokenMessage spokenMessage = (SpokenMessage) action.message;
         assertNotNull(spokenMessage);
         assertEquals(2, spokenMessage.getMessages().size());
 
@@ -61,7 +61,7 @@ public class YesNoTest {
         Action action = createPlayer().script.actions.get(1010);
         assertNotNull(action);
 
-        SpokenMessage spokenMessage = (SpokenMessage) action.visuals.get(Statement.Message);
+        SpokenMessage spokenMessage = (SpokenMessage) action.message;
         assertNotNull(spokenMessage);
         assertEquals(2, spokenMessage.getMessages().size());
 
