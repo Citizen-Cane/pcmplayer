@@ -11,6 +11,10 @@ public class IllegalStatementException extends IllegalArgumentException {
     }
 
     public IllegalStatementException(Statement statement, String args) {
-        super("Illegal statement arguments ." + statement + " " + args);
+        super("Illegal statement " + statement + " " + args);
+    }
+
+    public IllegalStatementException(Statement statement) {
+        super("Illegal statement " + statement);
     }
 }

@@ -1,10 +1,15 @@
 package pcm.state.visuals;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import pcm.controller.Player;
+import pcm.model.AbstractAction.Statement;
 import pcm.state.ValidatableResources;
 import pcm.state.Visual;
 import teaselib.Actor;
@@ -13,24 +18,30 @@ import teaselib.Message;
 import teaselib.MessagePart;
 
 public class SpokenMessage implements Visual, ValidatableResources {
+    public static final Set<Statement> MODIFIERS = Collections
+            .unmodifiableSet(new HashSet<>(Arrays.asList(Statement.Append, Statement.Prepend, Statement.Replace)));
 
     private final List<Entry> entries = new ArrayList<>();
     private Message message = null;
+    private Statement modifier = null;
     private final Actor actor;
 
     public static class Entry {
         public final Message message;
+        public final Statement modifier;
         public final Optional<Answer> answer;
 
-        public Entry(Message message) {
+        public Entry(Message message, Statement modifier) {
             super();
             this.message = message;
+            this.modifier = modifier;
             this.answer = Optional.empty();
         }
 
-        public Entry(Message message, Answer answer) {
+        public Entry(Message message, Statement modifier, Answer answer) {
             super();
             this.message = message;
+            this.modifier = modifier;
             this.answer = Optional.of(answer);
         }
     }
@@ -57,21 +68,21 @@ public class SpokenMessage implements Visual, ValidatableResources {
     }
 
     public void completeSection() {
-        entries.add(new Entry(message));
+        entries.add(new Entry(message, modifier));
     }
 
     public void completeSection(Answer answer) {
-        entries.add(new Entry(message, answer));
-        message = null;
+        entries.add(new Entry(message, modifier, answer));
     }
 
     public void startNewSection() {
         message = null;
+        modifier = null;
     }
 
     public void completeMessage() {
         if (message != null) {
-            entries.add(new Entry(message));
+            entries.add(new Entry(message, modifier));
         }
         for (Entry entry : entries) {
             entry.message.joinSentences().readAloud();
@@ -81,9 +92,19 @@ public class SpokenMessage implements Visual, ValidatableResources {
     @Override
     public void render(Player player) {
         for (Entry entry : entries) {
-            player.say(entry.message);
-            if (entry.answer.isPresent()) {
-                player.chat(entry.answer.get());
+            if (entry.modifier == Statement.Append) {
+                player.append(entry.message);
+            } else if (entry.modifier == Statement.Prepend) {
+                player.prepend(entry.message);
+            } else if (entry.modifier == Statement.Replace) {
+                player.replace(entry.message);
+            } else {
+                player.say(entry.message);
+            }
+
+            Optional<Answer> answer = entry.answer;
+            if (answer.isPresent()) {
+                player.chat(answer.get());
             }
         }
     }
@@ -107,5 +128,9 @@ public class SpokenMessage implements Visual, ValidatableResources {
 
     public List<Entry> entries() {
         return entries;
+    }
+
+    public void setModifier(Statement statement) {
+        modifier = statement;
     }
 }

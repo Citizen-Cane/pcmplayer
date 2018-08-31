@@ -75,7 +75,11 @@ public class Script extends AbstractAction {
 
         collectorFactory = new StatementCollectors.Factory();
         collectorFactory.add(Statement.Txt, txtCollector());
-        collectorFactory.add(Statement.Message, messageCollector());
+        Supplier<StatementCollector> messageCollector = messageCollector();
+        collectorFactory.add(Statement.Message, messageCollector);
+        collectorFactory.add(Statement.Prepend, messageCollector);
+        collectorFactory.add(Statement.Append, messageCollector);
+        collectorFactory.add(Statement.Replace, messageCollector);
 
         logger.info("Parsing script {}", name);
         try {
@@ -136,7 +140,13 @@ public class Script extends AbstractAction {
 
                 @Override
                 public void parse(ScriptLineTokenizer cmd) {
-                    message.add(cmd.line);
+                    if (cmd.statement == Statement.Message) {
+                        message.add(cmd.line);
+                    } else if (SpokenMessage.MODIFIERS.contains(cmd.statement)) {
+                        message.setModifier(cmd.statement);
+                    } else {
+                        throw new IllegalStatementException(cmd.statement, cmd.allArgs());
+                    }
                 }
 
                 @Override
