@@ -93,7 +93,7 @@ public class ScriptLineTokenizer {
     public String allAsText() {
         int s = statement.toString().length();
         if (line.length() > s + 1) {
-            return line.substring(s + 2).trim();
+            return originalLine.substring(s + 2).trim();
         } else {
             return "";
         }
@@ -110,9 +110,9 @@ public class ScriptLineTokenizer {
         String[] args = args();
         for (int i = 0; i < n; i++) {
             String arg = args[i];
-            index = line.indexOf(arg, index) + arg.length() + 1;
+            index = originalLine.indexOf(arg, index) + arg.length() + 1;
         }
-        return line.substring(index).trim();
+        return originalLine.substring(index).trim();
     }
 
     /**
@@ -122,11 +122,11 @@ public class ScriptLineTokenizer {
      * @return All command line arguments
      */
     public String asFilename() {
-        final int indexOfCommentStart = line.indexOf('\'');
+        final int indexOfCommentStart = originalLine.indexOf('\'');
         if (indexOfCommentStart < 0) {
             return allAsText();
         } else {
-            return line.substring(statement.toString().length() + 1, indexOfCommentStart - 1).trim();
+            return originalLine.substring(statement.toString().length() + 1, indexOfCommentStart - 1).trim();
         }
     }
 
