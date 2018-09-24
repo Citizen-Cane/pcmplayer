@@ -656,7 +656,7 @@ public class Player extends TeaseScript implements MainScript {
     }
 
     public void render(MediaRenderer mediaRenderer) {
-        queueRenderer(mediaRenderer);
+        scriptRenderer.queueRenderer(mediaRenderer);
     }
 
     @Override
