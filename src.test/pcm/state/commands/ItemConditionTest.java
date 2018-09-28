@@ -9,6 +9,7 @@ import pcm.controller.Declarations;
 import pcm.controller.Player;
 import pcm.state.StateCommandLineParameters;
 import pcm.state.conditions.ItemCondition;
+import pcm.state.conditions.StateCondition;
 import pcm.util.TestUtils;
 import teaselib.Body;
 import teaselib.Household;
@@ -52,10 +53,10 @@ public class ItemConditionTest {
                 new String[] { "teaselib.Toys.Chastity_Device", "is", player.namespaceApplyAttribute }, declarations))
                         .isTrueFor(player.state));
 
-        assertTrue(new ItemCondition(
+        assertTrue(new StateCondition(
                 new StateCommandLineParameters(new String[] { "teaselib.Body.OnPenis", "applied" }, declarations))
                         .isTrueFor(player.state));
-        assertTrue(new ItemCondition(new StateCommandLineParameters(
+        assertTrue(new StateCondition(new StateCommandLineParameters(
                 new String[] { "teaselib.Body.OnPenis", "is", player.namespaceApplyAttribute }, declarations))
                         .isTrueFor(player.state));
 
@@ -102,7 +103,7 @@ public class ItemConditionTest {
         assertTrue(new ItemCondition(
                 new StateCommandLineParameters(new String[] { "teaselib.Body.OnPenis", "applied" }, declarations))
                         .isTrueFor(player.state));
-        assertTrue(new ItemCondition(new StateCommandLineParameters(
+        assertTrue(new StateCondition(new StateCommandLineParameters(
                 new String[] { "teaselib.Body.OnPenis", "is", player.namespaceApplyAttribute }, declarations))
                         .isTrueFor(player.state));
 

@@ -32,7 +32,7 @@
 
 [Action 1030]
 .item Toys.Collar applied
-.item Body.AroundNeck applied
+.state Body.AroundNeck applied
 .range 1031
 
 [Action 1031]
@@ -45,8 +45,8 @@
 .range 1033
 
 [Action 1033]
-.item Body.AroundNeck is Applied.by.ItemTest
-.item Body.OnNipples is Applied.by.ItemTest_subscript
+.state Body.AroundNeck is Applied.by.ItemTest
+.state Body.OnNipples is Applied.by.ItemTest_subscript
 .range 1035
 
 [Action 1035]

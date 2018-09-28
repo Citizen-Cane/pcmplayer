@@ -77,9 +77,9 @@
 
 [Action 1030]
 .not .item Toys.Collar applied
-.not .item Body.AroundNeck applied
+.not .state Body.AroundNeck applied
 .not .item Toys.Nipple_clamps applied
-.not .item Body.OnNipples applied
+.not .state Body.OnNipples applied
 .range 1031
 
 [Action 1031]
