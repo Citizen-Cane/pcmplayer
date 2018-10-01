@@ -27,12 +27,56 @@
 ' - therefore the sub-action is effectively invoked after all interactions and range providers have been executed
 .must 3
 .set 2
-.range 9999
+.return
 
 
 [Action 1003]
 .must 1 2
 .range 9999
+
+
+
+' testMultipleGosubsAreExecutedOneAfterAnother
+
+[Action 1010]
+.set 0
+.unset 1 2 3 4
+.yes Interaction
+.gosub 1011
+.gosub 1012
+.gosub 1013
+.gosub 1014
+.gosub 1015
+.range 9999
+
+
+[Action 1011]
+.must 0 5
+.mustnot   1 2 3 4
+.set 1
+.return
+
+[Action 1012]
+.must 0 1 5
+.mustnot     2 3 4
+.set 2
+.return
+
+[Action 1013]
+.must 0 1 2 5
+.mustnot       3 4
+.set 3
+.return
+
+[Action 1014]
+.must 0 1 2 3 5
+.mustnot         4
+.set  4
+.return
+
+[Action 1015]
+.must 0 1 2 3 4 5
+.return
 
 
 ' proper exit for all test cases
