@@ -64,7 +64,7 @@ public class KeyReleaseHandler implements Visual {
                 if (DeviceCache.connect(keyRelease)) {
                     player.script.setKeyReleaseActuator(findActuatorForHoldingDuration(keyRelease));
                     Optional<Actuator> actuator = player.script.getKeyReleaseActuator();
-                    if (actuator.isPresent()) {
+                    if (!actuator.isPresent() && actuator.get().isRunning()) {
                         actuator.get().arm();
                     }
                 }

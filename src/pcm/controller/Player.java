@@ -163,9 +163,17 @@ public class Player extends TeaseScript implements MainScript {
     }
 
     protected Supplier<String> supplyReleaseAction() {
-        return () -> script != null ? script.releaseAction()
-                : ActionState.persistedInstance(ActionState.None.class, TeaseLib.DefaultDomain,
-                        "ReleaseAction.NotAvailable");
+        return this::releaseAction;
+    }
+
+    private String releaseAction() {
+        if (script != null) {
+            String releaseAction = script.releaseAction();
+            if (releaseAction != null) {
+                return releaseAction;
+            }
+        }
+        return ActionState.NotAvailable.stateName();
     }
 
     @Override
