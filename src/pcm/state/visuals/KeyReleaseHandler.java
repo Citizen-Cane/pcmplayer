@@ -43,7 +43,7 @@ public class KeyReleaseHandler implements Visual {
     }
 
     @Override
-    public void render(final Player player) {
+    public void render(Player player) {
         MediaRenderer keyReleaseHandler = new MediaRendererThread(player.teaseLib) {
             @Override
             protected void renderMedia() throws InterruptedException, IOException {
@@ -56,7 +56,7 @@ public class KeyReleaseHandler implements Visual {
                 }
             }
 
-            private void prepare(final Player player) {
+            private void prepare(Player player) {
                 player.script.clearKeyReleaseActuator();
                 KeyRelease keyRelease = teaseLib.devices.get(KeyRelease.class).getDefaultDevice();
                 mandatoryCompleted();
@@ -64,7 +64,7 @@ public class KeyReleaseHandler implements Visual {
                 if (DeviceCache.connect(keyRelease)) {
                     player.script.setKeyReleaseActuator(findActuatorForHoldingDuration(keyRelease));
                     Optional<Actuator> actuator = player.script.getKeyReleaseActuator();
-                    if (!actuator.isPresent() && actuator.get().isRunning()) {
+                    if (actuator.isPresent() && !actuator.get().isRunning()) {
                         actuator.get().arm();
                     }
                 }
