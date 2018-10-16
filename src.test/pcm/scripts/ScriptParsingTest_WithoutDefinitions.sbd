@@ -1,8 +1,11 @@
 ' pcm test cases
 
 .declare teaselib.body string
+.declare teaselib.body state
 .declare teaselib.household string
+.declare teaselib.household item
 .declare teaselib.toys string
+.declare teaselib.toys item
 
 .range 1010
 

@@ -1,7 +1,6 @@
 package pcm;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -28,27 +27,27 @@ public class ScriptParsingTest {
         Debugger debugger = new Debugger(player.teaseLib);
         debugger.freezeTime();
 
-        assertFalse(player.state(Toys.Collar).applied());
-        assertTrue(player.state(Toys.Collar).expired());
+        assertFalse(player.state(Body.AroundNeck).applied());
+        assertTrue(player.state(Body.AroundNeck).expired());
 
         TestUtils.play(player, 1000);
 
-        assertTrue(player.state(Toys.Collar).applied());
-        assertTrue(player.state(Toys.Collar).expired());
+        assertTrue(player.state(Body.AroundNeck).applied());
+        assertTrue(player.state(Body.AroundNeck).expired());
 
         TestUtils.play(player, 1001);
 
-        assertTrue(player.state(Toys.Collar).applied());
-        assertFalse(player.state(Toys.Collar).expired());
+        assertTrue(player.state(Body.AroundNeck).applied());
+        assertFalse(player.state(Body.AroundNeck).expired());
 
         debugger.advanceTime(1, TimeUnit.HOURS);
-        assertTrue(player.state(Toys.Collar).applied());
-        assertTrue(player.state(Toys.Collar).expired());
+        assertTrue(player.state(Body.AroundNeck).applied());
+        assertTrue(player.state(Body.AroundNeck).expired());
 
         TestUtils.play(player, 1002);
 
-        assertFalse(player.state(Toys.Collar).applied());
-        assertTrue(player.state(Toys.Collar).expired());
+        assertFalse(player.state(Body.AroundNeck).applied());
+        assertTrue(player.state(Body.AroundNeck).expired());
     }
 
     @Test

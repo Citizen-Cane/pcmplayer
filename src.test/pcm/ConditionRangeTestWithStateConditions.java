@@ -1,9 +1,6 @@
 package pcm;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 
@@ -30,7 +27,9 @@ public class ConditionRangeTestWithStateConditions {
     public void testConditionRangeIsCaseIndependent() throws ScriptParsingException {
         Declarations declarations = new Declarations();
         declarations.add("teaselib.Toys", Declarations.STRING);
+        declarations.add("teaselib.Toys", Declarations.STATE);
         declarations.add("teaselib.Body", Declarations.STRING);
+        declarations.add("teaselib.Body", Declarations.STATE);
 
         Condition condition = new StateCondition(new StateCommandLineParameters(
                 new String[] { "teaselib.Toys.Chastity_Device", "applied" }, declarations));

@@ -2,12 +2,15 @@
 
 .define Toys teaselib.Toys
 .declare Toys Enum
+.declare Toys Item
 
 .define Body teaselib.Body
 .declare Body Enum
+.declare Body State
 
 .define Household teaselib.Household
 .declare Household Enum
+.declare Household Item
 
 .declare Applied.by String
 
@@ -23,16 +26,16 @@
 .range 1001
 
 [Action 1001]
-.item Body.AroundNeck applied
-.item Body.AroundNeck expired
+.state Body.AroundNeck applied
+.state Body.AroundNeck expired
 .item Toys.Collar applied
 .item Toys.Collar expired
 .item Toys.Collar remove
 .range 1004
 
 [Action 1004]
-.not .item Body.AroundNeck applied
-.item Body.AroundNeck expired
+.not .state Body.AroundNeck applied
+.state Body.AroundNeck expired
 .not .item Toys.Collar applied
 .item Toys.Collar expired
 .range 1005
@@ -42,16 +45,16 @@
 .range 1006
 
 [Action 1006]
-.item Body.AroundNeck applied
-.not .item Body.AroundNeck expired
+.state Body.AroundNeck applied
+.not .state Body.AroundNeck expired
 .item Toys.Collar applied
 .not .item Toys.Collar expired
 .range 9999
 
 
 [Action 1008]
-.item Body.AroundNeck applied
-.item Body.AroundNeck expired
+.state Body.AroundNeck applied
+.state Body.AroundNeck expired
 .item Toys.Collar applied
 .item Toys.Collar expired
 .range 1009

@@ -21,7 +21,9 @@ public class StateCommandTest {
 
     public StateCommandTest() {
         declarations.add("teaselib.Toys", Declarations.STRING);
+        declarations.add("teaselib.Toys", Declarations.STATE);
         declarations.add("teaselib.Body", Declarations.STRING);
+        declarations.add("teaselib.Body", Declarations.STATE);
     }
 
     @Before

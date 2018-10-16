@@ -3,9 +3,11 @@
 
 .define Body teaselib.Body
 .declare Body Enum
+.declare Body State
 
 .define Posture teaselib.Posture
 .declare Posture Enum
+.declare Posture State
 
 
 ' condition ranges for should/shouldnot:

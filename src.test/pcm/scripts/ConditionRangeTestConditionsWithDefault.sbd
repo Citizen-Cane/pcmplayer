@@ -3,6 +3,7 @@
 
 .define Body teaselib.Body
 .declare Body Enum
+.declare Body State
 
 
 .range 1000

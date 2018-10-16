@@ -2,12 +2,15 @@
 
 .define Toys teaselib.Toys
 .declare Toys Enum
+.declare Toys Item
 
 .define Body teaselib.Body
 .declare Body Enum
+.declare Body State
 
 .define Household teaselib.Household
 .declare Household Enum
+.declare Household Item
 
 .declare Applied.by String
 

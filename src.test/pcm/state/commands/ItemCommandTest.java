@@ -28,7 +28,9 @@ public class ItemCommandTest {
 
     public ItemCommandTest() {
         declarations.add("teaselib.Toys", Declarations.STRING);
+        declarations.add("teaselib.Toys", Declarations.ITEM);
         declarations.add("teaselib.Body", Declarations.STRING);
+        declarations.add("teaselib.Body", Declarations.STATE);
     }
 
     @Test

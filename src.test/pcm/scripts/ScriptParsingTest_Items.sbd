@@ -4,11 +4,13 @@
 ' and defines must match exactly
 .define body teaselib.Body
 .declare body enum
+.declare body State
 
 ' Strings are case independent,
 ' but defines must match exactly
 .define Toys teASelib.TOys
 .declare Toys String
+.declare Toys Item
 
 .range 1010
 
@@ -20,7 +22,7 @@
 .range 1011
 
 [Action 1011]
-.item body.AroundNeck applied
+.state body.AroundNeck applied
 .range 9999
 
 

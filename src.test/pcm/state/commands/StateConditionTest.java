@@ -27,8 +27,12 @@ public class StateConditionTest {
 
     public StateConditionTest() {
         declarations.add("teaselib.Toys", Declarations.STRING);
+        declarations.add("teaselib.Toys", Declarations.STATE);
         declarations.add("teaselib.Body", Declarations.STRING);
+        declarations.add("teaselib.Body", Declarations.STATE);
         declarations.add("teaselib.Household", Declarations.STRING);
+        declarations.add("teaselib.Household", Declarations.STATE);
+
         declarations.add("applied.by", Declarations.STRING);
     }
 
