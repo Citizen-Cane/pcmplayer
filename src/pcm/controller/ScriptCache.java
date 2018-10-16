@@ -48,9 +48,8 @@ public class ScriptCache {
         if (script != null) {
             logger.debug("Using cached script {}", name);
         } else {
-            String location = path + name;
-            try (BufferedReader scriptReader = script(location);) {
-                script = new Script(actor, name, this, new ScriptParser(scriptReader, staticSymbols));
+            try (BufferedReader scriptReader = script(name);) {
+                script = new Script(actor, name, this, new ScriptParser(scriptReader, staticSymbols, this));
             }
             cache.put(name, new SoftReference<>(script));
         }
@@ -58,7 +57,15 @@ public class ScriptCache {
     }
 
     public BufferedReader script(String name) throws IOException {
-        InputStream inputStream = resourceLoader.get(name + ".sbd");
+        return loadScript(path + name + ".sbd");
+    }
+
+    public BufferedReader subScript(String name) throws IOException {
+        return loadScript(path + name + ".sbe");
+    }
+
+    private BufferedReader loadScript(String path) throws IOException {
+        InputStream inputStream = resourceLoader.get(path);
         return new BufferedReader(new InputStreamReader(inputStream));
     }
 

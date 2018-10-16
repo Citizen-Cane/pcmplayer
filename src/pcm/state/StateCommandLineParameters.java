@@ -1,7 +1,6 @@
 package pcm.state;
 
-import static pcm.state.StateCommandLineParameters.Keyword.Over;
-import static pcm.state.StateCommandLineParameters.Keyword.Remember;
+import static pcm.state.StateCommandLineParameters.Keyword.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -155,13 +154,15 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
     }
 
     public String[] items(Keyword keyword) throws ClassNotFoundException {
-        List<String> items = declarations.checked(get(keyword));
+        List<String> items = get(keyword);
+        declarations.validate(items);
         String[] array = new String[items.size()];
         return items.toArray(array);
     }
 
     public String item(Keyword keyword) throws ClassNotFoundException {
-        List<String> items = declarations.checked(get(keyword));
+        List<String> items = get(keyword);
+        declarations.validate(items);
         if (items.size() == 1) {
             return items.get(0);
         } else {
@@ -231,5 +232,9 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
         } else {
             throw new IllegalArgumentException("Operator " + keyword.toString() + " not supported");
         }
+    }
+
+    public Declarations getDeclarations() {
+        return declarations;
     }
 }

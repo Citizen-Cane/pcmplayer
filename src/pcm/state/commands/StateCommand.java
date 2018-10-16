@@ -2,6 +2,7 @@ package pcm.state.commands;
 
 import java.util.concurrent.TimeUnit;
 
+import pcm.controller.Declarations;
 import pcm.controller.Player;
 import pcm.model.AbstractAction.Statement;
 import pcm.model.IllegalStatementException;
@@ -29,6 +30,9 @@ public class StateCommand extends BasicCommand {
             throws ScriptParsingException {
         try {
             String[] items = args.items(Keyword.Item);
+            Declarations declarations = args.getDeclarations();
+            declarations.validate(items, State.class);
+
             if (args.containsKey(Keyword.Apply)) {
                 return apply(args, items);
             } else if (args.containsKey(Keyword.Remove)) {

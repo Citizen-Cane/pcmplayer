@@ -260,6 +260,11 @@ public abstract class AbstractAction {
          */
         Replace,
 
+        /**
+         * Include another script. Action numbers must match ascending order, to avoid errors.
+         */
+        Include,
+
         ;
 
         public static final Map<String, Statement> Lookup = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);

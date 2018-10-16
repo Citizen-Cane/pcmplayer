@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import pcm.controller.Declarations;
 import pcm.model.AbstractAction;
 import pcm.model.AbstractAction.Statement;
 import pcm.model.IllegalStatementException;
@@ -14,6 +15,7 @@ import pcm.state.StateCommandLineParameters.Keyword;
 import pcm.state.persistence.ScriptState;
 import teaselib.core.util.ExceptionUtil;
 import teaselib.util.DurationFormat;
+import teaselib.util.Item;
 
 public class ItemCondition extends BasicCondition {
     private static final Statement ITEM = AbstractAction.Statement.Item;
@@ -46,6 +48,9 @@ public class ItemCondition extends BasicCondition {
     private static ParameterizedStatement innerStatement(final StateCommandLineParameters args)
             throws ClassNotFoundException {
         String[] items = args.items(Keyword.Item);
+        Declarations declarations = args.getDeclarations();
+        declarations.validate(items, Item.class);
+
         if (args.containsKey(StateCommandLineParameters.Keyword.Is)) {
             return is(args, items);
         } else if (args.containsKey(StateCommandLineParameters.Keyword.Available)) {

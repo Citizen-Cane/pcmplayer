@@ -1,5 +1,6 @@
 package pcm.state.commands;
 
+import pcm.controller.Declarations;
 import pcm.controller.Player;
 import pcm.model.AbstractAction;
 import pcm.model.AbstractAction.Statement;
@@ -28,6 +29,9 @@ public class ItemCommand extends BasicCommand {
             throws ScriptParsingException {
         try {
             String[] items = args.items(Keyword.Item);
+            Declarations declarations = args.getDeclarations();
+            declarations.validate(items, Item.class);
+
             if (args.containsKey(Keyword.Apply)) {
                 return apply(args, items);
             } else if (args.containsKey(Keyword.Remove)) {

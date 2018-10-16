@@ -29,23 +29,32 @@ public class ScriptParser {
     private final Symbols staticSymbols;
     private final Deque<String[]> preprocessorScope = new ArrayDeque<>();
     private final BufferedReader reader;
+    private ScriptCache scriptCache;
 
-    private final Map<String, String> defines = new LinkedHashMap<>();
-    private final Declarations declarations = new Declarations();
+    private final Map<String, String> defines;
+    private final Declarations declarations;
 
     private String line = null;
     private int l = 0;
     private int n = 0;
     private int previousActionNumber = 0;
 
-    public ScriptParser(BufferedReader reader, Symbols staticSymbols) {
+    public ScriptParser(BufferedReader reader, Symbols staticSymbols, ScriptCache scriptCache) {
         this.reader = reader;
         this.staticSymbols = staticSymbols;
+        this.scriptCache = scriptCache;
+        this.defines = new LinkedHashMap<>();
+        this.declarations = new Declarations();
     }
 
-    // TODO Script must be a final variable because the reader is also final -> can parse only once
-    // TODO Refactor ScriptCache to create new script, then parse with ScriptParser instance
-    // - otherwise create script instance here
+    public ScriptParser(BufferedReader reader, ScriptParser parent) {
+        this.reader = reader;
+        this.staticSymbols = parent.staticSymbols;
+        this.scriptCache = parent.scriptCache;
+        this.defines = parent.defines;
+        this.declarations = parent.declarations;
+    }
+
     public void parse(Script script) throws ScriptParsingException, IOException {
         while ((line = readLine()) != null) {
             if (line.toLowerCase().startsWith(ACTIONMATCH)) {
@@ -57,6 +66,8 @@ public class ScriptParser {
                         defines.put(cmd.args()[0], cmd.argsFrom(1));
                     } else if (cmd.statement == Statement.Declare) {
                         declarations.add(cmd.args()[0], cmd.args()[1]);
+                    } else if (cmd.statement == Statement.Include) {
+                        parseSubscript(script, cmd);
                     } else {
                         script.add(cmd);
                     }
@@ -134,11 +145,13 @@ public class ScriptParser {
     }
 
     private void parseStatement(Script script, Action action, StatementCollectors collectors)
-            throws ScriptParsingException {
+            throws ScriptParsingException, ValidationIssue, IOException {
         ScriptLineTokenizer cmd = getScriptLineTokenizer(script);
         if (collectors.canParse(cmd.statement)) {
             StatementCollector collector = collectors.get(cmd.statement);
             collector.parse(cmd);
+        } else if (cmd.statement == Statement.Include) {
+            parseSubscript(script, cmd);
         } else {
             try {
                 action.add(cmd);
@@ -149,6 +162,20 @@ public class ScriptParser {
                     throw new ScriptParsingException(l, n, line, e.getMessage(), script);
                 }
             }
+        }
+    }
+
+    private void parseSubscript(Script script, ScriptLineTokenizer cmd)
+            throws IOException, ScriptParsingException, ValidationIssue {
+        try (BufferedReader subScriptReader = scriptCache.subScript(cmd.allArgs());) {
+            ScriptParser parser = new ScriptParser(subScriptReader, this);
+            parser.parse(script);
+            Action action;
+            while ((action = parser.parseAction(script)) != null) {
+                script.actions.put(action.number, action);
+            }
+
+            parser.parseAction(script);
         }
     }
 

@@ -27,5 +27,4 @@ public class ScriptException extends Exception {
     public String getMessage() {
         return (script != null ? script.name + ": " : "") + super.getMessage();
     }
-
 }
