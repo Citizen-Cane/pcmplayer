@@ -36,10 +36,11 @@ public class Declarations {
             value = STATE;
         }
 
-        if (names.contains(value.toLowerCase())) {
-            nameDeclarations.put(namespace, value);
-        } else if (types.contains(value.toLowerCase())) {
-            typeDeclarations.put(namespace, value);
+        String valueIgnoreCase = value.toLowerCase();
+        if (names.contains(valueIgnoreCase)) {
+            nameDeclarations.put(namespace.toLowerCase(), valueIgnoreCase);
+        } else if (types.contains(valueIgnoreCase)) {
+            typeDeclarations.put(namespace.toLowerCase(), valueIgnoreCase);
         } else {
             throw new IllegalArgumentException(value);
         }
@@ -87,11 +88,11 @@ public class Declarations {
         for (String item : items) {
             if (!RuntimeVariable.isVariable(item)) {
                 QualifiedItem qualifiedItem = QualifiedItem.of(item);
-                if (!typeDeclarations.containsKey(qualifiedItem.namespace())) {
+                String key = qualifiedItem.namespace().toLowerCase();
+                if (!typeDeclarations.containsKey(key)) {
                     throw new IllegalArgumentException("Undefiend type " + item);
-                } else if (!typeDeclarations.get(qualifiedItem.namespace()).equalsIgnoreCase(clazz.getName())) {
-                    throw new IllegalArgumentException(
-                            "Type " + item + " must be " + typeDeclarations.get(qualifiedItem.namespace()));
+                } else if (!typeDeclarations.get(key).equalsIgnoreCase(clazz.getName())) {
+                    throw new IllegalArgumentException("Type " + item + " must be " + typeDeclarations.get(key));
                 }
             }
         }
