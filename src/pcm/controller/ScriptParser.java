@@ -71,6 +71,8 @@ public class ScriptParser {
                     } else {
                         script.add(cmd);
                     }
+                } catch (IOException e) {
+                    throw new ScriptParsingException(l, n, line, e.getClass().getName(), script);
                 } catch (UnsupportedOperationException e) {
                     throw new ScriptParsingException(l, n, line, e.getMessage(), script);
                 } catch (Throwable t) {
