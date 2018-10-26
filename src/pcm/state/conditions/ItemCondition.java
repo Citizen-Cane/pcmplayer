@@ -115,7 +115,7 @@ public class ItemCondition extends BasicCondition {
                         return false;
                     }
                     for (String peer : peers) {
-                        if (state.player.item(peer).applied()) {
+                        if (state.player.state(peer).applied()) {
                             return false;
                         }
                     }
