@@ -1,7 +1,5 @@
 package pcm.state.commands;
 
-import java.util.concurrent.TimeUnit;
-
 import pcm.controller.Declarations;
 import pcm.controller.Player;
 import pcm.model.AbstractAction.Statement;
@@ -53,7 +51,6 @@ public class StateCommand extends BasicCommand {
             throw new IllegalArgumentException("Missing peers to apply the item to");
         }
         DurationFormat duration = args.durationOption();
-        boolean remember = args.rememberOption();
         return new ParameterizedStatement(STATE, args) {
             @Override
             public void run(ScriptState state) {
@@ -63,15 +60,7 @@ public class StateCommand extends BasicCommand {
                     attributeApplier.applyAttributes(player.script.scriptApplyAttribute);
                     attributeApplier.applyAttributes(player.namespaceApplyAttribute);
                     State.Options options = state.player.state(item).applyTo(peers);
-                    if (duration != null) {
-                        State persistence = options.over(duration.toSeconds(), TimeUnit.SECONDS);
-                        if (remember) {
-                            throw new UnsupportedOperationException();
-                            // persistence.remember();
-                        }
-                    } else if (remember) {
-                        // options.remember();
-                    }
+                    args.handleStateOptions(options, duration);
                 }
             }
         };

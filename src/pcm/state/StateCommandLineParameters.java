@@ -25,7 +25,6 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
 
         To,
         Over,
-        Remember,
 
         Remove,
 
@@ -189,11 +188,7 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
         return containsKey(Over) ? new DurationFormat(get(Keyword.Over).get(0)) : null;
     }
 
-    public boolean rememberOption() {
-        return containsKey(Remember);
-    }
-
-    public void handleStateOptions(State.Options options, final DurationFormat duration, final boolean remember) {
+    public void handleStateOptions(State.Options options, DurationFormat duration) {
         if (duration != null) {
             options.over(duration.toSeconds(), TimeUnit.SECONDS);
         }

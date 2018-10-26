@@ -58,7 +58,6 @@ public class ItemCommand extends BasicCommand {
                     "Apply just applies the default peers - use 'To' to apply additional peers");
         }
         DurationFormat duration = args.durationOption();
-        boolean remember = args.rememberOption();
         return new ParameterizedStatement(ITEM, args) {
             @Override
             public void run(ScriptState state) {
@@ -69,10 +68,9 @@ public class ItemCommand extends BasicCommand {
                     attributeApplier.applyAttributes(player.script.scriptApplyAttribute);
                     attributeApplier.applyAttributes(player.namespaceApplyAttribute);
                     State.Options options = peers.length == 0 ? itemImpl.apply() : itemImpl.applyTo(peers);
-                    args.handleStateOptions(options, duration, remember);
+                    args.handleStateOptions(options, duration);
                 }
             }
-
         };
     }
 
