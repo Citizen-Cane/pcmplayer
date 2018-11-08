@@ -89,32 +89,41 @@ public class ScriptState {
         // Restore restores:
         // - nothing if nothing has been saved before
         // - The range last saved
+        // - All timers
+        restoreValues();
+        restoreTimers();
+    }
+
+    private void restoreValues() {
         String start = read("save.start");
         if (start != null) {
             int s = Integer.parseInt(start);
-            if (s < 0)
-                return;
-            String end = read("save.end");
-            if (end != null) {
-                int e = Integer.parseInt(end);
-                if (e < 0)
-                    return;
-                for (int i = s; i <= e; i++) {
-                    restoreValue(i);
-                }
-                String timeKeys = read(TIMEKEYS);
-                if (timeKeys != null) {
-                    for (StringTokenizer keys = new StringTokenizer(timeKeys, " "); keys.hasMoreTokens();) {
-                        String key = keys.nextToken();
-                        String value = read(key);
-                        if (value == null) {
-                            throw new NumberFormatException(
-                                    "Missing state " + key + " - Don't you dare to hack into my memories!");
+            if (s >= 0) {
+                String end = read("save.end");
+                if (end != null) {
+                    int e = Integer.parseInt(end);
+                    if (e >= 0) {
+                        for (int i = s; i <= e; i++) {
+                            restoreValue(i);
                         }
-                        long timeValue = Long.parseLong(value);
-                        times.put(Integer.valueOf(key), timeValue);
                     }
                 }
+            }
+        }
+    }
+
+    private void restoreTimers() {
+        String timeKeys = read(TIMEKEYS);
+        if (timeKeys != null) {
+            for (StringTokenizer keys = new StringTokenizer(timeKeys, " "); keys.hasMoreTokens();) {
+                String key = keys.nextToken();
+                String value = read(key);
+                if (value == null) {
+                    throw new NumberFormatException(
+                            "Missing state " + key + " - Don't you dare to hack into my memories!");
+                }
+                long timeValue = Long.parseLong(value);
+                times.put(Integer.valueOf(key), timeValue);
             }
         }
     }
@@ -210,9 +219,7 @@ public class ScriptState {
     }
 
     public void set(Integer n) {
-        if (dataOverwrites.containsKey(n)) {
-            return;
-        } else {
+        if (!dataOverwrites.containsKey(n)) {
             setInternal(n);
         }
     }
@@ -249,9 +256,7 @@ public class ScriptState {
     }
 
     public void unset(Integer n) {
-        if (dataOverwrites.containsKey(n)) {
-            return;
-        } else {
+        if (!dataOverwrites.containsKey(n)) {
             unsetInternal(n);
         }
     }
@@ -295,14 +300,14 @@ public class ScriptState {
         }
     }
 
-    public void repeatSet(Integer n, int m) {
-        Integer v = -m;
+    public void repeatSet(Integer n, long m) {
+        Long v = -m;
         data.put(n, v.equals(SET) ? SET : v);
         actions.remove(n);
         times.remove(n);
     }
 
-    public void repeatAdd(Integer n, int m) {
+    public void repeatAdd(Integer n, long m) {
         Long v = data.containsKey(n) ? data.get(n) : UNSET;
         Long w = v.equals(SET) ? -m : v - m;
         logger.info("Increasing {} from {} to {}", n, v, w);
@@ -311,7 +316,7 @@ public class ScriptState {
         times.remove(n);
     }
 
-    public void repeatDel(Integer n, int m) {
+    public void repeatDel(Integer n, long m) {
         long v = data.containsKey(n) ? data.get(n) : UNSET;
         Long w = v + m < SET ? Long.valueOf(v) + m : SET;
         logger.info("Decreasing  {} from {}  to {}", n, v, w);
