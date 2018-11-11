@@ -17,8 +17,6 @@ public class LambdaTrigger extends BasicTrigger {
 
     @Override
     public boolean suspend() {
-        // TODO Player should call reached() directly
-        reached();
         return false;
     }
 
