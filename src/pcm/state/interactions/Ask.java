@@ -3,6 +3,7 @@ package pcm.state.interactions;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,8 +49,8 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
     @Override
     public ActionRange getRange(Player player, Script script, Action action, Runnable visuals)
             throws ScriptExecutionException {
-        List<Boolean> values = new ArrayList<>();
         List<String> choices = new ArrayList<>();
+        List<Boolean> values = new ArrayList<>();
         List<Integer> indices = new ArrayList<>();
         Map<Integer, AskItem> askItems = script.askItems;
         String title = null;
@@ -79,38 +80,42 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
         MappedScriptState mappedState = (MappedScriptState) state;
         for (int i = 0; i < indices.size(); i++) {
             Integer n = indices.get(i);
-            if (results.get(i)) {
+            boolean setItemsAvailable = results.get(i);
+            if (setItemsAvailable) {
                 // Handle mapped values
                 if (mappedState.hasScriptValueMapping(n)) {
                     Items items = mappedState.getMappedItems(n);
-                    if (items.isEmpty()) {
+                    List<Item> itemList = items.stream().collect(Collectors.toList());
+                    if (itemList.isEmpty()) {
                         throw new ScriptExecutionException("Undefined items in mapping " + n, script);
-                    } else if (items.size() == 1) {
-                        // Just a single item - just set
-                        state.set(n);
-                    } else if (!items.getAvailable().isEmpty()) {
-                        // Update, cache result
-                        mappedState.setOverride(n);
                     } else {
-                        // Execute action for selecting the mapped items
-                        Action detailAction = script.actions.get(n);
-                        if (detailAction == null) {
-                            throw new ScriptExecutionException("Missing mapping action for " + n, script);
-                        }
-                        Map<Statement, Visual> detailVisuals = detailAction.visuals;
-                        if (detailVisuals != null) {
-                            for (Visual visual : detailVisuals.values()) {
-                                player.render(visual);
-                            }
-                        }
-                        boolean anySet = checkDetailedItems(player, title, items);
-                        if (anySet) {
-                            // Update, cache result
-                            mappedState.setOverride(n);
-                            // execute the state-related part of the action
-                            detailAction.execute(state);
+                        if (itemList.size() == 1) {
+                            // single item - just set
+                            state.set(n);
+                        } else if (items.anyAvailable()) {
+                            // Update availability state
+                            mappedState.setIgnoreMapping(n);
                         } else {
-                            state.unset(n);
+                            // Execute action for selecting the mapped items
+                            Action detailAction = script.actions.get(n);
+                            if (detailAction == null) {
+                                throw new ScriptExecutionException("Missing mapping action for " + n, script);
+                            }
+                            Map<Statement, Visual> detailVisuals = detailAction.visuals;
+                            if (detailVisuals != null) {
+                                for (Visual visual : detailVisuals.values()) {
+                                    player.render(visual);
+                                }
+                            }
+                            boolean anySet = checkDetailedItems(player, title, items);
+                            if (anySet) {
+                                // Update, cache result
+                                mappedState.setIgnoreMapping(n);
+                                // execute the state-related part of the action
+                                detailAction.execute(state);
+                            } else {
+                                state.unset(n);
+                            }
                         }
                     }
                 } else {
@@ -125,9 +130,11 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
 
     private static boolean checkDetailedItems(Player player, String title, Items items) {
         // Ask which items of the category have been set
-        List<Boolean> itemValues = new ArrayList<>();
+        List<Item> itemList = new ArrayList<>();
         List<String> itemChoices = new ArrayList<>();
+        List<Boolean> itemValues = new ArrayList<>();
         for (Item item : items) {
+            itemList.add(item);
             itemValues.add(item.isAvailable());
             itemChoices.add(item.displayName());
         }
@@ -138,7 +145,7 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
         for (int j = 0; j < itemResults.size(); j++) {
             Boolean isAvailable = itemResults.get(j);
             anySet |= isAvailable;
-            items.get(j).setAvailable(isAvailable);
+            itemList.get(j).setAvailable(isAvailable);
         }
         return anySet;
     }

@@ -21,27 +21,24 @@ public class PersistencyTest {
         Chastified
     }
 
-    @Test
-    // TODO Throws AllActionsSet - expected test result
+    @Test(expected = AllActionsSetException.class)
     public void testThatResetRangeUnsetsMappings() throws Exception {
         Player player = TestUtils.createPlayer(getClass());
 
         player.state.addScriptValueMapping(MappedScriptState.Global,
                 new MappedScriptItemValue(365, player.items(Toys.Collar)));
-        // TODO same as in TeaseLib tests - item must return actual collar from
-        // user list
-        player.item(Toys.Collar).setAvailable(true);
+        assertFalse(player.items(Toys.Collar).anyAvailable());
 
-        assertEquals(1, player.items(Toys.Collar).getAvailable().size());
+        player.item(Toys.Collar).setAvailable(true);
+        assertTrue(player.items(Toys.Collar).anyAvailable());
         assertEquals(ScriptState.UNSET, player.state.get(365));
 
         player.validateScripts = false;
         player.loadScript("PersistencyTest_ResetRangeUnsetsMappings_MainScript");
 
-        // Correct because the optimized .resetrange only clears previously
-        // restored items,
+        // Correct because the optimized .resetrange statement only clears previously restored items,
         // and thus won't clear the toy anymore
-        assertEquals(1, player.items(Toys.Collar).getAvailable().size());
+        assertTrue(player.items(Toys.Collar).anyAvailable());
         assertEquals(ScriptState.SET, player.state.get(365));
 
         player.state.unset(100);
@@ -50,10 +47,10 @@ public class PersistencyTest {
             // This throws since when returning from the subscript,
             // action 365 has been set, and is thus cleared by .resetrange
             pcm.util.TestUtils.play(player, new ActionRange(1000), null);
-            assertTrue(false);
         } catch (AllActionsSetException e) {
             assertEquals(1, e.actions.size());
             assertEquals(1001, e.actions.get(0).number);
+            throw e;
         }
     }
 
@@ -63,13 +60,14 @@ public class PersistencyTest {
 
         player.state.addScriptValueMapping(MappedScriptState.Global,
                 new MappedScriptItemValue(365, player.items(Toys.Collar)));
-        player.item(Toys.Collar).setAvailable(true);
+        assertFalse(player.items(Toys.Collar).anyAvailable());
 
-        assertEquals(1, player.items(Toys.Collar).getAvailable().size());
+        player.item(Toys.Collar).setAvailable(true);
+        assertTrue(player.items(Toys.Collar).anyAvailable());
         assertEquals(ScriptState.UNSET, player.state.get(365));
         player.validateScripts = true;
         player.loadScript("PersistencyTest_ScriptRestoreWorks_MainScript");
-        assertEquals(1, player.items(Toys.Collar).getAvailable().size());
+        assertTrue(player.items(Toys.Collar).anyAvailable());
         assertEquals(ScriptState.SET, player.state.get(365));
 
         player.state.unset(100);

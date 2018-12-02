@@ -141,7 +141,7 @@ public class MappedScriptState extends ScriptState {
         super.set(n);
     }
 
-    public void setOverride(Integer n) {
+    public void setIgnoreMapping(Integer n) {
         if (hasScriptValueMapping(n)) {
             super.set(n);
         } else {

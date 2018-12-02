@@ -1,6 +1,7 @@
 package pcm.state.persistence;
 
 import java.util.Collections;
+import java.util.Iterator;
 
 import teaselib.util.Item;
 import teaselib.util.Items;
@@ -39,12 +40,17 @@ public class MappedScriptItemValue implements MappedScriptValue {
 
     @Override
     public void set() {
-        if (items.size() == 1) {
-            // 1:1 mapping
-            items.get(0).setAvailable(true);
+        Iterator<Item> item = items.iterator();
+        if (!item.hasNext()) {
+            // 1:1 mapping only
+            throw new IllegalStateException(n + "(" + items.toString() + ")" + ": No item to set available");
         } else {
-            throw new IllegalStateException(
-                    n + "(" + items.toString() + ")" + ": Multiple-mapped values can only be unset");
+            item.next().setAvailable(true);
+            if (item.hasNext()) {
+                // 1:1 mapping only
+                throw new IllegalStateException(
+                        n + "(" + items.toString() + ")" + ": Multiple-mapped values can only be unset");
+            }
         }
     }
 
