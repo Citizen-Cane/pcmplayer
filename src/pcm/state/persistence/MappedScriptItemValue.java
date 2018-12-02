@@ -35,7 +35,7 @@ public class MappedScriptItemValue implements MappedScriptValue {
 
     @Override
     public boolean isSet() {
-        return !items.getAvailable().isEmpty();
+        return items.anyAvailable();
     }
 
     @Override
