@@ -1,7 +1,10 @@
 package pcm.state.persistence;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import teaselib.util.Item;
 import teaselib.util.Items;
@@ -22,10 +25,11 @@ public class MappedScriptItemValue implements MappedScriptValue {
 
     public MappedScriptItemValue(int n, Items... items) {
         this.n = n;
-        this.items = new Items();
+        List<Item> all = new ArrayList<>();
         for (Items i : items) {
-            this.items.addAll(i);
+            all.addAll(i.stream().collect(Collectors.toList()));
         }
+        this.items = new Items(all);
     }
 
     @Override
