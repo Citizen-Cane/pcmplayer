@@ -3,7 +3,6 @@ package pcm.util;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import pcm.controller.Player;
 import pcm.model.Action;
@@ -20,6 +19,7 @@ import teaselib.core.TeaseLib;
 import teaselib.core.configuration.DebugSetup;
 import teaselib.core.debug.DebugHost;
 import teaselib.core.debug.DebugPersistence;
+import teaselib.test.TestScript;
 
 public class TestUtils {
     public static final String TEST_NAMESPACE = "Test_Namespace";
@@ -34,7 +34,7 @@ public class TestUtils {
     }
 
     public static Player createPlayer(TeaseLib teaseLib, Class<?> scriptClass) {
-        return createPlayer(teaseLib, scriptClass, teaseLib.getDominant(Gender.Feminine, Locale.US));
+        return createPlayer(teaseLib, scriptClass, TestScript.newActor(Gender.Feminine));
     }
 
     public static Player createPlayer(TeaseLib teaseLib, Class<?> scriptClass, Actor dominant) {

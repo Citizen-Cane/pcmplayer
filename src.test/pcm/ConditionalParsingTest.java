@@ -3,10 +3,9 @@
  */
 package pcm;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
-import java.util.Locale;
 
 import org.junit.Test;
 
@@ -21,6 +20,7 @@ import teaselib.Actor;
 import teaselib.Sexuality.Gender;
 import teaselib.Sexuality.Sex;
 import teaselib.core.TeaseLib;
+import teaselib.test.TestScript;
 
 /**
  * @author Citizen-Cane
@@ -35,14 +35,14 @@ public class ConditionalParsingTest {
         // TODO persistent enum needs class & default value,
         // otherwise The code looks strange
         // TODO set
-        return createPlayer(teaseLib, teaseLib.getDominant(Gender.Feminine, Locale.US));
+        return createPlayer(teaseLib, TestScript.newActor(Gender.Feminine));
     }
 
     public Player createMaster(Sex sex, Gender gender) throws Exception {
         TeaseLib teaseLib = TestUtils.teaseLib();
         teaseLib.new PersistentEnum<>(TeaseLib.DefaultDomain, Sex.class).set(sex);
         teaseLib.new PersistentEnum<>(TeaseLib.DefaultDomain, Gender.class).set(gender);
-        return createPlayer(teaseLib, teaseLib.getDominant(Gender.Masculine, Locale.US));
+        return createPlayer(teaseLib, TestScript.newActor(Gender.Masculine));
     }
 
     private static Player createPlayer(TeaseLib teaseLib, Actor dominant)
