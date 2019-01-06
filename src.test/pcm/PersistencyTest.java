@@ -93,7 +93,7 @@ public class PersistencyTest {
 
         // Not persisted because not remembered
         TeaseLib.PersistentString chastifiedState = player.teaseLib.new PersistentString(TeaseLib.DefaultDomain,
-                "pcm.PersistencyTest", "Body.Chastified.state.duration");
+                "pcm.PersistencyTest.Body", "Chastified.state.duration");
         assertFalse(chastifiedState.available());
     }
 
@@ -111,7 +111,7 @@ public class PersistencyTest {
         pcm.util.TestUtils.play(player, new ActionRange(1000), null);
 
         TeaseLib.PersistentString enemaState = player.teaseLib.new PersistentString(TeaseLib.DefaultDomain,
-                "pcm.PersistencyTest", "Body.Chastified.state.duration");
+                "pcm.PersistencyTest.Body", "Chastified.state.duration");
 
         assertFalse(enemaState.available());
     }
@@ -128,8 +128,9 @@ public class PersistencyTest {
 
         pcm.util.TestUtils.play(player, new ActionRange(1000), null);
 
+        // TODO namespace for variable is pcm.PersistencyTest.Body, but should be pcm.PersistencyTest
         TeaseLib.PersistentString chastifiedState = player.teaseLib.new PersistentString(TeaseLib.DefaultDomain,
-                "pcm.PersistencyTest", "Body.Chastified.state.duration");
+                "pcm.PersistencyTest.Body", "Chastified.state.duration");
         assertTrue(chastifiedState.available());
     }
 
@@ -146,7 +147,7 @@ public class PersistencyTest {
         pcm.util.TestUtils.play(player, new ActionRange(1010), null);
 
         TeaseLib.PersistentString chastifiedState = player.teaseLib.new PersistentString(TeaseLib.DefaultDomain,
-                "pcm.PersistencyTest", "Body.Chastified.state.duration");
+                "pcm.PersistencyTest.Body", "Chastified.state.duration");
         assertFalse(chastifiedState.available());
     }
 }
