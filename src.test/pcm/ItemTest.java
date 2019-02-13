@@ -1,6 +1,8 @@
 package pcm;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -87,12 +89,15 @@ public class ItemTest {
         debugger.freezeTime();
 
         player.state(Toys.Nipple_Clamps).applyTo().over(30, TimeUnit.MINUTES);
+        assertEquals(1800, player.state(Toys.Nipple_Clamps).duration().remaining(TimeUnit.SECONDS));
         TestUtils.play(player, 1040);
 
         debugger.advanceTime(30, TimeUnit.MINUTES);
+        assertEquals(0, player.state(Toys.Nipple_Clamps).duration().remaining(TimeUnit.SECONDS));
         TestUtils.play(player, 1041);
 
         debugger.advanceTime(10, TimeUnit.MINUTES);
+        assertEquals(-600, player.state(Toys.Nipple_Clamps).duration().remaining(TimeUnit.SECONDS));
         TestUtils.play(player, 1042);
     }
 
