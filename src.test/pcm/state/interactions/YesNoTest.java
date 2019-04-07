@@ -44,10 +44,8 @@ public class YesNoTest {
         assertEquals(2, entries.size());
 
         assertEquals("Foo.", entries.get(0).message.get(0).value);
-
         assertTrue(entries.get(0).answer.isPresent());
-        assertEquals(Answer.Meaning.NO, entries.get(0).answer.get().meaning);
-        assertEquals("No Foo", entries.get(0).answer.get().text);
+        assertEquals(Answer.no("No Foo"), entries.get(0).answer.get());
 
         assertEquals("Bar.", entries.get(1).message.get(0).value);
         assertFalse(entries.get(1).answer.isPresent());
@@ -76,14 +74,12 @@ public class YesNoTest {
         assertEquals("Foo.", entries.get(0).message.get(0).value);
 
         assertTrue(entries.get(0).answer.isPresent());
-        assertEquals(Answer.Meaning.NO, entries.get(0).answer.get().meaning);
-        assertEquals("No Foo", entries.get(0).answer.get().text);
+        assertEquals(Answer.no("No Foo"), entries.get(0).answer.get());
 
         assertEquals("Bar.", entries.get(1).message.get(0).value);
 
         assertTrue(entries.get(1).answer.isPresent());
-        assertEquals(Answer.Meaning.YES, entries.get(1).answer.get().meaning);
-        assertEquals("Yes Bar", entries.get(1).answer.get().text);
+        assertEquals(Answer.yes("Yes Bar"), entries.get(1).answer.get());
     }
 
     private static void testYesNo(Action action) {

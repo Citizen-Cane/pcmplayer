@@ -82,7 +82,7 @@ public class Stop extends AbstractBreakInteraction {
             timeoutFunction = displayPromptTogetherWithScriptFunction(player, visuals);
         }
 
-        String result = player.reply(timeoutFunction, answers);
+        Answer result = player.reply(timeoutFunction, answers);
         if (result != ScriptFunction.Timeout) {
             int index = answers.indexOf(result);
             logger.info("-> {}", result);

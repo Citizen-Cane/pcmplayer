@@ -64,7 +64,7 @@ public class Break extends AbstractBreakInteraction {
         });
 
         String result = player.reply(playRange, choices);
-        if (result == ScriptFunction.Timeout) {
+        if (result == ScriptFunction.TimeoutString) {
             return player.range;
         } else {
             if (!supressStackCorrectionOnBreak) {

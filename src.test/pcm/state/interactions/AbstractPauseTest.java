@@ -46,7 +46,7 @@ public class AbstractPauseTest {
 
         assertTrue(entries.get(0).answer.isPresent());
         assertEquals(Answer.Meaning.NO, entries.get(0).answer.get().meaning);
-        assertEquals("No Foo", entries.get(0).answer.get().text);
+        assertEquals(Answer.no("No Foo"), entries.get(0).answer.get());
 
         assertEquals("Bar.", entries.get(1).message.get(0).value);
 
@@ -72,13 +72,13 @@ public class AbstractPauseTest {
 
         assertTrue(entries.get(0).answer.isPresent());
         assertEquals(Answer.Meaning.NO, entries.get(0).answer.get().meaning);
-        assertEquals("No Foo", entries.get(0).answer.get().text);
+        assertEquals("No Foo", entries.get(0).answer.get().text.get(0));
 
         assertEquals("Bar.", entries.get(1).message.get(0).value);
 
         assertTrue(entries.get(1).answer.isPresent());
         assertEquals(Answer.Meaning.YES, entries.get(1).answer.get().meaning);
-        assertEquals("Yes Bar", entries.get(1).answer.get().text);
+        assertEquals("Yes Bar", entries.get(1).answer.get().text.get(0));
 
         assertTrue(action.interaction instanceof Range);
     }
