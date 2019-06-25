@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.StringTokenizer;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Supplier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,12 +41,10 @@ import teaselib.MainScript;
 import teaselib.Message;
 import teaselib.Sexuality.Gender;
 import teaselib.Sexuality.Sex;
-import teaselib.State;
 import teaselib.TeaseScript;
 import teaselib.core.ResourceLoader;
 import teaselib.core.ScriptInterruptedException;
 import teaselib.core.TeaseLib;
-import teaselib.core.devices.ActionState;
 import teaselib.core.media.MediaRenderer;
 import teaselib.core.texttospeech.ScriptScanner;
 import teaselib.core.texttospeech.TextToSpeechRecorder;
@@ -85,8 +82,6 @@ public class Player extends TeaseScript implements MainScript {
 
     private boolean invokedOnAllSet = false;
     private boolean intentionalQuit = false;
-
-    private final RuntimeVariables runtimeVariables = new RuntimeVariables();
 
     /**
      * This range can be pushed onto the script range stack to tell the player to hand over execution from the PCM
@@ -128,8 +123,6 @@ public class Player extends TeaseScript implements MainScript {
         this.scripts = new ScriptCache(resources, Player.ScriptFolder, symbols);
         this.mistressPath = mistressPath;
         mainScript = mainscript;
-
-        initializeRuntimeVariables();
     }
 
     private Symbols createDominantSubmissiveSymbols() {
@@ -156,24 +149,6 @@ public class Player extends TeaseScript implements MainScript {
         Symbols staticSymbols = new Symbols();
         staticSymbols.put(dominantSubmissiveSymbol.toString(), "true");
         return staticSymbols;
-    }
-
-    private void initializeRuntimeVariables() {
-        runtimeVariables.add("Key_Release.Action", supplyReleaseAction());
-    }
-
-    protected Supplier<String> supplyReleaseAction() {
-        return this::releaseAction;
-    }
-
-    private String releaseAction() {
-        if (script != null) {
-            String releaseAction = script.releaseAction();
-            if (releaseAction != null) {
-                return releaseAction;
-            }
-        }
-        return ActionState.NotAvailable.stateName();
     }
 
     @Override
@@ -665,24 +640,6 @@ public class Player extends TeaseScript implements MainScript {
 
     public void render(MediaRenderer mediaRenderer) {
         scriptRenderer.queueRenderer(mediaRenderer);
-    }
-
-    @Override
-    public State state(String name) {
-        if (RuntimeVariable.isVariable(name)) {
-            RuntimeVariable runtimeVariable = runtimeVariables.get(name);
-            if (runtimeVariable == null) {
-                throw new IllegalArgumentException("Undefined Runtime variable " + name);
-            }
-            String runtimeState = runtimeVariable.value();
-            if (runtimeState == null) {
-                throw new NullPointerException("Runtime variable value " + name);
-            } else {
-                return state(runtimeState);
-            }
-        } else {
-            return super.state(name);
-        }
     }
 
     public static void validateScript(Script script, List<ValidationIssue> validationErrors)

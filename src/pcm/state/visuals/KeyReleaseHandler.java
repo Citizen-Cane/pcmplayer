@@ -30,16 +30,16 @@ public class KeyReleaseHandler implements Visual {
     public static final String[] Commands = { Prepare, Start, Sleep, Release };
 
     final String command;
-    final long duration;
+    final long durationSeconds;
 
     public KeyReleaseHandler(String command) {
         this(command, 0);
     }
 
-    public KeyReleaseHandler(String command, long seconds) {
+    public KeyReleaseHandler(String command, long durationSeconds) {
         super();
         this.command = command;
-        this.duration = seconds;
+        this.durationSeconds = durationSeconds;
     }
 
     @Override
@@ -47,7 +47,7 @@ public class KeyReleaseHandler implements Visual {
         MediaRenderer keyReleaseHandler = new MediaRendererThread(player.teaseLib) {
             @Override
             protected void renderMedia() throws InterruptedException, IOException {
-                logger.info("{} {}", command, (duration > 0 ? duration : ""));
+                logger.info("{} {}", command, (durationSeconds > 0 ? durationSeconds : ""));
                 startCompleted();
                 if (command.equalsIgnoreCase(Prepare)) {
                     prepare(player);
@@ -62,25 +62,25 @@ public class KeyReleaseHandler implements Visual {
                 mandatoryCompleted();
 
                 if (DeviceCache.connect(keyRelease)) {
-                    player.script.setKeyReleaseActuator(findActuatorForHoldingDuration(keyRelease));
-                    Optional<Actuator> actuator = player.script.getKeyReleaseActuator();
-                    if (actuator.isPresent() && !actuator.get().isRunning()) {
-                        actuator.get().arm();
+                    Actuator actuator = findActuatorForHoldingDuration(keyRelease);
+                    if (!actuator.isRunning()) {
+                        player.script.setKeyReleaseActuator(actuator);
+                        actuator.arm();
                     }
                 }
             }
 
             private Actuator findActuatorForHoldingDuration(KeyRelease keyRelease) {
-                return keyRelease.actuators().get(duration, TimeUnit.SECONDS);
+                return keyRelease.actuators().get(durationSeconds, TimeUnit.SECONDS);
             }
 
             private void handleKey(Player player) {
                 Optional<Actuator> actuator = player.script.getKeyReleaseActuator();
                 if (actuator.isPresent()) {
                     if (command.equalsIgnoreCase(Start)) {
-                        actuator.get().start(duration, TimeUnit.SECONDS);
+                        actuator.get().start(durationSeconds, TimeUnit.SECONDS);
                     } else if (command.equalsIgnoreCase(Sleep)) {
-                        actuator.get().sleep(duration, TimeUnit.SECONDS);
+                        actuator.get().sleep(durationSeconds, TimeUnit.SECONDS);
                     } else if (command.equalsIgnoreCase(Release)) {
                         actuator.get().release();
                     }
