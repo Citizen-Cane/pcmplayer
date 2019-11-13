@@ -3,8 +3,17 @@ package pcm.model;
 import teaselib.util.Interval;
 
 public class ActionRange extends Interval implements ConditionRange {
+
+    public static ActionRange of(int start, int end) {
+        return new ActionRange(start, end);
+    }
+
+    public static ActionRange of(int start) {
+        return new ActionRange(start, start);
+    }
+
     public ActionRange(int start) {
-        super(start);
+        super(start, start);
     }
 
     public ActionRange(int start, int end) {

@@ -447,7 +447,7 @@ public class Action extends AbstractAction {
             setInteraction(new PopUp(parseInt(args[0]), parseInt(args[1]), cmd.script));
         } else if (name == Statement.Ask) {
             String args[] = cmd.args();
-            Ask ask = new Ask(parseInt(args[0]), parseInt(args[1]));
+            Ask ask = new Ask(parseInt(args[0]), parseInt(args[1]), cmd.script);
             // Ask must also be a command, in order to pick up the state
             addCommand(ask);
             setInteraction(ask);

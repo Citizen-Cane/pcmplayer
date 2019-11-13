@@ -1,6 +1,7 @@
 package pcm.state.interactions;
 
-import static java.lang.Boolean.*;
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,13 +34,20 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
 
     private final int start;
     private final int end;
+    private final List<AskItem> askItems = new ArrayList<>();
 
     private ScriptState state = null;
     private Interaction rangeProvider = null;
 
-    public Ask(int start, int end) {
+    public Ask(int start, int end, Script script) {
         this.start = start;
         this.end = end;
+        Map<Integer, AskItem> all = script.askItems;
+        for (int i = start; i <= end; i++) {
+            if (all.containsKey(i)) {
+                askItems.add(all.get(i));
+            }
+        }
     }
 
     @Override
@@ -53,25 +61,21 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
         List<String> choices = new ArrayList<>();
         List<Boolean> values = new ArrayList<>();
         List<Integer> indices = new ArrayList<>();
-        Map<Integer, AskItem> askItems = script.askItems;
         String title = null;
-        for (int i = start; i <= end; i++) {
-            Integer index = i;
-            if (askItems.containsKey(index)) {
-                AskItem askItem = askItems.get(index);
-                if (askItem.action == 0) {
-                    title = askItem.title;
-                } else {
-                    int condition = askItem.condition;
-                    if (condition == AskItem.ALWAYS || state.get(condition).equals(ScriptState.SET)) {
-                        Boolean value = state.get(askItem.action).equals(ScriptState.SET) ? TRUE : FALSE;
-                        values.add(value);
-                        choices.add(askItem.title);
-                        indices.add(askItem.action);
-                    }
+        for (AskItem askItem : askItems) {
+            if (askItem.action == 0) {
+                title = askItem.title;
+            } else {
+                int condition = askItem.condition;
+                if (condition == AskItem.ALWAYS || state.get(condition).equals(ScriptState.SET)) {
+                    Boolean value = state.get(askItem.action).equals(ScriptState.SET) ? TRUE : FALSE;
+                    values.add(value);
+                    choices.add(askItem.title);
+                    indices.add(askItem.action);
                 }
             }
         }
+
         logger.info("{} {}", getClass().getSimpleName(), choices);
         visuals.run();
         player.completeMandatory();
@@ -169,6 +173,7 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
         List<ActionRange> coverage = new ArrayList<>();
         coverage.add(new ActionRange(start, end));
         coverage.addAll(rangeProvider.coverage());
+        askItems.stream().map(askItem -> ActionRange.of(askItem.action)).forEach(coverage::add);
         return coverage;
     }
 
