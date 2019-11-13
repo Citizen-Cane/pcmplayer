@@ -2,7 +2,7 @@ package pcm.state.interactions;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -20,19 +20,14 @@ import pcm.state.Interaction;
 public class PopUp implements Interaction {
     private static final Logger logger = LoggerFactory.getLogger(PopUp.class);
 
-    private final int start;
-    private final int end;
+    private final ActionRange range;
     private final List<MenuItem> menuItems = new ArrayList<>();
 
-    public PopUp(int start, int end, Script script) {
-        this.start = start;
-        this.end = end;
-        Map<Integer, MenuItem> all = script.menuItems;
-        for (int i = start; i <= end; i++) {
-            Integer index = Integer.valueOf(i);
-            if (all.containsKey(index)) {
-                MenuItem menuItem = all.get(index);
-                this.menuItems.add(menuItem);
+    public PopUp(ActionRange range, Script script) {
+        this.range = range;
+        for (Entry<Integer, MenuItem> entry : script.menuItems.entrySet()) {
+            if (range.contains(entry.getKey())) {
+                this.menuItems.add(entry.getValue());
             }
         }
     }
@@ -52,7 +47,8 @@ public class PopUp implements Interaction {
     public void validate(Script script, Action action, List<ValidationIssue> validationErrors) {
         for (MenuItem menuItem : menuItems) {
             if (script.actions.getAll(menuItem.range).isEmpty()) {
-                validationErrors.add(new ValidationIssue(action, "Empty range " + menuItem.range, script));
+                validationErrors.add(new ValidationIssue(action,
+                        "menu item " + menuItem.n + " empty range " + menuItem.range, script));
             }
         }
     }
@@ -60,7 +56,7 @@ public class PopUp implements Interaction {
     @Override
     public List<ActionRange> coverage() {
         List<ActionRange> coverage = new ArrayList<>(menuItems.size() + 1);
-        coverage.add(new ActionRange(start, end));
+        coverage.add(range);
         menuItems.stream().map(menuItem -> menuItem.range).forEach(coverage::add);
         return coverage;
     }

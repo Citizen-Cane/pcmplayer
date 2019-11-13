@@ -6,6 +6,7 @@ import static java.lang.Boolean.TRUE;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -32,20 +33,17 @@ import teaselib.util.Items;
 public class Ask implements Command, Interaction, NeedsRangeProvider {
     private static final Logger logger = LoggerFactory.getLogger(Ask.class);
 
-    private final int start;
-    private final int end;
+    private final ActionRange range;
     private final List<AskItem> askItems = new ArrayList<>();
 
     private ScriptState state = null;
     private Interaction rangeProvider = null;
 
-    public Ask(int start, int end, Script script) {
-        this.start = start;
-        this.end = end;
-        Map<Integer, AskItem> all = script.askItems;
-        for (int i = start; i <= end; i++) {
-            if (all.containsKey(i)) {
-                askItems.add(all.get(i));
+    public Ask(ActionRange range, Script script) {
+        this.range = range;
+        for (Entry<Integer, AskItem> entry : script.askItems.entrySet()) {
+            if (range.contains(entry.getKey())) {
+                askItems.add(entry.getValue());
             }
         }
     }
@@ -171,7 +169,7 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
     @Override
     public List<ActionRange> coverage() {
         List<ActionRange> coverage = new ArrayList<>();
-        coverage.add(new ActionRange(start, end));
+        coverage.add(range);
         coverage.addAll(rangeProvider.coverage());
         askItems.stream().map(askItem -> ActionRange.of(askItem.action)).forEach(coverage::add);
         return coverage;

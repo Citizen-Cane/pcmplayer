@@ -1,6 +1,6 @@
 package pcm.model;
 
-import static java.lang.Integer.*;
+import static java.lang.Integer.parseInt;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -396,15 +396,7 @@ public class Action extends AbstractAction {
         }
         // interactions
         else if (name == Statement.Range) {
-
-            String args[] = cmd.args();
-            int start = parseInt(args[0]);
-            if (args.length > 1) {
-                int end = parseInt(args[1]);
-                setInteraction(new Range(start, end));
-            } else {
-                setInteraction(new Range(start));
-            }
+            setInteraction(new Range(ActionRange.of(cmd.args())));
         } else if (name == Statement.Pause) {
             String resumeText = cmd.allAsText();
             if (resumeText.isEmpty()) {
@@ -412,9 +404,7 @@ public class Action extends AbstractAction {
             }
 
             setInteraction(new Pause(resumeText));
-        } else if (name == Statement.Yes)
-
-        {
+        } else if (name == Statement.Yes) {
             String yesText = cmd.allAsText();
             if (yesText.isEmpty()) {
                 yesText = getResponseText(Statement.YesText, cmd.script);
@@ -443,11 +433,10 @@ public class Action extends AbstractAction {
             setInteraction(args.length > 2 ? new LoadSbd(script, parseInt(args[1]), parseInt(args[2]))
                     : new LoadSbd(script, parseInt(args[1])));
         } else if (name == Statement.PopUp) {
-            String args[] = cmd.args();
-            setInteraction(new PopUp(parseInt(args[0]), parseInt(args[1]), cmd.script));
+            setInteraction(new PopUp(ActionRange.of(cmd.args()), cmd.script));
         } else if (name == Statement.Ask) {
             String args[] = cmd.args();
-            Ask ask = new Ask(parseInt(args[0]), parseInt(args[1]), cmd.script);
+            Ask ask = new Ask(ActionRange.of(args), cmd.script);
             // Ask must also be a command, in order to pick up the state
             addCommand(ask);
             setInteraction(ask);
@@ -455,21 +444,14 @@ public class Action extends AbstractAction {
             setInteraction(Quit.instance);
         } else if (name == Statement.Break) {
             String args[] = cmd.args();
-            ActionRange playRange = new ActionRange(parseInt(args[0]), parseInt(args[1]));
+            ActionRange playRange = ActionRange.of(args);
             if (args[2].equalsIgnoreCase(Break.SuppressStackCorrectionOnBreak)) {
                 setInteraction(new Break(playRange, rangesFromArgv(args, 3), true));
             } else {
                 setInteraction(new Break(playRange, rangesFromArgv(args, 2), false));
             }
         } else if (name == Statement.GoSub) {
-            String args[] = cmd.args();
-            int start = parseInt(args[0]);
-            if (args.length > 1) {
-                int end = parseInt(args[1]);
-                setInteraction(new GoSub(new ActionRange(start, end)));
-            } else {
-                setInteraction(new GoSub(new ActionRange(start)));
-            }
+            setInteraction(new GoSub(ActionRange.of(cmd.args())));
         } else if (name == Statement.Return) {
             setInteraction(new Return());
         } else if (name == Statement.Append) {

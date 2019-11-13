@@ -1,8 +1,20 @@
 package pcm.model;
 
+import static java.lang.Integer.parseInt;
+
 import teaselib.util.Interval;
 
 public class ActionRange extends Interval implements ConditionRange {
+
+    public static ActionRange of(String... args) {
+        int start = parseInt(args[0]);
+        if (args.length > 1) {
+            int end = parseInt(args[1]);
+            return ActionRange.of(start, end);
+        } else {
+            return ActionRange.of(start);
+        }
+    }
 
     public static ActionRange of(int start, int end) {
         return new ActionRange(start, end);
@@ -36,9 +48,9 @@ public class ActionRange extends Interval implements ConditionRange {
     @Override
     public String toString() {
         if (start == end) {
-            return "Range " + start;
+            return Integer.toString(start);
         } else {
-            return "Range " + start + "-" + end;
+            return start + "-" + end;
         }
     }
 }
