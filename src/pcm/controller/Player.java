@@ -33,6 +33,7 @@ import pcm.state.Condition;
 import pcm.state.Visual;
 import pcm.state.commands.ResetRange;
 import pcm.state.conditions.Should;
+import pcm.state.interactions.LoadSbd;
 import pcm.state.persistence.MappedScriptState;
 import teaselib.Actor;
 import teaselib.Config;
@@ -309,22 +310,81 @@ public class Player extends TeaseScript implements MainScript {
         state.setScript(script);
     }
 
-    public void validateProject() throws ScriptParsingException, ValidationIssue, IOException {
-        List<ValidationIssue> validationErrors = new ArrayList<>();
-        validateAspects(script, state, resources, validationErrors);
-        // TODO Load scripts explicitly - currently they're loaded by loading the main script
+    public List<ValidationIssue> validateProject() throws ScriptParsingException, ValidationIssue, IOException {
+        List<ValidationIssue> validationIssues = new ArrayList<>();
+
+        validateAspects(script, state, resources, validationIssues);
         for (String s : scripts.names()) {
             Script subScript = scripts.get(actor, s);
             if (subScript != script) {
-                validateAspects(subScript, state, resources, validationErrors);
+                validateAspects(subScript, state, resources, validationIssues);
             }
         }
-        if (!validationErrors.isEmpty()) {
-            for (ScriptException scriptError : validationErrors) {
-                if (logger.isInfoEnabled())
-                    logger.info(errorMessage(scriptError));
+
+        return validationIssues;
+    }
+
+    public List<ValidationIssue> validateResources() throws ScriptParsingException, ValidationIssue, IOException {
+        List<ValidationIssue> validationIssues = new ArrayList<>();
+        validateResources(script, resources, validationIssues);
+        return validationIssues;
+    }
+
+    public void loadScripts() throws ScriptParsingException, ValidationIssue, IOException {
+        for (String s : scripts.names()) {
+            scripts.get(actor, s);
+        }
+    }
+
+    public List<ValidationIssue> validateCoverage() throws ScriptParsingException, ValidationIssue, IOException {
+        List<ValidationIssue> validationIssues = new ArrayList<>();
+
+        for (String name : scripts.names()) {
+            Script script = scripts.get(actor, name);
+            List<Action> uncovered = script.actions.getAll();
+
+            for (Action a : script.actions.getAll()) {
+                if (!(a.interaction instanceof LoadSbd)) {
+                    for (ActionRange coverage : a.interaction.coverage()) {
+                        uncovered.removeAll(script.actions.getAll(coverage));
+                    }
+                }
             }
-            throw new ValidationIssue("Validation failed, " + validationErrors.size() + " issues", script);
+
+            uncovered.removeAll(script.actions.getAll(script.startRange));
+            uncovered.removeAll(script.actions.getAll(script.onAllSet));
+            uncovered.removeAll(script.actions.getAll(script.onClose));
+
+            for (String callingScriptName : scripts.names()) {
+                Script callingScript = scripts.get(actor, callingScriptName);
+                if (callingScript != script) {
+                    for (Action a : callingScript.actions.getAll()) {
+                        if (a.interaction instanceof LoadSbd) {
+                            LoadSbd interaction = (LoadSbd) a.interaction;
+                            if (interaction.scriptName.equalsIgnoreCase(script.name)) {
+                                uncovered.removeAll(
+                                        script.actions.getAll(new ActionRange(interaction.start, interaction.end)));
+                            }
+                        }
+                    }
+                }
+            }
+
+            for (Action a : uncovered) {
+                validationIssues.add(new ValidationIssue("Action without caller, " + a, script));
+            }
+        }
+
+        return validationIssues;
+    }
+
+    public void reportValidationIssues(List<ValidationIssue> validationIssues) throws ValidationIssue {
+        if (!validationIssues.isEmpty()) {
+            for (ScriptException validationIssue : validationIssues) {
+                if (logger.isInfoEnabled())
+                    logger.info(errorMessage(validationIssue));
+            }
+            throw new ValidationIssue("Validation failed, " + validationIssues.size() + " issues", script);
         }
     }
 
@@ -332,11 +392,6 @@ public class Player extends TeaseScript implements MainScript {
             List<ValidationIssue> validationErrors) throws ScriptParsingException {
         validateScript(script, validationErrors);
         validateMappings(script, state, validationErrors);
-
-        boolean validateAssets = Boolean.parseBoolean(teaseLib.config.get(Config.Debug.StopOnAssetNotFound));
-        if (validateAssets) {
-            validateResources(script, resources, validationErrors);
-        }
     }
 
     private static void validateMappings(Script script, MappedScriptState state,
@@ -583,7 +638,7 @@ public class Player extends TeaseScript implements MainScript {
             } else if (conditionsRanges.hasNext()) {
                 ConditionRange relaxed = conditionsRanges.next();
                 if (!relaxed.equals(Script.DefaultConditionRange) && logger.isDebugEnabled()) {
-                    logger.debug("Relaxing " + relaxed.toString());
+                    logger.debug("Relaxing {}", relaxed);
                 }
                 relaxedConditions.add(relaxed);
                 continue;
@@ -696,7 +751,7 @@ public class Player extends TeaseScript implements MainScript {
             return "Script " + scriptName + ": " + t.getMessage() + "\n" + cause.getClass().getSimpleName() + ": "
                     + cause.getMessage();
         } else {
-            return "Script " + scriptName + ", " + t.getClass().getName() + ": " + t.getMessage();
+            return "Script " + scriptName + ", " + t.getClass().getSimpleName() + ": " + t.getMessage();
         }
     }
 

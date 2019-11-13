@@ -1,5 +1,6 @@
 package pcm.state.interactions;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -56,4 +57,10 @@ public class YesNo implements Interaction {
         script.actions.validate(script, action, new ActionRange(startYes, endYes), validationErrors);
         script.actions.validate(script, action, new ActionRange(startNo, endNo), validationErrors);
     }
+
+    @Override
+    public List<ActionRange> coverage() {
+        return Arrays.asList(new ActionRange(startYes, endYes), new ActionRange(startNo, endNo));
+    }
+
 }

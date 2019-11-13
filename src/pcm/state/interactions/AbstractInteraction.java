@@ -3,6 +3,7 @@ package pcm.state.interactions;
 import java.util.List;
 
 import pcm.model.Action;
+import pcm.model.ActionRange;
 import pcm.model.Script;
 import pcm.model.ScriptParsingException;
 import pcm.model.ValidationIssue;
@@ -35,4 +36,10 @@ public abstract class AbstractInteraction implements Interaction, NeedsRangeProv
             validationErrors.add(new ValidationIssue(action, "Range provider missing", script));
         }
     }
+
+    @Override
+    public List<ActionRange> coverage() {
+        return rangeProvider.coverage();
+    }
+
 }

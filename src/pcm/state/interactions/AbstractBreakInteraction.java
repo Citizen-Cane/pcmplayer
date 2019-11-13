@@ -1,5 +1,6 @@
 package pcm.state.interactions;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -51,6 +52,15 @@ public abstract class AbstractBreakInteraction extends AbstractInteraction {
         }
 
         super.validate(script, action, validationErrors);
+    }
+
+    @Override
+    public List<ActionRange> coverage() {
+        List<ActionRange> rangeProviderCoverage = super.coverage();
+        List<ActionRange> coverage = new ArrayList<>(choiceRanges.size() + rangeProviderCoverage.size());
+        coverage.addAll(choiceRanges.values());
+        coverage.addAll(rangeProviderCoverage);
+        return coverage;
     }
 
 }

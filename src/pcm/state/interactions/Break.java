@@ -64,7 +64,9 @@ public class Break extends AbstractBreakInteraction {
         });
 
         String result = player.reply(playRange, choices);
-        if (result == ScriptFunction.TimeoutString) {
+        // TODO use answers,
+        // make TimeoutString unique since it can be returned from script as well
+        if (result.equals(ScriptFunction.TimeoutString)) {
             return player.range;
         } else {
             if (!supressStackCorrectionOnBreak) {
@@ -80,4 +82,5 @@ public class Break extends AbstractBreakInteraction {
             script.stack.pop();
         }
     }
+
 }

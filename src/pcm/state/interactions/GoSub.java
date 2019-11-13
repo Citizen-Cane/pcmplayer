@@ -1,5 +1,6 @@
 package pcm.state.interactions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -44,4 +45,14 @@ public class GoSub extends AbstractInteraction {
         script.actions.validate(script, action, range, validationErrors);
         super.validate(script, action, validationErrors);
     }
+
+    @Override
+    public List<ActionRange> coverage() {
+        List<ActionRange> rangeProviderCoverage = super.coverage();
+        List<ActionRange> coverage = new ArrayList<>(1 + rangeProviderCoverage.size());
+        coverage.add(range);
+        coverage.addAll(rangeProviderCoverage);
+        return coverage;
+    }
+
 }

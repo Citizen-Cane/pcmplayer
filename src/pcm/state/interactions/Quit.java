@@ -1,5 +1,6 @@
 package pcm.state.interactions;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -21,15 +22,19 @@ public class Quit implements Interaction {
     public static final Quit instance = new Quit();
 
     @Override
-    public ActionRange getRange(Player player, Script script,
-            Action action, Runnable visuals) {
+    public ActionRange getRange(Player player, Script script, Action action, Runnable visuals) {
         logger.info(getClass().getSimpleName());
         visuals.run();
         return null;
     }
 
     @Override
-    public void validate(Script script, Action action,
-            List<ValidationIssue> validationErrors) {
+    public void validate(Script script, Action action, List<ValidationIssue> validationErrors) {
     }
+
+    @Override
+    public List<ActionRange> coverage() {
+        return Collections.emptyList();
+    }
+
 }

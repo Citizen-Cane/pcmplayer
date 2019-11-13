@@ -1,5 +1,6 @@
 package pcm.state.interactions;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -33,20 +34,21 @@ public class Range implements Interaction {
     }
 
     @Override
-    public ActionRange getRange(Player player, Script script, Action action,
-            Runnable visuals) {
+    public ActionRange getRange(Player player, Script script, Action action, Runnable visuals) {
         visuals.run();
         ActionRange actionRange = new ActionRange(start, end);
-        if (actionRange.start < actionRange.end) {
-            logger.info(actionRange.toString());
-        }
+        logger.info("{}", actionRange);
         return actionRange;
     }
 
     @Override
-    public void validate(Script script, Action action,
-            List<ValidationIssue> validationErrors) {
-        script.actions.validate(script, action, new ActionRange(start, end),
-                validationErrors);
+    public void validate(Script script, Action action, List<ValidationIssue> validationErrors) {
+        script.actions.validate(script, action, new ActionRange(start, end), validationErrors);
     }
+
+    @Override
+    public List<ActionRange> coverage() {
+        return Collections.singletonList(new ActionRange(start, end));
+    }
+
 }

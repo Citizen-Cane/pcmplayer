@@ -1,5 +1,7 @@
 package pcm.state.interactions;
 
+import static java.lang.Boolean.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +35,6 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
     private final int end;
 
     private ScriptState state = null;
-
     private Interaction rangeProvider = null;
 
     public Ask(int start, int end) {
@@ -63,7 +64,7 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
                 } else {
                     int condition = askItem.condition;
                     if (condition == AskItem.ALWAYS || state.get(condition).equals(ScriptState.SET)) {
-                        Boolean value = state.get(askItem.action) == ScriptState.SET ? Boolean.TRUE : Boolean.FALSE;
+                        Boolean value = state.get(askItem.action).equals(ScriptState.SET) ? TRUE : FALSE;
                         values.add(value);
                         choices.add(askItem.title);
                         indices.add(askItem.action);
@@ -162,4 +163,13 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
             rangeProvider.validate(script, action, validationErrors);
         }
     }
+
+    @Override
+    public List<ActionRange> coverage() {
+        List<ActionRange> coverage = new ArrayList<>();
+        coverage.add(new ActionRange(start, end));
+        coverage.addAll(rangeProvider.coverage());
+        return coverage;
+    }
+
 }

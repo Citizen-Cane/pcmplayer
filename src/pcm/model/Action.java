@@ -444,7 +444,7 @@ public class Action extends AbstractAction {
                     : new LoadSbd(script, parseInt(args[1])));
         } else if (name == Statement.PopUp) {
             String args[] = cmd.args();
-            setInteraction(new PopUp(parseInt(args[0]), parseInt(args[1])));
+            setInteraction(new PopUp(parseInt(args[0]), parseInt(args[1]), cmd.script));
         } else if (name == Statement.Ask) {
             String args[] = cmd.args();
             Ask ask = new Ask(parseInt(args[0]), parseInt(args[1]));
@@ -618,6 +618,7 @@ public class Action extends AbstractAction {
                         .add(new ValidationIssue(this, "Invalid value for poss statement (" + poss + ")", script));
             }
         }
+
         if (visuals != null) {
             // Validate each visual
             for (Visual visual : visuals.values()) {
@@ -668,11 +669,26 @@ public class Action extends AbstractAction {
                 }
             }
         }
+
         if (interaction != null) {
             interaction.validate(script, this, validationErrors);
         } else {
             validationErrors.add(new ValidationIssue(this, "No interaction", script));
         }
+
+        if (!referencedBy(script)) {
+            validationErrors.add(new ValidationIssue(this, "Unused action", script));
+        }
+        if (!referencedBy(script)) {
+            validationErrors.add(new ValidationIssue(this, "Unused action", script));
+        }
+    }
+
+    @SuppressWarnings("static-method")
+    private boolean referencedBy(@SuppressWarnings("unused") Script script) {
+        return true;
+        // TODO parse interactions cover all defined ranges
+        // TODO parse references from other scripts
     }
 
     private void addMessageValidationIssue(Script script, List<ValidationIssue> validationErrors, Statement special) {
