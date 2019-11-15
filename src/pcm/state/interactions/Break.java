@@ -11,6 +11,8 @@ import pcm.model.Action;
 import pcm.model.ActionRange;
 import pcm.model.Script;
 import pcm.model.ScriptExecutionException;
+import teaselib.Answer;
+import teaselib.Answers;
 import teaselib.ScriptFunction;
 import teaselib.core.speechrecognition.SpeechRecognition;
 import teaselib.core.util.ExceptionUtil;
@@ -46,10 +48,10 @@ public class Break extends AbstractBreakInteraction {
             throws ScriptExecutionException {
         int stackMemento = script.stack.size();
         visuals.run();
-        List<String> choices = new ArrayList<>(choiceRanges.size());
+        Answers answers = new Answers(choiceRanges.size());
         List<ActionRange> ranges = new ArrayList<>(choiceRanges.size());
         for (Entry<Statement, ActionRange> entry : choiceRanges.entrySet()) {
-            choices.add(action.getResponseText(entry.getKey(), script));
+            answers.add(Answer.resume(action.getResponseText(entry.getKey(), script)));
             ranges.add(entry.getValue());
         }
 
@@ -63,16 +65,14 @@ public class Break extends AbstractBreakInteraction {
             SpeechRecognition.completeSpeechRecognitionInProgress();
         });
 
-        String result = player.reply(playRange, choices);
-        // TODO use answers,
-        // make TimeoutString unique since it can be returned from script as well
-        if (result.equals(ScriptFunction.TimeoutString)) {
+        Answer result = player.reply(playRange, answers);
+        if (result.equals(ScriptFunction.Timeout)) {
             return player.range;
         } else {
             if (!supressStackCorrectionOnBreak) {
                 restoreStack(script, stackMemento);
             }
-            int index = choices.indexOf(result);
+            int index = answers.indexOf(result);
             return ranges.get(index);
         }
     }
