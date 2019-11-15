@@ -336,6 +336,7 @@ public class Player extends TeaseScript implements MainScript {
     }
 
     public void loadScripts() throws ScriptParsingException, ValidationIssue, IOException {
+        validateScript(script, new ArrayList<>());
         for (String s : scripts.names()) {
             scripts.get(actor, s);
         }
@@ -360,6 +361,9 @@ public class Player extends TeaseScript implements MainScript {
         uncovered.removeAll(script.actions.getAll(script.startRange));
         uncovered.removeAll(script.actions.getAll(script.onAllSet));
         uncovered.removeAll(script.actions.getAll(script.onClose));
+        if (script.onRecognitionRejected != null) {
+            uncovered.removeAll(script.actions.getAll(script.onRecognitionRejected));
+        }
 
         retainActionsCalledFromOtherActions(script, uncovered);
         retainActionsCalledFromOtherScript(script, uncovered);
