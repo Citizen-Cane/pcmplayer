@@ -42,4 +42,15 @@ public abstract class AbstractInteraction implements Interaction, NeedsRangeProv
         return rangeProvider.coverage();
     }
 
+    @Override
+    public String toString() {
+        StringBuilder string = new StringBuilder();
+        string.append(getClass().getSimpleName());
+        if (rangeProvider != null) {
+            string.append("->");
+            string.append(rangeProvider.toString());
+        }
+        return string.toString();
+    }
+
 }

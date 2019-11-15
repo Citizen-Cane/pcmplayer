@@ -24,7 +24,8 @@
 ' 3 is set by a debugger response action in the unit test
 ' - set here already since gosub has to complete the calling action first before invoking this one
 ' - completing includes processing all interactions and range providers
-' - therefore the sub-action is effectively invoked after all interactions and range providers have been executed
+' - therefore the sub-action is effectively invoked
+' - after all interactions and other range providers have been executed
 .must 3
 .set 2
 .return
@@ -36,7 +37,7 @@
 
 
 
-' testMultipleGosubsAreExecutedOneAfterAnother
+' testMultipleGosubsAreExecutedOneAfterAnotherPromptFirst
 
 [Action 1010]
 .set 0

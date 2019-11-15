@@ -13,6 +13,7 @@ import pcm.model.Script;
 import pcm.model.ScriptExecutionException;
 import pcm.model.ScriptParsingException;
 import pcm.model.ValidationIssue;
+import pcm.state.Interaction;
 
 /**
  * @author Citizen-Cane
@@ -36,6 +37,17 @@ public class GoSub extends AbstractInteraction {
         visuals.run();
         script.stack.push(rangeProvider.getRange(player, script, action, NoVisuals));
         return range;
+    }
+
+    @Override
+    public void setRangeProvider(Interaction rangeProvider) {
+        if (rangeProvider instanceof Range || rangeProvider instanceof GoSub || rangeProvider instanceof Return
+                || rangeProvider instanceof LoadSbd) {
+            super.setRangeProvider(rangeProvider);
+        } else {
+            throw new IllegalArgumentException("Wrong interaction sequence: " + rangeProvider.getClass().getSimpleName()
+                    + " can only be executed first");
+        }
     }
 
     @Override

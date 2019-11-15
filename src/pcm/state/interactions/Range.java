@@ -39,4 +39,9 @@ public class Range implements Interaction {
         return Collections.singletonList(actionRange);
     }
 
+    @Override
+    public String toString() {
+        return actionRange.toString();
+    }
+
 }

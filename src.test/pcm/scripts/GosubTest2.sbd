@@ -1,0 +1,57 @@
+' pcm test cases
+
+
+.range 9999
+
+
+' testMultipleGosubsAreExecutedOneAfterAnotherPromptLast
+
+[Action 1020]
+.set 0
+.unset 1 2 3 4
+.gosub 1021
+.gosub 1022
+.gosub 1023
+.gosub 1024
+.gosub 1025
+.yes Interaction
+.range 1026
+
+
+[Action 1021]
+.must 0
+.mustnot   1 2 3 4 5
+.set 1
+.return
+
+[Action 1022]
+.must 0 1
+.mustnot     2 3 4
+.set 2
+.return
+
+[Action 1023]
+.must 0 1 2
+.mustnot       3 4
+.set 3
+.return
+
+[Action 1024]
+.must 0 1 2 3
+.mustnot         4
+.set  4
+.return
+
+[Action 1025]
+.must 0 1 2 3 4
+.return
+
+[Action 1026]
+.must 0 1 2 3 4
+.range 9999
+
+' proper exit for all test cases
+[action 9999]
+.noimage
+.quit
+
