@@ -180,14 +180,14 @@ public class Player extends TeaseScript implements MainScript {
                     while ((line = debugReader.readLine()) != null) {
                         line = line.trim();
                         int comment = line.indexOf("//");
-                        if (comment == 0) {
-                            continue;
-                        } else if (comment > 0) {
-                            line = line.substring(0, comment - 1);
-                        }
-                        if (!line.isEmpty()) {
-                            scriptName = line;
-                            break;
+                        if (comment != 0) {
+                            if (comment > 0) {
+                                line = line.substring(0, comment - 1);
+                            }
+                            if (!line.isEmpty()) {
+                                scriptName = line;
+                                break;
+                            }
                         }
                     }
                 }
@@ -309,8 +309,7 @@ public class Player extends TeaseScript implements MainScript {
     }
 
     private void setScript(Script newScript) {
-        if (logger.isInfoEnabled())
-            logger.info("Loading script " + newScript.name);
+        logger.info("Loading script {}", newScript.name);
         script = newScript;
         state.setScript(script);
     }
@@ -318,18 +317,18 @@ public class Player extends TeaseScript implements MainScript {
     public List<ValidationIssue> validateProject() throws ScriptParsingException, ValidationIssue, IOException {
         List<ValidationIssue> validationIssues = new ArrayList<>();
 
-        validateAspects(script, state, resources, validationIssues);
+        validateAspects(script, state, validationIssues);
         for (String s : scripts.names()) {
             Script subScript = scripts.get(actor, s);
             if (subScript != script) {
-                validateAspects(subScript, state, resources, validationIssues);
+                validateAspects(subScript, state, validationIssues);
             }
         }
 
         return validationIssues;
     }
 
-    public List<ValidationIssue> validateResources() throws ScriptParsingException, ValidationIssue, IOException {
+    public List<ValidationIssue> validateResources() {
         List<ValidationIssue> validationIssues = new ArrayList<>();
         validateResources(script, resources, validationIssues);
         return validationIssues;
@@ -345,41 +344,53 @@ public class Player extends TeaseScript implements MainScript {
         List<ValidationIssue> validationIssues = new ArrayList<>();
 
         for (String name : scripts.names()) {
-            Script script = scripts.get(actor, name);
-            List<Action> uncovered = script.actions.getAll();
-
-            for (Action a : script.actions.getAll()) {
-                if (!(a.interaction instanceof LoadSbd)) {
-                    for (ActionRange coverage : a.interaction.coverage()) {
-                        uncovered.removeAll(script.actions.getAll(coverage));
-                    }
-                }
-            }
-
-            uncovered.removeAll(script.actions.getAll(script.startRange));
-            uncovered.removeAll(script.actions.getAll(script.onAllSet));
-            uncovered.removeAll(script.actions.getAll(script.onClose));
-
-            for (String callingScriptName : scripts.names()) {
-                Script callingScript = scripts.get(actor, callingScriptName);
-                if (callingScript != script) {
-                    for (Action a : callingScript.actions.getAll()) {
-                        if (a.interaction instanceof LoadSbd) {
-                            LoadSbd interaction = (LoadSbd) a.interaction;
-                            if (interaction.range.script.equalsIgnoreCase(script.name)) {
-                                uncovered.removeAll(script.actions.getAll(interaction.range));
-                            }
-                        }
-                    }
-                }
-            }
-
-            for (Action a : uncovered) {
-                validationIssues.add(new ValidationIssue("Action without caller, " + a, script));
+            Script s = scripts.get(actor, name);
+            for (Action a : retainUncovered(s)) {
+                validationIssues.add(new ValidationIssue("Action without caller, " + a, s));
             }
         }
 
         return validationIssues;
+    }
+
+    private List<Action> retainUncovered(Script script) throws ScriptParsingException, ValidationIssue, IOException {
+        List<Action> uncovered = script.actions.getAll();
+
+        uncovered.removeAll(script.actions.getAll(script.startRange));
+        uncovered.removeAll(script.actions.getAll(script.onAllSet));
+        uncovered.removeAll(script.actions.getAll(script.onClose));
+
+        retainActionsCalledFromOtherActions(script, uncovered);
+        retainActionsCalledFromOtherScript(script, uncovered);
+
+        return uncovered;
+    }
+
+    private void retainActionsCalledFromOtherActions(Script script, List<Action> uncovered) {
+        for (Action a : script.actions.getAll()) {
+            if (!(a.interaction instanceof LoadSbd)) {
+                for (ActionRange coverage : a.interaction.coverage()) {
+                    uncovered.removeAll(script.actions.getAll(coverage));
+                }
+            }
+        }
+    }
+
+    private void retainActionsCalledFromOtherScript(Script script, List<Action> uncovered)
+            throws ScriptParsingException, ValidationIssue, IOException {
+        for (String callingScriptName : scripts.names()) {
+            Script callingScript = scripts.get(actor, callingScriptName);
+            if (callingScript != script) {
+                for (Action a : callingScript.actions.getAll()) {
+                    if (a.interaction instanceof LoadSbd) {
+                        LoadSbd interaction = (LoadSbd) a.interaction;
+                        if (interaction.range.script.equalsIgnoreCase(script.name)) {
+                            uncovered.removeAll(script.actions.getAll(interaction.range));
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public void reportValidationIssues(List<ValidationIssue> validationIssues) throws ValidationIssue {
@@ -392,8 +403,8 @@ public class Player extends TeaseScript implements MainScript {
         }
     }
 
-    private void validateAspects(Script script, MappedScriptState state, ResourceLoader resources,
-            List<ValidationIssue> validationErrors) throws ScriptParsingException {
+    private void validateAspects(Script script, MappedScriptState state, List<ValidationIssue> validationErrors)
+            throws ScriptParsingException {
         validateScript(script, validationErrors);
         validateMappings(script, state, validationErrors);
     }
@@ -431,13 +442,10 @@ public class Player extends TeaseScript implements MainScript {
         invokedOnAllSet = false;
         if (script.onClose != null) {
             final Thread scriptThread = Thread.currentThread();
-            teaseLib.host.setQuitHandler(new Runnable() {
-                @Override
-                public void run() {
-                    logger.info("Interrupting script thread '" + scriptThread.getName() + "'");
-                    scriptThread.interrupt();
-                    // The main script continues at the onClose range
-                }
+            teaseLib.host.setQuitHandler(() -> {
+                logger.info("Interrupting script thread '{}'", scriptThread.getName());
+                scriptThread.interrupt();
+                // The main script continues at the onClose range
             });
         }
         script.execute(state);
@@ -520,8 +528,8 @@ public class Player extends TeaseScript implements MainScript {
 
     }
 
-    public void loadScript(LoadSbdRange range) throws ScriptParsingException, ValidationIssue, IOException,
-            ScriptExecutionException, AllActionsSetException {
+    public void loadScript(LoadSbdRange range)
+            throws ScriptParsingException, ValidationIssue, IOException, ScriptExecutionException {
         setScript(script.load(range.script));
         resetScript();
         this.range = range;
@@ -531,10 +539,9 @@ public class Player extends TeaseScript implements MainScript {
     }
 
     private Action getAction() throws AllActionsSetException {
-        Action action;
         List<Action> actions = range(script, range);
-        action = chooseAction(actions);
-        if (action == null) {
+        Action candidate = chooseAction(actions);
+        if (candidate == null) {
             logger.info("All actions set");
             if (script.onAllSet != null && !invokedOnAllSet) {
                 logger.info("Invoking OnAllSet handler");
@@ -545,14 +552,14 @@ public class Player extends TeaseScript implements MainScript {
                     throw new AllActionsSetException(script.actions.getAll(range),
                             new ActionRange(range.start, range.end), script);
                 } else {
-                    action = chooseAction(actions);
+                    candidate = chooseAction(actions);
                 }
             } else {
                 throw new AllActionsSetException(script.actions.getAll(range), new ActionRange(range.start, range.end),
                         script);
             }
         }
-        return action;
+        return candidate;
     }
 
     public ActionRange execute(Action action) throws ScriptExecutionException {
@@ -615,26 +622,26 @@ public class Player extends TeaseScript implements MainScript {
         while (true) {
             List<Action> poss0 = null;
             List<Action> poss100 = null;
-            for (Action action : candidates) {
-                boolean getAction = evalConditions(action, relaxedConditions);
+            for (Action candidate : candidates) {
+                boolean getAction = evalConditions(candidate, relaxedConditions);
                 if (getAction) {
                     // poss == 1 and poss == 100 are special cases
-                    if (action.poss != null) {
-                        if (action.poss == 0) {
+                    if (candidate.poss != null) {
+                        if (candidate.poss == 0) {
                             if (poss0 == null) {
                                 poss0 = new LinkedList<>();
                             }
-                            poss0.add(action);
-                        } else if (action.poss == 100) {
+                            poss0.add(candidate);
+                        } else if (candidate.poss == 100) {
                             if (poss100 == null) {
                                 poss100 = new LinkedList<>();
                             }
-                            poss100.add(action);
+                            poss100.add(candidate);
                         } else {
-                            selectable.add(action);
+                            selectable.add(candidate);
                         }
                     } else {
-                        selectable.add(action);
+                        selectable.add(candidate);
                     }
                 }
             }
@@ -655,7 +662,6 @@ public class Player extends TeaseScript implements MainScript {
                     logger.debug("Relaxing {}", relaxed);
                 }
                 relaxedConditions.add(relaxed);
-                continue;
             } else {
                 return Collections.emptyList();
             }
