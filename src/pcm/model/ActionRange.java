@@ -2,6 +2,8 @@ package pcm.model;
 
 import static java.lang.Integer.parseInt;
 
+import java.util.Optional;
+
 import teaselib.util.Interval;
 
 public class ActionRange extends Interval implements ConditionRange {
@@ -30,6 +32,10 @@ public class ActionRange extends Interval implements ConditionRange {
 
     public ActionRange(int start, int end) {
         super(start, end);
+    }
+
+    public Optional<String> script() {
+        return Optional.empty();
     }
 
     public boolean validate() {

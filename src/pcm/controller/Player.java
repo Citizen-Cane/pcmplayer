@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.StringTokenizer;
 import java.util.concurrent.ExecutionException;
 
@@ -19,9 +20,9 @@ import org.slf4j.LoggerFactory;
 
 import pcm.model.AbstractAction;
 import pcm.model.Action;
-import pcm.model.ActionLoadSbd;
 import pcm.model.ActionRange;
 import pcm.model.ConditionRange;
+import pcm.model.LoadSbdRange;
 import pcm.model.Script;
 import pcm.model.ScriptException;
 import pcm.model.ScriptExecutionException;
@@ -54,6 +55,10 @@ import teaselib.util.RandomImages;
 import teaselib.util.SpeechRecognitionRejectedScript;
 import teaselib.util.TextVariables;
 
+/**
+ * @author Citizen-Cane
+ * 
+ */
 public class Player extends TeaseScript implements MainScript {
     private static final Logger logger = LoggerFactory.getLogger(Player.class);
 
@@ -361,9 +366,8 @@ public class Player extends TeaseScript implements MainScript {
                     for (Action a : callingScript.actions.getAll()) {
                         if (a.interaction instanceof LoadSbd) {
                             LoadSbd interaction = (LoadSbd) a.interaction;
-                            if (interaction.scriptName.equalsIgnoreCase(script.name)) {
-                                uncovered.removeAll(
-                                        script.actions.getAll(new ActionRange(interaction.start, interaction.end)));
+                            if (interaction.range.script.equalsIgnoreCase(script.name)) {
+                                uncovered.removeAll(script.actions.getAll(interaction.range));
                             }
                         }
                     }
@@ -478,15 +482,13 @@ public class Player extends TeaseScript implements MainScript {
                     // in order to return command to the player
                     // Used to execute a sub-script from java
                     break;
-                } else if (range instanceof ActionLoadSbd) {
-                    ActionLoadSbd loadSbd = (ActionLoadSbd) range;
-                    setScript(loadSbd.script);
-                    resetScript();
-                    range = loadSbd;
-                    // Jumping into a different script
-                    // definitely exits the play range
-                    action = getAction();
+                } else {
+                    Optional<String> scriptName = range.script();
+                    if (scriptName.isPresent()) {
+                        loadScript((LoadSbdRange) range);
+                    }
                 }
+
                 if (Thread.interrupted()) {
                     throw new ScriptInterruptedException();
                 }
@@ -507,6 +509,8 @@ public class Player extends TeaseScript implements MainScript {
                 } else {
                     throw e;
                 }
+            } catch (ScriptParsingException | ValidationIssue | IOException e) {
+                throw new ScriptExecutionException(action, e, script);
             } catch (ScriptExecutionException e) {
                 throw e;
             } catch (Exception e) {
@@ -514,6 +518,16 @@ public class Player extends TeaseScript implements MainScript {
             }
         }
 
+    }
+
+    public void loadScript(LoadSbdRange range) throws ScriptParsingException, ValidationIssue, IOException,
+            ScriptExecutionException, AllActionsSetException {
+        setScript(script.load(range.script));
+        resetScript();
+        this.range = range;
+        // Jumping into a different script
+        // definitely exits the play range
+        this.action = getAction();
     }
 
     private Action getAction() throws AllActionsSetException {

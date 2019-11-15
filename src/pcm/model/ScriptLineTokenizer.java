@@ -60,6 +60,10 @@ public class ScriptLineTokenizer {
         return argv;
     }
 
+    public String[] args(int from) {
+        return Arrays.copyOfRange(args(), from, args().length);
+    }
+
     public void addArgsTo(Collection<Integer> collection) {
         String[] args = args();
         if (args.length == 0) {

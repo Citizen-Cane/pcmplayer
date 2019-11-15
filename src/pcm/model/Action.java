@@ -430,8 +430,7 @@ public class Action extends AbstractAction {
             String arg0 = args[0];
             int endIndex = arg0.lastIndexOf('.');
             String script = endIndex < 0 ? arg0 : arg0.substring(0, endIndex);
-            setInteraction(args.length > 2 ? new LoadSbd(script, parseInt(args[1]), parseInt(args[2]))
-                    : new LoadSbd(script, parseInt(args[1])));
+            setInteraction(new LoadSbd(script, ActionRange.of(cmd.args(1))));
         } else if (name == Statement.PopUp) {
             setInteraction(new PopUp(ActionRange.of(cmd.args()), cmd.script));
         } else if (name == Statement.Ask) {
