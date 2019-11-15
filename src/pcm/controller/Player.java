@@ -90,13 +90,14 @@ public class Player extends TeaseScript implements MainScript {
     private boolean intentionalQuit = false;
 
     /**
-     * This range can be pushed onto the script range stack to tell the player to hand over execution from the PCM
-     * script engine back to the player.
-     * 
+     * This range tells the player to hand over execution from the PCM script engine back to the caller.
+     * <p>
      * Push it on the stack, and call {@link Player#playFrom(ActionRange)}. The current script is executed up to the
      * next occurrence of a {@link AbstractAction.Statement#Return} statement.
+     * <p>
+     * The quit command also returns this range.
      */
-    public static final ActionRange ReturnToPlayer = new ActionRange(0);
+    public static final ActionRange EndRange = new ActionRange(0);
 
     public static void recordVoices(Actor actor, File path, String projectName, String[] scriptNames, String[] assets)
             throws IOException, ValidationIssue, ScriptParsingException, InterruptedException, ExecutionException {
@@ -282,7 +283,7 @@ public class Player extends TeaseScript implements MainScript {
                 try {
                     // The play(Range) method must end on return, not continue
                     // somewhere else
-                    Player.this.scripts.stack.push(ReturnToPlayer);
+                    Player.this.scripts.stack.push(EndRange);
                     range = Player.this.script.onRecognitionRejected;
                     Player.this.playRange(new ActionRange(0, Integer.MAX_VALUE));
                     if (range == null) {
@@ -454,8 +455,8 @@ public class Player extends TeaseScript implements MainScript {
     }
 
     /**
-     * Plays the given range. Returns on {@code .quit}, if {@link Player#ReturnToPlayer} had been pushed on the stack
-     * and a return statement is executed, or if the the next action is not a member of the play range.
+     * Plays the given range. Returns on {@code .quit}, if {@link Player#EndRange} had been pushed on the stack and a
+     * return statement is executed, or if the the next action is not a member of the play range.
      * 
      * @param playRange
      *            The range to play.
@@ -480,15 +481,7 @@ public class Player extends TeaseScript implements MainScript {
                 }
 
                 range = execute(action);
-                if (range == null) {
-                    // Quit
-                    setImage(Message.NoImage);
-                    show("");
-                    break;
-                } else if (range == ReturnToPlayer) {
-                    // do nothing and temporarily suspends playing
-                    // in order to return command to the player
-                    // Used to execute a sub-script from java
+                if (range == EndRange) {
                     break;
                 } else {
                     Optional<String> scriptName = range.script();

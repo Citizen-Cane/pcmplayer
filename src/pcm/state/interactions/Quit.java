@@ -12,6 +12,7 @@ import pcm.model.ActionRange;
 import pcm.model.Script;
 import pcm.model.ValidationIssue;
 import pcm.state.Interaction;
+import teaselib.Message;
 
 public class Quit implements Interaction {
     private static final Logger logger = LoggerFactory.getLogger(Quit.class);
@@ -25,11 +26,16 @@ public class Quit implements Interaction {
     public ActionRange getRange(Player player, Script script, Action action, Runnable visuals) {
         logger.info(getClass().getSimpleName());
         visuals.run();
-        return null;
+
+        player.completeAll();
+        player.setImage(Message.NoImage);
+        player.show("");
+
+        return Player.EndRange;
     }
 
     @Override
-    public void validate(Script script, Action action, List<ValidationIssue> validationErrors) {
+    public void validate(Script script, Action action, List<ValidationIssue> validationErrors) { // Ignore
     }
 
     @Override
