@@ -55,9 +55,10 @@ public class Break extends AbstractBreakInteraction {
             ranges.add(entry.getValue());
         }
 
+        ActionRange range = rangeProvider.getRange(player, script, action, NoVisuals);
         ScriptFunction playRange = new ScriptFunction(() -> {
             try {
-                player.range = rangeProvider.getRange(player, script, action, NoVisuals);
+                player.action = player.getAction(range);
                 player.playRange(breakRange);
             } catch (ScriptExecutionException e) {
                 throw ExceptionUtil.asRuntimeException(e);
@@ -67,7 +68,7 @@ public class Break extends AbstractBreakInteraction {
 
         Answer result = player.reply(playRange, answers);
         if (result.equals(ScriptFunction.Timeout)) {
-            return player.range;
+            return ActionRange.of(player.action.number);
         } else {
             if (!supressStackCorrectionOnBreak) {
                 restoreStack(script, stackMemento);

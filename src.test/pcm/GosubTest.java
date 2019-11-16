@@ -29,7 +29,7 @@ public class GosubTest {
             return Debugger.Response.Choose;
         });
 
-        pcm.util.TestUtils.play(player, new ActionRange(1000), null);
+        pcm.util.TestUtils.play(player, new ActionRange(1000));
     }
 
     @Test
@@ -44,7 +44,7 @@ public class GosubTest {
             return Debugger.Response.Choose;
         });
 
-        pcm.util.TestUtils.play(player, new ActionRange(1010), null);
+        pcm.util.TestUtils.play(player, new ActionRange(1010));
     }
 
     @Test(expected = ScriptParsingException.class)
@@ -59,7 +59,7 @@ public class GosubTest {
             return Debugger.Response.Choose;
         });
 
-        pcm.util.TestUtils.play(player, new ActionRange(1020), null);
+        pcm.util.TestUtils.play(player, new ActionRange(1020));
         // TODO fails because reply() is executed directly in the ".Yes" interaction
         // whereas the .gosub statements just push ranges, which results in later execution
         // yes-statement has to be executed after the last .gosub range has been popped from the stack

@@ -26,22 +26,19 @@ import pcm.util.TestUtils;
  *
  */
 public class ScriptTests {
-    Player player = TestUtils.createPlayer(getClass());
+    final Player player;
 
     public ScriptTests() throws IOException {
+        player = TestUtils.createPlayer(getClass());
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
     @Before
-    public void setUpBefore() throws Exception {
+    public void setUpBefore() throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
         player.loadScript("ScriptTests");
     }
 
     @Test
-    public void testAllUnsetAfterInit() throws Exception {
-        Player player = TestUtils.createPlayer(getClass(), "ScriptTests");
+    public void testAllUnsetAfterInit() throws ScriptExecutionException {
         assertEquals(0, player.state.size());
 
         TestUtils.play(player, new ActionRange(9999), new ActionRange(9999));
@@ -51,13 +48,13 @@ public class ScriptTests {
     }
 
     @Test
-    public void testOutOfActions() throws Exception {
+    public void testOutOfActions() throws ScriptExecutionException {
         ActionRange r = new ActionRange(1000, 1001);
         player.state.set(9);
         player.playOnly(r);
         assertEquals(ScriptState.SET, player.state.get(1000));
         assertEquals(ScriptState.UNSET, player.state.get(1001));
-        assertEquals(9999, player.range.start);
+        assertEquals(9999, player.action.number);
         try {
             player.playOnly(r);
             assertTrue("Unexpected action available", false);
@@ -70,7 +67,7 @@ public class ScriptTests {
 
     // Logged repeatAdd/Del, added test case to document the feature
     @Test
-    public void testRepeatAdd() throws Exception {
+    public void testRepeatAdd() throws ScriptExecutionException {
         ActionRange r = new ActionRange(1010, 1011);
         assertEquals(ScriptState.UNSET, player.state.get(1010));
         player.playOnly(r);
@@ -87,7 +84,7 @@ public class ScriptTests {
     }
 
     @Test
-    public void testRepeatDel() throws Exception {
+    public void testRepeatDel() throws ScriptExecutionException {
         ActionRange r = new ActionRange(1020, 1023);
         assertEquals(ScriptState.UNSET, player.state.get(1020));
         player.playOnly(r);
@@ -103,7 +100,7 @@ public class ScriptTests {
     }
 
     @Test
-    public void testShouldnotWithDefaultConditionRange() throws Exception {
+    public void testShouldnotWithDefaultConditionRange() throws ScriptExecutionException {
         ActionRange r = new ActionRange(1030, 1030);
         assertEquals(ScriptState.UNSET, player.state.get(1030));
         player.playOnly(r);
@@ -117,9 +114,7 @@ public class ScriptTests {
     }
 
     @Test
-    public void testResetRange() throws AllActionsSetException, ScriptExecutionException, ScriptParsingException,
-            ValidationIssue, IOException {
-        Player player = TestUtils.createPlayer(getClass(), "ScriptTests");
+    public void testResetRange() throws ScriptExecutionException {
         TestUtils.play(player, new ActionRange(1040), new ActionRange(1040, 1041));
 
         assertEquals(ScriptState.UNSET, player.state.get(1040));
@@ -135,9 +130,7 @@ public class ScriptTests {
     }
 
     @Test
-    public void testMustNotAllOf() throws AllActionsSetException, ScriptExecutionException, ScriptParsingException,
-            ValidationIssue, IOException {
-        Player player = TestUtils.createPlayer(getClass(), "ScriptTests");
+    public void testMustNotAllOf() throws ScriptExecutionException {
         TestUtils.play(player, new ActionRange(1050), new ActionRange(1050, 1059));
 
         assertEquals(ScriptState.SET, player.state.get(1053));
@@ -146,9 +139,7 @@ public class ScriptTests {
     }
 
     @Test
-    public void testMustAnyOf() throws AllActionsSetException, ScriptExecutionException, ScriptParsingException,
-            ValidationIssue, IOException {
-        Player player = TestUtils.createPlayer(getClass(), "ScriptTests");
+    public void testMustAnyOf() throws ScriptExecutionException {
         TestUtils.play(player, new ActionRange(1060), new ActionRange(1060, 1069));
 
         assertEquals(ScriptState.SET, player.state.get(1062));

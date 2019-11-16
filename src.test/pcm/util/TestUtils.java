@@ -52,11 +52,11 @@ public class TestUtils {
     }
 
     public static void play(Player player, int start) throws ScriptExecutionException {
-        play(player, new ActionRange(start), null);
+        play(player, new ActionRange(start), ActionRange.all);
     }
 
     public static void play(Player player, ActionRange start) throws ScriptExecutionException {
-        play(player, start, null);
+        play(player, start, ActionRange.all);
     }
 
     public static void play(Player player, ActionRange start, ActionRange playRange) throws ScriptExecutionException {

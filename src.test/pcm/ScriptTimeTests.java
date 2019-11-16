@@ -90,7 +90,7 @@ public class ScriptTimeTests {
         debugger.freezeTime();
 
         ActionRange r = new ActionRange(1000);
-        player.range = r;
+        player.action = player.getAction(r);
         player.playFrom(r);
 
         assertEquals(ScriptState.SET, player.state.get(1000));
@@ -129,7 +129,7 @@ public class ScriptTimeTests {
         debugger.freezeTime();
 
         ActionRange r = new ActionRange(1020);
-        player.range = r;
+        player.action = player.getAction(r);
         player.playFrom(r);
         assertEquals(ScriptState.SET, player.state.get(1020));
         assertFalse(containsAction(1021));
@@ -142,7 +142,7 @@ public class ScriptTimeTests {
         debugger.freezeTime();
 
         ActionRange r = new ActionRange(1025);
-        player.range = r;
+        player.action = player.getAction(r);
         player.playFrom(r);
         assertEquals(ScriptState.SET, player.state.get(1025));
         assertTrue(containsAction(1026));
@@ -156,7 +156,7 @@ public class ScriptTimeTests {
         debugger.freezeTime();
 
         ActionRange r = new ActionRange(1030);
-        player.range = r;
+        player.action = player.getAction(r);
         player.playFrom(r);
         assertEquals(ScriptState.SET, player.state.get(1030));
 
@@ -176,7 +176,7 @@ public class ScriptTimeTests {
     }
 
     @Test
-    public void showHowToCheckForInfinityInCode() throws Exception {
+    public void showHowToCheckForInfinityInCode() {
         debugger.freezeTime();
 
         player.state.setTime(9, player.duration(10, TimeUnit.SECONDS));
@@ -187,11 +187,11 @@ public class ScriptTimeTests {
     }
 
     @Test
-    public void showHowToCheckForInfinityInScript() throws Exception {
+    public void showHowToCheckForInfinityInScript() throws ScriptExecutionException {
         debugger.freezeTime();
 
         ActionRange r = new ActionRange(1040);
-        player.range = r;
+        player.action = player.getAction(r);
         player.playFrom(r);
         assertEquals(ScriptState.SET, player.state.get(1040));
 

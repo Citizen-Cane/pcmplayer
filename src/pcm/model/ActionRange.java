@@ -8,6 +8,8 @@ import teaselib.util.Interval;
 
 public class ActionRange extends Interval implements ConditionRange {
 
+    public static final ActionRange all = new ActionRange(Integer.MIN_VALUE, Integer.MAX_VALUE);
+
     public static ActionRange of(String... args) {
         int start = parseInt(args[0]);
         if (args.length > 1) {
