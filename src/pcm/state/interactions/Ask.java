@@ -54,7 +54,7 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
     }
 
     @Override
-    public ActionRange getRange(Player player, Script script, Action action, Runnable visuals)
+    public Action getRange(Player player, Script script, Action action, Runnable visuals)
             throws ScriptExecutionException {
         List<String> choices = new ArrayList<>();
         List<Boolean> values = new ArrayList<>();

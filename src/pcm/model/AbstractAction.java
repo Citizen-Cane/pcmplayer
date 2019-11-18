@@ -306,7 +306,7 @@ public abstract class AbstractAction {
         if (commands != null) {
             for (Command command : commands) {
                 Logger logger = LoggerFactory.getLogger(command.getClass());
-                logger.info(command.toString());
+                logger.info("{}", command);
                 command.execute(state);
             }
         }
@@ -340,7 +340,12 @@ public abstract class AbstractAction {
     static Condition createConditionFrom(int lineNumber, String line, Script script, Declarations declarations)
             throws ScriptParsingException {
         ScriptLineTokenizer cmd = new ScriptLineTokenizer(lineNumber, line, script, declarations);
-        Action action = new Action(0);
+        Action action = new Action(0) {
+            @Override
+            public void execute(ScriptState state) throws ScriptExecutionException {
+                throw new UnsupportedOperationException();
+            }
+        };
         action.add(cmd);
         return action.conditions.get(0);
     }

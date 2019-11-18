@@ -49,7 +49,7 @@ public class Script extends AbstractAction {
     public String mistressImages = null;
 
     private final ScriptCache scriptCache;
-    public final Deque<ActionRange> stack;
+    public final Deque<Action> stack;
 
     private Actuator keyReleaseActuator = null;
 
@@ -58,12 +58,7 @@ public class Script extends AbstractAction {
     /**
      * The condition range used when the script doesn't define its own list of condition ranges.
      */
-    public static final ConditionRange DefaultConditionRange = new ConditionRange() {
-        @Override
-        public boolean contains(Object condition) {
-            return true;
-        }
-    };
+    public static final ConditionRange DefaultConditionRange = condition -> true;
 
     public Script(Actor actor, String name, ScriptCache scriptCache, ScriptParser parser)
             throws ScriptParsingException, ValidationIssue, IOException {

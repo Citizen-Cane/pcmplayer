@@ -32,18 +32,20 @@ public class YesNo implements Interaction {
     }
 
     @Override
-    public ActionRange getRange(final Player player, Script script, Action action, Runnable visuals)
+    public Action getRange(final Player player, Script script, Action action, Runnable visuals)
             throws ScriptExecutionException {
         visuals.run();
         Answer yes = Answer.yes(action.getResponseText(Statement.YesText, script));
         Answer no = Answer.no(action.getResponseText(Statement.NoText, script));
+        ActionRange range;
         if (player.reply(yes, no) == yes) {
             logger.info("-> Yes");
-            return new ActionRange(startYes, endYes);
+            range = ActionRange.of(startYes, endYes);
         } else {
             logger.info("-> No");
-            return new ActionRange(startNo, endNo);
+            range = ActionRange.of(startNo, endNo);
         }
+        return player.getAction(range);
     }
 
     @Override

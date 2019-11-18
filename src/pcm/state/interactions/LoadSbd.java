@@ -3,6 +3,7 @@ package pcm.state.interactions;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import pcm.controller.Player;
 import pcm.model.Action;
@@ -22,10 +23,20 @@ public class LoadSbd implements Interaction {
     }
 
     @Override
-    public ActionRange getRange(Player player, Script script, Action action, Runnable visuals)
+    public Action getRange(Player player, Script script, Action action, Runnable visuals)
             throws ScriptExecutionException {
         visuals.run();
-        return range;
+
+        Optional<String> scriptName = range.script();
+        if (scriptName.isPresent()) {
+            try {
+                player.loadScript((LoadSbdRange) range);
+            } catch (ScriptParsingException | ValidationIssue | IOException e) {
+                throw new ScriptExecutionException(action, e, script);
+            }
+        }
+
+        return player.getAction(range);
     }
 
     @Override

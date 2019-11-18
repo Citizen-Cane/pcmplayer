@@ -48,7 +48,7 @@ public class Stop extends AbstractBreakInteraction {
     }
 
     @Override
-    public ActionRange getRange(final Player player, Script script, final Action action, final Runnable visuals)
+    public Action getRange(final Player player, Script script, final Action action, final Runnable visuals)
             throws ScriptExecutionException {
         logger.info("{}", this);
 
@@ -86,7 +86,7 @@ public class Stop extends AbstractBreakInteraction {
         if (result != ScriptFunction.Timeout) {
             int index = answers.indexOf(result);
             logger.info("-> {}", result);
-            return ranges.get(index);
+            return player.getAction(ranges.get(index));
         } else {
             return rangeProvider.getRange(player, script, action, NoVisuals);
         }

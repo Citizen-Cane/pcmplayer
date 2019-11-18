@@ -23,7 +23,7 @@ public class Quit implements Interaction {
     public static final Quit instance = new Quit();
 
     @Override
-    public ActionRange getRange(Player player, Script script, Action action, Runnable visuals) {
+    public Action getRange(Player player, Script script, Action action, Runnable visuals) {
         logger.info(getClass().getSimpleName());
         visuals.run();
 
@@ -31,7 +31,7 @@ public class Quit implements Interaction {
         player.setImage(Message.NoImage);
         player.show("");
 
-        return Player.EndRange;
+        return Player.EndAction;
     }
 
     @Override

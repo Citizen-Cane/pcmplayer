@@ -13,9 +13,6 @@ import pcm.util.TestUtils;
 import teaselib.core.Debugger;
 
 public class GosubTest {
-    enum Body {
-        Chastified
-    }
 
     @Test
     public void testGosubIsExecutedAfterActionCommands()
@@ -47,11 +44,11 @@ public class GosubTest {
         pcm.util.TestUtils.play(player, new ActionRange(1010));
     }
 
-    @Test(expected = ScriptParsingException.class)
+    @Test
     public void testMultipleGosubsAreExecutedOneAfterAnotherPromptLast()
             throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
         Player player = TestUtils.createPlayer(getClass());
-        player.loadScript(getClass().getSimpleName() + "2");
+        player.loadScript(getClass().getSimpleName());
 
         Debugger debugger = new Debugger(player.teaseLib);
         debugger.addResponse("Interaction", () -> {
@@ -60,8 +57,5 @@ public class GosubTest {
         });
 
         pcm.util.TestUtils.play(player, new ActionRange(1020));
-        // TODO fails because reply() is executed directly in the ".Yes" interaction
-        // whereas the .gosub statements just push ranges, which results in later execution
-        // yes-statement has to be executed after the last .gosub range has been popped from the stack
     }
 }

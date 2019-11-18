@@ -18,13 +18,13 @@ public class Return implements Interaction {
     private static final Logger logger = LoggerFactory.getLogger(Return.class);
 
     @Override
-    public ActionRange getRange(Player player, Script script, Action action, Runnable visuals)
+    public Action getRange(Player player, Script script, Action action, Runnable visuals)
             throws ScriptExecutionException {
         visuals.run();
         if (script.stack.size() > 0) {
-            ActionRange range = script.stack.pop();
-            logger.info(range != null ? range.toString() : "end of script");
-            return range;
+            Action next = script.stack.pop();
+            logger.info("{}", next != null ? next : "end of script");
+            return next;
         } else {
             throw new ScriptExecutionException(action, "Stack empty", script);
         }

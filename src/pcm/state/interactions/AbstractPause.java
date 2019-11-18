@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 
 import pcm.controller.Player;
 import pcm.model.Action;
-import pcm.model.ActionRange;
 import pcm.model.Script;
 import pcm.model.ScriptExecutionException;
 import teaselib.Answer;
@@ -20,7 +19,7 @@ public abstract class AbstractPause extends AbstractInteraction {
     }
 
     @Override
-    public ActionRange getRange(Player player, Script script, Action action, Runnable visuals)
+    public Action getRange(Player player, Script script, Action action, Runnable visuals)
             throws ScriptExecutionException {
         visuals.run();
 

@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import pcm.model.AbstractAction.Statement;
 import pcm.model.Action;
 import pcm.model.Script;
+import pcm.model.ScriptAction;
 import pcm.model.ScriptLineTokenizer;
 import pcm.model.ScriptParsingException;
 import pcm.model.StatementCollector;
@@ -106,7 +107,7 @@ public class ScriptParser {
                 if (n <= previousActionNumber) {
                     throw new ScriptParsingException(l, n, line, "Action must be defined in increasing order", script);
                 } else {
-                    action = new Action(n);
+                    action = new ScriptAction(n);
                     previousActionNumber = action.number;
 
                     StatementCollectors collectors = new StatementCollectors(script.collectorFactory);

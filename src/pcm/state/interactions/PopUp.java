@@ -33,14 +33,14 @@ public class PopUp implements Interaction {
     }
 
     @Override
-    public ActionRange getRange(Player player, Script script, Action action, Runnable visuals)
+    public Action getRange(Player player, Script script, Action action, Runnable visuals)
             throws ScriptExecutionException {
         List<String> choices = menuItems.stream().map(menuItem -> menuItem.message).collect(Collectors.toList());
         logger.info("{} {}", getClass().getSimpleName(), choices);
         visuals.run();
         player.completeMandatory();
         String result = player.reply(choices);
-        return menuItems.get(choices.indexOf(result)).range;
+        return player.getAction(menuItems.get(choices.indexOf(result)).range);
     }
 
     @Override

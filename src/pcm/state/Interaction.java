@@ -11,11 +11,7 @@ import pcm.model.ScriptParsingException;
 import pcm.model.ValidationIssue;
 
 public interface Interaction {
-    static final Runnable NoVisuals = new Runnable() {
-        @Override
-        public void run() {
-        }
-    };
+    static final Runnable NoVisuals = () -> {};
 
     /**
      * Return a range to be executed next.
@@ -34,7 +30,7 @@ public interface Interaction {
      * @return
      * @throws ScriptExecutionException
      */
-    ActionRange getRange(Player player, Script script, Action action, Runnable visuals) throws ScriptExecutionException;
+    Action getRange(Player player, Script script, Action action, Runnable visuals) throws ScriptExecutionException;
 
     void validate(Script script, Action action, List<ValidationIssue> validationErrors) throws ScriptParsingException;
 

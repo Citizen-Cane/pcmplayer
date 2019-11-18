@@ -9,11 +9,11 @@ import org.slf4j.LoggerFactory;
 import pcm.controller.Player;
 import pcm.model.Action;
 import pcm.model.ActionRange;
+import pcm.model.GeneratedAction;
 import pcm.model.Script;
 import pcm.model.ScriptExecutionException;
 import pcm.model.ScriptParsingException;
 import pcm.model.ValidationIssue;
-import pcm.state.Interaction;
 
 /**
  * @author Citizen-Cane
@@ -31,23 +31,18 @@ public class GoSub extends AbstractInteraction {
     }
 
     @Override
-    public ActionRange getRange(Player player, Script script, Action action, Runnable visuals)
+    public Action getRange(Player player, Script script, Action action, Runnable visuals)
             throws ScriptExecutionException {
         logger.info("{}", range);
         visuals.run();
-        script.stack.push(rangeProvider.getRange(player, script, action, NoVisuals));
-        return range;
-    }
 
-    @Override
-    public void setRangeProvider(Interaction rangeProvider) {
-        if (rangeProvider instanceof Range || rangeProvider instanceof GoSub || rangeProvider instanceof Return
-                || rangeProvider instanceof LoadSbd) {
-            super.setRangeProvider(rangeProvider);
-        } else {
-            throw new IllegalArgumentException("Wrong interaction sequence: " + rangeProvider.getClass().getSimpleName()
-                    + " can only be executed first");
-        }
+        Action next = new GeneratedAction(action.number);
+        next.interaction = rangeProvider;
+        script.stack.push(next);
+
+        
+        
+        return player.getAction(range);
     }
 
     @Override
@@ -65,6 +60,21 @@ public class GoSub extends AbstractInteraction {
         coverage.add(range);
         coverage.addAll(rangeProviderCoverage);
         return coverage;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder string = new StringBuilder();
+        string.append(getClass().getSimpleName());
+        string.append(" ");
+        string.append(range);
+
+        if (rangeProvider != null) {
+            string.append("->");
+            string.append(rangeProvider.toString());
+        }
+
+        return string.toString();
     }
 
 }

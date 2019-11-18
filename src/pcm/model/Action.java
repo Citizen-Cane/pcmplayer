@@ -56,6 +56,7 @@ import pcm.state.interactions.Stop;
 import pcm.state.interactions.Stop.TimeoutType;
 import pcm.state.interactions.Yes;
 import pcm.state.interactions.YesNo;
+import pcm.state.persistence.ScriptState;
 import pcm.state.visuals.Delay;
 import pcm.state.visuals.Exec;
 import pcm.state.visuals.Image;
@@ -67,7 +68,7 @@ import pcm.state.visuals.SpokenMessage;
 import pcm.state.visuals.Timeout;
 import teaselib.core.speechrecognition.SpeechRecognition.TimeoutBehavior;
 
-public class Action extends AbstractAction {
+public abstract class Action extends AbstractAction {
     public final int number;
     public Integer poss = null;
 
@@ -516,7 +517,12 @@ public class Action extends AbstractAction {
     private static Command createCommandFrom(int lineNumber, String line, Script script, Declarations declarations)
             throws ScriptParsingException {
         ScriptLineTokenizer cmd = new ScriptLineTokenizer(lineNumber, line, script, declarations);
-        Action action = new Action(0);
+        Action action = new Action(0) {
+            @Override
+            public void execute(ScriptState state) throws ScriptExecutionException {
+                throw new UnsupportedOperationException();
+            }
+        };
         action.add(cmd);
         return action.commands.get(0);
     }

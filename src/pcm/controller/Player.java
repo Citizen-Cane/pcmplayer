@@ -11,7 +11,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.StringTokenizer;
 import java.util.concurrent.ExecutionException;
 
@@ -36,6 +35,7 @@ import pcm.state.commands.ResetRange;
 import pcm.state.conditions.Should;
 import pcm.state.interactions.LoadSbd;
 import pcm.state.persistence.MappedScriptState;
+import pcm.state.persistence.ScriptState;
 import teaselib.Actor;
 import teaselib.Config;
 import teaselib.Images;
@@ -89,15 +89,19 @@ public class Player extends TeaseScript implements MainScript {
     private boolean intentionalQuit = false;
 
     /**
-     * This range tells the player to hand over execution from the PCM script engine back to the caller.
+     * The EndAction tells the player to hand over execution from the PCM script engine back to the caller.
      * <p>
      * Push it on the stack, and call {@link Player#playFrom(ActionRange)}. The current script is executed up to the
      * next occurrence of a {@link AbstractAction.Statement#Return} statement.
      * <p>
-     * The quit command also returns this range.
+     * The quit command also returns this action.
      */
-    public static final ActionRange EndRange = new ActionRange(0);
-    public static final Action EndAction = new Action(0);
+    public static final Action EndAction = new Action(0) {
+        @Override
+        public void execute(ScriptState state) throws ScriptExecutionException {
+            throw new UnsupportedOperationException();
+        }
+    };
 
     public static void recordVoices(Actor actor, File path, String projectName, String[] scriptNames, String[] assets)
             throws IOException, ValidationIssue, ScriptParsingException, InterruptedException, ExecutionException {
@@ -231,6 +235,7 @@ public class Player extends TeaseScript implements MainScript {
             reportError(e, name);
             return;
         }
+
         if (script != null) {
             try {
                 play(startRange, playRange);
@@ -284,7 +289,7 @@ public class Player extends TeaseScript implements MainScript {
             public void run() {
                 try {
                     // The play(Range) method must end on return, not continue somewhere else
-                    Player.this.scripts.stack.push(EndRange);
+                    Player.this.scripts.stack.push(EndAction);
                     action = getAction(Player.this.script.onRecognitionRejected);
                     Player.this.playRange(new ActionRange(0, Integer.MAX_VALUE));
                     if (action == EndAction) {
@@ -460,7 +465,7 @@ public class Player extends TeaseScript implements MainScript {
     }
 
     /**
-     * Plays the given range. Returns on {@code .quit}, if {@link Player#EndRange} had been pushed on the stack and a
+     * Plays the given range. Returns on {@code .quit}, if {@link Player#EndAction} had been pushed on the stack and a
      * return statement is executed, or if the the next action is not a member of the play range.
      * 
      * @param playRange
@@ -494,8 +499,6 @@ public class Player extends TeaseScript implements MainScript {
                 } else {
                     throw e;
                 }
-            } catch (ScriptParsingException | ValidationIssue | IOException e) {
-                throw new ScriptExecutionException(action, e, script);
             } catch (ScriptExecutionException e) {
                 throw e;
             } catch (Exception e) {
@@ -514,49 +517,36 @@ public class Player extends TeaseScript implements MainScript {
     }
 
     public Action getAction(ActionRange range) throws AllActionsSetException {
-        if (range == Player.EndRange) {
-            return Player.EndAction;
-        } else {
-            List<Action> actions = range(script, range);
-            Action candidate = chooseAction(actions);
-            if (candidate == null) {
-                logger.info("All actions set");
-                if (script.onAllSet != null && !invokedOnAllSet) {
-                    logger.info("Invoking OnAllSet handler");
-                    invokedOnAllSet = true;
-                    range = script.onAllSet;
-                    actions = range(script, range);
-                    if (actions.isEmpty()) {
-                        throw new AllActionsSetException(script.actions.getAll(range),
-                                new ActionRange(range.start, range.end), script);
-                    } else {
-                        candidate = chooseAction(actions);
-                    }
+        List<Action> actions = range(script, range);
+        Action candidate = chooseAction(actions);
+        if (candidate == null) {
+            logger.info("All actions set");
+            if (script.onAllSet != null && !invokedOnAllSet) {
+                logger.info("Invoking OnAllSet handler");
+                invokedOnAllSet = true;
+                range = script.onAllSet;
+                actions = range(script, range);
+                if (actions.isEmpty()) {
+                    throw new AllActionsSetException(script.actions.getAll(range), range, script);
                 } else {
-                    throw new AllActionsSetException(script.actions.getAll(range),
-                            new ActionRange(range.start, range.end), script);
+                    candidate = chooseAction(actions);
                 }
+            } else {
+                throw new AllActionsSetException(script.actions.getAll(range), range, script);
             }
-            return candidate;
         }
+        return candidate;
     }
 
-    public Action execute(Action action)
-            throws ScriptExecutionException, ScriptParsingException, ValidationIssue, IOException {
-        state.set(action);
+    public Action execute(Action action) throws ScriptExecutionException {
         action.execute(state);
-        ActionRange range = action.interaction.getRange(this, script, action, () -> render(action));
+        Action next = action.interaction.getRange(this, script, action, () -> render(action));
 
         if (Thread.interrupted()) {
             throw new ScriptInterruptedException();
         }
 
-        Optional<String> scriptName = range.script();
-        if (scriptName.isPresent()) {
-            loadScript((LoadSbdRange) range);
-        }
-
-        return getAction(range);
+        return next;
     }
 
     private void render(Action action) {

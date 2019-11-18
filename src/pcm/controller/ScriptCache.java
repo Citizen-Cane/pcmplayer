@@ -15,7 +15,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pcm.model.ActionRange;
+import pcm.model.Action;
 import pcm.model.Script;
 import pcm.model.ScriptParsingException;
 import pcm.model.Symbols;
@@ -31,7 +31,7 @@ public class ScriptCache {
     private final ResourceLoader resourceLoader;
     private final String path;
 
-    public final Deque<ActionRange> stack;
+    public final Deque<Action> stack;
 
     public ScriptCache(ResourceLoader resourceLoader, String path, Symbols staticSymbols) {
         this.resourceLoader = resourceLoader;

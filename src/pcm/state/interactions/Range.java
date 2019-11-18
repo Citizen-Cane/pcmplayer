@@ -10,6 +10,7 @@ import pcm.controller.Player;
 import pcm.model.Action;
 import pcm.model.ActionRange;
 import pcm.model.Script;
+import pcm.model.ScriptExecutionException;
 import pcm.model.ValidationIssue;
 import pcm.state.Interaction;
 
@@ -23,10 +24,11 @@ public class Range implements Interaction {
     }
 
     @Override
-    public ActionRange getRange(Player player, Script script, Action action, Runnable visuals) {
+    public Action getRange(Player player, Script script, Action action, Runnable visuals)
+            throws ScriptExecutionException {
         visuals.run();
         logger.info("{}", actionRange);
-        return actionRange;
+        return player.getAction(actionRange);
     }
 
     @Override
