@@ -33,7 +33,7 @@ public abstract class AbstractInteraction implements Interaction, NeedsRangeProv
         if (rangeProvider != null) {
             rangeProvider.validate(script, action, validationErrors);
         } else {
-            validationErrors.add(new ValidationIssue(action, "Range provider missing", script));
+            validationErrors.add(new ValidationIssue(script, action, "Range provider missing"));
         }
     }
 

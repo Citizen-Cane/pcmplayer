@@ -47,8 +47,8 @@ public class PopUp implements Interaction {
     public void validate(Script script, Action action, List<ValidationIssue> validationErrors) {
         for (MenuItem menuItem : menuItems) {
             if (script.actions.getAll(menuItem.range).isEmpty()) {
-                validationErrors.add(new ValidationIssue(action,
-                        "menu item " + menuItem.n + " empty range " + menuItem.range, script));
+                validationErrors.add(new ValidationIssue(script, action,
+                        "menu item " + menuItem.n + " empty range " + menuItem.range));
             }
         }
     }

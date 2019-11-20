@@ -10,8 +10,7 @@ package pcm.model;
 public class MissingResource extends ValidationIssue {
     private static final long serialVersionUID = 1L;
 
-    public MissingResource(Action action, String resourceName,
-            Script script) {
-        super(action, resourceName, script);
+    public MissingResource(Script script, Action action, String name) {
+        super(script, action, name);
     }
 }

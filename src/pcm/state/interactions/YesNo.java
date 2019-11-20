@@ -54,7 +54,7 @@ public class YesNo implements Interaction {
             action.getResponseText(Statement.YesText, script);
             action.getResponseText(Statement.NoText, script);
         } catch (Exception e) {
-            validationErrors.add(new ValidationIssue(action, e, script));
+            validationErrors.add(new ValidationIssue(script, action, e));
         }
         script.actions.validate(script, action, new ActionRange(startYes, endYes), validationErrors);
         script.actions.validate(script, action, new ActionRange(startNo, endNo), validationErrors);

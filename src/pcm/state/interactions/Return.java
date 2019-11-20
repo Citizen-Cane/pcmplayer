@@ -21,12 +21,12 @@ public class Return implements Interaction {
     public Action getRange(Player player, Script script, Action action, Runnable visuals)
             throws ScriptExecutionException {
         visuals.run();
-        if (script.stack.size() > 0) {
+        if (!script.stack.isEmpty()) {
             Action next = script.stack.pop();
             logger.info("{}", next != null ? next : "end of script");
             return next;
         } else {
-            throw new ScriptExecutionException(action, "Stack empty", script);
+            throw new ScriptExecutionException(script, action, "Stack empty");
         }
     }
 

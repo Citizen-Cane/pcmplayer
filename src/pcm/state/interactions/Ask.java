@@ -90,7 +90,7 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
                     Items items = mappedState.getMappedItems(n);
                     List<Item> itemList = items.stream().collect(Collectors.toList());
                     if (itemList.isEmpty()) {
-                        throw new ScriptExecutionException("Undefined items in mapping " + n, script);
+                        throw new ScriptExecutionException(script, action, "Undefined items in mapping " + n);
                     } else {
                         if (itemList.size() == 1) {
                             // single item - just set
@@ -102,7 +102,7 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
                             // Execute action for selecting the mapped items
                             Action detailAction = script.actions.get(n);
                             if (detailAction == null) {
-                                throw new ScriptExecutionException("Missing mapping action for " + n, script);
+                                throw new ScriptExecutionException(script, action, "Missing mapping action for " + n);
                             }
                             Map<Statement, Visual> detailVisuals = detailAction.visuals;
                             if (detailVisuals != null) {

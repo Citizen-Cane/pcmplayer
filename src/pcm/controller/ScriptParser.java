@@ -20,8 +20,8 @@ import pcm.model.Symbols;
 import pcm.model.ValidationIssue;
 
 public class ScriptParser {
-    private final static String ACTIONMATCH = "[action ";
-    private final static String COMMENT = "'";
+    private static final String ACTIONMATCH = "[action ";
+    private static final String COMMENT = "'";
     private static final String DEFINE_IF = "#if";
     private static final String DEFINE_ELSEIF = "#elseif";
     private static final String DEFINE_ELSE = "#else";
@@ -72,15 +72,11 @@ public class ScriptParser {
                     } else {
                         script.add(cmd);
                     }
-                } catch (IOException e) {
-                    throw new ScriptParsingException(l, n, line, e.getClass().getName(), script);
-                } catch (UnsupportedOperationException e) {
-                    throw new ScriptParsingException(l, n, line, e.getMessage(), script);
-                } catch (Throwable t) {
-                    throw new ScriptParsingException(l, n, line, t, script);
+                } catch (Throwable e) {
+                    throw new ScriptParsingException(script, e, l, line);
                 }
             } else {
-                throw new ScriptParsingException(l, n, line, "Unexpected script input", script);
+                throw new ScriptParsingException(script, "Unexpected script input", l, line);
             }
         }
     }
@@ -96,51 +92,60 @@ public class ScriptParser {
         if (line == null) {
             return null;
         } else {
-            Action action = null;
             try {
                 int start = ACTIONMATCH.length();
                 int end = line.indexOf(']');
                 if (end < start) {
-                    throw new ScriptParsingException(l, 0, line, "Invalid action number", script);
-                }
-                n = Integer.parseInt(line.substring(start, end));
-                if (n <= previousActionNumber) {
-                    throw new ScriptParsingException(l, n, line, "Action must be defined in increasing order", script);
+                    throw new ScriptParsingException(script, "Invalid action number", l, line);
                 } else {
-                    action = new ScriptAction(n);
-                    previousActionNumber = action.number;
-
-                    StatementCollectors collectors = new StatementCollectors(script.collectorFactory);
-
-                    while ((line = readLine()) != null) {
-                        // Start of a new action
-                        if (line.startsWith(".")) {
-                            parseStatement(script, action, collectors);
-                        } else if (line.toLowerCase().startsWith(ACTIONMATCH)) {
-                            break;
-                        } else if (line.startsWith("[]")) {
-                            for (StatementCollector statementCollector : collectors) {
-                                statementCollector.nextSection(action);
-                            }
-                        } else if (line.startsWith("[") && line.endsWith("]")) {
-                            handleDeprecatedInlineReply();
-                        } else {
-                            collectors.get(Statement.Message)
-                                    .parse(new ScriptLineTokenizer(Statement.Message, l, line, script, declarations));
-                        }
+                    n = Integer.parseInt(line.substring(start, end));
+                    if (n <= previousActionNumber) {
+                        throw new ScriptParsingException(script, "Action must be defined in increasing order", l, line);
+                    } else {
+                        return parseBody(script);
                     }
-                    finalizeActionParsing(script, action, collectors);
                 }
             } catch (ScriptParsingException | ValidationIssue e) {
-                if (e.script == null) {
-                    e.script = script;
-                }
                 throw e;
             } catch (Exception e) {
-                throw new ScriptParsingException(l, n, line, e, script);
+                throw new ScriptParsingException(script, e, l, line);
             }
-            return action;
         }
+    }
+
+    private Action parseBody(Script script) throws ScriptParsingException, ValidationIssue {
+        Action action = new ScriptAction(n);
+        previousActionNumber = action.number;
+
+        try {
+            StatementCollectors collectors = new StatementCollectors(script.collectorFactory);
+
+            while ((line = readLine()) != null) {
+                // Start of a new action
+                if (line.startsWith(".")) {
+                    parseStatement(script, action, collectors);
+                } else if (line.toLowerCase().startsWith(ACTIONMATCH)) {
+                    break;
+                } else if (line.startsWith("[]")) {
+                    for (StatementCollector statementCollector : collectors) {
+                        statementCollector.nextSection(action);
+                    }
+                } else if (line.startsWith("[") && line.endsWith("]")) {
+                    handleDeprecatedInlineReply();
+                } else {
+                    collectors.get(Statement.Message)
+                            .parse(new ScriptLineTokenizer(Statement.Message, l, line, script, declarations));
+                }
+            }
+
+            finalizeActionParsing(script, action, collectors);
+        } catch (ScriptParsingException | ValidationIssue e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ScriptParsingException(script, action, e, l, line);
+        }
+
+        return action;
     }
 
     private static void handleDeprecatedInlineReply() {
@@ -156,15 +161,7 @@ public class ScriptParser {
         } else if (cmd.statement == Statement.Include) {
             parseSubscript(script, cmd);
         } else {
-            try {
-                action.add(cmd);
-            } catch (ScriptParsingException e) {
-                if (e.getCause() != null) {
-                    throw new ScriptParsingException(l, n, line, e.getCause(), script);
-                } else {
-                    throw new ScriptParsingException(l, n, line, e.getMessage(), script);
-                }
-            }
+            action.add(cmd);
         }
     }
 
@@ -189,9 +186,8 @@ public class ScriptParser {
     private static void finalizeActionParsing(Script script, Action action, StatementCollectors collectors)
             throws ValidationIssue {
         if (collectors.hasParsed(Statement.Message) && collectors.hasParsed(Statement.Txt)) {
-            throw new ValidationIssue(action,
-                    "Spoken messages and .txt are exclusive because the TeaseLib PCMPlayer supports only one text area",
-                    script);
+            throw new ValidationIssue(script, action,
+                    "Spoken messages and .txt are exclusive because the TeaseLib PCMPlayer supports only one text area");
         }
 
         for (StatementCollector collector : collectors) {

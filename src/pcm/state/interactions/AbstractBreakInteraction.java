@@ -44,7 +44,7 @@ public abstract class AbstractBreakInteraction extends AbstractInteraction {
                 action.getResponseText(entry.getKey(), script);
             }
         } catch (Exception e) {
-            validationErrors.add(new ValidationIssue(action, e, script));
+            validationErrors.add(new ValidationIssue(script, action, e));
         }
 
         for (Entry<Statement, ActionRange> entry : choiceRanges.entrySet()) {

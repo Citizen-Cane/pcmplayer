@@ -32,7 +32,7 @@ public class LoadSbd implements Interaction {
             try {
                 player.loadScript((LoadSbdRange) range);
             } catch (ScriptParsingException | ValidationIssue | IOException e) {
-                throw new ScriptExecutionException(action, e, script);
+                throw new ScriptExecutionException(script, action, e);
             }
         }
 
@@ -48,7 +48,7 @@ public class LoadSbd implements Interaction {
         } catch (ValidationIssue e) {
             validationErrors.add(e);
         } catch (IOException e) {
-            validationErrors.add(new ValidationIssue(action, e, script));
+            validationErrors.add(new ValidationIssue(script, action, e));
         }
     }
 

@@ -77,18 +77,12 @@ public class Script extends AbstractAction {
         collectorFactory.add(Statement.Replace, messageCollector);
 
         logger.info("Parsing script {}", name);
-        try {
-            parser.parse(this);
-            Action action = null;
-            while ((action = parser.parseAction(this)) != null) {
-                actions.put(action.number, action);
-            }
-        } catch (ScriptParsingException e) {
-            if (e.script == null) {
-                e.script = this;
-            }
-            throw e;
+        parser.parse(this);
+        Action action = null;
+        while ((action = parser.parseAction(this)) != null) {
+            actions.put(action.number, action);
         }
+
         completeScriptDefaults();
         completeConditionRanges();
 
@@ -294,9 +288,9 @@ public class Script extends AbstractAction {
 
     public void validate(List<ValidationIssue> validationErrors) {
         if (startRange == null) {
-            validationErrors.add(new ValidationIssue("Missing start range", this));
+            validationErrors.add(new ValidationIssue(this, "Missing start range"));
         } else if (!startRange.validate()) {
-            validationErrors.add(new ValidationIssue("Wrong start range", this));
+            validationErrors.add(new ValidationIssue(this, "Wrong start range"));
         }
     }
 

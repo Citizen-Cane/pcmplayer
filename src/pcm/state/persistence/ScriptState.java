@@ -338,7 +338,7 @@ public class ScriptState {
         Integer n = action.number;
         final Long value = get(n);
         if (value.equals(SET)) {
-            throw new ScriptExecutionException("Action already set");
+            throw new ScriptExecutionException(player.script, action, "Action already set");
         } else if (value.equals(UNSET)) {
             // advance from UNSET to SET
             // Action sets are not saved, and unlike data sets cleared on

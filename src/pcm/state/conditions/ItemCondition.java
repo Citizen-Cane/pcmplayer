@@ -8,7 +8,6 @@ import pcm.controller.Declarations;
 import pcm.model.AbstractAction;
 import pcm.model.AbstractAction.Statement;
 import pcm.model.IllegalStatementException;
-import pcm.model.ScriptParsingException;
 import pcm.state.BasicCondition;
 import pcm.state.StateCommandLineParameters;
 import pcm.state.StateCommandLineParameters.Keyword;
@@ -21,27 +20,23 @@ public class ItemCondition extends BasicCondition {
     private static final Statement ITEM = AbstractAction.Statement.Item;
     private final StateCommandLineParameters args;
 
-    public ItemCondition(StateCommandLineParameters args) throws ScriptParsingException {
+    public ItemCondition(StateCommandLineParameters args) throws ClassNotFoundException {
         super(statement(args));
         this.args = args;
     }
 
     private static ParameterizedStatement statement(final StateCommandLineParameters args)
-            throws ScriptParsingException {
-        try {
-            final ParameterizedStatement innerStatement = innerStatement(args);
-            if (args.containsKey(Keyword.Not)) {
-                return new ParameterizedStatement(ITEM, args) {
-                    @Override
-                    public boolean call(ScriptState state) {
-                        return !innerStatement.call(state);
-                    }
-                };
-            } else {
-                return innerStatement;
-            }
-        } catch (ClassNotFoundException e) {
-            throw new ScriptParsingException(e);
+            throws ClassNotFoundException {
+        final ParameterizedStatement innerStatement = innerStatement(args);
+        if (args.containsKey(Keyword.Not)) {
+            return new ParameterizedStatement(ITEM, args) {
+                @Override
+                public boolean call(ScriptState state) {
+                    return !innerStatement.call(state);
+                }
+            };
+        } else {
+            return innerStatement;
         }
     }
 

@@ -265,7 +265,7 @@ public class Player extends TeaseScript implements MainScript {
 
     public void play(ActionRange startRange, ActionRange playRange) throws ScriptExecutionException {
         if (script == null) {
-            throw new ScriptExecutionException("No script loaded");
+            throw new IllegalStateException("No script loaded");
         }
 
         ActionRange range;
@@ -354,7 +354,7 @@ public class Player extends TeaseScript implements MainScript {
         for (String name : scripts.names()) {
             Script s = scripts.get(actor, name);
             for (Action a : retainUncovered(s)) {
-                validationIssues.add(new ValidationIssue("Action without caller, " + a, s));
+                validationIssues.add(new ValidationIssue(s, a, "Action without caller"));
             }
         }
 
@@ -410,7 +410,7 @@ public class Player extends TeaseScript implements MainScript {
                 if (logger.isInfoEnabled())
                     logger.info(errorMessage(validationIssue));
             }
-            throw new ValidationIssue("Validation failed, " + validationIssues.size() + " issues", script);
+            throw new ValidationIssue(script, "Validation failed with " + validationIssues.size() + " issues");
         }
     }
 
@@ -443,8 +443,8 @@ public class Player extends TeaseScript implements MainScript {
             MappedScriptState state, List<ValidationIssue> validationErrors) {
         for (int n : range) {
             if (state.hasScriptValueMapping(n)) {
-                validationErrors.add(new ValidationIssue(
-                        abstractAction.toString() + ": .resetrange may not unset mapped item or state " + n, script));
+                validationErrors.add(new ValidationIssue(script,
+                        abstractAction + ": .resetrange may not unset mapped item or state " + n));
             }
         }
     }
@@ -502,7 +502,7 @@ public class Player extends TeaseScript implements MainScript {
             } catch (ScriptExecutionException e) {
                 throw e;
             } catch (Exception e) {
-                throw new ScriptExecutionException(action, "Error executing script", e, script);
+                throw new ScriptExecutionException(script, action, e);
             }
         }
     }
@@ -527,12 +527,12 @@ public class Player extends TeaseScript implements MainScript {
                 range = script.onAllSet;
                 actions = range(script, range);
                 if (actions.isEmpty()) {
-                    throw new AllActionsSetException(script.actions.getAll(range), range, script);
+                    throw new AllActionsSetException(script, action, range, script.actions.getAll(range));
                 } else {
                     candidate = chooseAction(actions);
                 }
             } else {
-                throw new AllActionsSetException(script.actions.getAll(range), range, script);
+                throw new AllActionsSetException(script, action, range, script.actions.getAll(range));
             }
         }
         return candidate;
@@ -693,11 +693,6 @@ public class Player extends TeaseScript implements MainScript {
         for (Action action : script.actions.values()) {
             action.validate(script, validationErrors);
         }
-        for (ScriptException scriptError : validationErrors) {
-            if (scriptError.script == null) {
-                scriptError.script = script;
-            }
-        }
     }
 
     public static void validateResources(Script script, ResourceLoader resourceLoader,
@@ -717,7 +712,7 @@ public class Player extends TeaseScript implements MainScript {
                     stream.close();
                 }
             } catch (IOException e) {
-                validationIssues.add(new ValidationIssue(action, e, script));
+                validationIssues.add(new ValidationIssue(script, action, e));
             }
         }
     }
@@ -730,16 +725,19 @@ public class Player extends TeaseScript implements MainScript {
         showError(t, errorMessage(t, scriptName));
     }
 
-    private String errorMessage(ScriptException e) {
-        String scriptName = e.script != null ? e.script.name : script.name;
-        return errorMessage(e, scriptName);
+    private static String errorMessage(ScriptException e) {
+        return e.getClass().getSimpleName() + ": " + e.getMessage();
     }
 
     private static String errorMessage(Throwable t, String scriptName) {
         Throwable cause = t.getCause();
         if (cause != null) {
-            return "Script " + scriptName + ": " + t.getMessage() + "\n" + cause.getClass().getSimpleName() + ": "
-                    + cause.getMessage();
+            if (cause instanceof ScriptException) {
+                return errorMessage((ScriptException) cause);
+            } else {
+                return "Script " + scriptName + ": " + t.getMessage() + "\n" + cause.getClass().getSimpleName() + ": "
+                        + cause.getMessage();
+            }
         } else {
             return "Script " + scriptName + ", " + t.getClass().getSimpleName() + ": " + t.getMessage();
         }

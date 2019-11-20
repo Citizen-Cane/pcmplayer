@@ -3,21 +3,31 @@ package pcm.model;
 public class ScriptParsingException extends ScriptException {
     private static final long serialVersionUID = 1L;
 
-    public ScriptParsingException(int lineNumber, int actionNumber, String line, String reason, Script script) {
-        this(lineNumber, actionNumber, line, reason, null, script);
+    final int lineNumber;
+    final String line;
+
+    public ScriptParsingException(Script script, Throwable t, int lineNumber, String line) {
+        super(script, formatMessage(script, t.getMessage(), lineNumber), t);
+        this.lineNumber = lineNumber;
+        this.line = line;
     }
 
-    public ScriptParsingException(int lineNumber, int actionNumber, String line, Throwable t, Script script) {
-        this(lineNumber, actionNumber, line, t.getMessage(), t, script);
+    public ScriptParsingException(Script script, String message, int lineNumber, String line) {
+        super(script, formatMessage(script, message, lineNumber));
+        this.lineNumber = lineNumber;
+        this.line = line;
     }
 
-    ScriptParsingException(int lineNumber, int actionNumber, String line, String reason, Throwable cause,
-            Script script) {
-        super(reason + " in line " + lineNumber + (actionNumber > 0 ? ", Action " + actionNumber : "") + ": " + line,
-                cause, script);
+    public ScriptParsingException(Script script, Action action, String message, int lineNumber, String line) {
+        super(script, formatMessage(script, action, message, lineNumber));
+        this.lineNumber = lineNumber;
+        this.line = line;
     }
 
-    public ScriptParsingException(Exception e) {
-        super(e.getMessage(), e);
+    public ScriptParsingException(Script script, Action action, Throwable t, int lineNumber, String line) {
+        super(script, formatMessage(script, action, t.getMessage(), lineNumber), t);
+        this.lineNumber = lineNumber;
+        this.line = line;
     }
+
 }

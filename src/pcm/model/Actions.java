@@ -15,22 +15,22 @@ import pcm.state.persistence.ScriptState;
  *
  */
 public class Actions {
-    private Map<Integer, Action> actions = new LinkedHashMap<>();
+    private Map<Integer, Action> map = new LinkedHashMap<>();
 
     public Action put(Integer n, Action action) {
-        return actions.put(n, action);
+        return map.put(n, action);
     }
 
     public Action get(int n) {
-        if (actions.containsKey(n)) {
-            return actions.get(Integer.valueOf(n));
+        if (map.containsKey(n)) {
+            return map.get(Integer.valueOf(n));
         } else {
             return null;
         }
     }
 
     public List<Action> getAll() {
-        return new ArrayList<>(actions.values());
+        return new ArrayList<>(map.values());
     }
 
     /**
@@ -43,8 +43,8 @@ public class Actions {
         List<Action> actionRange = new ArrayList<>();
         for (int i = range.start; i <= range.end; i++) {
             Integer index = Integer.valueOf(i);
-            if (actions.containsKey(index)) {
-                actionRange.add(actions.get(index));
+            if (map.containsKey(index)) {
+                actionRange.add(map.get(index));
             }
         }
         return actionRange;
@@ -61,10 +61,10 @@ public class Actions {
         List<Action> actionRange = new ArrayList<>();
         for (int i = range.start; i <= range.end; i++) {
             Integer index = Integer.valueOf(i);
-            if (actions.containsKey(index)) {
-                Action action = actions.get(index);
+            if (map.containsKey(index)) {
+                Action action = map.get(index);
                 if (!state.get(Integer.valueOf(action.number)).equals(ScriptState.SET)) {
-                    actionRange.add(actions.get(index));
+                    actionRange.add(map.get(index));
                 }
             }
         }
@@ -72,21 +72,20 @@ public class Actions {
     }
 
     public void validate(Script script, Action action, ActionRange range, List<ValidationIssue> validationErrors) {
-        List<Action> actions = getAll(range);
-        if (actions.isEmpty()) {
+        List<Action> allInRange = getAll(range);
+        if (allInRange.isEmpty()) {
+            validationErrors.add(new ValidationIssue(script, action, "Range " + range + " is empty"));
+        } else if (allInRange.get(0).number != range.start) {
             validationErrors
-                    .add(new ValidationIssue(action, "Range " + range.start + "-" + range.end + " is empty", script));
-        } else if (actions.get(0).number != range.start) {
-            validationErrors.add(new ValidationIssue(action,
-                    "Range " + range.start + "-" + range.end + " must start at " + range.start, script));
+                    .add(new ValidationIssue(script, action, "Range " + range + " must start at " + range.start));
         }
     }
 
     public Collection<Action> values() {
-        return actions.values();
+        return map.values();
     }
 
     public int size() {
-        return actions.size();
+        return map.size();
     }
 }

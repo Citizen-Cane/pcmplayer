@@ -119,8 +119,8 @@ public abstract class Action extends AbstractAction {
                     // In the original PCMistress program,
                     // such images wouldn't be rendered at all,
                     // or just pop up for a fraction of a second
-                    throw new ValidationIssue(this,
-                            "Without a message, a Delay statement is needed to display the image", script);
+                    throw new ValidationIssue(script, this,
+                            "Without a message, a Delay statement is needed to display the image");
                 }
             }
         }
@@ -362,24 +362,40 @@ public abstract class Action extends AbstractAction {
         } else if (name == Statement.State) {
             StateCommandLineParameters args = new StateCommandLineParameters(cmd.args(), cmd.declarations);
             if (args.isCommand()) {
-                addCommand(new StateCommand(args));
+                try {
+                    addCommand(new StateCommand(args));
+                } catch (ClassNotFoundException e) {
+                    throw new ScriptParsingException(cmd.script, this, e, cmd.lineNumber, cmd.line);
+                }
             } else {
                 if (IfState.isExtendedIfClause(cmd.args())) {
                     addCondition(new IfState(name, cmd.args(), new IfState.ConditionCreator() {
                         @Override
                         public Condition createCondition(StateCommandLineParameters firstParameters)
                                 throws ScriptParsingException {
-                            return new StateCondition(firstParameters);
+                            try {
+                                return new StateCondition(firstParameters);
+                            } catch (ClassNotFoundException e) {
+                                throw new ScriptParsingException(cmd.script, Action.this, e, cmd.lineNumber, cmd.line);
+                            }
                         }
                     }, cmd.declarations));
                 } else {
-                    addCondition(new StateCondition(args));
+                    try {
+                        addCondition(new StateCondition(args));
+                    } catch (ClassNotFoundException e) {
+                        throw new ScriptParsingException(cmd.script, Action.this, e, cmd.lineNumber, cmd.line);
+                    }
                 }
             }
         } else if (name == Statement.Item) {
             StateCommandLineParameters args = new StateCommandLineParameters(cmd.args(), cmd.declarations);
             if (args.isCommand()) {
-                addCommand(new ItemCommand(args));
+                try {
+                    addCommand(new ItemCommand(args));
+                } catch (ClassNotFoundException e) {
+                    throw new ScriptParsingException(cmd.script, this, e, cmd.lineNumber, cmd.line);
+                }
             } else {
                 if (IfState.isExtendedIfClause(cmd.args())) {
                     addCondition(new IfState(name, cmd.args(), new IfState.ConditionCreator() {
@@ -387,11 +403,19 @@ public abstract class Action extends AbstractAction {
                         @Override
                         public Condition createCondition(StateCommandLineParameters firstParameters)
                                 throws ScriptParsingException {
-                            return new ItemCondition(firstParameters);
+                            try {
+                                return new ItemCondition(firstParameters);
+                            } catch (ClassNotFoundException e) {
+                                throw new ScriptParsingException(cmd.script, Action.this, e, cmd.lineNumber, cmd.line);
+                            }
                         }
                     }, cmd.declarations));
                 } else {
-                    addCondition(new ItemCondition(args));
+                    try {
+                        addCondition(new ItemCondition(args));
+                    } catch (ClassNotFoundException e) {
+                        throw new ScriptParsingException(cmd.script, Action.this, e, cmd.lineNumber, cmd.line);
+                    }
                 }
             }
         }
@@ -602,7 +626,7 @@ public abstract class Action extends AbstractAction {
         if (poss != null) {
             if (poss < 0 || poss > 100) {
                 validationErrors
-                        .add(new ValidationIssue(this, "Invalid value for poss statement (" + poss + ")", script));
+                        .add(new ValidationIssue(script, this, "Invalid value for poss statement (" + poss + ")"));
             }
         }
 
@@ -624,8 +648,8 @@ public abstract class Action extends AbstractAction {
                 Statement[] requiresMessage = { Statement.Image, Statement.Delay };
                 for (Statement statement : requiresMessage) {
                     if (visuals.containsKey(statement)) {
-                        validationErrors.add(new ValidationIssue(this,
-                                "Message without .txt or speech part won't render images or other media", script));
+                        validationErrors.add(new ValidationIssue(script, this,
+                                "Message without .txt or speech part won't render images or other media"));
                     }
                 }
             } else if (message instanceof SpokenMessage) {
@@ -633,9 +657,8 @@ public abstract class Action extends AbstractAction {
                     Statement[] requiresSinglePageMessage = { Statement.Image, Statement.Delay };
                     for (Statement statement : requiresSinglePageMessage) {
                         if (visuals.containsKey(statement)) {
-                            validationErrors.add(new ValidationIssue(this,
-                                    "." + statement.toString() + "  doesn't work correctly in multi-page messages",
-                                    script));
+                            validationErrors.add(new ValidationIssue(script, this,
+                                    "." + statement.toString() + "  doesn't work correctly in multi-page messages"));
                         }
                     }
                 }
@@ -646,13 +669,13 @@ public abstract class Action extends AbstractAction {
                 Delay delay = (Delay) visuals.get(Statement.Delay);
                 if (delay.to == 0) {
                     validationErrors.add(
-                            new ValidationIssue(this, "Delay 0 + NoImage is deprecated and should be removed", script));
+                            new ValidationIssue(script, this, "Delay 0 + NoImage is deprecated and should be removed"));
                 }
             } else if (visuals.containsKey(Statement.Delay)) {
                 Delay delay = (Delay) visuals.get(Statement.Delay);
                 if (delay.to == 0) {
                     validationErrors
-                            .add(new ValidationIssue(this, "Delay 0 is deprecated and should be removed", script));
+                            .add(new ValidationIssue(script, this, "Delay 0 is deprecated and should be removed"));
                 }
             }
         }
@@ -660,14 +683,14 @@ public abstract class Action extends AbstractAction {
         if (interaction != null) {
             interaction.validate(script, this, validationErrors);
         } else {
-            validationErrors.add(new ValidationIssue(this, "No interaction", script));
+            validationErrors.add(new ValidationIssue(script, this, "No interaction"));
         }
 
         if (!referencedBy(script)) {
-            validationErrors.add(new ValidationIssue(this, "Unused action", script));
+            validationErrors.add(new ValidationIssue(script, this, "Unused action"));
         }
         if (!referencedBy(script)) {
-            validationErrors.add(new ValidationIssue(this, "Unused action", script));
+            validationErrors.add(new ValidationIssue(script, this, "Unused action"));
         }
     }
 
@@ -680,7 +703,7 @@ public abstract class Action extends AbstractAction {
 
     private void addMessageValidationIssue(Script script, List<ValidationIssue> validationErrors, Statement special) {
         validationErrors
-                .add(new ValidationIssue(this, special + " is must be rendered last - remove it from visuals", script));
+                .add(new ValidationIssue(script, this, special + " is must be rendered last - remove it from visuals"));
     }
 
     public List<String> validateResources() {
@@ -697,6 +720,6 @@ public abstract class Action extends AbstractAction {
 
     @Override
     public String toString() {
-        return "Action " + number;
+        return Integer.toString(number);
     }
 }
