@@ -16,19 +16,19 @@ public class ScriptException extends Exception {
     }
 
     static String formatMessage(Script script, String message) {
-        return String.format("%1s: %2s", script.name, message);
+        return String.format("%1$s: %2$s", script.name, message);
     }
 
     static String formatMessage(Script script, String message, int lineNumber) {
-        return String.format("%1s:%3s: %2s", script, message, lineNumber);
+        return String.format("%1$s:%3$s: %2$s", script, message, lineNumber);
     }
 
     static String formatMessage(Script script, Action action, String message) {
-        return String.format("%1s, action %2s: %3s", script, action, message);
+        return String.format("%1$s, action %2$s: %3$s", script, action, message);
     }
 
     static String formatMessage(Script script, Action action, String message, int lineNumber) {
-        return String.format("%1s:%4s, action %2s: %3s", script, action, message, lineNumber);
+        return String.format("%1$s:%4$s, action %2$s: %3$s", script, action, message, lineNumber);
     }
 
 }
