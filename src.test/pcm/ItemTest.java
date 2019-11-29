@@ -217,4 +217,17 @@ public class ItemTest {
         TestUtils.play(player, 1103);
 
     }
+
+    @Test
+    public void testItemMatching()
+            throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
+        Player player = TestUtils.createPlayer(getClass());
+        player.loadScript(getClass().getSimpleName());
+
+        Debugger debugger = new Debugger(player.teaseLib);
+        debugger.freezeTime();
+
+        TestUtils.play(player, 1110);
+
+    }
 }

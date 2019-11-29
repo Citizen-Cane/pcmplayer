@@ -11,8 +11,8 @@ import pcm.model.IllegalStatementException;
 import pcm.state.BasicCondition;
 import pcm.state.StateCommandLineParameters;
 import pcm.state.StateCommandLineParameters.Keyword;
+import pcm.state.commands.ItemCommand;
 import pcm.state.persistence.ScriptState;
-import teaselib.core.util.ExceptionUtil;
 import teaselib.util.DurationFormat;
 import teaselib.util.Item;
 
@@ -40,13 +40,13 @@ public class ItemCondition extends BasicCondition {
         }
     }
 
-    private static ParameterizedStatement innerStatement(final StateCommandLineParameters args)
-            throws ClassNotFoundException {
+    private static ParameterizedStatement innerStatement(final StateCommandLineParameters args) {
         String[] items = args.items(Keyword.Item);
         Declarations declarations = args.getDeclarations();
         declarations.validate(items, Item.class);
-
-        if (args.containsKey(StateCommandLineParameters.Keyword.Is)) {
+        if (args.containsKey(StateCommandLineParameters.Keyword.Matching)) {
+            return matching(args, items);
+        } else if (args.containsKey(StateCommandLineParameters.Keyword.Is)) {
             return is(args, items);
         } else if (args.containsKey(StateCommandLineParameters.Keyword.Available)) {
             return available(args, items);
@@ -69,8 +69,7 @@ public class ItemCondition extends BasicCondition {
         }
     }
 
-    private static ParameterizedStatement is(final StateCommandLineParameters args, final String[] items)
-            throws ClassNotFoundException {
+    private static ParameterizedStatement is(final StateCommandLineParameters args, final String[] items) {
         Object[] attributes = args.items(StateCommandLineParameters.Keyword.Is);
         return new ParameterizedStatement(ITEM, args) {
             @Override
@@ -99,8 +98,7 @@ public class ItemCondition extends BasicCondition {
         };
     }
 
-    private static ParameterizedStatement canApply(final StateCommandLineParameters args, final String[] items)
-            throws ClassNotFoundException {
+    private static ParameterizedStatement canApply(final StateCommandLineParameters args, final String[] items) {
         String[] peers = args.items(Keyword.To);
         return new ParameterizedStatement(ITEM, args) {
             @Override
@@ -120,8 +118,7 @@ public class ItemCondition extends BasicCondition {
         };
     }
 
-    private static ParameterizedStatement applied(final StateCommandLineParameters args, final String[] items)
-            throws ClassNotFoundException {
+    private static ParameterizedStatement applied(final StateCommandLineParameters args, final String[] items) {
         String[] peers = args.items(Keyword.To);
         return new ParameterizedStatement(ITEM, args) {
             @Override
@@ -226,6 +223,17 @@ public class ItemCondition extends BasicCondition {
         };
     }
 
+    private static ParameterizedStatement matching(final StateCommandLineParameters args, final String[] items) {
+        String[] attributes = args.items(StateCommandLineParameters.Keyword.Matching);
+        return new ParameterizedStatement(ITEM, args) {
+            @Override
+            public boolean call(ScriptState state) {
+                ItemCommand.replaceWithMatching(args, items, attributes, state);
+                return innerStatement(args).call(state);
+            }
+        };
+    }
+
     @Override
     public String toString() {
         return args.toString();
@@ -257,10 +265,6 @@ public class ItemCondition extends BasicCondition {
     }
 
     public List<String> items() {
-        try {
-            return Arrays.asList(args.items(Keyword.Item));
-        } catch (ClassNotFoundException e) {
-            throw ExceptionUtil.asRuntimeException(e);
-        }
+        return Arrays.asList(args.items(Keyword.Item));
     }
 }

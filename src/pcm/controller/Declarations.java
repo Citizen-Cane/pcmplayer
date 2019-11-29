@@ -54,7 +54,7 @@ public class Declarations {
         return nameDeclarations.entrySet();
     }
 
-    public void validate(List<String> qualifiedNames) throws ClassNotFoundException {
+    public void validate(List<String> qualifiedNames) {
         for (String value : qualifiedNames) {
             if (!RuntimeVariable.isVariable(value)) {
                 boolean valueChecked = false;

@@ -3,6 +3,7 @@
 .define Toys teaselib.Toys
 .declare Toys Enum
 .declare Toys Item
+.declare Toys.Gags Enum
 
 .define Body teaselib.Body
 .declare Body Enum
@@ -300,6 +301,25 @@
 .item Toys.Nipple_Clamps not applied
 .item Toys.Gag not applied
 .unset 1103
+.range 9999
+
+
+' testItemMatching
+
+[Action 1110]
+.item Toys.Gag matching Toys.Gags.Ring_Gag apply
+.range 1111
+
+[Action 1111]
+.item Toys.Gag is applied
+.range 1112
+
+[Action 1112]
+.item Toys.Gag matching Toys.Gags.Ring_Gag is applied
+.range 1113
+
+[Action 1113]
+.item Toys.Gag matching Toys.Gags.Bit_Gag is not applied
 .range 9999
 
 
