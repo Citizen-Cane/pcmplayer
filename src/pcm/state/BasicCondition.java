@@ -8,7 +8,7 @@ import teaselib.core.util.CommandLineParameters;
 public class BasicCondition implements Condition {
     protected final ParameterizedStatement statement;
 
-    protected static abstract class ParameterizedStatement {
+    protected abstract static class ParameterizedStatement {
         private final Statement statement;
         private final CommandLineParameters<?> args;
 

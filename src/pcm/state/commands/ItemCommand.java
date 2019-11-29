@@ -1,10 +1,13 @@
 package pcm.state.commands;
 
+import static java.util.stream.Collectors.toList;
+
 import pcm.controller.Declarations;
 import pcm.controller.Player;
 import pcm.model.AbstractAction;
 import pcm.model.AbstractAction.Statement;
 import pcm.model.IllegalStatementException;
+import pcm.model.ScriptExecutionException;
 import pcm.state.BasicCommand;
 import pcm.state.StateCommandLineParameters;
 import pcm.state.StateCommandLineParameters.Keyword;
@@ -12,25 +15,28 @@ import pcm.state.persistence.ScriptState;
 import teaselib.State;
 import teaselib.core.StateMaps;
 import teaselib.core.StateMaps.Attributes;
+import teaselib.core.util.QualifiedItem;
 import teaselib.util.DurationFormat;
 import teaselib.util.Item;
+import teaselib.util.Items;
 
 public class ItemCommand extends BasicCommand {
     private static final Statement ITEM = AbstractAction.Statement.Item;
     private final StateCommandLineParameters args;
 
-    public ItemCommand(StateCommandLineParameters args) throws ClassNotFoundException {
+    public ItemCommand(StateCommandLineParameters args) {
         super(statement(args));
         this.args = args;
     }
 
-    private static ParameterizedStatement statement(final StateCommandLineParameters args)
-            throws ClassNotFoundException {
+    private static ParameterizedStatement statement(final StateCommandLineParameters args) {
         String[] items = args.items(Keyword.Item);
         Declarations declarations = args.getDeclarations();
         declarations.validate(items, Item.class);
 
-        if (args.containsKey(Keyword.Apply)) {
+        if (args.containsKey(StateCommandLineParameters.Keyword.Matching)) {
+            return matching(args, items);
+        } else if (args.containsKey(Keyword.Apply)) {
             return apply(args, items);
         } else if (args.containsKey(Keyword.Remove)) {
             return remove(args, items);
@@ -41,8 +47,7 @@ public class ItemCommand extends BasicCommand {
         }
     }
 
-    private static ParameterizedStatement apply(final StateCommandLineParameters args, final String[] items)
-            throws ClassNotFoundException {
+    private static ParameterizedStatement apply(final StateCommandLineParameters args, final String[] items) {
         Object[] peers = args.items(args.containsKey(Keyword.To) ? Keyword.To : Keyword.Apply);
         if (args.containsKey(Keyword.To) && peers.length == 0) {
             throw new IllegalArgumentException("Missing peers to apply the item to");
@@ -67,8 +72,7 @@ public class ItemCommand extends BasicCommand {
         };
     }
 
-    private static ParameterizedStatement remove(final StateCommandLineParameters args, final String[] items)
-            throws ClassNotFoundException {
+    private static ParameterizedStatement remove(final StateCommandLineParameters args, final String[] items) {
         if (args.containsKey(Keyword.To)) {
             throw new IllegalArgumentException(Keyword.Remove + " doesn't accept from/to peer list.");
         }
@@ -97,6 +101,25 @@ public class ItemCommand extends BasicCommand {
                 }
             }
         };
+    }
+
+    private static ParameterizedStatement matching(final StateCommandLineParameters args, final String[] items) {
+        String[] attributes = args.items(StateCommandLineParameters.Keyword.Matching);
+        return new ParameterizedStatement(ITEM, args) {
+            @Override
+            public void run(ScriptState state) throws ScriptExecutionException {
+                replaceWithMatching(args, items, attributes, state);
+                statement(args).run(state);
+            }
+        };
+    }
+
+    public static void replaceWithMatching(StateCommandLineParameters args, String[] items, String[] attributes,
+            ScriptState state) {
+        Items matching = state.player.items(items).matching(attributes);
+        args.remove(Keyword.Matching);
+        args.remove(Keyword.Item);
+        args.put(Keyword.Item, matching.stream().map(QualifiedItem::of).map(QualifiedItem::toString).collect(toList()));
     }
 
     @Override

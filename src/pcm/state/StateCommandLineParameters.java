@@ -1,6 +1,6 @@
 package pcm.state;
 
-import static pcm.state.StateCommandLineParameters.Keyword.*;
+import static pcm.state.StateCommandLineParameters.Keyword.Over;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,6 +43,8 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
         Elapsed,
         Limit,
 
+        Matching,
+
         GreaterThan,
         GreaterOrEqualThan,
         LessOrEqualThan,
@@ -80,14 +82,10 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
     }
 
     private void validateArgs() {
-        try {
-            if (items(Keyword.Item).length == 0) {
-                throw new IllegalArgumentException("Items must be specified first");
-            } else if (items(Keyword.Remove).length > 0) {
-                throw new IllegalArgumentException("Remove can only remove all items");
-            }
-        } catch (ClassNotFoundException e) {
-            throw new IllegalArgumentException("Not an enum", e);
+        if (items(Keyword.Item).length == 0) {
+            throw new IllegalArgumentException("Items must be specified first");
+        } else if (items(Keyword.Remove).length > 0) {
+            throw new IllegalArgumentException("Remove can only remove all items");
         }
     }
 
@@ -152,14 +150,14 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
         return normalizedArgs;
     }
 
-    public String[] items(Keyword keyword) throws ClassNotFoundException {
+    public String[] items(Keyword keyword) {
         List<String> items = get(keyword);
         declarations.validate(items);
         String[] array = new String[items.size()];
         return items.toArray(array);
     }
 
-    public String item(Keyword keyword) throws ClassNotFoundException {
+    public String item(Keyword keyword) {
         List<String> items = get(keyword);
         declarations.validate(items);
         if (items.size() == 1) {

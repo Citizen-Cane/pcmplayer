@@ -391,11 +391,7 @@ public abstract class Action extends AbstractAction {
         } else if (name == Statement.Item) {
             StateCommandLineParameters args = new StateCommandLineParameters(cmd.args(), cmd.declarations);
             if (args.isCommand()) {
-                try {
-                    addCommand(new ItemCommand(args));
-                } catch (ClassNotFoundException e) {
-                    throw new ScriptParsingException(cmd.script, this, e, cmd.lineNumber, cmd.line);
-                }
+                addCommand(new ItemCommand(args));
             } else {
                 if (IfState.isExtendedIfClause(cmd.args())) {
                     addCondition(new IfState(name, cmd.args(), new IfState.ConditionCreator() {

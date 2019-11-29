@@ -17,7 +17,7 @@ public class BasicCommand implements Command {
             this.args = args;
         }
 
-        protected abstract void run(ScriptState state) throws ScriptExecutionException;
+        public abstract void run(ScriptState state) throws ScriptExecutionException;
 
         @Override
         public String toString() {
