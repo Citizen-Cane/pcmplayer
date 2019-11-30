@@ -33,7 +33,6 @@ import pcm.state.Condition;
 import pcm.state.Visual;
 import pcm.state.commands.ResetRange;
 import pcm.state.conditions.Should;
-import pcm.state.interactions.LoadSbd;
 import pcm.state.persistence.MappedScriptState;
 import pcm.state.persistence.ScriptState;
 import teaselib.Actor;
@@ -379,8 +378,8 @@ public class Player extends TeaseScript implements MainScript {
 
     private void retainActionsCalledFromOtherActions(Script script, List<Action> uncovered) {
         for (Action a : script.actions.getAll()) {
-            if (!(a.interaction instanceof LoadSbd)) {
-                for (ActionRange coverage : a.interaction.coverage()) {
+            for (ActionRange coverage : a.interaction.coverage()) {
+                if (!(coverage instanceof LoadSbdRange)) {
                     uncovered.removeAll(script.actions.getAll(coverage));
                 }
             }
@@ -393,10 +392,12 @@ public class Player extends TeaseScript implements MainScript {
             Script callingScript = scripts.get(actor, callingScriptName);
             if (callingScript != script) {
                 for (Action a : callingScript.actions.getAll()) {
-                    if (a.interaction instanceof LoadSbd) {
-                        LoadSbd interaction = (LoadSbd) a.interaction;
-                        if (interaction.range.script.equalsIgnoreCase(script.name)) {
-                            uncovered.removeAll(script.actions.getAll(interaction.range));
+                    for (ActionRange coverage : a.interaction.coverage()) {
+                        if (coverage instanceof LoadSbdRange) {
+                            LoadSbdRange loadSbdRange = (LoadSbdRange) coverage;
+                            if (loadSbdRange.script.equalsIgnoreCase(script.name)) {
+                                uncovered.removeAll(script.actions.getAll(loadSbdRange));
+                            }
                         }
                     }
                 }
