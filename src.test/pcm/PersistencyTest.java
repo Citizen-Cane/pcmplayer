@@ -1,8 +1,6 @@
 package pcm;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 
@@ -92,7 +90,7 @@ public class PersistencyTest {
         MappedScriptState state = player.state;
 
         state.addScriptValueMapping(mainScript,
-                new MappedScriptStateValue.ForSession(267, player.state(Body.Chastified), Toys.Chastity_Device));
+                new MappedScriptStateValue.Indefinitely(267, player.state(Body.Chastified), Toys.Chastity_Device));
 
         player.loadScript(mainScript);
         assertFalse(player.state(Body.Chastified).applied());
@@ -104,7 +102,9 @@ public class PersistencyTest {
         // Not persisted because not remembered
         TeaseLib.PersistentString chastifiedState = player.teaseLib.new PersistentString(TeaseLib.DefaultDomain,
                 "pcm.PersistencyTest.Body", "Chastified.state.duration");
-        assertFalse(chastifiedState.available());
+        assertTrue(chastifiedState.available());
+
+        // TODO only if in save range -> resolves declaration as infinite
     }
 
     @Test
@@ -127,7 +127,7 @@ public class PersistencyTest {
     }
 
     @Test
-    public void testThatTimeMappingsPersistsPositiveValues()
+    public void testThatTimeMappingsPersistsPositiveValuesTheSameWayAsUnmappedSetTimes()
             throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
         Player player = TestUtils.createPlayer(getClass());
         String mainScript = "PersistencyTest_testThatMappedStateIsPersisted";
@@ -138,14 +138,15 @@ public class PersistencyTest {
         player.loadScript(mainScript);
         pcm.util.TestUtils.play(player, new ActionRange(1000));
 
-        // TODO namespace for variable is pcm.PersistencyTest.Body, but should be pcm.PersistencyTest
         TeaseLib.PersistentString chastifiedState = player.teaseLib.new PersistentString(TeaseLib.DefaultDomain,
                 "pcm.PersistencyTest.Body", "Chastified.state.duration");
         assertTrue(chastifiedState.available());
+
+        // TODO only if in save range -> resolves declaration
     }
 
     @Test
-    public void testThatTimeMappingDoesntPersist_SetTime_00_00_00()
+    public void testThatTimeMappingPersists_SetTime_00_00_00()
             throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
         Player player = TestUtils.createPlayer(getClass());
         String mainScript = "PersistencyTest_testThatMappedStateIsPersisted";
@@ -158,6 +159,7 @@ public class PersistencyTest {
 
         TeaseLib.PersistentString chastifiedState = player.teaseLib.new PersistentString(TeaseLib.DefaultDomain,
                 "pcm.PersistencyTest.Body", "Chastified.state.duration");
-        assertFalse(chastifiedState.available());
+        assertTrue(chastifiedState.available());
     }
+
 }

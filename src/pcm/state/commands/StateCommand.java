@@ -1,7 +1,5 @@
 package pcm.state.commands;
 
-import java.util.concurrent.TimeUnit;
-
 import pcm.controller.Declarations;
 import pcm.controller.Player;
 import pcm.model.AbstractAction.Statement;
@@ -20,13 +18,12 @@ public class StateCommand extends BasicCommand {
     private static final Statement STATE = Statement.State;
     private final StateCommandLineParameters args;
 
-    public StateCommand(StateCommandLineParameters args) throws ClassNotFoundException {
+    public StateCommand(StateCommandLineParameters args) {
         super(statement(args));
         this.args = args;
     }
 
-    private static ParameterizedStatement statement(final StateCommandLineParameters args)
-            throws ClassNotFoundException {
+    private static ParameterizedStatement statement(final StateCommandLineParameters args) {
         String[] items = args.items(Keyword.Item);
         Declarations declarations = args.getDeclarations();
         declarations.validate(items, State.class);
@@ -40,8 +37,7 @@ public class StateCommand extends BasicCommand {
         }
     }
 
-    private static ParameterizedStatement apply(final StateCommandLineParameters args, final String[] items)
-            throws ClassNotFoundException {
+    private static ParameterizedStatement apply(final StateCommandLineParameters args, final String[] items) {
         Object[] peers = args.items(args.containsKey(Keyword.To) ? Keyword.To : Keyword.Apply);
         if (args.containsKey(Keyword.To) && peers.length == 0) {
             throw new IllegalArgumentException("Missing peers to apply the item to");
@@ -57,22 +53,13 @@ public class StateCommand extends BasicCommand {
                     attributeApplier.applyAttributes(player.script.scriptApplyAttribute);
                     attributeApplier.applyAttributes(player.namespaceApplyAttribute);
                     State.Options options = state.player.state(item).applyTo(peers);
-                    if (duration != null) {
-                        State persistence = options.over(duration.toSeconds(), TimeUnit.SECONDS);
-                        if (remember) {
-                            throw new UnsupportedOperationException();
-                            // persistence.remember();
-                        }
-                    } else if (remember) {
-                        // options.remember();
-                    }
+                    args.handleStateOptions(options, duration, remember);
                 }
             }
         };
     }
 
-    private static ParameterizedStatement remove(final StateCommandLineParameters args, final String[] items)
-            throws ClassNotFoundException {
+    private static ParameterizedStatement remove(final StateCommandLineParameters args, final String[] items) {
         Object[] peers = args.items(Keyword.From);
         return new ParameterizedStatement(STATE, args) {
             @Override

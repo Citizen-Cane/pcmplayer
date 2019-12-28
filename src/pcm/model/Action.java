@@ -1,6 +1,6 @@
 package pcm.model;
 
-import static java.lang.Integer.parseInt;
+import static java.lang.Integer.*;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -362,11 +362,7 @@ public abstract class Action extends AbstractAction {
         } else if (name == Statement.State) {
             StateCommandLineParameters args = new StateCommandLineParameters(cmd.args(), cmd.declarations);
             if (args.isCommand()) {
-                try {
-                    addCommand(new StateCommand(args));
-                } catch (ClassNotFoundException e) {
-                    throw new ScriptParsingException(cmd.script, this, e, cmd.lineNumber, cmd.line);
-                }
+                addCommand(new StateCommand(args));
             } else {
                 if (IfState.isExtendedIfClause(cmd.args())) {
                     addCondition(new IfState(name, cmd.args(), new IfState.ConditionCreator() {
