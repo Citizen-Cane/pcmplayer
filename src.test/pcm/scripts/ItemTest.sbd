@@ -323,6 +323,36 @@
 .range 9999
 
 
+' testApplyToAndRemoveFromOneAfterAnother
+
+[Action 1120]
+.item Household.Clothes_Pegs is not applied to Body.OnBalls
+.item Household.Clothes_Pegs is not applied to Body.OnNipples
+.item Household.Clothes_Pegs apply to Body.OnBalls
+.range 1121
+
+[Action 1121]
+.item Household.Clothes_Pegs is applied to Body.OnBalls
+.item Household.Clothes_Pegs apply to Body.OnNipples
+.range 1122
+
+[Action 1122]
+.item Household.Clothes_Pegs is applied to Body.OnBalls
+.item Household.Clothes_Pegs is applied to Body.OnNipples
+.item Household.Clothes_Pegs remove from Body.OnBalls
+.range 1123
+
+[Action 1123]
+.item Household.Clothes_Pegs is applied to Body.OnNipples
+.item Household.Clothes_Pegs remove from Body.OnNipples
+.range 1124
+
+[Action 1124]
+.item Household.Clothes_Pegs is not applied to Body.OnBalls
+.item Household.Clothes_Pegs is not applied to Body.OnNipples
+.range 9999
+
+
 ' proper exit for all test cases
 [action 9999]
 .unset 9999

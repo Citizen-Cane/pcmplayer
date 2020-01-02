@@ -369,19 +369,11 @@ public abstract class Action extends AbstractAction {
                         @Override
                         public Condition createCondition(StateCommandLineParameters firstParameters)
                                 throws ScriptParsingException {
-                            try {
-                                return new StateCondition(firstParameters);
-                            } catch (ClassNotFoundException e) {
-                                throw new ScriptParsingException(cmd.script, Action.this, e, cmd.lineNumber, cmd.line);
-                            }
+                            return new StateCondition(firstParameters);
                         }
                     }, cmd.declarations));
                 } else {
-                    try {
-                        addCondition(new StateCondition(args));
-                    } catch (ClassNotFoundException e) {
-                        throw new ScriptParsingException(cmd.script, Action.this, e, cmd.lineNumber, cmd.line);
-                    }
+                    addCondition(new StateCondition(args));
                 }
             }
         } else if (name == Statement.Item) {
@@ -391,23 +383,14 @@ public abstract class Action extends AbstractAction {
             } else {
                 if (IfState.isExtendedIfClause(cmd.args())) {
                     addCondition(new IfState(name, cmd.args(), new IfState.ConditionCreator() {
-
                         @Override
                         public Condition createCondition(StateCommandLineParameters firstParameters)
                                 throws ScriptParsingException {
-                            try {
-                                return new ItemCondition(firstParameters);
-                            } catch (ClassNotFoundException e) {
-                                throw new ScriptParsingException(cmd.script, Action.this, e, cmd.lineNumber, cmd.line);
-                            }
+                            return new ItemCondition(firstParameters);
                         }
                     }, cmd.declarations));
                 } else {
-                    try {
-                        addCondition(new ItemCondition(args));
-                    } catch (ClassNotFoundException e) {
-                        throw new ScriptParsingException(cmd.script, Action.this, e, cmd.lineNumber, cmd.line);
-                    }
+                    addCondition(new ItemCondition(args));
                 }
             }
         }
@@ -419,7 +402,6 @@ public abstract class Action extends AbstractAction {
             if (resumeText.isEmpty()) {
                 resumeText = getResponseText(Statement.ResumeText, cmd.script);
             }
-
             setInteraction(new Pause(resumeText));
         } else if (name == Statement.Yes) {
             String yesText = cmd.allAsText();

@@ -41,6 +41,9 @@ public class StateCommand extends BasicCommand {
         Object[] peers = args.items(args.containsKey(Keyword.To) ? Keyword.To : Keyword.Apply);
         if (args.containsKey(Keyword.To) && peers.length == 0) {
             throw new IllegalArgumentException("Missing peers to apply the item to");
+        } else if (args.containsKey(Keyword.Apply) && args.items(Keyword.Apply).length > 0) {
+            throw new IllegalArgumentException(
+                    "Apply just applies the default peers - use 'Apply To' to apply additional peers");
         }
         DurationFormat duration = args.durationOption();
         boolean remember = args.rememberOption();
@@ -60,7 +63,10 @@ public class StateCommand extends BasicCommand {
     }
 
     private static ParameterizedStatement remove(final StateCommandLineParameters args, final String[] items) {
-        Object[] peers = args.items(Keyword.From);
+        Object[] peers = args.items(args.containsKey(Keyword.From) ? Keyword.From : Keyword.Remove);
+        if (args.containsKey(Keyword.From) && peers.length == 0) {
+            throw new IllegalArgumentException("Missing peers to remove the item from");
+        }
         return new ParameterizedStatement(STATE, args) {
             @Override
             public void run(ScriptState state) {

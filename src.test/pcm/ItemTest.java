@@ -1,8 +1,6 @@
 package pcm;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -196,7 +194,7 @@ public class ItemTest {
         Debugger debugger = new Debugger(player.teaseLib);
         debugger.freezeTime();
 
-        player.item(Toys.Nipple_Clamps).remove();
+        assertFalse(player.item(Toys.Nipple_Clamps).applied());
         player.item(Toys.Gag).apply();
         TestUtils.play(player, 1101);
         TestUtils.play(player, 1102);
@@ -206,7 +204,7 @@ public class ItemTest {
         TestUtils.play(player, 1101);
         TestUtils.play(player, 1102);
 
-        player.item(Toys.Nipple_Clamps).apply();
+        assertTrue(player.item(Toys.Nipple_Clamps).applied());
         player.item(Toys.Gag).apply();
         TestUtils.play(player, 1100);
         TestUtils.play(player, 1101);
@@ -215,6 +213,18 @@ public class ItemTest {
         player.item(Toys.Nipple_Clamps).remove();
         player.item(Toys.Gag).remove();
         TestUtils.play(player, 1103);
+
+    }
+
+    @Test
+    public void testApplyAndRemoveOneAfterAnother()
+            throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
+        Player player = TestUtils.createPlayer(getClass());
+        player.loadScript(getClass().getSimpleName());
+
+        Debugger debugger = new Debugger(player.teaseLib);
+        debugger.freezeTime();
+        TestUtils.play(player, 1120);
 
     }
 

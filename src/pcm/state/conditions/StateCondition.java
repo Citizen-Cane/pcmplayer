@@ -1,5 +1,7 @@
 package pcm.state.conditions;
 
+import static pcm.state.StateCommandLineParameters.Keyword.*;
+
 import java.util.concurrent.TimeUnit;
 
 import pcm.controller.Declarations;
@@ -17,13 +19,12 @@ public class StateCondition extends BasicCondition {
     private static final Statement STATE = AbstractAction.Statement.State;
     private final StateCommandLineParameters args;
 
-    public StateCondition(StateCommandLineParameters args) throws ClassNotFoundException {
+    public StateCondition(StateCommandLineParameters args) {
         super(statement(args));
         this.args = args;
     }
 
-    private static ParameterizedStatement statement(final StateCommandLineParameters args)
-            throws ClassNotFoundException {
+    private static ParameterizedStatement statement(final StateCommandLineParameters args) {
         ParameterizedStatement innerStatement = innerStatement(args);
         if (args.containsKey(Keyword.Not)) {
             return new ParameterizedStatement(STATE, args) {
@@ -37,8 +38,7 @@ public class StateCondition extends BasicCondition {
         }
     }
 
-    private static ParameterizedStatement innerStatement(final StateCommandLineParameters args)
-            throws ClassNotFoundException {
+    private static ParameterizedStatement innerStatement(final StateCommandLineParameters args) {
         String[] items = args.items(Keyword.Item);
         Declarations declarations = args.getDeclarations();
         declarations.validate(items, State.class);
@@ -62,8 +62,7 @@ public class StateCondition extends BasicCondition {
         }
     }
 
-    private static ParameterizedStatement is(final StateCommandLineParameters args, final String[] items)
-            throws ClassNotFoundException {
+    private static ParameterizedStatement is(StateCommandLineParameters args, String[] items) {
         Object[] attributes = args.items(StateCommandLineParameters.Keyword.Is);
         return new ParameterizedStatement(STATE, args) {
             @Override
@@ -78,9 +77,8 @@ public class StateCondition extends BasicCondition {
         };
     }
 
-    private static ParameterizedStatement applied(final StateCommandLineParameters args, final String[] items)
-            throws ClassNotFoundException {
-        String[] peers = args.items(Keyword.To);
+    private static ParameterizedStatement applied(StateCommandLineParameters args, String[] items) {
+        String[] peers = BasicCondition.optionalPeers(args, Applied, To);
         return new ParameterizedStatement(STATE, args) {
             @Override
             public boolean call(ScriptState state) {
@@ -102,7 +100,7 @@ public class StateCondition extends BasicCondition {
         };
     }
 
-    private static ParameterizedStatement free(final StateCommandLineParameters args, final String[] items) {
+    private static ParameterizedStatement free(StateCommandLineParameters args, String[] items) {
         return new ParameterizedStatement(STATE, args) {
             @Override
             public boolean call(ScriptState state) {
@@ -116,7 +114,7 @@ public class StateCondition extends BasicCondition {
         };
     }
 
-    private static ParameterizedStatement expired(final StateCommandLineParameters args, final String[] items) {
+    private static ParameterizedStatement expired(StateCommandLineParameters args, String[] items) {
         return new ParameterizedStatement(STATE, args) {
             @Override
             public boolean call(ScriptState state) {
@@ -130,7 +128,7 @@ public class StateCondition extends BasicCondition {
         };
     }
 
-    private static ParameterizedStatement remaining(final StateCommandLineParameters args, final String[] items) {
+    private static ParameterizedStatement remaining(StateCommandLineParameters args, String[] items) {
         Keyword condition = args.getCondition();
         StateCommandLineParameters.Operator op = args.getOperator(condition);
         DurationFormat durationFormat = new DurationFormat(args.value(condition));
@@ -148,7 +146,7 @@ public class StateCondition extends BasicCondition {
         };
     }
 
-    private static ParameterizedStatement elapsed(final StateCommandLineParameters args, final String[] items) {
+    private static ParameterizedStatement elapsed(StateCommandLineParameters args, String[] items) {
         Keyword condition = args.getCondition();
         StateCommandLineParameters.Operator op = args.getOperator(condition);
         DurationFormat durationFormat = new DurationFormat(args.value(condition));
@@ -166,7 +164,7 @@ public class StateCondition extends BasicCondition {
         };
     }
 
-    private static ParameterizedStatement limit(final StateCommandLineParameters args, final String[] items) {
+    private static ParameterizedStatement limit(StateCommandLineParameters args, String[] items) {
         Keyword condition = args.getCondition();
         StateCommandLineParameters.Operator op = args.getOperator(condition);
         DurationFormat durationFormat = new DurationFormat(args.value(condition));

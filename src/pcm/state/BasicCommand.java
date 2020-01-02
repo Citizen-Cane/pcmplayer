@@ -2,6 +2,7 @@ package pcm.state;
 
 import pcm.model.AbstractAction.Statement;
 import pcm.model.ScriptExecutionException;
+import pcm.state.StateCommandLineParameters.Keyword;
 import pcm.state.persistence.ScriptState;
 import teaselib.core.util.CommandLineParameters;
 
@@ -32,6 +33,18 @@ public class BasicCommand implements Command {
     @Override
     public void execute(ScriptState state) throws ScriptExecutionException {
         statement.run(state);
+    }
+
+    protected static Object[] optionalPeers(StateCommandLineParameters args, Keyword condition, Keyword peerList) {
+        Object[] peers = args.items(args.containsKey(peerList) ? peerList : condition);
+        if (args.containsKey(peerList) && peers.length == 0) {
+            throw new IllegalArgumentException("Missing peers to " + condition.name().toLowerCase() + " the item '"
+                    + peerList.name().toLowerCase() + "'");
+        } else if (args.containsKey(condition) && args.items(condition).length > 0) {
+            throw new IllegalArgumentException("'" + condition.name() + "' just applies the default peers - use '"
+                    + condition.name() + " " + peerList.name() + "' to apply additional peers");
+        }
+        return peers;
     }
 
 }

@@ -1,6 +1,7 @@
 package pcm.state.commands;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.*;
+import static pcm.state.StateCommandLineParameters.Keyword.*;
 
 import pcm.controller.Declarations;
 import pcm.controller.Player;
@@ -47,14 +48,10 @@ public class ItemCommand extends BasicCommand {
         }
     }
 
-    private static ParameterizedStatement apply(final StateCommandLineParameters args, final String[] items) {
-        Object[] peers = args.items(args.containsKey(Keyword.To) ? Keyword.To : Keyword.Apply);
-        if (args.containsKey(Keyword.To) && peers.length == 0) {
-            throw new IllegalArgumentException("Missing peers to apply the item to");
-        } else if (args.containsKey(Keyword.Apply) && args.items(Keyword.Apply).length > 0) {
-            throw new IllegalArgumentException(
-                    "Apply just applies the default peers - use 'To' to apply additional peers");
-        }
+    private static ParameterizedStatement apply(StateCommandLineParameters args, String[] items) {
+        Keyword to = Keyword.To;
+        Keyword apply = Keyword.Apply;
+        Object[] peers = optionalPeers(args, apply, to);
         DurationFormat duration = args.durationOption();
         boolean remember = args.rememberOption();
         return new ParameterizedStatement(ITEM, args) {
@@ -74,11 +71,8 @@ public class ItemCommand extends BasicCommand {
         };
     }
 
-    private static ParameterizedStatement remove(final StateCommandLineParameters args, final String[] items) {
-        if (args.containsKey(Keyword.To)) {
-            throw new IllegalArgumentException(Keyword.Remove + " doesn't accept from/to peer list.");
-        }
-        Object[] peers = args.items(args.containsKey(Keyword.To) ? Keyword.From : Keyword.Remove);
+    private static ParameterizedStatement remove(StateCommandLineParameters args, String[] items) {
+        Object[] peers = BasicCommand.optionalPeers(args, Remove, From);
         return new ParameterizedStatement(ITEM, args) {
             @Override
             public void run(ScriptState state) {

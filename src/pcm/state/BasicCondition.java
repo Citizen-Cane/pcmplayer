@@ -2,6 +2,7 @@ package pcm.state;
 
 import pcm.model.AbstractAction.Statement;
 import pcm.model.ConditionRange;
+import pcm.state.StateCommandLineParameters.Keyword;
 import pcm.state.persistence.ScriptState;
 import teaselib.core.util.CommandLineParameters;
 
@@ -37,6 +38,17 @@ public class BasicCondition implements Condition {
     @Override
     public boolean isInside(ConditionRange conditionRange) {
         return conditionRange.contains(this);
+    }
+
+    protected static String[] optionalPeers(StateCommandLineParameters args, Keyword condition, Keyword peerList) {
+        String[] peers = args.items(args.containsKey(peerList) ? peerList : condition);
+        if (args.containsKey(peerList) && peers.length == 0) {
+            throw new IllegalArgumentException("Missing peers");
+        } else if (args.containsKey(condition) && args.items(condition).length > 0) {
+            throw new IllegalArgumentException("'" + condition.name() + "' just applies to the default peers - use '"
+                    + condition.name() + " " + peerList.name() + "' to apply additional peers");
+        }
+        return peers;
     }
 
 }
