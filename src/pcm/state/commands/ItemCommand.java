@@ -1,7 +1,8 @@
 package pcm.state.commands;
 
-import static java.util.stream.Collectors.*;
-import static pcm.state.StateCommandLineParameters.Keyword.*;
+import static java.util.stream.Collectors.toList;
+import static pcm.state.StateCommandLineParameters.Keyword.From;
+import static pcm.state.StateCommandLineParameters.Keyword.Remove;
 
 import pcm.controller.Declarations;
 import pcm.controller.Player;
@@ -30,7 +31,7 @@ public class ItemCommand extends BasicCommand {
         this.args = args;
     }
 
-    private static ParameterizedStatement statement(final StateCommandLineParameters args) {
+    static ParameterizedStatement statement(final StateCommandLineParameters args) {
         String[] items = args.items(Keyword.Item);
         Declarations declarations = args.getDeclarations();
         declarations.validate(items, Item.class);

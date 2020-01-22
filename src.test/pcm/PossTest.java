@@ -1,6 +1,6 @@
 package pcm;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -15,7 +15,7 @@ import pcm.model.ActionRange;
 import pcm.util.TestUtils;
 
 public class PossTest {
-    private final AtomicInteger randomResult = new AtomicInteger(0);
+    final AtomicInteger randomResult = new AtomicInteger(0);
     private final ProbabilityModel probabilityModel = new ProbabilityModelBasedOnPossBucketSum() {
         @Override
         protected double random(double from, double to) {
@@ -161,12 +161,10 @@ public class PossTest {
         assertDecision(actions.get(1), actions, 100);
     }
 
-    private void assertDecision(Action expectedAction, List<Action> actions,
-            int randomValue) {
+    private void assertDecision(Action expectedAction, List<Action> actions, int randomValue) {
         synchronized (randomResult) {
             randomResult.set(randomValue);
-            Action actionResult = probabilityModel
-                    .chooseActionBasedOnPossValue(actions);
+            Action actionResult = probabilityModel.chooseActionBasedOnPossValue(actions);
             assertEquals(expectedAction, actionResult);
         }
     }

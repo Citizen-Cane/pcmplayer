@@ -15,24 +15,18 @@ import teaselib.util.Item;
 import teaselib.util.Items;
 
 /**
- * Adds mapping to host persistence. One use case is the mapping from host to
- * pcm toys.
+ * Adds mapping to host persistence. One use case is the mapping from host to pcm toys.
  * 
- * The mapping allows to map multiple host values to a single pcm values, in
- * order to be able to map toy categories. Gags are a good example for this,
- * since Mine requires just a gag, but doesn't care about the specific kind.
+ * The mapping allows to map multiple host values to a single pcm values, in order to be able to map toy categories.
+ * Gags are a good example for this, since Mine requires just a gag, but doesn't care about the specific kind.
  * 
- * @author someone
- *
- */
-/**
- * @author someone
+ * @author Citizen-Cane
  *
  */
 public class MappedScriptState extends ScriptState {
     public static final String Global = "";
 
-    private static class ScriptMapping {
+    static class ScriptMapping {
         final Map<Integer, MappedScriptValue> scriptValueMapping = new HashMap<>();
         final Map<Integer, teaselib.State> stateTimeMapping = new HashMap<>();
         final Map<Integer, Enum<?>[]> peers = new HashMap<>();

@@ -59,7 +59,7 @@ import teaselib.util.TextVariables;
  * 
  */
 public class Player extends TeaseScript implements MainScript {
-    private static final Logger logger = LoggerFactory.getLogger(Player.class);
+    static final Logger logger = LoggerFactory.getLogger(Player.class);
 
     public static final String ScriptFolder = "scripts/";
 
@@ -80,12 +80,12 @@ public class Player extends TeaseScript implements MainScript {
     public boolean validateScripts = false;
     public boolean debugOutput = false;
 
-    private final ScriptCache scripts;
+    final ScriptCache scripts;
     private final String mistressPath;
     private final String mainScript;
 
     private boolean invokedOnAllSet = false;
-    private boolean intentionalQuit = false;
+    boolean intentionalQuit = false;
 
     /**
      * The EndAction tells the player to hand over execution from the PCM script engine back to the caller.

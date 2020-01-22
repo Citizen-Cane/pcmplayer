@@ -1,6 +1,7 @@
 package pcm.state.conditions;
 
-import static pcm.state.StateCommandLineParameters.Keyword.*;
+import static pcm.state.StateCommandLineParameters.Keyword.Applied;
+import static pcm.state.StateCommandLineParameters.Keyword.To;
 
 import java.util.Arrays;
 import java.util.List;
@@ -41,7 +42,7 @@ public class ItemCondition extends BasicCondition {
         }
     }
 
-    private static ParameterizedStatement innerStatement(StateCommandLineParameters args) {
+    static ParameterizedStatement innerStatement(StateCommandLineParameters args) {
         String[] items = args.items(Keyword.Item);
         Declarations declarations = args.getDeclarations();
         declarations.validate(items, Item.class);

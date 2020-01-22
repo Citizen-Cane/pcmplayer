@@ -20,7 +20,7 @@ import teaselib.core.media.MediaRendererThread;
  *
  */
 public class KeyReleaseHandler implements Visual {
-    private static final Logger logger = LoggerFactory.getLogger(KeyReleaseHandler.class);
+    static final Logger logger = LoggerFactory.getLogger(KeyReleaseHandler.class);
 
     public static final String Prepare = "prepare";
     public static final String Start = "start";
