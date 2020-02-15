@@ -1,6 +1,7 @@
 package pcm.state.persistence;
 
 import teaselib.State;
+import teaselib.State.Persistence.Until;
 import teaselib.util.Items;
 
 public abstract class MappedScriptStateValue implements MappedScriptValue {
@@ -56,7 +57,7 @@ public abstract class MappedScriptStateValue implements MappedScriptValue {
 
         @Override
         public void set() {
-            state.applyTo((Object[]) peers).remember();
+            state.applyTo((Object[]) peers).remember(Until.Removed);
         }
 
         @Override

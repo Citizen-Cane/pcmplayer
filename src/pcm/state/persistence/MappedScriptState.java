@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import pcm.controller.Player;
 import pcm.model.Script;
 import teaselib.Duration;
+import teaselib.State.Persistence.Until;
 import teaselib.util.Item;
 import teaselib.util.Items;
 
@@ -167,7 +168,7 @@ public class MappedScriptState extends ScriptState {
         if (hasStateTimeMapping(n)) {
             teaselib.State state = scriptMapping.stateTimeMapping.get(n);
             Enum<?>[] items = scriptMapping.peers.get(n);
-            state.applyTo((Object[]) items).over(duration).remember();
+            state.applyTo((Object[]) items).over(duration).remember(Until.Removed);
         }
         super.setTime(n, duration);
     }

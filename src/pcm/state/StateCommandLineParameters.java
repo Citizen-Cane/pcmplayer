@@ -1,6 +1,7 @@
 package pcm.state;
 
-import static pcm.state.StateCommandLineParameters.Keyword.*;
+import static pcm.state.StateCommandLineParameters.Keyword.Over;
+import static pcm.state.StateCommandLineParameters.Keyword.Remember;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 import pcm.controller.Declarations;
 import teaselib.State;
+import teaselib.State.Persistence.Until;
 import teaselib.core.util.CommandLineParameters;
 import teaselib.util.DurationFormat;
 
@@ -195,10 +197,10 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
         if (duration != null) {
             State.Persistence persistence = options.over(duration.toSeconds(), TimeUnit.SECONDS);
             if (remember) {
-                persistence.remember();
+                persistence.remember(Until.Removed);
             }
         } else if (remember) {
-            options.remember();
+            options.remember(Until.Removed);
         }
     }
 
