@@ -56,6 +56,31 @@
 .loadsbd ItemTest.sbd 1035
 
 
+' testStateNamespaceAndApplyTagsInScript
+
+[Action 1130]
+.item Toys.Collar applied
+.state Body.AroundNeck applied
+.range 1131
+
+[Action 1131]
+.item Household.Clothes_Pegs apply to Body.OnNipples
+.range 1132
+
+[Action 1132]
+.item Toys.Collar is Applied.by.ItemTest
+.item Household.Clothes_Pegs is Applied.by.ItemTest_subscript
+.range 1133
+
+[Action 1133]
+.state Body.AroundNeck is Applied.by.ItemTest
+.state Body.OnNipples is Applied.by.ItemTest_subscript
+.range 1135
+
+[Action 1135]
+.loadsbd ItemTest.sbd 1135
+
+
 ' proper exit for all test cases
 [action 9999]
 .unset 9999
