@@ -14,7 +14,6 @@ import pcm.model.ScriptExecutionException;
 import teaselib.Answer;
 import teaselib.Answers;
 import teaselib.ScriptFunction;
-import teaselib.core.speechrecognition.SpeechRecognition;
 import teaselib.core.util.ExceptionUtil;
 
 /**
@@ -62,7 +61,7 @@ public class Break extends AbstractBreakInteraction {
             } catch (ScriptExecutionException e) {
                 throw ExceptionUtil.asRuntimeException(e);
             }
-            SpeechRecognition.completeSpeechRecognitionInProgress();
+            player.scriptRenderer.audioSync.completeSpeechRecognition();
         });
 
         Answer result = player.reply(playRange, answers);
