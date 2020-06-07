@@ -1,6 +1,6 @@
 package pcm.model;
 
-import static java.lang.Integer.*;
+import static java.lang.Integer.parseInt;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -16,7 +16,10 @@ import pcm.state.StateCommandLineParameters;
 import pcm.state.Validatable;
 import pcm.state.ValidatableResources;
 import pcm.state.Visual;
+import pcm.state.commands.DebugEntry;
 import pcm.state.commands.ItemCommand;
+import pcm.state.commands.KeyReleaseCommand;
+import pcm.state.commands.KeyReleaseCommandLineParameters;
 import pcm.state.commands.Repeat;
 import pcm.state.commands.RepeatAdd;
 import pcm.state.commands.RepeatDel;
@@ -60,7 +63,6 @@ import pcm.state.persistence.ScriptState;
 import pcm.state.visuals.Delay;
 import pcm.state.visuals.Exec;
 import pcm.state.visuals.Image;
-import pcm.state.visuals.KeyReleaseHandler;
 import pcm.state.visuals.NoImage;
 import pcm.state.visuals.NoMessage;
 import pcm.state.visuals.Sound;
@@ -173,44 +175,13 @@ public abstract class Action extends AbstractAction {
             } else {
                 throw new IllegalArgumentException(cmd.line);
             }
-        } else if (name == Statement.KeyRelease) {
-            Visual keyRelease = null;
-            String args[] = cmd.args();
-            String command = args[0];
-            for (String string : KeyReleaseHandler.Commands) {
-                if (string.equalsIgnoreCase(command)) {
-                    if (args.length == 1) {
-                        keyRelease = new KeyReleaseHandler(command);
-                        break;
-                    } else if (args.length == 2) {
-                        String durationArg = args[1];
-                        long duration;
-                        if ("min".equalsIgnoreCase(durationArg)) {
-                            duration = Long.MIN_VALUE;
-                        } else if ("max".equalsIgnoreCase(durationArg)) {
-                            duration = Long.MAX_VALUE;
-                        } else {
-                            duration = parseInt(durationArg);
-                        }
-                        keyRelease = new KeyReleaseHandler(command, duration);
-                        break;
-                    } else {
-                        throw new IllegalArgumentException(cmd.line);
-                    }
-                }
-            }
-            if (keyRelease == null) {
-                throw new IllegalArgumentException(cmd.line);
-            } else {
-                addVisual(name, keyRelease);
-            }
-        } else if (name == Statement.Say) {
-            // Ignore, because message are spoken per default
         }
+
         // Conditions
         else if (name == Statement.Must) {
             Must must = new Must();
             cmd.addArgsTo(must);
+
             addCondition(must);
         } else if (name == Statement.MustNot) {
             MustNot mustNot = new MustNot();
@@ -393,7 +364,12 @@ public abstract class Action extends AbstractAction {
                     addCondition(new ItemCondition(args));
                 }
             }
+        } else if (name == Statement.KeyRelease) {
+            addCommand(new KeyReleaseCommand(new KeyReleaseCommandLineParameters(cmd.args(), cmd.declarations)));
+        } else if (name == Statement.Debug) {
+            addCommand(new DebugEntry());
         }
+
         // interactions
         else if (name == Statement.Range) {
             setInteraction(new Range(ActionRange.of(cmd.args())));

@@ -31,6 +31,7 @@ import pcm.model.ValidationIssue;
 import pcm.state.Command;
 import pcm.state.Condition;
 import pcm.state.Visual;
+import pcm.state.commands.DebugEntry;
 import pcm.state.commands.ResetRange;
 import pcm.state.conditions.Should;
 import pcm.state.persistence.MappedScriptState;
@@ -372,6 +373,7 @@ public class Player extends TeaseScript implements MainScript {
 
         retainActionsCalledFromOtherActions(script, uncovered);
         retainActionsCalledFromOtherScript(script, uncovered);
+        retainDebugEntries(script, uncovered);
 
         return uncovered;
     }
@@ -399,6 +401,18 @@ public class Player extends TeaseScript implements MainScript {
                                 uncovered.removeAll(script.actions.getAll(loadSbdRange));
                             }
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    private void retainDebugEntries(Script script, List<Action> uncovered) {
+        for (Action a : script.actions.getAll()) {
+            if (a.commands != null) {
+                for (Command command : a.commands) {
+                    if (command instanceof DebugEntry) {
+                        uncovered.remove(a);
                     }
                 }
             }
