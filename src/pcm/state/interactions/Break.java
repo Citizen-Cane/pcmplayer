@@ -65,7 +65,7 @@ public class Break extends AbstractBreakInteraction {
         });
 
         Answer result = player.reply(playRange, answers);
-        if (result.equals(ScriptFunction.Timeout)) {
+        if (result.equals(Answer.Timeout)) {
             return player.action;
         } else {
             if (!supressStackCorrectionOnBreak) {

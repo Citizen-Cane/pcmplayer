@@ -83,7 +83,7 @@ public class Stop extends AbstractBreakInteraction {
         }
 
         Answer result = player.reply(timeoutFunction, answers);
-        if (result != ScriptFunction.Timeout) {
+        if (result != Answer.Timeout) {
             int index = answers.indexOf(result);
             logger.info("-> {}", result);
             return player.getAction(ranges.get(index));
