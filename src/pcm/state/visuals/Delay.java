@@ -20,7 +20,7 @@ public class Delay implements Visual {
 
     @Override
     public void render(Player player) {
-        duration = player.random(from, to);
+        duration = player.random.value(from, to);
         player.setDuration(duration);
     }
 }

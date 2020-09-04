@@ -71,7 +71,7 @@ public class Player extends TeaseScript implements MainScript {
     private final ProbabilityModel probabilityModel = new ProbabilityModelBasedOnPossBucketSum() {
         @Override
         public double random(double from, double to) {
-            return Player.this.random(from, to);
+            return Player.this.random.value(from, to);
         }
     };
 

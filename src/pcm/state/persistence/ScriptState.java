@@ -372,7 +372,7 @@ public class ScriptState {
     }
 
     public int getRandom(int min, int max) {
-        return player.random(min, max);
+        return player.random.value(min, max);
     }
 
     /**
