@@ -6,7 +6,6 @@ package pcm.state.persistence;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.TimeUnit;
 
 import pcm.controller.Player;
 import pcm.model.Script;
@@ -157,7 +156,7 @@ public class MappedScriptState extends ScriptState {
         if (hasStateTimeMapping(n)) {
             teaselib.State state = scriptMapping.stateTimeMapping.get(n);
             Duration duration = state.duration();
-            return duration.end(TimeUnit.SECONDS);
+            return getTime(duration);
         } else {
             return super.getTime(n);
         }

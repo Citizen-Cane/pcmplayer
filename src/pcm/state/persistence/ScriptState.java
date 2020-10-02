@@ -246,7 +246,17 @@ public class ScriptState {
 
     public void setTime(Integer n, Duration duration) {
         data.remove(n);
-        times.put(n, duration.end(TimeUnit.SECONDS));
+        times.put(n, getTime(duration));
+    }
+
+    static long getTime(Duration duration) {
+        long start = duration.start(TimeUnit.SECONDS);
+        long limit = duration.limit(TimeUnit.SECONDS);
+        if (start < Long.MAX_VALUE - limit) {
+            return start + limit;
+        } else {
+            return Long.MAX_VALUE;
+        }
     }
 
     public void unset(Collection<Integer> unset) {

@@ -20,7 +20,7 @@ import pcm.model.ScriptExecutionException;
 import pcm.state.conditions.TimeTo;
 import pcm.state.persistence.ScriptState;
 import pcm.util.TestUtils;
-import teaselib.State;
+import teaselib.Duration;
 import teaselib.core.Debugger;
 import teaselib.util.DurationFormat;
 
@@ -182,7 +182,7 @@ public class ScriptTimeTests {
         player.state.setTime(9, player.duration(10, TimeUnit.SECONDS));
         assertFalse(new TimeTo(9, "-INF").isTrueFor(player.state));
 
-        player.state.setTime(9, player.duration(State.INDEFINITELY, TimeUnit.SECONDS));
+        player.state.setTime(9, player.duration(Duration.INFINITE, TimeUnit.SECONDS));
         assertTrue(new TimeTo(9, "-INF").isTrueFor(player.state));
     }
 
@@ -195,9 +195,9 @@ public class ScriptTimeTests {
         player.playFrom(r);
         assertEquals(ScriptState.SET, player.state.get(1040));
 
-        int setTImeFinite = 1041;
-        assertFalse(containsAction(setTImeFinite));
-        int setTImeInfinite = 1042;
-        assertTrue(containsAction(setTImeInfinite));
+        int setTimeFinite = 1041;
+        assertFalse(containsAction(setTimeFinite));
+        int setTimeInfinite = 1042;
+        assertTrue(containsAction(setTimeInfinite));
     }
 }

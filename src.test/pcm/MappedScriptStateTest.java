@@ -1,7 +1,10 @@
 package pcm;
 
-import static org.junit.Assert.*;
-import static pcm.state.persistence.ScriptState.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static pcm.state.persistence.ScriptState.SET;
+import static pcm.state.persistence.ScriptState.UNSET;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -152,7 +155,7 @@ public class MappedScriptStateTest {
         // Mapping isn't allowed anymore since TeaseLib doesn't allow infinite states anymore
         pcm.set(ChastityCageAction);
         long time = player.teaseLib.getTime(TimeUnit.SECONDS);
-        assertEquals(time, chastityCageState.duration().end(TimeUnit.SECONDS));
+        assertEquals(time, chastityCageState.duration().start(TimeUnit.SECONDS));
     }
 
     @Test
