@@ -68,7 +68,7 @@ import pcm.state.visuals.NoMessage;
 import pcm.state.visuals.Sound;
 import pcm.state.visuals.SpokenMessage;
 import pcm.state.visuals.Timeout;
-import teaselib.core.speechrecognition.SpeechRecognition.TimeoutBehavior;
+import teaselib.core.speechrecognition.TimeoutBehavior;
 
 public abstract class Action extends AbstractAction {
     public final int number;

@@ -18,7 +18,7 @@ import pcm.state.visuals.Timeout;
 import teaselib.Answer;
 import teaselib.Answers;
 import teaselib.ScriptFunction;
-import teaselib.core.speechrecognition.SpeechRecognition.TimeoutBehavior;
+import teaselib.core.speechrecognition.TimeoutBehavior;
 
 public class Stop extends AbstractBreakInteraction {
     private static final Logger logger = LoggerFactory.getLogger(Stop.class);
