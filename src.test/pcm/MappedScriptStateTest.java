@@ -1,10 +1,7 @@
 package pcm;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static pcm.state.persistence.ScriptState.SET;
-import static pcm.state.persistence.ScriptState.UNSET;
+import static org.junit.Assert.*;
+import static pcm.state.persistence.ScriptState.*;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -20,6 +17,7 @@ import pcm.model.ValidationIssue;
 import pcm.state.persistence.MappedScriptState;
 import pcm.state.persistence.MappedScriptStateValue;
 import pcm.state.persistence.ScriptState;
+import pcm.util.TestPlayer;
 import pcm.util.TestUtils;
 import teaselib.Household;
 import teaselib.State;
@@ -86,12 +84,9 @@ public class MappedScriptStateTest {
         assertEquals(ScriptState.SET, pcm.get(1000));
     }
 
-    @Test(expected = java.lang.RuntimeException.class)
-    public void testThatUninitializedUnmappedStateThrows() throws AllActionsSetException, ScriptExecutionException {
-        TestUtils.play(player, 1010);
-
-        assertEquals(SET, pcm.get(1010));
-        assertEquals(SET, pcm.get(9999));
+    @Test
+    public void testThatUninitializedUnmappedStateThrows() {
+        assertThrows(IllegalArgumentException.class, () -> TestUtils.play(player, 1010));
     }
 
     @Test
@@ -175,7 +170,7 @@ public class MappedScriptStateTest {
     @Test
     public void testThatScriptHandlesUnmappedTimeValuesCorrectly() throws AllActionsSetException,
             ScriptExecutionException, ScriptParsingException, ValidationIssue, IOException {
-        Player testScript = TestUtils.createPlayer(getClass(), MAPPED_STATE_TEST_SCRIPT);
+        TestPlayer testScript = TestPlayer.loadScript(getClass());
         Debugger debugger = new Debugger(testScript.teaseLib);
         debugger.freezeTime();
 

@@ -1,11 +1,29 @@
 package pcm.controller;
 
+import java.util.Objects;
+
+import pcm.model.Action;
+import pcm.state.interactions.Stop;
+
+/**
+ * Run the given lambda when the checkpoint has been reached
+ * 
+ * @author Citizen-Cane
+ *
+ */
 public class LambdaTrigger extends BasicTrigger {
     private final Runnable runnable;
     private boolean reached = false;
 
-    public LambdaTrigger(int action, Runnable runnable) {
-        super("", action);
+    public LambdaTrigger(Action action, Runnable runnable) {
+        super("", action.number);
+
+        Objects.requireNonNull(action);
+        Objects.requireNonNull(runnable);
+
+        if (action.interaction instanceof Stop) {
+            throw new IllegalArgumentException(getClass().getName() + " is incompatible with stop interaction");
+        }
         this.runnable = runnable;
     }
 
@@ -21,7 +39,7 @@ public class LambdaTrigger extends BasicTrigger {
     }
 
     @Override
-    public boolean assertExpected() throws AssertionError {
+    public boolean expected() throws AssertionError {
         return reached;
     }
 }

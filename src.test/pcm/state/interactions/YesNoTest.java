@@ -15,25 +15,20 @@ import pcm.model.ScriptParsingException;
 import pcm.model.ValidationIssue;
 import pcm.state.visuals.SpokenMessage;
 import pcm.state.visuals.SpokenMessage.Entry;
-import pcm.util.TestUtils;
+import pcm.util.TestPlayer;
 import teaselib.Answer;
-import teaselib.core.Debugger;
 
 public class YesNoTest {
-    private static Player createPlayer()
-            throws IOException, ScriptParsingException, ValidationIssue, ScriptExecutionException {
-        Player player = TestUtils.createPlayer(YesNoTest.class);
-        player.loadScript(YesNoTest.class.getSimpleName());
 
-        Debugger debugger = new Debugger(player.teaseLib);
-        debugger.freezeTime();
-        return player;
+    final Player player;
+
+    public YesNoTest() throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
+        player = TestPlayer.loadScript(getClass());
     }
 
     @Test
-    public void testScriptStructureWithFinalInteraction()
-            throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
-        Action action = createPlayer().script.actions.get(1000);
+    public void testScriptStructureWithFinalInteraction() {
+        Action action = player.script.actions.get(1000);
         assertNotNull(action);
 
         SpokenMessage spokenMessage = (SpokenMessage) action.message;
@@ -54,9 +49,8 @@ public class YesNoTest {
     }
 
     @Test
-    public void testScriptStructureWithFinalBrackets()
-            throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
-        Action action = createPlayer().script.actions.get(1010);
+    public void testScriptStructureWithFinalBrackets() {
+        Action action = player.script.actions.get(1010);
         assertNotNull(action);
 
         SpokenMessage spokenMessage = (SpokenMessage) action.message;
@@ -87,4 +81,5 @@ public class YesNoTest {
         assertEquals("YesNo Yes Foo", action.getResponseText(Statement.YesText, null));
         assertEquals("YesNo No Bar", action.getResponseText(Statement.NoText, null));
     }
+
 }

@@ -1,0 +1,29 @@
+' pcm test cases
+
+
+' testStop
+
+[Action 1000]
+Get ready...
+.range 1001
+
+[Action 1001]
+Do some foo!
+.stoptext Stop!
+.set 8
+.delay 60 60 STOP 9990 9990
+.range 9992
+
+
+[action 9990]
+.range 9999
+
+[action 9992]
+.range 9999
+
+' proper exit for all test cases
+[action 9999]
+.unset 9999
+.noimage
+.quit
+

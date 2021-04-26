@@ -14,6 +14,7 @@ import pcm.state.Condition;
 import pcm.state.persistence.ScriptState;
 import teaselib.Actor;
 import teaselib.Sexuality.Gender;
+import teaselib.core.Debugger;
 import teaselib.core.ResourceLoader;
 import teaselib.core.TeaseLib;
 import teaselib.core.configuration.DebugSetup;
@@ -33,7 +34,7 @@ public class TestUtils {
         return createPlayer(teaseLib, scriptClass);
     }
 
-    public static Player createPlayer(TeaseLib teaseLib, Class<?> scriptClass) {
+    private static Player createPlayer(TeaseLib teaseLib, Class<?> scriptClass) {
         return createPlayer(teaseLib, scriptClass, TestScript.newActor(Gender.Feminine));
     }
 
@@ -43,12 +44,18 @@ public class TestUtils {
         };
     }
 
-    public static Player createPlayer(Class<?> scriptClass, String script)
+    public static Player loadScript(Class<?> scriptClass, String script)
             throws ScriptParsingException, ScriptExecutionException, IOException, ValidationIssue {
         TeaseLib teaseLib = teaseLib();
         Player player = createPlayer(teaseLib, scriptClass);
         player.loadScript(script);
+        freezeTime(player);
         return player;
+    }
+
+    private static void freezeTime(Player player) {
+        Debugger debugger = new Debugger(player.teaseLib);
+        debugger.freezeTime();
     }
 
     public static void play(Player player, int start) throws ScriptExecutionException {

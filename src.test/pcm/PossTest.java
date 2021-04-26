@@ -1,6 +1,6 @@
 package pcm;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -12,7 +12,7 @@ import pcm.controller.ProbabilityModel;
 import pcm.controller.ProbabilityModelBasedOnPossBucketSum;
 import pcm.model.Action;
 import pcm.model.ActionRange;
-import pcm.util.TestUtils;
+import pcm.util.TestPlayer;
 
 public class PossTest {
     final AtomicInteger randomResult = new AtomicInteger(0);
@@ -25,7 +25,7 @@ public class PossTest {
 
     @Test
     public void testPoss() throws Exception {
-        Player player = TestUtils.createPlayer(getClass(), "PossTest");
+        Player player = TestPlayer.loadScript(getClass());
 
         ActionRange r = new ActionRange(1000, 1003);
         List<Action> actions = player.range(r);
@@ -52,7 +52,7 @@ public class PossTest {
 
     @Test
     public void testPoss100() throws Exception {
-        Player player = TestUtils.createPlayer(getClass(), "PossTest");
+        Player player = TestPlayer.loadScript(getClass());
 
         ActionRange r = new ActionRange(1010, 1013);
         List<Action> actions = player.range(r);
@@ -67,7 +67,7 @@ public class PossTest {
 
     @Test
     public void testPossElse() throws Exception {
-        Player player = TestUtils.createPlayer(getClass(), "PossTest");
+        Player player = TestPlayer.loadScript(getClass());
 
         player.state.unset(0);
         player.state.unset(1);
@@ -91,7 +91,7 @@ public class PossTest {
 
     @Test
     public void testPoss100WeightedElse() throws Exception {
-        Player player = TestUtils.createPlayer(getClass(), "PossTest");
+        Player player = TestPlayer.loadScript(getClass());
 
         player.state.set(0);
         player.state.set(1);
@@ -111,7 +111,7 @@ public class PossTest {
 
     @Test
     public void testWeightedElse() throws Exception {
-        Player player = TestUtils.createPlayer(getClass(), "PossTest");
+        Player player = TestPlayer.loadScript(getClass());
 
         player.state.unset(0);
         player.state.set(1);
@@ -139,7 +139,7 @@ public class PossTest {
 
     @Test
     public void testElse2() throws Exception {
-        Player player = TestUtils.createPlayer(getClass(), "PossTest");
+        Player player = TestPlayer.loadScript(getClass());
 
         player.state.unset(0);
         player.state.unset(1);

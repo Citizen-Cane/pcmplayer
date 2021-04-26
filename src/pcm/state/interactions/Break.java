@@ -17,8 +17,8 @@ import teaselib.ScriptFunction;
 import teaselib.core.util.ExceptionUtil;
 
 /**
- * Displays prompts while playing a range. THe following should be considered when using this statement:
- * <li>The stack is saved and restored, allowing for leaving the play range by interrupting the script function.
+ * Displays prompts while playing a range. The following should be considered when using this statement:
+ * <li>The stack is saved and restored, for allowing to exit the play range by interrupting the script function.
  * <li>All gosub/return pairs must be contained in the play range. This condition can't be validated, so be careful.
  * <li>If the break range is left by interrupting the script function within a gosub-statement, the stack is restored,
  * and execution continues at the exit range.

@@ -10,7 +10,7 @@ import org.junit.Test;
 import pcm.controller.Declarations;
 import pcm.controller.Player;
 import pcm.state.StateCommandLineParameters;
-import pcm.util.TestUtils;
+import pcm.util.TestPlayer;
 import teaselib.State;
 import teaselib.Toys;
 
@@ -28,7 +28,7 @@ public class StateCommandTest {
 
     @Before
     public void initPlayer() throws Exception {
-        player = TestUtils.createPlayer(StateCommandTest.class, "StateCommandTest");
+        player = TestPlayer.loadScript(getClass());
     }
 
     @Test

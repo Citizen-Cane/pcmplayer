@@ -4,7 +4,7 @@ public interface Trigger extends BreakPoint {
     @Override
     void reached();
 
-    boolean assertExpected() throws AssertionError;
+    boolean expected();
 
     String getMessage();
 

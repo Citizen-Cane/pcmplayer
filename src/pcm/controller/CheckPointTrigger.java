@@ -1,6 +1,8 @@
 package pcm.controller;
 
 /**
+ * Indicates that a given checkpoint (the specified action) has been reached
+ * 
  * @author Citizen-Cane
  *
  */
@@ -25,7 +27,7 @@ public class CheckPointTrigger extends BasicTrigger {
     }
 
     @Override
-    public boolean assertExpected() throws AssertionError {
+    public boolean expected() throws AssertionError {
         return expected == reached;
     }
 

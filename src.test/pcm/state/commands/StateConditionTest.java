@@ -9,7 +9,7 @@ import pcm.controller.Declarations;
 import pcm.controller.Player;
 import pcm.state.StateCommandLineParameters;
 import pcm.state.conditions.StateCondition;
-import pcm.util.TestUtils;
+import pcm.util.TestPlayer;
 import teaselib.Body;
 import teaselib.Household;
 import teaselib.State;
@@ -22,7 +22,7 @@ public class StateConditionTest {
 
     @Before
     public void initPlayer() throws Exception {
-        player = TestUtils.createPlayer(StateCommandTest.class, "ItemCommandTest");
+        player = TestPlayer.loadScript(StateCommandTest.class, "ItemCommandTest");
     }
 
     public StateConditionTest() {
