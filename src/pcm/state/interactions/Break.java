@@ -1,10 +1,8 @@
 package pcm.state.interactions;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
+import pcm.controller.AllActionsSetException;
 import pcm.controller.Player;
 import pcm.model.AbstractAction.Statement;
 import pcm.model.Action;
@@ -12,7 +10,6 @@ import pcm.model.ActionRange;
 import pcm.model.Script;
 import pcm.model.ScriptExecutionException;
 import teaselib.Answer;
-import teaselib.Answers;
 import teaselib.ScriptFunction;
 import teaselib.core.util.ExceptionUtil;
 
@@ -43,19 +40,23 @@ public class Break extends AbstractBreakInteraction {
     }
 
     @Override
-    public Action getRange(final Player player, final Script script, final Action action, Runnable visuals)
+    public Action getRange(Player player, Script script, Action action, Runnable visuals)
             throws ScriptExecutionException {
         int stackMemento = script.stack.size();
         visuals.run();
-        Answers answers = new Answers(choiceRanges.size());
-        List<ActionRange> ranges = new ArrayList<>(choiceRanges.size());
-        for (Entry<Statement, ActionRange> entry : choiceRanges.entrySet()) {
-            answers.add(Answer.resume(action.getResponseText(entry.getKey(), script)));
-            ranges.add(entry.getValue());
-        }
 
-        player.action = rangeProvider.getRange(player, script, action, NoVisuals);
-        ScriptFunction playRange = new ScriptFunction(() -> {
+        player.action = getNextAction(player, script, action);
+        ScriptFunction playRange = getPlayRange(player);
+
+        return performBreakRange(player, script, action, stackMemento, playRange);
+    }
+
+    protected Action getNextAction(Player player, Script script, Action action) throws ScriptExecutionException {
+        return rangeProvider.getRange(player, script, action, NoVisuals);
+    }
+
+    private ScriptFunction getPlayRange(final Player player) {
+        return new ScriptFunction(() -> {
             try {
                 player.playRange(breakRange);
             } catch (ScriptExecutionException e) {
@@ -63,16 +64,19 @@ public class Break extends AbstractBreakInteraction {
             }
             player.scriptRenderer.audioSync.completeSpeechRecognition();
         });
+    }
 
-        Answer result = player.reply(playRange, answers);
+    private Action performBreakRange(Player player, Script script, Action action, int stackMemento,
+            ScriptFunction playRange) throws AllActionsSetException {
+        Map<Answer, ActionRange> ranges = ranges(script, action);
+        Answer result = player.reply(playRange, answers(ranges));
         if (result.equals(Answer.Timeout)) {
             return player.action;
         } else {
             if (!supressStackCorrectionOnBreak) {
                 restoreStack(script, stackMemento);
             }
-            int index = answers.indexOf(result);
-            return player.getAction(ranges.get(index));
+            return player.getAction(ranges.get(result));
         }
     }
 

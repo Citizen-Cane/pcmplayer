@@ -6,9 +6,9 @@ package pcm.state.visuals;
 import pcm.controller.Player;
 
 /**
- * The timeout class is used to direct rendering the delay to the interaction.
+ * The timeout class is used to direct the delay to the interaction.
  * 
- * @author someone
+ * @author Citizen-Cane
  *
  */
 public class Timeout extends Delay {
@@ -23,10 +23,8 @@ public class Timeout extends Delay {
 
     @Override
     public void render(Player player) {
-        // The timeout class is used to direct rendering the
-        // delay to the interaction
+        // The timeout class is used to direct the delay to the interaction
         duration = player.random.value(from, to);
-        return;
     }
 
 }

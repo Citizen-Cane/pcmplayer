@@ -21,10 +21,11 @@ public class SpokenMessage implements Visual, ValidatableResources {
     public static final Set<Statement> MODIFIERS = Collections
             .unmodifiableSet(new HashSet<>(Arrays.asList(Statement.Append, Statement.Prepend, Statement.Replace)));
 
+    private final Actor actor;
     private final List<Entry> entries = new ArrayList<>();
+
     private Message message = null;
     private Statement modifier = null;
-    private final Actor actor;
 
     public static class Entry {
         public final Message message;
@@ -133,4 +134,14 @@ public class SpokenMessage implements Visual, ValidatableResources {
     public void setModifier(Statement statement) {
         modifier = statement;
     }
+
+    @Override
+    public String toString() {
+        if (message != null) {
+            return message.toString();
+        } else {
+            return NoMessage.instance.toString();
+        }
+    }
+
 }

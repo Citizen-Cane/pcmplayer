@@ -1,6 +1,7 @@
 package pcm.state.interactions;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -11,6 +12,8 @@ import pcm.model.ActionRange;
 import pcm.model.Script;
 import pcm.model.ScriptParsingException;
 import pcm.model.ValidationIssue;
+import teaselib.Answer;
+import teaselib.Answers;
 
 public abstract class AbstractBreakInteraction extends AbstractInteraction {
     final Map<Statement, ActionRange> choiceRanges;
@@ -21,6 +24,27 @@ public abstract class AbstractBreakInteraction extends AbstractInteraction {
         }
 
         this.choiceRanges = choiceRanges;
+    }
+
+    Map<Answer, ActionRange> ranges(Script script, Action action) {
+        Map<Answer, ActionRange> ranges = new LinkedHashMap<>();
+        for (Entry<Statement, ActionRange> entry : choiceRanges.entrySet()) {
+            String choice = action.getResponseText(entry.getKey(), script);
+            Answer answer;
+            if (entry.getKey() == Statement.YesText) {
+                answer = Answer.yes(choice);
+            } else if (entry.getKey() == Statement.NoText) {
+                answer = Answer.no(choice);
+            } else {
+                answer = Answer.resume(choice);
+            }
+            ranges.put(answer, entry.getValue());
+        }
+        return ranges;
+    }
+
+    static Answers answers(Map<Answer, ActionRange> ranges) {
+        return new Answers(new ArrayList<>(ranges.keySet()));
     }
 
     @Override

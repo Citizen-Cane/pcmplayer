@@ -256,7 +256,7 @@ public class Player extends TeaseScript implements MainScript {
     }
 
     public void playFrom(ActionRange startRange) throws ScriptExecutionException {
-        play(startRange, (ActionRange) ActionRange.all);
+        play(startRange, ActionRange.all);
     }
 
     public void playOnly(ActionRange startRange) throws ScriptExecutionException {
@@ -378,7 +378,7 @@ public class Player extends TeaseScript implements MainScript {
         return uncovered;
     }
 
-    private void retainActionsCalledFromOtherActions(Script script, List<Action> uncovered) {
+    private static void retainActionsCalledFromOtherActions(Script script, List<Action> uncovered) {
         for (Action a : script.actions.getAll()) {
             for (ActionRange coverage : a.interaction.coverage()) {
                 if (!(coverage instanceof LoadSbdRange)) {
@@ -407,7 +407,7 @@ public class Player extends TeaseScript implements MainScript {
         }
     }
 
-    private void retainDebugEntries(Script script, List<Action> uncovered) {
+    private static void retainDebugEntries(Script script, List<Action> uncovered) {
         for (Action a : script.actions.getAll()) {
             if (a.commands != null) {
                 for (Command command : a.commands) {
@@ -429,7 +429,7 @@ public class Player extends TeaseScript implements MainScript {
         }
     }
 
-    private void validateAspects(Script script, MappedScriptState state, List<ValidationIssue> validationErrors)
+    private static void validateAspects(Script script, MappedScriptState state, List<ValidationIssue> validationErrors)
             throws ScriptParsingException {
         validateScript(script, validationErrors);
         validateMappings(script, state, validationErrors);
@@ -556,7 +556,6 @@ public class Player extends TeaseScript implements MainScript {
     public Action execute(Action action) throws ScriptExecutionException {
         action.execute(state);
         Action next = action.interaction.getRange(this, script, action, () -> render(action));
-
         if (Thread.interrupted()) {
             throw new ScriptInterruptedException();
         }

@@ -34,7 +34,7 @@ public class StopTest {
         player.debugger.addResponse("Stop!", Response.Ignore);
         player.play(action.number);
         assertEquals(ScriptState.SET, player.state.get(1001));
-        assertEquals("Execution of action that contains the delay ... STOP statement", ScriptState.SET,
+        assertEquals("Execution of action that contains the delay x y STOP statement", ScriptState.SET,
                 player.state.get(8));
         assertEquals(ScriptState.SET, player.state.get(9992));
     }
@@ -46,7 +46,7 @@ public class StopTest {
         player.debugger.addResponse("Stop!", Response.Choose);
         player.play(action.number);
         assertEquals(ScriptState.SET, player.state.get(1001));
-        assertEquals("Execution of action that contains the delay ... STOP statement", ScriptState.SET,
+        assertEquals("Execution of action that contains the delay x y STOP statement", ScriptState.SET,
                 player.state.get(8));
         assertEquals(ScriptState.SET, player.state.get(9990));
     }

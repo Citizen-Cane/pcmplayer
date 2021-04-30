@@ -33,8 +33,8 @@ public class BreakTest {
         assertNotNull(action);
         player.debugger.addResponse("Stop!", Response.Ignore);
         player.play(action.number);
-        assertEquals(ScriptState.SET, player.state.get(8));
         assertEquals(ScriptState.SET, player.state.get(1001));
+        assertEquals(ScriptState.SET, player.state.get(8));
         assertEquals(ScriptState.SET, player.state.get(9992));
     }
 

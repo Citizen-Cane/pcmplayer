@@ -1,6 +1,6 @@
 package pcm.model;
 
-import static java.lang.Integer.parseInt;
+import static java.lang.Integer.*;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -442,7 +442,7 @@ public abstract class Action extends AbstractAction {
     private void addDelayAndReplies(ScriptLineTokenizer cmd, String[] args) {
         int from = parseInt(args[0]);
         int to = parseInt(args[1]);
-        // Type
+
         TimeoutType timeoutType = null;
         final String arg2 = args[2].toLowerCase();
         if (arg2.equals("confirm")) {
@@ -452,7 +452,7 @@ public abstract class Action extends AbstractAction {
         } else if (arg2.equals("terminate")) {
             timeoutType = TimeoutType.Terminate;
         }
-        // Behavior
+
         TimeoutBehavior timeoutBehavior = null;
         final String arg3 = args[3].toLowerCase();
         if (arg3.equals("indubiomitius")) {
@@ -462,19 +462,31 @@ public abstract class Action extends AbstractAction {
         } else if (arg3.equals("indubiocontrareum")) {
             timeoutBehavior = TimeoutBehavior.InDubioContraReum;
         }
-        // Build the statement
+
+        Delay timeout;
+        Map<Statement, ActionRange> rangesFromArgv;
         if (timeoutType != null && timeoutBehavior != null) {
-            addVisual(Statement.Delay, new Timeout(from, to));
-            setInteraction(new Stop(rangesFromArgv(args, 4), timeoutType, timeoutBehavior));
-        } else if (timeoutType != null && timeoutBehavior == null) {
-            addVisual(Statement.Delay, new Timeout(from, to));
-            setInteraction(new Stop(rangesFromArgv(args, 3), timeoutType, TimeoutBehavior.InDubioProDuriore));
-        } else if (timeoutType == null && timeoutBehavior == null) {
-            addVisual(Statement.Delay, new Delay(from, to));
-            setInteraction(
-                    new Stop(rangesFromArgv(args, 2), Stop.TimeoutType.Terminate, TimeoutBehavior.InDubioProDuriore));
+            timeout = new Timeout(from, to);
+            rangesFromArgv = rangesFromArgv(args, 4);
+        } else if (timeoutType != null) {
+            timeout = new Timeout(from, to);
+            timeoutBehavior = TimeoutBehavior.InDubioProDuriore;
+            rangesFromArgv = rangesFromArgv(args, 3);
+        } else if (timeoutBehavior == null) {
+            timeout = new Delay(from, to);
+            timeoutType = TimeoutType.Terminate;
+            timeoutBehavior = TimeoutBehavior.InDubioProDuriore;
+            rangesFromArgv = rangesFromArgv(args, 2);
         } else {
             throw new IllegalArgumentException(cmd.line);
+        }
+
+        if (timeoutType == TimeoutType.Terminate) {
+            addVisual(Statement.Delay, timeout);
+            setInteraction(new Stop.Termimative(rangesFromArgv, timeoutBehavior));
+        } else {
+            addVisual(Statement.Delay, timeout);
+            setInteraction(new Stop.Confirmative(rangesFromArgv, timeoutType, timeoutBehavior));
         }
     }
 

@@ -1,9 +1,6 @@
 package pcm.state.interactions;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,15 +13,24 @@ import pcm.model.Script;
 import pcm.model.ScriptExecutionException;
 import pcm.state.visuals.Timeout;
 import teaselib.Answer;
-import teaselib.Answers;
 import teaselib.ScriptFunction;
 import teaselib.core.speechrecognition.TimeoutBehavior;
 
-public class Stop extends AbstractBreakInteraction {
+/**
+ * THe Stop statement executes the current action as a timed script function.
+ * 
+ * @author Citizen-Cane
+ *
+ */
+public abstract class Stop extends AbstractBreakInteraction {
     private static final Logger logger = LoggerFactory.getLogger(Stop.class);
 
-    private final TimeoutType timeoutType;
-    private final TimeoutBehavior timeoutBehavior;
+    final TimeoutBehavior timeoutBehavior;
+
+    public Stop(Map<Statement, ActionRange> choiceRanges, TimeoutBehavior timeoutBehavior) {
+        super(choiceRanges);
+        this.timeoutBehavior = timeoutBehavior;
+    }
 
     public enum TimeoutType {
         /**
@@ -41,69 +47,83 @@ public class Stop extends AbstractBreakInteraction {
         AutoConfirm
     }
 
-    public Stop(Map<Statement, ActionRange> choiceRanges, TimeoutType timeoutType, TimeoutBehavior timeoutBehavior) {
-        super(choiceRanges);
-        this.timeoutType = timeoutType;
-        this.timeoutBehavior = timeoutBehavior;
-    }
+    /**
+     * Render visuals directly, then display prompt with predefined timeout function.
+     * 
+     * @author Citizen-Cane
+     *
+     */
+    public static class Confirmative extends Stop {
+        private final TimeoutType timeoutType;
 
-    @Override
-    public Action getRange(final Player player, Script script, final Action action, final Runnable visuals)
-            throws ScriptExecutionException {
-        logger.info("{}", this);
-
-        Answers answers = new Answers(choiceRanges.size());
-        List<ActionRange> ranges = new ArrayList<>(choiceRanges.size());
-        for (Entry<Statement, ActionRange> entry : choiceRanges.entrySet()) {
-            String choice = action.getResponseText(entry.getKey(), script);
-            if (entry.getKey() == Statement.YesText) {
-                answers.add(Answer.yes(choice));
-            } else if (entry.getKey() == Statement.NoText) {
-                answers.add(Answer.no(choice));
-            } else {
-                answers.add(Answer.resume(choice));
-            }
-            ranges.add(entry.getValue());
+        public Confirmative(Map<Statement, ActionRange> choiceRanges, TimeoutType timeoutType,
+                TimeoutBehavior timeoutBehavior) {
+            super(choiceRanges, timeoutBehavior);
+            this.timeoutType = timeoutType;
         }
 
-        ScriptFunction timeoutFunction;
-        // If the reply requires confirmation, then it's treated like a normal reply,
-        // and the prompt appears after all visuals have been rendered their mandatory part
-        if (timeoutType != TimeoutType.Terminate) {
-            // Render visuals directly, then display prompt with predefined timeout function
+        @Override
+        public Action getRange(Player player, Script script, Action action, Runnable visuals)
+                throws ScriptExecutionException {
+            logger.info("{}", this);
+
             visuals.run();
+
+            ScriptFunction timeoutFunction;
             Timeout timeout = (Timeout) action.visuals.get(Statement.Delay);
             if (timeoutType == TimeoutType.AutoConfirm) {
                 timeoutFunction = timeoutWithAutoConfirmation(player, timeout);
             } else {
                 timeoutFunction = timeoutWithConfirmation(player, timeout);
             }
-        } else {
-            timeoutFunction = displayPromptTogetherWithScriptFunction(player, visuals);
+
+            return nextAction(player, script, action, timeoutFunction);
         }
 
-        Answer result = player.reply(timeoutFunction, answers);
+        private ScriptFunction timeoutWithAutoConfirmation(final Player player, Timeout timeout) {
+            return player.timeoutWithAutoConfirmation(timeout.duration, timeoutBehavior);
+        }
+
+        private ScriptFunction timeoutWithConfirmation(final Player player, Timeout timeout) {
+            return player.timeoutWithConfirmation(timeout.duration, timeoutBehavior);
+        }
+    }
+
+    /**
+     * Render visuals in a script function.
+     * 
+     * @author Citizen-Cane
+     *
+     */
+    public static class Termimative extends Stop {
+        public Termimative(Map<Statement, ActionRange> choiceRanges, TimeoutBehavior timeoutBehavior) {
+            super(choiceRanges, timeoutBehavior);
+        }
+
+        @Override
+        public Action getRange(Player player, Script script, Action action, Runnable visuals)
+                throws ScriptExecutionException {
+            logger.info("{}", this);
+
+            ScriptFunction timeoutFunction = new ScriptFunction(() -> {
+                visuals.run();
+                player.completeMandatory();
+            });
+
+            return nextAction(player, script, action, timeoutFunction);
+        }
+    }
+
+    Action nextAction(Player player, Script script, Action action, ScriptFunction timeoutFunction)
+            throws ScriptExecutionException {
+        Map<Answer, ActionRange> ranges = ranges(script, action);
+        Answer result = player.reply(timeoutFunction, answers(ranges));
         if (result != Answer.Timeout) {
-            int index = answers.indexOf(result);
             logger.info("-> {}", result);
-            return player.getAction(ranges.get(index));
+            return player.getAction(ranges.get(result));
         } else {
             return rangeProvider.getRange(player, script, action, NoVisuals);
         }
     }
 
-    private ScriptFunction timeoutWithAutoConfirmation(final Player player, Timeout timeout) {
-        return player.timeoutWithAutoConfirmation(timeout.duration, timeoutBehavior);
-    }
-
-    private ScriptFunction timeoutWithConfirmation(final Player player, Timeout timeout) {
-        return player.timeoutWithConfirmation(timeout.duration, timeoutBehavior);
-    }
-
-    private static ScriptFunction displayPromptTogetherWithScriptFunction(final Player player, final Runnable visuals) {
-        return new ScriptFunction(() -> {
-            visuals.run();
-            player.completeMandatory();
-        });
-    }
 }

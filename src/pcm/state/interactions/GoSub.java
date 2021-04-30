@@ -40,8 +40,6 @@ public class GoSub extends AbstractInteraction {
         next.interaction = rangeProvider;
         script.stack.push(next);
 
-        
-        
         return player.getAction(range);
     }
 

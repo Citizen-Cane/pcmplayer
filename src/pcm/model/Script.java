@@ -89,83 +89,78 @@ public class Script extends AbstractAction {
     }
 
     private Supplier<StatementCollector> txtCollector() {
-        return () -> {
-            return new StatementCollector() {
-                Txt txt;
+        return () -> new StatementCollector() {
+            Txt txt;
 
-                @Override
-                public void init() {
-                    txt = new Txt(actor);
-                }
+            @Override
+            public void init() {
+                txt = new Txt(actor);
+            }
 
-                @Override
-                public void parse(ScriptLineTokenizer cmd) {
-                    String text = cmd.line.substring(Statement.Txt.toString().length() + 1);
-                    txt.add(text.trim());
-                }
+            @Override
+            public void parse(ScriptLineTokenizer cmd) {
+                String text = cmd.line.substring(Statement.Txt.toString().length() + 1);
+                txt.add(text.trim());
+            }
 
-                @Override
-                public void nextSection(Action action) { // Nothing to do
-                }
+            @Override
+            public void nextSection(Action action) { // Nothing to do
+            }
 
-                @Override
-                public void applyTo(Action action) {
-                    txt.end();
-                    action.message = txt;
-                }
-            };
+            @Override
+            public void applyTo(Action action) {
+                txt.end();
+                action.message = txt;
+            }
         };
     }
 
     private Supplier<StatementCollector> messageCollector() {
-        return (Supplier<StatementCollector>) () -> {
-            return new StatementCollector() {
-                SpokenMessage message;
+        return () -> new StatementCollector() {
+            SpokenMessage message;
 
-                @Override
-                public void init() { // Nothing to do
-                    message = new SpokenMessage(actor);
-                }
+            @Override
+            public void init() { // Nothing to do
+                message = new SpokenMessage(actor);
+            }
 
-                @Override
-                public void parse(ScriptLineTokenizer cmd) {
-                    if (cmd.statement == Statement.Message) {
-                        message.add(cmd.line);
-                    } else if (SpokenMessage.MODIFIERS.contains(cmd.statement)) {
-                        message.setModifier(cmd.statement);
-                    } else {
-                        throw new IllegalStatementException(cmd.statement, cmd.allArgs());
-                    }
+            @Override
+            public void parse(ScriptLineTokenizer cmd) {
+                if (cmd.statement == Statement.Message) {
+                    message.add(cmd.line);
+                } else if (SpokenMessage.MODIFIERS.contains(cmd.statement)) {
+                    message.setModifier(cmd.statement);
+                } else {
+                    throw new IllegalStatementException(cmd.statement, cmd.allArgs());
                 }
+            }
 
-                @Override
-                public void nextSection(Action action) {
-                    if (action.interaction instanceof AbstractPause) {
-                        AbstractPause pause = (AbstractPause) action.interaction;
-                        message.completeSection(pause.answer);
-                        action.interaction = null;
-                    } else if (action.interaction == null) {
-                        message.completeSection();
-                    } else {
-                        throw new IllegalArgumentException("Action " + action.number + ": " + "Interaction "
-                                + action.interaction.getClass().getSimpleName()
-                                + " not allowed as message section prompt");
-                    }
-                    message.startNewSection();
+            @Override
+            public void nextSection(Action action) {
+                if (action.interaction instanceof AbstractPause) {
+                    AbstractPause pause = (AbstractPause) action.interaction;
+                    message.completeSection(pause.answer);
+                    action.interaction = null;
+                } else if (action.interaction == null) {
+                    message.completeSection();
+                } else {
+                    throw new IllegalArgumentException("Action " + action.number + ": " + "Interaction "
+                            + action.interaction.getClass().getSimpleName() + " not allowed as message section prompt");
                 }
+                message.startNewSection();
+            }
 
-                @Override
-                public void applyTo(Action action) {
-                    message.completeMessage();
-                    action.message = message;
-                }
-            };
+            @Override
+            public void applyTo(Action action) {
+                message.completeMessage();
+                action.message = message;
+            }
         };
     }
 
     private void completeScriptDefaults() {
         if (responses == null) {
-            responses = new HashMap<>();
+            responses = Collections.emptyMap();
             // No defaults since hard-coded messages can't be translated
         }
     }
