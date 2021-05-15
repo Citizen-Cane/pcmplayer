@@ -1,7 +1,7 @@
 ' pcm test cases
 
 
-' testStop
+' testBreak
 
 [Action 1000]
 Get ready...
@@ -15,6 +15,23 @@ Get ready...
 [action 1002]
 Do some foo!
 .set 8
+.range 9992
+
+
+' testNesting
+
+
+[Action 1010]
+.unset 1010
+.break 1010 1019 STOP 9990
+.stoptext Stop!
+.range 1011 1012
+
+[Action 1011]
+.range 1010
+
+[action 1012]
+.else
 .range 9992
 
 

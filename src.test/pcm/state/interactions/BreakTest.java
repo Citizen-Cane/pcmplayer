@@ -64,4 +64,20 @@ public class BreakTest {
         assertEquals("Stop range", ScriptState.SET, player.state.get(9990));
     }
 
+    @Test
+    public void testBreakStatementNesting() throws ScriptExecutionException {
+        Action action = player.script.actions.get(1010);
+        player.debugger.addResponse("Stop!", Response.Ignore);
+        assertNotNull(action);
+        try {
+            player.play(action.number);
+            fail("nested break statement not detected");
+        } catch (ScriptExecutionException e) {
+            if (e.action != action) {
+                throw e;
+            }
+        }
+
+    }
+
 }

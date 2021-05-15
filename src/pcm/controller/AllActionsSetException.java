@@ -12,6 +12,10 @@ public class AllActionsSetException extends ScriptExecutionException {
 
     public final List<Action> actions;
 
+    public AllActionsSetException(Script script, Action action, ActionRange range) {
+        this(script, action, range, script.actions.getAll(range));
+    }
+
     public AllActionsSetException(Script script, Action action, ActionRange range, List<Action> actions) {
         super(script, action, (actions.size() > 1 ? "All actions set: " : "Empty range ") + range);
         this.actions = actions;

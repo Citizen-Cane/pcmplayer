@@ -77,6 +77,7 @@ public class Player extends TeaseScript implements MainScript {
 
     public Script script = null;
     public Action action = null;
+    public ActionRange playRange = null;
 
     public boolean validateScripts = false;
     public boolean debugOutput = false;
@@ -137,7 +138,7 @@ public class Player extends TeaseScript implements MainScript {
     }
 
     private Symbols createDominantSubmissiveSymbols() {
-        StringBuilder dominantSubmissiveSymbol = new StringBuilder();
+        var dominantSubmissiveSymbol = new StringBuilder();
 
         if (actor.gender == Voice.Male) {
             dominantSubmissiveSymbol.append("M");
@@ -169,18 +170,18 @@ public class Player extends TeaseScript implements MainScript {
 
     public void play(String scriptName) {
         StringTokenizer argv = parseDebugFile(scriptName);
-        scriptName = argv.nextToken();
-        play(scriptName, parseStartRange(argv));
+        play(argv.nextToken(), parseStartRange(argv));
     }
 
     private StringTokenizer parseDebugFile(String scriptName) {
+        String startRange = scriptName;
         String resourcePath = getClass().getSimpleName() + ResourceLoader.separator + "debug.txt";
         try {
             InputStream debugStream = resources.get(resourcePath);
             if (debugStream != null) {
                 debugOutput = true;
                 validateScripts = Boolean.parseBoolean(teaseLib.config.get(Config.Debug.StopOnAssetNotFound));
-                try (BufferedReader debugReader = new BufferedReader(new InputStreamReader(debugStream));) {
+                try (var debugReader = new BufferedReader(new InputStreamReader(debugStream));) {
                     String line;
                     while ((line = debugReader.readLine()) != null) {
                         line = line.trim();
@@ -190,7 +191,7 @@ public class Player extends TeaseScript implements MainScript {
                                 line = line.substring(0, comment - 1);
                             }
                             if (!line.isEmpty()) {
-                                scriptName = line;
+                                startRange = line;
                                 break;
                             }
                         }
@@ -200,7 +201,7 @@ public class Player extends TeaseScript implements MainScript {
         } catch (Exception e) {
             logger.error(resourcePath, e);
         }
-        return new StringTokenizer(scriptName, " \t");
+        return new StringTokenizer(startRange, " \t");
     }
 
     private static ActionRange parseStartRange(StringTokenizer argv) {
@@ -489,36 +490,49 @@ public class Player extends TeaseScript implements MainScript {
      * @throws ScriptExecutionException
      */
     public void playRange(ActionRange playRange) throws ScriptExecutionException {
-        while (action != EndAction && playRange.contains(action.number)) {
-            BreakPoint breakPoint = breakPoints.getBreakPoint(script.name, action.number);
-            breakPoint.reached();
-            if (breakPoint.suspend()) {
-                return;
-            }
-
-            try {
-                action = execute(action);
-            } catch (ScriptInterruptedException e) {
-                // Because script functions in the break range statement are
-                // running in the same player instance as the main script,
-                // we have to check the play range in order to find out if the
-                // onClose handler should be called.
-                // It's kind of a hack, and leaves a small loop hole
-                // (placing the onClose range inside the play range),
-                // but saves us from creating a second player instance
-                boolean callOnCloseHandler = script.onClose != null && playRange.contains(script.onClose);
-                if (callOnCloseHandler && !intentionalQuit) {
-                    endAll();
-                    action = getAction(script.onClose);
-                    Thread.interrupted();
-                } else {
-                    throw e;
+        ActionRange previous = this.playRange;
+        try {
+            this.playRange = playRange;
+            while (action != EndAction && playRange.contains(action.number)) {
+                var breakPoint = breakPoints.getBreakPoint(script.name, action.number);
+                breakPoint.reached();
+                if (breakPoint.suspend()) {
+                    return;
                 }
-            } catch (ScriptExecutionException e) {
-                throw e;
-            } catch (Exception e) {
-                throw new ScriptExecutionException(script, action, e);
+
+                try {
+                    action = execute(action);
+                } catch (ScriptInterruptedException e) {
+                    // Because script functions in the break range statement are
+                    // running in the same player instance as the main script,
+                    // we have to check the play range in order to find out if the
+                    // onClose handler should be called.
+                    // It's kind of a hack, and leaves a small loop hole
+                    // (placing the onClose range inside the play range),
+                    // but saves us from creating a second player instance
+                    boolean callOnCloseHandler = script.onClose != null && playRange.contains(script.onClose);
+                    if (callOnCloseHandler && !intentionalQuit) {
+                        endAll();
+                        action = getAction(script.onClose);
+                        Thread.interrupted();
+                    } else {
+                        throw e;
+                    }
+                } catch (ScriptExecutionException e) {
+                    throw e;
+                } catch (RuntimeException e) {
+                    Throwable cause = e.getCause();
+                    if (cause instanceof ScriptExecutionException) {
+                        throw (ScriptExecutionException) cause;
+                    } else {
+                        throw e;
+                    }
+                } catch (Exception e) {
+                    throw new ScriptExecutionException(script, action, e);
+                }
             }
+        } finally {
+            this.playRange = previous;
         }
     }
 
@@ -533,21 +547,21 @@ public class Player extends TeaseScript implements MainScript {
 
     public Action getAction(ActionRange range) throws AllActionsSetException {
         List<Action> actions = range(script, range);
-        Action candidate = chooseAction(actions);
+        var candidate = chooseAction(actions);
         if (candidate == null) {
             logger.info("All actions set");
             if (script.onAllSet != null && !invokedOnAllSet) {
                 logger.info("Invoking OnAllSet handler");
                 invokedOnAllSet = true;
-                range = script.onAllSet;
-                actions = range(script, range);
+                ActionRange onAllSet = script.onAllSet;
+                actions = range(script, onAllSet);
                 if (actions.isEmpty()) {
-                    throw new AllActionsSetException(script, action, range, script.actions.getAll(range));
+                    throw new AllActionsSetException(script, action, onAllSet);
                 } else {
                     candidate = chooseAction(actions);
                 }
             } else {
-                throw new AllActionsSetException(script, action, range, script.actions.getAll(range));
+                throw new AllActionsSetException(script, action, range);
             }
         }
         return candidate;

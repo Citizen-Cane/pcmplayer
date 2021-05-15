@@ -18,7 +18,7 @@ import teaselib.Answers;
 public abstract class AbstractBreakInteraction extends AbstractInteraction {
     final Map<Statement, ActionRange> choiceRanges;
 
-    public AbstractBreakInteraction(Map<Statement, ActionRange> choiceRanges) {
+    protected AbstractBreakInteraction(Map<Statement, ActionRange> choiceRanges) {
         if (choiceRanges.containsKey(Statement.Chat) && choiceRanges.size() > 1) {
             throw new IllegalArgumentException(Statement.Chat.toString());
         }
@@ -49,7 +49,7 @@ public abstract class AbstractBreakInteraction extends AbstractInteraction {
 
     @Override
     public String toString() {
-        StringBuilder s = new StringBuilder();
+        var s = new StringBuilder();
         s.append(getClass().getSimpleName() + ": ");
         for (Entry<Statement, ActionRange> entry : choiceRanges.entrySet()) {
             s.append(entry.getKey());

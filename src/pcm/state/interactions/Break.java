@@ -42,6 +42,9 @@ public class Break extends AbstractBreakInteraction {
     @Override
     public Action getRange(Player player, Script script, Action action, Runnable visuals)
             throws ScriptExecutionException {
+        if (breakRange == player.playRange) {
+            throw new ScriptExecutionException(script, action, "Trying to break the same range twice");
+        }
         int stackMemento = script.stack.size();
         visuals.run();
 
@@ -80,7 +83,7 @@ public class Break extends AbstractBreakInteraction {
         }
     }
 
-    private static void restoreStack(final Script script, int stackMemento) {
+    private static void restoreStack(Script script, int stackMemento) {
         while (script.stack.size() > stackMemento) {
             script.stack.pop();
         }
