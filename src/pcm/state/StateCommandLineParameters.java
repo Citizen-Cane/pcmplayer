@@ -1,24 +1,27 @@
 package pcm.state;
 
+import static java.util.stream.Collectors.toList;
 import static pcm.state.StateCommandLineParameters.Keyword.Over;
 import static pcm.state.StateCommandLineParameters.Keyword.Remember;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import pcm.controller.Declarations;
-import teaselib.State;
-import teaselib.State.Persistence.Until;
+import pcm.state.persistence.ScriptState;
 import teaselib.core.util.CommandLineParameters;
+import teaselib.core.util.QualifiedItem;
 import teaselib.util.DurationFormat;
+import teaselib.util.Items;
 
 public class StateCommandLineParameters extends CommandLineParameters<StateCommandLineParameters.Keyword> {
     private static final long serialVersionUID = 1L;
-    private Declarations declarations;
+
+    private final Declarations declarations;
 
     public enum Keyword {
         Item,
@@ -45,6 +48,7 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
         Remaining,
         Elapsed,
         Limit,
+        Removed,
 
         Matching,
 
@@ -56,7 +60,8 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
 
         Not,;
 
-        static final Set<Keyword> COMMANDS = new HashSet<>(Arrays.asList(Apply, Remove, SetAvailable));
+        static final Set<Keyword> COMMANDS = Collections
+                .unmodifiableSet(new HashSet<>(Arrays.asList(Apply, Remove, SetAvailable)));
     }
 
     public boolean isCommand() {
@@ -193,17 +198,6 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
         return containsKey(Remember);
     }
 
-    public void handleStateOptions(State.Options options, DurationFormat duration, boolean remember) {
-        if (duration != null) {
-            State.Persistence persistence = options.over(duration.toSeconds(), TimeUnit.SECONDS);
-            if (remember) {
-                persistence.remember(Until.Removed);
-            }
-        } else if (remember) {
-            options.remember(Until.Removed);
-        }
-    }
-
     public Keyword getCondition() {
         Keyword[] conditionOperators = { Keyword.GreaterThan, Keyword.GreaterOrEqualThan, Keyword.LessOrEqualThan,
                 Keyword.LessThan, Keyword.Equals };
@@ -242,4 +236,24 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
     public Declarations getDeclarations() {
         return declarations;
     }
+
+    public void replaceWithMatching(String[] items, String[] attributes, ScriptState state) {
+        remove(Keyword.Matching);
+        remove(Keyword.Item);
+        Items matching = state.player.items(items).matching(attributes);
+        put(Keyword.Item, matching.stream().map(QualifiedItem::of).map(QualifiedItem::toString).collect(toList()));
+    }
+
+    public String[] optionalPeers(Keyword condition, Keyword peerList) {
+        String[] peers = items(containsKey(peerList) ? peerList : condition);
+        if (containsKey(peerList) && peers.length == 0) {
+            throw new IllegalArgumentException("Missing peers to " + condition.name().toLowerCase() + " the item '"
+                    + peerList.name().toLowerCase() + "'");
+        } else if (containsKey(condition) && items(condition).length > 0) {
+            throw new IllegalArgumentException("'" + condition.name() + "' just applies the default peers - use '"
+                    + condition.name() + " " + peerList.name() + "' to apply additional peers");
+        }
+        return peers;
+    }
+
 }

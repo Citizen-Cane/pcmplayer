@@ -11,6 +11,7 @@ import pcm.model.AbstractAction.Statement;
 import pcm.model.ScriptParsingException;
 import pcm.state.BasicCondition;
 import pcm.state.Condition;
+import pcm.state.ParameterizedConditionStatement;
 import pcm.state.StateCommandLineParameters;
 import pcm.state.StateCommandLineParameters.Keyword;
 import pcm.state.persistence.ScriptState;
@@ -34,7 +35,7 @@ public class IfState extends BasicCondition {
         this.args = args;
     }
 
-    private static ParameterizedStatement statement(Statement statement, String[] args,
+    private static ParameterizedConditionStatement statement(Statement statement, String[] args,
             ConditionCreator conditionCreator, Declarations declarations) throws ScriptParsingException {
         final List<Condition> conditions = new ArrayList<>();
 
@@ -83,9 +84,9 @@ public class IfState extends BasicCondition {
         }
     }
 
-    private static ParameterizedStatement logicalAND(Statement statement, String[] args, Declarations declarations,
+    private static ParameterizedConditionStatement logicalAND(Statement statement, String[] args, Declarations declarations,
             final List<Condition> conditions) {
-        return new ParameterizedStatement(statement, new StateCommandLineParameters(args, declarations)) {
+        return new ParameterizedConditionStatement(statement, new StateCommandLineParameters(args, declarations)) {
             @Override
             public boolean call(ScriptState state) {
                 for (Condition condition : conditions) {
@@ -97,9 +98,9 @@ public class IfState extends BasicCondition {
         };
     }
 
-    private static ParameterizedStatement logicalOR(Statement statement, String[] args, Declarations declarations,
+    private static ParameterizedConditionStatement logicalOR(Statement statement, String[] args, Declarations declarations,
             final List<Condition> conditions) {
-        return new ParameterizedStatement(statement, new StateCommandLineParameters(args, declarations)) {
+        return new ParameterizedConditionStatement(statement, new StateCommandLineParameters(args, declarations)) {
             @Override
             public boolean call(ScriptState state) {
                 for (Condition condition : conditions) {

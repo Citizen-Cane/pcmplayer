@@ -1,32 +1,20 @@
 package pcm.state;
 
+import static pcm.state.StateCommandLineParameters.Keyword.Applied;
+import static pcm.state.StateCommandLineParameters.Keyword.To;
+
+import java.util.function.BiFunction;
+
+import pcm.controller.Player;
 import pcm.model.AbstractAction.Statement;
 import pcm.model.ConditionRange;
-import pcm.state.StateCommandLineParameters.Keyword;
 import pcm.state.persistence.ScriptState;
-import teaselib.core.util.CommandLineParameters;
+import teaselib.State;
 
 public class BasicCondition implements Condition {
-    protected final ParameterizedStatement statement;
+    protected final ParameterizedConditionStatement statement;
 
-    protected abstract static class ParameterizedStatement {
-        private final Statement statement;
-        private final CommandLineParameters<?> args;
-
-        public <T extends Enum<T>> ParameterizedStatement(Statement statement, CommandLineParameters<T> args) {
-            this.statement = statement;
-            this.args = args;
-        }
-
-        public abstract boolean call(ScriptState state);
-
-        @Override
-        public String toString() {
-            return statement.toString() + " " + args.toString();
-        }
-    }
-
-    public BasicCondition(ParameterizedStatement statement) {
+    public BasicCondition(ParameterizedConditionStatement statement) {
         this.statement = statement;
     }
 
@@ -40,15 +28,29 @@ public class BasicCondition implements Condition {
         return conditionRange.contains(this);
     }
 
-    protected static String[] optionalPeers(StateCommandLineParameters args, Keyword condition, Keyword peerList) {
-        String[] peers = args.items(args.containsKey(peerList) ? peerList : condition);
-        if (args.containsKey(peerList) && peers.length == 0) {
-            throw new IllegalArgumentException("Missing peers");
-        } else if (args.containsKey(condition) && args.items(condition).length > 0) {
-            throw new IllegalArgumentException("'" + condition.name() + "' just applies to the default peers - use '"
-                    + condition.name() + " " + peerList.name() + "' to apply additional peers");
-        }
-        return peers;
+    protected static ParameterizedConditionStatement applied(StateCommandLineParameters args, String[] items,
+            Statement statement, BiFunction<Player, String, State> stateSupplier) {
+        String[] peers = args.optionalPeers(Applied, To);
+        return new ParameterizedConditionStatement(statement, args) {
+            @Override
+            public boolean call(ScriptState scriptState) {
+                for (String value : items) {
+                    var state = stateSupplier.apply(scriptState.player, value);
+                    if (peers.length == 0) {
+                        if (!state.applied()) {
+                            return false;
+                        }
+                    } else {
+                        for (String peer : peers) {
+                            if (!state.is(peer)) {
+                                return false;
+                            }
+                        }
+                    }
+                }
+                return true;
+            }
+        };
     }
 
 }

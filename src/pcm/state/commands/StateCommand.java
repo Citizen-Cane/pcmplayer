@@ -1,17 +1,12 @@
 package pcm.state.commands;
 
-import pcm.controller.Declarations;
-import pcm.controller.Player;
 import pcm.model.AbstractAction.Statement;
 import pcm.model.IllegalStatementException;
 import pcm.state.BasicCommand;
+import pcm.state.ParameterizedCommandStatement;
 import pcm.state.StateCommandLineParameters;
 import pcm.state.StateCommandLineParameters.Keyword;
-import pcm.state.persistence.ScriptState;
 import teaselib.State;
-import teaselib.core.StateMaps;
-import teaselib.core.StateMaps.Attributes;
-import teaselib.util.DurationFormat;
 
 public class StateCommand extends BasicCommand {
 
@@ -23,10 +18,9 @@ public class StateCommand extends BasicCommand {
         this.args = args;
     }
 
-    private static ParameterizedStatement statement(final StateCommandLineParameters args) {
+    private static ParameterizedCommandStatement statement(StateCommandLineParameters args) {
         String[] items = args.items(Keyword.Item);
-        Declarations declarations = args.getDeclarations();
-        declarations.validate(items, State.class);
+        args.getDeclarations().validate(items, State.class);
 
         if (args.containsKey(Keyword.Apply)) {
             return apply(args, items);
@@ -37,48 +31,12 @@ public class StateCommand extends BasicCommand {
         }
     }
 
-    private static ParameterizedStatement apply(final StateCommandLineParameters args, final String[] items) {
-        Object[] peers = args.items(args.containsKey(Keyword.To) ? Keyword.To : Keyword.Apply);
-        if (args.containsKey(Keyword.To) && peers.length == 0) {
-            throw new IllegalArgumentException("Missing peers to apply the item to");
-        } else if (args.containsKey(Keyword.Apply) && args.items(Keyword.Apply).length > 0) {
-            throw new IllegalArgumentException(
-                    "Apply just applies the default peers - use 'Apply To' to apply additional peers");
-        }
-        DurationFormat duration = args.durationOption();
-        boolean remember = args.rememberOption();
-        return new ParameterizedStatement(STATE, args) {
-            @Override
-            public void run(ScriptState state) {
-                Player player = state.player;
-                for (String item : items) {
-                    Attributes attributeApplier = (StateMaps.Attributes) player.state(item);
-                    attributeApplier.applyAttributes(player.script.scriptApplyAttribute);
-                    attributeApplier.applyAttributes(player.namespaceApplyAttribute);
-                    State.Options options = state.player.state(item).applyTo(peers);
-                    args.handleStateOptions(options, duration, remember);
-                }
-            }
-        };
+    private static ParameterizedCommandStatement apply(StateCommandLineParameters args, final String[] items) {
+        return apply(args, STATE, items, (player, state) -> player.state(state));
     }
 
-    private static ParameterizedStatement remove(final StateCommandLineParameters args, final String[] items) {
-        Object[] peers = args.items(args.containsKey(Keyword.From) ? Keyword.From : Keyword.Remove);
-        if (args.containsKey(Keyword.From) && peers.length == 0) {
-            throw new IllegalArgumentException("Missing peers to remove the item from");
-        }
-        return new ParameterizedStatement(STATE, args) {
-            @Override
-            public void run(ScriptState state) {
-                for (String item : items) {
-                    if (peers.length == 0) {
-                        state.player.state(item).remove();
-                    } else {
-                        state.player.state(item).removeFrom(peers);
-                    }
-                }
-            }
-        };
+    private static ParameterizedCommandStatement remove(StateCommandLineParameters args, final String[] items) {
+        return remove(args, STATE, items, (player, item) -> player.state(item));
     }
 
     @Override

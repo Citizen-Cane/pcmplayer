@@ -1,22 +1,17 @@
 package pcm.state.conditions;
 
-import static pcm.state.StateCommandLineParameters.Keyword.Applied;
-import static pcm.state.StateCommandLineParameters.Keyword.To;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import pcm.controller.Declarations;
 import pcm.model.AbstractAction;
 import pcm.model.AbstractAction.Statement;
 import pcm.model.IllegalStatementException;
 import pcm.state.BasicCondition;
+import pcm.state.ParameterizedConditionStatement;
 import pcm.state.StateCommandLineParameters;
 import pcm.state.StateCommandLineParameters.Keyword;
-import pcm.state.commands.ItemCommand;
 import pcm.state.persistence.ScriptState;
-import teaselib.util.DurationFormat;
 import teaselib.util.Item;
 
 public class ItemCondition extends BasicCondition {
@@ -28,10 +23,10 @@ public class ItemCondition extends BasicCondition {
         this.args = args;
     }
 
-    private static ParameterizedStatement statement(StateCommandLineParameters args) {
-        final ParameterizedStatement innerStatement = innerStatement(args);
+    private static ParameterizedConditionStatement statement(StateCommandLineParameters args) {
+        final ParameterizedConditionStatement innerStatement = innerStatement(args);
         if (args.containsKey(Keyword.Not)) {
-            return new ParameterizedStatement(ITEM, args) {
+            return new ParameterizedConditionStatement(ITEM, args) {
                 @Override
                 public boolean call(ScriptState state) {
                     return !innerStatement.call(state);
@@ -42,9 +37,9 @@ public class ItemCondition extends BasicCondition {
         }
     }
 
-    static ParameterizedStatement innerStatement(StateCommandLineParameters args) {
+    static ParameterizedConditionStatement innerStatement(StateCommandLineParameters args) {
         String[] items = args.items(Keyword.Item);
-        Declarations declarations = args.getDeclarations();
+        var declarations = args.getDeclarations();
         declarations.validate(items, Item.class);
         if (args.containsKey(StateCommandLineParameters.Keyword.Matching)) {
             return matching(args, items);
@@ -66,43 +61,27 @@ public class ItemCondition extends BasicCondition {
             return elapsed(args, items);
         } else if (args.containsKey(StateCommandLineParameters.Keyword.Limit)) {
             return limit(args, items);
+        } else if (args.containsKey(StateCommandLineParameters.Keyword.Removed)) {
+            return removed(args, items);
         } else {
             throw new IllegalStatementException("Keyword not found", args);
         }
     }
 
-    private static ParameterizedStatement is(StateCommandLineParameters args, String[] items) {
+    private static ParameterizedConditionStatement is(StateCommandLineParameters args, String[] items) {
         Object[] attributes = args.items(StateCommandLineParameters.Keyword.Is);
-        return new ParameterizedStatement(ITEM, args) {
-            @Override
-            public boolean call(ScriptState state) {
-                for (String item : items) {
-                    if (!state.player.item(item).is(attributes)) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-        };
+        return new ParameterizedConditionStatement.Boolean(args, items, ITEM,
+                (player, value) -> player.item(value).is(attributes));
     }
 
-    private static ParameterizedStatement available(StateCommandLineParameters args, String[] items) {
-        return new ParameterizedStatement(ITEM, args) {
-            @Override
-            public boolean call(ScriptState state) {
-                for (String item : items) {
-                    if (!state.player.item(item).isAvailable()) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-        };
+    private static ParameterizedConditionStatement available(StateCommandLineParameters args, String[] items) {
+        return new ParameterizedConditionStatement.Boolean(args, items, ITEM,
+                (player, value) -> player.item(value).isAvailable());
     }
 
-    private static ParameterizedStatement canApply(StateCommandLineParameters args, String[] items) {
+    private static ParameterizedConditionStatement canApply(StateCommandLineParameters args, String[] items) {
         String[] peers = args.items(Keyword.To);
-        return new ParameterizedStatement(ITEM, args) {
+        return new ParameterizedConditionStatement(ITEM, args) {
             @Override
             public boolean call(ScriptState state) {
                 for (String item : items) {
@@ -120,118 +99,47 @@ public class ItemCondition extends BasicCondition {
         };
     }
 
-    private static ParameterizedStatement applied(StateCommandLineParameters args, String[] items) {
-        String[] peers = BasicCondition.optionalPeers(args, Applied, To);
-        return new ParameterizedStatement(ITEM, args) {
-            @Override
-            public boolean call(ScriptState state) {
-                for (String item : items) {
-                    if (peers.length == 0) {
-                        if (!state.player.item(item).applied()) {
-                            return false;
-                        }
-                    } else {
-                        for (String peer : peers) {
-                            if (!state.player.item(item).is(peer)) {
-                                return false;
-                            }
-                        }
-                    }
-                }
-                return true;
-            }
-        };
+    private static ParameterizedConditionStatement applied(StateCommandLineParameters args, String[] items) {
+        return applied(args, items, ITEM, (player, value) -> player.item(value));
     }
 
-    private static ParameterizedStatement free(StateCommandLineParameters args, String[] items) {
-        return new ParameterizedStatement(ITEM, args) {
-            @Override
-            public boolean call(ScriptState state) {
-                for (String item : items) {
-                    if (state.player.item(item).applied()) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-        };
+    private static ParameterizedConditionStatement free(StateCommandLineParameters args, String[] items) {
+        return new ParameterizedConditionStatement.Boolean(args, items, ITEM,
+                (player, value) -> player.item(value).removed());
     }
 
-    private static ParameterizedStatement expired(StateCommandLineParameters args, String[] items) {
-        return new ParameterizedStatement(ITEM, args) {
-            @Override
-            public boolean call(ScriptState state) {
-                for (String item : items) {
-                    if (!state.player.item(item).expired()) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-        };
+    private static ParameterizedConditionStatement expired(StateCommandLineParameters args, String[] items) {
+        return new ParameterizedConditionStatement.Boolean(args, items, ITEM,
+                (player, value) -> player.item(value).expired());
     }
 
-    private static ParameterizedStatement remaining(StateCommandLineParameters args, String[] items) {
-        Keyword condition = args.getCondition();
-        StateCommandLineParameters.Operator op = args.getOperator(condition);
-        DurationFormat durationFormat = new DurationFormat(args.value(condition));
-        return new ParameterizedStatement(ITEM, args) {
-            @Override
-            public boolean call(ScriptState state) {
-                for (String item : items) {
-                    if (!(op.isTrueFor(state.player.item(item).duration().remaining(TimeUnit.SECONDS),
-                            durationFormat.toSeconds()))) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-        };
+    private static ParameterizedConditionStatement remaining(StateCommandLineParameters args, String[] items) {
+        return new ParameterizedConditionStatement.Duration(args, items, ITEM,
+                (player, value) -> player.item(value).duration().remaining(TimeUnit.SECONDS));
     }
 
-    private static ParameterizedStatement elapsed(StateCommandLineParameters args, String[] items) {
-        Keyword condition = args.getCondition();
-        StateCommandLineParameters.Operator op = args.getOperator(condition);
-        DurationFormat durationFormat = new DurationFormat(args.value(condition));
-        return new ParameterizedStatement(ITEM, args) {
-            @Override
-            public boolean call(ScriptState state) {
-                for (String item : items) {
-                    if (!(op.isTrueFor(state.player.item(item).duration().elapsed(TimeUnit.SECONDS),
-                            durationFormat.toSeconds()))) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-        };
+    private static ParameterizedConditionStatement elapsed(StateCommandLineParameters args, String[] items) {
+        return new ParameterizedConditionStatement.Duration(args, items, ITEM,
+                (player, value) -> player.item(value).duration().elapsed(TimeUnit.SECONDS));
     }
 
-    private static ParameterizedStatement limit(StateCommandLineParameters args, String[] items) {
-        Keyword condition = args.getCondition();
-        StateCommandLineParameters.Operator op = args.getOperator(condition);
-        DurationFormat durationFormat = new DurationFormat(args.value(condition));
-        return new ParameterizedStatement(ITEM, args) {
-            @Override
-            public boolean call(ScriptState state) {
-                for (String item : items) {
-                    if (!(op.isTrueFor(state.player.item(item).duration().limit(TimeUnit.SECONDS),
-                            durationFormat.toSeconds()))) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-        };
+    private static ParameterizedConditionStatement limit(StateCommandLineParameters args, String[] items) {
+        return new ParameterizedConditionStatement.Duration(args, items, ITEM,
+                (player, value) -> player.item(value).duration().limit(TimeUnit.SECONDS));
     }
 
-    private static ParameterizedStatement matching(StateCommandLineParameters args, String[] items) {
+    private static ParameterizedConditionStatement removed(StateCommandLineParameters args, String[] items) {
+        return new ParameterizedConditionStatement.Duration(args, items, ITEM,
+                (player, value) -> player.item(value).removed(TimeUnit.SECONDS));
+    }
+
+    private static ParameterizedConditionStatement matching(StateCommandLineParameters args, String[] items) {
         String[] attributes = args.items(StateCommandLineParameters.Keyword.Matching);
-        return new ParameterizedStatement(ITEM, args) {
+        return new ParameterizedConditionStatement(ITEM, args) {
             @Override
             public boolean call(ScriptState state) {
-                ItemCommand.replaceWithMatching(args, items, attributes, state);
-                return innerStatement(args).call(state);
+                ((StateCommandLineParameters) args).replaceWithMatching(items, attributes, state);
+                return innerStatement((StateCommandLineParameters) args).call(state);
             }
         };
     }

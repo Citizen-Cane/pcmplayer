@@ -1,32 +1,26 @@
 package pcm.state;
 
+import static pcm.state.StateCommandLineParameters.Keyword.From;
+import static pcm.state.StateCommandLineParameters.Keyword.Remove;
+
+import java.util.concurrent.TimeUnit;
+import java.util.function.BiFunction;
+
+import pcm.controller.Player;
 import pcm.model.AbstractAction.Statement;
 import pcm.model.ScriptExecutionException;
 import pcm.state.StateCommandLineParameters.Keyword;
 import pcm.state.persistence.ScriptState;
-import teaselib.core.util.CommandLineParameters;
+import teaselib.State;
+import teaselib.State.Persistence.Until;
+import teaselib.core.StateMaps;
+import teaselib.core.StateMaps.Attributes;
+import teaselib.util.DurationFormat;
 
 public class BasicCommand implements Command {
-    protected final ParameterizedStatement statement;
+    protected final ParameterizedCommandStatement statement;
 
-    protected abstract static class ParameterizedStatement {
-        private final Statement statement;
-        private final CommandLineParameters<?> args;
-
-        public <T extends Enum<T>> ParameterizedStatement(Statement statement, CommandLineParameters<T> args) {
-            this.statement = statement;
-            this.args = args;
-        }
-
-        public abstract void run(ScriptState state) throws ScriptExecutionException;
-
-        @Override
-        public String toString() {
-            return statement.toString() + " " + args.toString();
-        }
-    }
-
-    public BasicCommand(ParameterizedStatement statement) {
+    public BasicCommand(ParameterizedCommandStatement statement) {
         this.statement = statement;
     }
 
@@ -35,16 +29,55 @@ public class BasicCommand implements Command {
         statement.run(state);
     }
 
-    protected static Object[] optionalPeers(StateCommandLineParameters args, Keyword condition, Keyword peerList) {
-        Object[] peers = args.items(args.containsKey(peerList) ? peerList : condition);
-        if (args.containsKey(peerList) && peers.length == 0) {
-            throw new IllegalArgumentException("Missing peers to " + condition.name().toLowerCase() + " the item '"
-                    + peerList.name().toLowerCase() + "'");
-        } else if (args.containsKey(condition) && args.items(condition).length > 0) {
-            throw new IllegalArgumentException("'" + condition.name() + "' just applies the default peers - use '"
-                    + condition.name() + " " + peerList.name() + "' to apply additional peers");
-        }
-        return peers;
+    protected static ParameterizedCommandStatement apply(StateCommandLineParameters args, Statement statement,
+            String[] items, BiFunction<Player, String, State> stateSupplier) {
+        Object[] peers = args.optionalPeers(Keyword.Apply, Keyword.To);
+        DurationFormat duration = args.durationOption();
+        boolean remember = args.rememberOption();
+        return new ParameterizedCommandStatement(statement, args) {
+            @Override
+            public void run(ScriptState scriptState) {
+                var player = scriptState.player;
+                for (String value : items) {
+                    var state = stateSupplier.apply(player, value);
+                    Attributes attributeApplier = (StateMaps.Attributes) state;
+                    attributeApplier.applyAttributes(player.script.scriptApplyAttribute);
+                    attributeApplier.applyAttributes(player.namespaceApplyAttribute);
+                    var options = peers.length == 0 ? state.apply() : state.applyTo(peers);
+                    handleStateOptions(options, duration, remember);
+                }
+            }
+
+            public void handleStateOptions(State.Options options, DurationFormat duration, boolean remember) {
+                if (duration != null) {
+                    var persistence = options.over(duration.toSeconds(), TimeUnit.SECONDS);
+                    if (remember) {
+                        persistence.remember(Until.Removed);
+                    }
+                } else if (remember) {
+                    options.remember(Until.Removed);
+                }
+            }
+
+        };
+    }
+
+    protected static ParameterizedCommandStatement remove(StateCommandLineParameters args, Statement statement,
+            String[] items, BiFunction<Player, String, State> stateSupplier) {
+        Object[] peers = args.optionalPeers(Remove, From);
+        return new ParameterizedCommandStatement(statement, args) {
+            @Override
+            public void run(ScriptState scriptState) {
+                for (String value : items) {
+                    var state = stateSupplier.apply(scriptState.player, value);
+                    if (peers.length == 0) {
+                        state.remove();
+                    } else {
+                        state.removeFrom(peers);
+                    }
+                }
+            }
+        };
     }
 
 }
