@@ -1,5 +1,6 @@
 package pcm.controller;
 
+import java.util.Collections;
 import java.util.Objects;
 
 import pcm.model.Action;
@@ -16,7 +17,7 @@ public class LambdaTrigger extends BasicTrigger {
     private boolean reached = false;
 
     public LambdaTrigger(Action action, Runnable runnable) {
-        super("", action.number);
+        super("", Collections.singleton(action));
 
         Objects.requireNonNull(action);
         Objects.requireNonNull(runnable);

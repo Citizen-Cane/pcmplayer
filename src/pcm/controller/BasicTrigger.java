@@ -1,18 +1,22 @@
 package pcm.controller;
 
+import java.util.Set;
+
+import pcm.model.Action;
+
 public abstract class BasicTrigger implements Trigger {
-    private final int action;
+    private final Set<Action> actions;
     private final String message;
 
-    protected BasicTrigger(String message, int action) {
+    protected BasicTrigger(String message, Set<Action> actions) {
         super();
         this.message = message;
-        this.action = action;
+        this.actions = actions;
     }
 
     @Override
-    public int getAction() {
-        return action;
+    public Set<Action> actions() {
+        return actions;
     }
 
     @Override
@@ -22,7 +26,7 @@ public abstract class BasicTrigger implements Trigger {
 
     @Override
     public String toString() {
-        return "action=" + action;
+        return "actions=" + actions;
     }
 
 }

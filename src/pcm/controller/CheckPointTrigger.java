@@ -1,5 +1,10 @@
 package pcm.controller;
 
+import java.util.Collections;
+import java.util.Set;
+
+import pcm.model.Action;
+
 /**
  * Indicates that a given checkpoint (the specified action) has been reached
  * 
@@ -10,8 +15,13 @@ public class CheckPointTrigger extends BasicTrigger {
     private final boolean expected;
     private boolean reached = false;
 
-    public CheckPointTrigger(String message, int action, boolean expected) {
-        super(message, action);
+    public CheckPointTrigger(String message, Action action, boolean expected) {
+        super(message, Collections.singleton(action));
+        this.expected = expected;
+    }
+
+    public CheckPointTrigger(String message, Set<Action> actions, boolean expected) {
+        super(message, actions);
         this.expected = expected;
     }
 

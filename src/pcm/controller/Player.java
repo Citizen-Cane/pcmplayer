@@ -494,7 +494,7 @@ public class Player extends TeaseScript implements MainScript {
         try {
             this.playRange = playRange;
             while (action != EndAction && playRange.contains(action.number)) {
-                var breakPoint = breakPoints.getBreakPoint(script.name, action.number);
+                var breakPoint = breakPoints.getBreakPoint(script.name, action);
                 breakPoint.reached();
                 if (breakPoint.suspend()) {
                     return;

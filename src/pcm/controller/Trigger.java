@@ -1,5 +1,9 @@
 package pcm.controller;
 
+import java.util.Set;
+
+import pcm.model.Action;
+
 public interface Trigger extends BreakPoint {
     @Override
     void reached();
@@ -8,5 +12,5 @@ public interface Trigger extends BreakPoint {
 
     String getMessage();
 
-    int getAction();
+    Set<Action> actions();
 }
