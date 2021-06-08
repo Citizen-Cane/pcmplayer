@@ -52,7 +52,7 @@ public class BreakPoints {
         if (bpm == null) {
             return BreakPoint.NONE;
         }
-        BreakPoint breakPoint = bpm.get(action);
+        var breakPoint = bpm.get(action);
         if (breakPoint == null) {
             return BreakPoint.NONE;
         }

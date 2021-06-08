@@ -57,9 +57,9 @@ public class Declarations {
     public void validate(List<String> qualifiedNames) {
         for (String value : qualifiedNames) {
             if (!RuntimeVariable.isVariable(value)) {
-                boolean valueChecked = false;
+                var valueChecked = false;
                 for (Map.Entry<String, String> entry : entries()) {
-                    QualifiedItem qualifiedItem = QualifiedItem.of(value);
+                    var qualifiedItem = QualifiedItem.of(value);
                     boolean isDeclared = qualifiedItem.namespace().equalsIgnoreCase(entry.getKey());
                     if (isDeclared) {
                         if (isKeyword(entry, Declarations.ENUM)) {
@@ -87,7 +87,7 @@ public class Declarations {
     public boolean validate(String[] items, Class<? extends State> clazz) {
         for (String item : items) {
             if (!RuntimeVariable.isVariable(item)) {
-                QualifiedItem qualifiedItem = QualifiedItem.of(item);
+                var qualifiedItem = QualifiedItem.of(item);
                 String key = qualifiedItem.namespace().toLowerCase();
                 if (!typeDeclarations.containsKey(key)) {
                     throw new IllegalArgumentException("Undefiend type " + item);

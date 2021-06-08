@@ -3,9 +3,9 @@ package pcm.state.commands;
 import pcm.model.AbstractAction.Statement;
 import pcm.model.IllegalStatementException;
 import pcm.state.BasicCommand;
+import pcm.state.StateKeywords;
 import pcm.state.ParameterizedCommandStatement;
 import pcm.state.StateCommandLineParameters;
-import pcm.state.StateCommandLineParameters.Keyword;
 import teaselib.State;
 
 public class StateCommand extends BasicCommand {
@@ -19,15 +19,15 @@ public class StateCommand extends BasicCommand {
     }
 
     private static ParameterizedCommandStatement statement(StateCommandLineParameters args) {
-        String[] items = args.items(Keyword.Item);
+        String[] items = args.items(StateKeywords.Item);
         args.getDeclarations().validate(items, State.class);
 
-        if (args.containsKey(Keyword.Apply)) {
+        if (args.containsKey(StateKeywords.Apply)) {
             return apply(args, items);
-        } else if (args.containsKey(Keyword.Remove)) {
+        } else if (args.containsKey(StateKeywords.Remove)) {
             return remove(args, items);
         } else {
-            throw new IllegalStatementException("Keyword not found", args);
+            throw new IllegalStatementException("State command not found or invalid", args);
         }
     }
 

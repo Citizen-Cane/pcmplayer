@@ -1,15 +1,11 @@
 package pcm.state;
 
-import static pcm.state.StateCommandLineParameters.Keyword.From;
-import static pcm.state.StateCommandLineParameters.Keyword.Remove;
-
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 
 import pcm.controller.Player;
 import pcm.model.AbstractAction.Statement;
 import pcm.model.ScriptExecutionException;
-import pcm.state.StateCommandLineParameters.Keyword;
 import pcm.state.persistence.ScriptState;
 import teaselib.State;
 import teaselib.State.Persistence.Until;
@@ -31,7 +27,7 @@ public class BasicCommand implements Command {
 
     protected static ParameterizedCommandStatement apply(StateCommandLineParameters args, Statement statement,
             String[] items, BiFunction<Player, String, State> stateSupplier) {
-        Object[] peers = args.optionalPeers(Keyword.Apply, Keyword.To);
+        Object[] peers = args.optionalPeers(StateKeywords.Apply, StateKeywords.To);
         DurationFormat duration = args.durationOption();
         boolean remember = args.rememberOption();
         return new ParameterizedCommandStatement(statement, args) {
@@ -64,7 +60,7 @@ public class BasicCommand implements Command {
 
     protected static ParameterizedCommandStatement remove(StateCommandLineParameters args, Statement statement,
             String[] items, BiFunction<Player, String, State> stateSupplier) {
-        Object[] peers = args.optionalPeers(Remove, From);
+        Object[] peers = args.optionalPeers(StateKeywords.Remove, StateKeywords.From);
         return new ParameterizedCommandStatement(statement, args) {
             @Override
             public void run(ScriptState scriptState) {

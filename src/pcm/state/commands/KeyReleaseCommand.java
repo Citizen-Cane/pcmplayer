@@ -37,7 +37,7 @@ public class KeyReleaseCommand extends BasicCommand {
         if (args.containsKey(KeyReleaseCommandLineParameters.Keyword.Prepare)) {
             return prepare(args, items);
         } else {
-            throw new IllegalStatementException("Keyword not found", args);
+            throw new IllegalStatementException("Key-Release command not found or invalid", args);
         }
     }
 

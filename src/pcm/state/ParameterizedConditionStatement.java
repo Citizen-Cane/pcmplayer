@@ -5,7 +5,6 @@ import java.util.function.BiPredicate;
 
 import pcm.controller.Player;
 import pcm.model.AbstractAction.Statement;
-import pcm.state.StateCommandLineParameters.Keyword;
 import pcm.state.persistence.ScriptState;
 import teaselib.core.util.CommandLineParameters;
 import teaselib.util.DurationFormat;
@@ -59,7 +58,7 @@ public abstract class ParameterizedConditionStatement extends ParameterizedState
             super(statement, args);
             this.items = items;
             this.durationSupplier = duration;
-            Keyword condition = args.getCondition();
+            StateKeywords condition = args.getComparisonOperator();
             this.durationFormat = new DurationFormat(args.value(condition));
             this.comperator = args.getOperator(condition);
         }

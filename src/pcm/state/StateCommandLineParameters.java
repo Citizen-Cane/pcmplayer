@@ -1,71 +1,26 @@
 package pcm.state;
 
 import static java.util.stream.Collectors.toList;
-import static pcm.state.StateCommandLineParameters.Keyword.Over;
-import static pcm.state.StateCommandLineParameters.Keyword.Remember;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import pcm.controller.Declarations;
+import pcm.model.IllegalStatementException;
 import pcm.state.persistence.ScriptState;
 import teaselib.core.util.CommandLineParameters;
 import teaselib.core.util.QualifiedItem;
 import teaselib.util.DurationFormat;
 import teaselib.util.Items;
 
-public class StateCommandLineParameters extends CommandLineParameters<StateCommandLineParameters.Keyword> {
+public class StateCommandLineParameters extends CommandLineParameters<StateKeywords> {
     private static final long serialVersionUID = 1L;
 
     private final Declarations declarations;
 
-    public enum Keyword {
-        Item,
-
-        Apply,
-
-        To,
-        Over,
-        Remember,
-
-        Remove,
-
-        From,
-
-        SetAvailable,
-
-        Is,
-        Isnt,
-        Available,
-        CanApply,
-        Applied,
-        Free,
-        Expired,
-        Remaining,
-        Elapsed,
-        Limit,
-        Removed,
-
-        Matching,
-
-        GreaterThan,
-        GreaterOrEqualThan,
-        LessOrEqualThan,
-        LessThan,
-        Equals,
-
-        Not,;
-
-        static final Set<Keyword> COMMANDS = Collections
-                .unmodifiableSet(new HashSet<>(Arrays.asList(Apply, Remove, SetAvailable)));
-    }
-
     public boolean isCommand() {
-        for (Keyword keyword : Keyword.COMMANDS) {
+        for (StateKeywords keyword : StateKeywords.COMMANDS) {
             if (containsKey(keyword)) {
                 return true;
             }
@@ -73,8 +28,8 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
         return false;
     }
 
-    public StateCommandLineParameters(CommandLineParameters<Keyword> args, Declarations declarations) {
-        super(args, Keyword.class);
+    public StateCommandLineParameters(CommandLineParameters<StateKeywords> args, Declarations declarations) {
+        super(args, StateKeywords.class);
         this.declarations = declarations;
         validateArgs();
     }
@@ -84,15 +39,15 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
     }
 
     public StateCommandLineParameters(List<String> args, Declarations declarations) {
-        super(normalizedArgs(args), Keyword.values(), Keyword.class);
+        super(normalizedArgs(args), StateKeywords.values(), StateKeywords.class);
         this.declarations = declarations;
         validateArgs();
     }
 
     private void validateArgs() {
-        if (items(Keyword.Item).length == 0) {
+        if (items(StateKeywords.Item).length == 0) {
             throw new IllegalArgumentException("Items must be specified first");
-        } else if (items(Keyword.Remove).length > 0) {
+        } else if (items(StateKeywords.Remove).length > 0) {
             throw new IllegalArgumentException("Remove can only remove all items");
         }
     }
@@ -102,36 +57,36 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
 
         for (int i = 0; i < args.size(); i++) {
             String arg = args.get(i);
-            if (arg.equalsIgnoreCase(Keyword.Is.name())) {
-                if (args.get(i + 1).equalsIgnoreCase(Keyword.Not.name())) {
-                    if (args.get(i + 2).equalsIgnoreCase(Keyword.Free.name())) {
-                        normalizedArgs.add(Keyword.Applied.name().toLowerCase());
+            if (arg.equalsIgnoreCase(StateKeywords.Is.name())) {
+                if (args.get(i + 1).equalsIgnoreCase(StateKeywords.Not.name())) {
+                    if (args.get(i + 2).equalsIgnoreCase(StateKeywords.Free.name())) {
+                        normalizedArgs.add(StateKeywords.Applied.name().toLowerCase());
                         i += 2;
-                    } else if (args.get(i + 2).equalsIgnoreCase(Keyword.Applied.name())) {
-                        normalizedArgs.add(Keyword.Not.name().toLowerCase());
-                        normalizedArgs.add(Keyword.Applied.name().toLowerCase());
+                    } else if (args.get(i + 2).equalsIgnoreCase(StateKeywords.Applied.name())) {
+                        normalizedArgs.add(StateKeywords.Not.name().toLowerCase());
+                        normalizedArgs.add(StateKeywords.Applied.name().toLowerCase());
                         i += 2;
                     } else {
-                        normalizedArgs.add(Keyword.Not.name().toLowerCase());
-                        normalizedArgs.add(Keyword.Is.name().toLowerCase());
+                        normalizedArgs.add(StateKeywords.Not.name().toLowerCase());
+                        normalizedArgs.add(StateKeywords.Is.name().toLowerCase());
                         i += 1;
                     }
-                } else if (args.get(i + 1).equalsIgnoreCase(Keyword.Applied.name())) {
-                    normalizedArgs.add(Keyword.Applied.name().toLowerCase());
+                } else if (args.get(i + 1).equalsIgnoreCase(StateKeywords.Applied.name())) {
+                    normalizedArgs.add(StateKeywords.Applied.name().toLowerCase());
                     i += 1;
-                } else if (args.get(i + 1).equalsIgnoreCase(Keyword.Free.name())) {
-                    normalizedArgs.add(Keyword.Free.name().toLowerCase());
+                } else if (args.get(i + 1).equalsIgnoreCase(StateKeywords.Free.name())) {
+                    normalizedArgs.add(StateKeywords.Free.name().toLowerCase());
                     i += 1;
                 } else {
                     normalizedArgs.add(arg);
                 }
-            } else if (arg.equalsIgnoreCase(Keyword.Not.name())) {
-                if (args.get(i + 1).equalsIgnoreCase(Keyword.Free.name())) {
-                    normalizedArgs.add(Keyword.Applied.name().toLowerCase());
+            } else if (arg.equalsIgnoreCase(StateKeywords.Not.name())) {
+                if (args.get(i + 1).equalsIgnoreCase(StateKeywords.Free.name())) {
+                    normalizedArgs.add(StateKeywords.Applied.name().toLowerCase());
                     i += 1;
-                } else if (args.get(i + 1).equalsIgnoreCase(Keyword.Is.name())) {
-                    if (args.get(i + 2).equalsIgnoreCase(Keyword.Free.name())) {
-                        normalizedArgs.add(Keyword.Applied.name().toLowerCase());
+                } else if (args.get(i + 1).equalsIgnoreCase(StateKeywords.Is.name())) {
+                    if (args.get(i + 2).equalsIgnoreCase(StateKeywords.Free.name())) {
+                        normalizedArgs.add(StateKeywords.Applied.name().toLowerCase());
                         i += 2;
                     } else {
                         normalizedArgs.add(arg);
@@ -139,17 +94,17 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
                 } else {
                     normalizedArgs.add(arg);
                 }
-            } else if (arg.equalsIgnoreCase(Keyword.Isnt.name())) {
-                if (args.get(i + 1).equalsIgnoreCase(Keyword.Applied.name())) {
-                    normalizedArgs.add(Keyword.Not.name().toLowerCase());
-                    normalizedArgs.add(Keyword.Applied.name().toLowerCase());
+            } else if (arg.equalsIgnoreCase(StateKeywords.Isnt.name())) {
+                if (args.get(i + 1).equalsIgnoreCase(StateKeywords.Applied.name())) {
+                    normalizedArgs.add(StateKeywords.Not.name().toLowerCase());
+                    normalizedArgs.add(StateKeywords.Applied.name().toLowerCase());
                     i += 1;
-                } else if (args.get(i + 1).equalsIgnoreCase(Keyword.Free.name())) {
-                    normalizedArgs.add(Keyword.Applied.name().toLowerCase());
+                } else if (args.get(i + 1).equalsIgnoreCase(StateKeywords.Free.name())) {
+                    normalizedArgs.add(StateKeywords.Applied.name().toLowerCase());
                     i += 1;
                 } else {
-                    normalizedArgs.add(Keyword.Not.name().toLowerCase());
-                    normalizedArgs.add(Keyword.Is.name().toLowerCase());
+                    normalizedArgs.add(StateKeywords.Not.name().toLowerCase());
+                    normalizedArgs.add(StateKeywords.Is.name().toLowerCase());
                 }
             } else {
                 normalizedArgs.add(arg);
@@ -158,78 +113,79 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
         return normalizedArgs;
     }
 
-    public String[] items(Keyword keyword) {
+    public String[] items(StateKeywords keyword) {
         List<String> items = get(keyword);
         declarations.validate(items);
         String[] array = new String[items.size()];
         return items.toArray(array);
     }
 
-    public String item(Keyword keyword) {
+    public String item(StateKeywords keyword) {
         List<String> items = get(keyword);
         declarations.validate(items);
         if (items.size() == 1) {
             return items.get(0);
+        } else if (items.isEmpty()) {
+            throw new IllegalStatementException("Argument expected for " + keyword, this);
         } else {
-            throw new IllegalArgumentException(keyword + " requires a single argument");
+            throw new IllegalStatementException("Single argument expected for " + keyword + " but got " + items, this);
         }
     }
 
-    public String[] values(Keyword keyword) {
+    public String[] values(StateKeywords keyword) {
         List<String> items = get(keyword);
         String[] array = new String[items.size()];
         return items.toArray(array);
     }
 
-    public String value(Keyword keyword) {
-        List<String> items = get(keyword);
-        if (items.size() == 1) {
-            return items.get(0);
+    public String value(StateKeywords keyword) {
+        List<String> values = get(keyword);
+        if (values.size() == 1) {
+            return values.get(0);
+        } else if (values.isEmpty()) {
+            throw new IllegalStatementException("Argument expected for " + keyword, this);
         } else {
-            throw new IllegalArgumentException(keyword + " requires a single argument");
+            throw new IllegalStatementException("Single argument expected for " + keyword + " but got " + values, this);
         }
     }
 
     public DurationFormat durationOption() {
-        return containsKey(Over) ? new DurationFormat(get(Keyword.Over).get(0)) : null;
+        return containsKey(StateKeywords.Over) ? new DurationFormat(get(StateKeywords.Over).get(0)) : null;
     }
 
     public boolean rememberOption() {
-        return containsKey(Remember);
+        return containsKey(StateKeywords.Remember);
     }
 
-    public Keyword getCondition() {
-        Keyword[] conditionOperators = { Keyword.GreaterThan, Keyword.GreaterOrEqualThan, Keyword.LessOrEqualThan,
-                Keyword.LessThan, Keyword.Equals };
-        for (Keyword keyword : conditionOperators) {
+    public StateKeywords getComparisonOperator() {
+        for (StateKeywords keyword : StateKeywords.ComparisonOperators) {
             if (containsKey(keyword)) {
-                if (values(keyword).length != 1) {
-                    throw new IllegalArgumentException(
-                            "Condition operator " + keyword.toString() + " expects a single argument");
-                }
+                // if (values(keyword).length != 1) {
+                // throw new IllegalStatementException("Single argument expected for", keyword.toString(), this);
+                // }
                 return keyword;
             }
         }
-        throw new IllegalArgumentException("Comparison operator missing ");
+        throw new IllegalStatementException("Comparison operator missing or spelled wrong", this);
     }
 
     public interface Operator {
         boolean isTrueFor(long n, long m);
     }
 
-    public Operator getOperator(Keyword keyword) {
-        if (keyword == Keyword.GreaterThan) {
+    public Operator getOperator(StateKeywords keyword) {
+        if (keyword == StateKeywords.GreaterThan) {
             return (n, m) -> n > m;
-        } else if (keyword == Keyword.GreaterOrEqualThan) {
+        } else if (keyword == StateKeywords.GreaterOrEqualThan) {
             return (n, m) -> n >= m;
-        } else if (keyword == Keyword.LessOrEqualThan) {
+        } else if (keyword == StateKeywords.LessOrEqualThan) {
             return (n, m) -> n <= m;
-        } else if (keyword == Keyword.LessThan) {
+        } else if (keyword == StateKeywords.LessThan) {
             return (n, m) -> n < m;
-        } else if (keyword == Keyword.Equals) {
+        } else if (keyword == StateKeywords.Equals) {
             return (n, m) -> n == m;
         } else {
-            throw new IllegalArgumentException("Operator " + keyword.toString() + " not supported");
+            throw new IllegalStatementException("Unsupported comparison Operator", keyword, this);
         }
     }
 
@@ -238,13 +194,13 @@ public class StateCommandLineParameters extends CommandLineParameters<StateComma
     }
 
     public void replaceWithMatching(String[] items, String[] attributes, ScriptState state) {
-        remove(Keyword.Matching);
-        remove(Keyword.Item);
+        remove(StateKeywords.Matching);
+        remove(StateKeywords.Item);
         Items matching = state.player.items(items).matching(attributes);
-        put(Keyword.Item, matching.stream().map(QualifiedItem::of).map(QualifiedItem::toString).collect(toList()));
+        put(StateKeywords.Item, matching.stream().map(QualifiedItem::of).map(QualifiedItem::toString).collect(toList()));
     }
 
-    public String[] optionalPeers(Keyword condition, Keyword peerList) {
+    public String[] optionalPeers(StateKeywords condition, StateKeywords peerList) {
         String[] peers = items(containsKey(peerList) ? peerList : condition);
         if (containsKey(peerList) && peers.length == 0) {
             throw new IllegalArgumentException("Missing peers to " + condition.name().toLowerCase() + " the item '"

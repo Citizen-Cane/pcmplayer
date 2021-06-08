@@ -11,9 +11,9 @@ import pcm.model.AbstractAction.Statement;
 import pcm.model.ScriptParsingException;
 import pcm.state.BasicCondition;
 import pcm.state.Condition;
+import pcm.state.StateKeywords;
 import pcm.state.ParameterizedConditionStatement;
 import pcm.state.StateCommandLineParameters;
-import pcm.state.StateCommandLineParameters.Keyword;
 import pcm.state.persistence.ScriptState;
 import teaselib.core.util.CommandLineParameters;
 
@@ -64,12 +64,12 @@ public class IfState extends BasicCondition {
 
             i++;
 
-            CommandLineParameters<Keyword> condition = new CommandLineParameters<>(
+            CommandLineParameters<StateKeywords> condition = new CommandLineParameters<>(
                     StateCommandLineParameters.normalizedArgs(conditionArgs),
-                    StateCommandLineParameters.Keyword.values(), Keyword.class);
+                    StateKeywords.values(), StateKeywords.class);
             if (condition.getItems().isEmpty()) {
-                condition.put(StateCommandLineParameters.Keyword.Item,
-                        Arrays.asList(firstParameters.values(Keyword.Item)));
+                condition.put(StateKeywords.Item,
+                        Arrays.asList(firstParameters.values(StateKeywords.Item)));
             }
 
             StateCommandLineParameters conditionParameters = new StateCommandLineParameters(condition, declarations);

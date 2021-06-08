@@ -7,7 +7,7 @@ import pcm.model.ScriptExecutionException;
 import pcm.state.BasicCommand;
 import pcm.state.ParameterizedCommandStatement;
 import pcm.state.StateCommandLineParameters;
-import pcm.state.StateCommandLineParameters.Keyword;
+import pcm.state.StateKeywords;
 import pcm.state.persistence.ScriptState;
 import teaselib.util.Item;
 
@@ -21,20 +21,20 @@ public class ItemCommand extends BasicCommand {
     }
 
     static ParameterizedCommandStatement statement(StateCommandLineParameters args) {
-        String[] items = args.items(Keyword.Item);
+        String[] items = args.items(StateKeywords.Item);
         var declarations = args.getDeclarations();
         declarations.validate(items, Item.class);
 
-        if (args.containsKey(StateCommandLineParameters.Keyword.Matching)) {
+        if (args.containsKey(StateKeywords.Matching)) {
             return matching(args, items);
-        } else if (args.containsKey(Keyword.Apply)) {
+        } else if (args.containsKey(StateKeywords.Apply)) {
             return apply(args, items);
-        } else if (args.containsKey(Keyword.Remove)) {
+        } else if (args.containsKey(StateKeywords.Remove)) {
             return remove(args, items);
-        } else if (args.containsKey(Keyword.SetAvailable)) {
+        } else if (args.containsKey(StateKeywords.SetAvailable)) {
             return setAvailable(args, items);
         } else {
-            throw new IllegalStatementException("Keyword not found", args);
+            throw new IllegalStatementException("Item command not found or invalid", args);
         }
     }
 
@@ -47,7 +47,7 @@ public class ItemCommand extends BasicCommand {
     }
 
     private static ParameterizedCommandStatement setAvailable(StateCommandLineParameters args, String[] items) {
-        var setAvailable = Boolean.parseBoolean(args.value(Keyword.SetAvailable));
+        var setAvailable = Boolean.parseBoolean(args.value(StateKeywords.SetAvailable));
         return new ParameterizedCommandStatement(ITEM, args) {
             @Override
             public void run(ScriptState state) {
@@ -59,7 +59,7 @@ public class ItemCommand extends BasicCommand {
     }
 
     private static ParameterizedCommandStatement matching(StateCommandLineParameters args, String[] items) {
-        String[] attributes = args.items(StateCommandLineParameters.Keyword.Matching);
+        String[] attributes = args.items(StateKeywords.Matching);
         return new ParameterizedCommandStatement(ITEM, args) {
             @Override
             public void run(ScriptState state) throws ScriptExecutionException {

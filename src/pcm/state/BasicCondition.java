@@ -1,7 +1,7 @@
 package pcm.state;
 
-import static pcm.state.StateCommandLineParameters.Keyword.Applied;
-import static pcm.state.StateCommandLineParameters.Keyword.To;
+import static pcm.state.StateKeywords.Applied;
+import static pcm.state.StateKeywords.To;
 
 import java.util.function.BiFunction;
 

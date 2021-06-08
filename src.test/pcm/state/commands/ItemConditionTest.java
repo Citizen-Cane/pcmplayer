@@ -1,6 +1,9 @@
 package pcm.state.commands;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -10,21 +13,25 @@ import pcm.controller.Player;
 import pcm.state.StateCommandLineParameters;
 import pcm.state.conditions.ItemCondition;
 import pcm.state.conditions.StateCondition;
+import pcm.state.persistence.ScriptState;
 import pcm.util.TestUtils;
 import teaselib.Body;
 import teaselib.Household;
 import teaselib.State;
 import teaselib.Toys;
+import teaselib.core.Debugger;
 import teaselib.util.Item;
 
 public class ItemConditionTest {
     final Declarations declarations = new Declarations();
 
     Player player;
+    ScriptState scriptState;
 
     @Before
     public void initPlayer() throws Exception {
         player = TestUtils.loadScript(StateCommandTest.class, "ItemCommandTest");
+        scriptState = player.state;
     }
 
     public ItemConditionTest() {
@@ -45,24 +52,24 @@ public class ItemConditionTest {
 
         ItemCommand foo = new ItemCommand(new StateCommandLineParameters(
                 new String[] { "teaselib.Toys.Chastity_Device", "Apply" }, declarations));
-        foo.execute(player.state);
+        foo.execute(scriptState);
 
         assertTrue(chastityDevice.applied());
         assertTrue(somethingOnPenis.applied());
         assertTrue(player.item("teaselib.Toys.Chastity_Device").applied());
 
         assertTrue(new ItemCondition(new StateCommandLineParameters(
-                new String[] { "teaselib.Toys.Chastity_Device", "applied" }, declarations)).isTrueFor(player.state));
+                new String[] { "teaselib.Toys.Chastity_Device", "applied" }, declarations)).isTrueFor(scriptState));
         assertTrue(new ItemCondition(new StateCommandLineParameters(
                 new String[] { "teaselib.Toys.Chastity_Device", "is", player.namespaceApplyAttribute }, declarations))
-                        .isTrueFor(player.state));
+                        .isTrueFor(scriptState));
 
         assertTrue(new StateCondition(
                 new StateCommandLineParameters(new String[] { "teaselib.Body.OnPenis", "applied" }, declarations))
-                        .isTrueFor(player.state));
+                        .isTrueFor(scriptState));
         assertTrue(new StateCondition(new StateCommandLineParameters(
                 new String[] { "teaselib.Body.OnPenis", "is", player.namespaceApplyAttribute }, declarations))
-                        .isTrueFor(player.state));
+                        .isTrueFor(scriptState));
 
         chastityDevice.remove();
         assertFalse(chastityDevice.applied());
@@ -72,16 +79,16 @@ public class ItemConditionTest {
 
         assertTrue(new ItemCondition(new StateCommandLineParameters(
                 new String[] { "teaselib.Toys.Chastity_Device", "not", "applied" }, declarations))
-                        .isTrueFor(player.state));
+                        .isTrueFor(scriptState));
         assertTrue(new ItemCondition(new StateCommandLineParameters(
                 new String[] { "teaselib.Toys.Chastity_Device", "is", "not", player.namespaceApplyAttribute },
-                declarations)).isTrueFor(player.state));
+                declarations)).isTrueFor(scriptState));
 
         assertTrue(new StateCondition(new StateCommandLineParameters(
-                new String[] { "teaselib.Body.OnPenis", "not", "applied" }, declarations)).isTrueFor(player.state));
+                new String[] { "teaselib.Body.OnPenis", "not", "applied" }, declarations)).isTrueFor(scriptState));
         assertTrue(new StateCondition(new StateCommandLineParameters(
                 new String[] { "teaselib.Body.OnPenis", "is", "not", player.namespaceApplyAttribute }, declarations))
-                        .isTrueFor(player.state));
+                        .isTrueFor(scriptState));
 
     }
 
@@ -93,23 +100,23 @@ public class ItemConditionTest {
         ItemCommand foo = new ItemCommand(new StateCommandLineParameters(
                 new String[] { "teaselib.Household.Clothes_Pegs", "apply", "to", "teaselib.Body.OnPenis" },
                 declarations));
-        foo.execute(player.state);
+        foo.execute(scriptState);
 
         assertTrue(clothesPegs.applied());
         assertTrue(somethingOnPenis.applied());
 
         assertTrue(new ItemCondition(new StateCommandLineParameters(
-                new String[] { "teaselib.Household.Clothes_Pegs", "applied" }, declarations)).isTrueFor(player.state));
+                new String[] { "teaselib.Household.Clothes_Pegs", "applied" }, declarations)).isTrueFor(scriptState));
         assertTrue(new ItemCondition(new StateCommandLineParameters(
                 new String[] { "teaselib.Household.Clothes_Pegs", "is", player.namespaceApplyAttribute }, declarations))
-                        .isTrueFor(player.state));
+                        .isTrueFor(scriptState));
 
         assertTrue(new StateCondition(
                 new StateCommandLineParameters(new String[] { "teaselib.Body.OnPenis", "applied" }, declarations))
-                        .isTrueFor(player.state));
+                        .isTrueFor(scriptState));
         assertTrue(new StateCondition(new StateCommandLineParameters(
                 new String[] { "teaselib.Body.OnPenis", "is", player.namespaceApplyAttribute }, declarations))
-                        .isTrueFor(player.state));
+                        .isTrueFor(scriptState));
 
         clothesPegs.remove();
 
@@ -119,15 +126,38 @@ public class ItemConditionTest {
 
         assertTrue(new ItemCondition(new StateCommandLineParameters(
                 new String[] { "teaselib.Household.Clothes_Pegs", "not", "applied" }, declarations))
-                        .isTrueFor(player.state));
+                        .isTrueFor(scriptState));
         assertTrue(new ItemCondition(new StateCommandLineParameters(
                 new String[] { "teaselib.Household.Clothes_Pegs", "is", "not", player.namespaceApplyAttribute },
-                declarations)).isTrueFor(player.state));
+                declarations)).isTrueFor(scriptState));
 
         assertTrue(new StateCondition(new StateCommandLineParameters(
-                new String[] { "teaselib.Body.OnPenis", "not", "applied" }, declarations)).isTrueFor(player.state));
+                new String[] { "teaselib.Body.OnPenis", "not", "applied" }, declarations)).isTrueFor(scriptState));
         assertTrue(new StateCondition(new StateCommandLineParameters(
                 new String[] { "teaselib.Body.OnPenis", "is", "not", player.namespaceApplyAttribute }, declarations))
-                        .isTrueFor(player.state));
+                        .isTrueFor(scriptState));
     }
+
+    @Test
+    public void testItemRmoved() throws Exception {
+        Debugger debugger = new Debugger(player);
+
+        State analDouche = player.item(Toys.Anal_Douche);
+        analDouche.apply();
+        analDouche.remove();
+
+        assertTrue(new ItemCondition(new StateCommandLineParameters(
+                new String[] { "teaselib.Toys.Anal_Douche", "removed", "lessThan", "04:00\"00" }, declarations))
+                        .isTrueFor(scriptState));
+
+        debugger.advanceTime(4, TimeUnit.HOURS);
+
+        assertFalse(new ItemCondition(new StateCommandLineParameters(
+                new String[] { "teaselib.Toys.Anal_Douche", "removed", "lessThan", "04:00\"00" }, declarations))
+                        .isTrueFor(scriptState));
+        assertTrue(new ItemCondition(new StateCommandLineParameters(
+                new String[] { "teaselib.Toys.Anal_Douche", "removed", "greaterOrEqualThan", "04:00\"00" },
+                declarations)).isTrueFor(scriptState));
+    }
+
 }

@@ -10,7 +10,7 @@ import pcm.model.IllegalStatementException;
 import pcm.state.BasicCondition;
 import pcm.state.ParameterizedConditionStatement;
 import pcm.state.StateCommandLineParameters;
-import pcm.state.StateCommandLineParameters.Keyword;
+import pcm.state.StateKeywords;
 import pcm.state.persistence.ScriptState;
 import teaselib.util.Item;
 
@@ -25,7 +25,7 @@ public class ItemCondition extends BasicCondition {
 
     private static ParameterizedConditionStatement statement(StateCommandLineParameters args) {
         final ParameterizedConditionStatement innerStatement = innerStatement(args);
-        if (args.containsKey(Keyword.Not)) {
+        if (args.containsKey(StateKeywords.Not)) {
             return new ParameterizedConditionStatement(ITEM, args) {
                 @Override
                 public boolean call(ScriptState state) {
@@ -38,38 +38,38 @@ public class ItemCondition extends BasicCondition {
     }
 
     static ParameterizedConditionStatement innerStatement(StateCommandLineParameters args) {
-        String[] items = args.items(Keyword.Item);
+        String[] items = args.items(StateKeywords.Item);
         var declarations = args.getDeclarations();
         declarations.validate(items, Item.class);
-        if (args.containsKey(StateCommandLineParameters.Keyword.Matching)) {
+        if (args.containsKey(StateKeywords.Matching)) {
             return matching(args, items);
-        } else if (args.containsKey(StateCommandLineParameters.Keyword.Is)) {
+        } else if (args.containsKey(StateKeywords.Is)) {
             return is(args, items);
-        } else if (args.containsKey(StateCommandLineParameters.Keyword.Available)) {
+        } else if (args.containsKey(StateKeywords.Available)) {
             return available(args, items);
-        } else if (args.containsKey(StateCommandLineParameters.Keyword.CanApply)) {
+        } else if (args.containsKey(StateKeywords.CanApply)) {
             return canApply(args, items);
-        } else if (args.containsKey(StateCommandLineParameters.Keyword.Applied)) {
+        } else if (args.containsKey(StateKeywords.Applied)) {
             return applied(args, items);
-        } else if (args.containsKey(StateCommandLineParameters.Keyword.Free)) {
+        } else if (args.containsKey(StateKeywords.Free)) {
             return free(args, items);
-        } else if (args.containsKey(StateCommandLineParameters.Keyword.Expired)) {
+        } else if (args.containsKey(StateKeywords.Expired)) {
             return expired(args, items);
-        } else if (args.containsKey(StateCommandLineParameters.Keyword.Remaining)) {
+        } else if (args.containsKey(StateKeywords.Remaining)) {
             return remaining(args, items);
-        } else if (args.containsKey(StateCommandLineParameters.Keyword.Elapsed)) {
+        } else if (args.containsKey(StateKeywords.Elapsed)) {
             return elapsed(args, items);
-        } else if (args.containsKey(StateCommandLineParameters.Keyword.Limit)) {
+        } else if (args.containsKey(StateKeywords.Limit)) {
             return limit(args, items);
-        } else if (args.containsKey(StateCommandLineParameters.Keyword.Removed)) {
+        } else if (args.containsKey(StateKeywords.Removed)) {
             return removed(args, items);
         } else {
-            throw new IllegalStatementException("Keyword not found", args);
+            throw new IllegalStatementException("Item condition not found or invalid", args);
         }
     }
 
     private static ParameterizedConditionStatement is(StateCommandLineParameters args, String[] items) {
-        Object[] attributes = args.items(StateCommandLineParameters.Keyword.Is);
+        Object[] attributes = args.items(StateKeywords.Is);
         return new ParameterizedConditionStatement.Boolean(args, items, ITEM,
                 (player, value) -> player.item(value).is(attributes));
     }
@@ -80,7 +80,7 @@ public class ItemCondition extends BasicCondition {
     }
 
     private static ParameterizedConditionStatement canApply(StateCommandLineParameters args, String[] items) {
-        String[] peers = args.items(Keyword.To);
+        String[] peers = args.items(StateKeywords.To);
         return new ParameterizedConditionStatement(ITEM, args) {
             @Override
             public boolean call(ScriptState state) {
@@ -129,12 +129,13 @@ public class ItemCondition extends BasicCondition {
     }
 
     private static ParameterizedConditionStatement removed(StateCommandLineParameters args, String[] items) {
-        return new ParameterizedConditionStatement.Duration(args, items, ITEM,
-                (player, value) -> player.item(value).removed(TimeUnit.SECONDS));
+        return new ParameterizedConditionStatement.Duration(args, items, ITEM, (player, value) -> {
+            return player.item(value).removed(TimeUnit.SECONDS);
+        });
     }
 
     private static ParameterizedConditionStatement matching(StateCommandLineParameters args, String[] items) {
-        String[] attributes = args.items(StateCommandLineParameters.Keyword.Matching);
+        String[] attributes = args.items(StateKeywords.Matching);
         return new ParameterizedConditionStatement(ITEM, args) {
             @Override
             public boolean call(ScriptState state) {
@@ -175,6 +176,6 @@ public class ItemCondition extends BasicCondition {
     }
 
     public List<String> items() {
-        return Arrays.asList(args.items(Keyword.Item));
+        return Arrays.asList(args.items(StateKeywords.Item));
     }
 }
