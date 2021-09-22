@@ -19,14 +19,13 @@ import teaselib.core.ResourceLoader;
 import teaselib.core.TeaseLib;
 import teaselib.core.configuration.DebugSetup;
 import teaselib.core.debug.DebugHost;
-import teaselib.core.debug.DebugPersistence;
 import teaselib.test.TestScript;
 
 public class TestUtils {
     public static final String TEST_NAMESPACE = "Test_Namespace";
 
     public static TeaseLib teaseLib() throws IOException {
-        return new TeaseLib(new DebugHost(), new DebugPersistence(), new DebugSetup());
+        return new TeaseLib(new DebugHost(), new DebugSetup());
     }
 
     public static Player createPlayer(Class<?> scriptClass) throws IOException {

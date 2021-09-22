@@ -14,7 +14,6 @@ import teaselib.core.ResourceLoader;
 import teaselib.core.TeaseLib;
 import teaselib.core.configuration.DebugSetup;
 import teaselib.core.debug.DebugHost;
-import teaselib.core.debug.DebugPersistence;
 import teaselib.test.TestScript;
 
 /**
@@ -28,7 +27,7 @@ public class TestPlayer extends Player {
     public final Debugger debugger;
 
     public TestPlayer(Class<?> scriptClass) throws IOException {
-        this(new TeaseLib(new DebugHost(), new DebugPersistence(), new DebugSetup()), scriptClass);
+        this(new TeaseLib(new DebugHost(), new DebugSetup()), scriptClass);
     }
 
     public TestPlayer(TeaseLib teaseLib, Class<?> scriptClass) {
