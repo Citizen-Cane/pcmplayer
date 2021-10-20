@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import teaselib.State;
-import teaselib.core.util.QualifiedItem;
+import teaselib.core.util.QualifiedString;
 import teaselib.core.util.ReflectionUtils;
 
 public class Declarations {
@@ -30,17 +30,19 @@ public class Declarations {
     }
 
     public void add(String namespace, String value) {
+        String valueLowerCase;
         if (value.equalsIgnoreCase("item")) {
-            value = ITEM;
+            valueLowerCase = ITEM;
         } else if (value.equalsIgnoreCase("state")) {
-            value = STATE;
+            valueLowerCase = STATE;
+        } else {
+            valueLowerCase = value.toLowerCase();
         }
 
-        String valueIgnoreCase = value.toLowerCase();
-        if (names.contains(valueIgnoreCase)) {
-            nameDeclarations.put(namespace.toLowerCase(), valueIgnoreCase);
-        } else if (types.contains(valueIgnoreCase)) {
-            typeDeclarations.put(namespace.toLowerCase(), valueIgnoreCase);
+        if (names.contains(valueLowerCase)) {
+            nameDeclarations.put(namespace.toLowerCase(), valueLowerCase);
+        } else if (types.contains(valueLowerCase)) {
+            typeDeclarations.put(namespace.toLowerCase(), valueLowerCase);
         } else {
             throw new IllegalArgumentException(value);
         }
@@ -59,11 +61,11 @@ public class Declarations {
             if (!RuntimeVariable.isVariable(value)) {
                 var valueChecked = false;
                 for (Map.Entry<String, String> entry : entries()) {
-                    var qualifiedItem = QualifiedItem.of(value);
-                    boolean isDeclared = qualifiedItem.namespace().equalsIgnoreCase(entry.getKey());
+                    var qualifiedValue = QualifiedString.of(value);
+                    boolean isDeclared = qualifiedValue.namespace().equalsIgnoreCase(entry.getKey());
                     if (isDeclared) {
                         if (isKeyword(entry, Declarations.ENUM)) {
-                            ReflectionUtils.getEnum(qualifiedItem);
+                            ReflectionUtils.getEnum(qualifiedValue);
                             valueChecked = true;
                         } else if (isKeyword(entry, Declarations.STRING)) {
                             valueChecked = true;
@@ -87,8 +89,7 @@ public class Declarations {
     public boolean validate(String[] items, Class<? extends State> clazz) {
         for (String item : items) {
             if (!RuntimeVariable.isVariable(item)) {
-                var qualifiedItem = QualifiedItem.of(item);
-                String key = qualifiedItem.namespace().toLowerCase();
+                String key = QualifiedString.of(item).namespace().toLowerCase();
                 if (!typeDeclarations.containsKey(key)) {
                     throw new IllegalArgumentException("Undefiend type " + item);
                 } else if (!typeDeclarations.get(key).equalsIgnoreCase(clazz.getName())) {

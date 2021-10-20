@@ -8,9 +8,8 @@ import pcm.model.AbstractAction.Statement;
 import pcm.model.ScriptExecutionException;
 import pcm.state.persistence.ScriptState;
 import teaselib.State;
+import teaselib.State.Attributes;
 import teaselib.State.Persistence.Until;
-import teaselib.core.StateMaps;
-import teaselib.core.StateMaps.Attributes;
 import teaselib.util.DurationFormat;
 
 public class BasicCommand implements Command {
@@ -36,7 +35,7 @@ public class BasicCommand implements Command {
                 var player = scriptState.player;
                 for (String value : items) {
                     var state = stateSupplier.apply(player, value);
-                    Attributes attributeApplier = (StateMaps.Attributes) state;
+                    Attributes attributeApplier = (State.Attributes) state;
                     attributeApplier.applyAttributes(player.script.scriptApplyAttribute);
                     attributeApplier.applyAttributes(player.namespaceApplyAttribute);
                     var options = peers.length == 0 ? state.apply() : state.applyTo(peers);

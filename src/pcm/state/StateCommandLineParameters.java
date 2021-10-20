@@ -1,7 +1,5 @@
 package pcm.state;
 
-import static java.util.stream.Collectors.toList;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -10,7 +8,7 @@ import pcm.controller.Declarations;
 import pcm.model.IllegalStatementException;
 import pcm.state.persistence.ScriptState;
 import teaselib.core.util.CommandLineParameters;
-import teaselib.core.util.QualifiedItem;
+import teaselib.core.util.QualifiedString;
 import teaselib.util.DurationFormat;
 import teaselib.util.Items;
 
@@ -197,7 +195,7 @@ public class StateCommandLineParameters extends CommandLineParameters<StateKeywo
         remove(StateKeywords.Matching);
         remove(StateKeywords.Item);
         Items matching = state.player.items(items).matching(attributes);
-        put(StateKeywords.Item, matching.stream().map(QualifiedItem::of).map(QualifiedItem::toString).collect(toList()));
+        put(StateKeywords.Item, matching.stream().map(QualifiedString::of).map(QualifiedString::toString).toList());
     }
 
     public String[] optionalPeers(StateKeywords condition, StateKeywords peerList) {
