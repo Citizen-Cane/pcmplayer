@@ -1,9 +1,6 @@
 package pcm;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 
@@ -27,7 +24,7 @@ import teaselib.Posture;
 public class ConditionRangeTestWithStateConditions {
 
     @Test
-    public void testConditionRangeIsCaseIndependent() throws ClassNotFoundException {
+    public void testConditionRangeIsCaseIndependent() {
         Declarations declarations = new Declarations();
         declarations.add("teaselib.Toys", Declarations.STRING);
         declarations.add("teaselib.Toys", Declarations.STATE);

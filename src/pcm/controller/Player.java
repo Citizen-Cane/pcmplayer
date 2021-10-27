@@ -108,20 +108,21 @@ public class Player extends TeaseScript implements MainScript {
             throws IOException, ValidationIssue, ScriptParsingException, InterruptedException, ExecutionException {
         ResourceLoader resources = new ResourceLoader(path, projectName);
         resources.addAssets(assets);
-        TextToSpeechRecorder recorder = new TextToSpeechRecorder(path, projectName, resources, new TextVariables());
-        Symbols dominantSubmissiveRelations = Symbols.getDominantSubmissiveRelations();
-        for (Entry<String, String> entry : dominantSubmissiveRelations.entrySet()) {
-            Symbols dominantSubmissiveRelation = new Symbols();
-            dominantSubmissiveRelation.put(entry.getKey(), entry.getValue());
-            ScriptCache scripts = new ScriptCache(resources, Player.ScriptFolder, dominantSubmissiveRelation);
-            recorder.startPass(entry.getKey(), entry.getValue());
-            for (String scriptName : scriptNames) {
-                Script script = scripts.get(actor, scriptName);
-                ScriptScanner scriptScanner = new PCMScriptScanner(script);
-                recorder.run(scriptScanner);
+        try (TextToSpeechRecorder recorder = new TextToSpeechRecorder(path, projectName, resources, new TextVariables())) {
+            Symbols dominantSubmissiveRelations = Symbols.getDominantSubmissiveRelations();
+            for (Entry<String, String> entry : dominantSubmissiveRelations.entrySet()) {
+                Symbols dominantSubmissiveRelation = new Symbols();
+                dominantSubmissiveRelation.put(entry.getKey(), entry.getValue());
+                ScriptCache scripts = new ScriptCache(resources, Player.ScriptFolder, dominantSubmissiveRelation);
+                recorder.startPass(entry.getKey(), entry.getValue());
+                for (String scriptName : scriptNames) {
+                    Script script = scripts.get(actor, scriptName);
+                    ScriptScanner scriptScanner = new PCMScriptScanner(script);
+                    recorder.run(scriptScanner);
+                }
             }
+            recorder.finish();
         }
-        recorder.finish();
     }
 
     public Player(TeaseLib teaseLib, ResourceLoader resources, Actor actor, String namespace, String mistressPath,

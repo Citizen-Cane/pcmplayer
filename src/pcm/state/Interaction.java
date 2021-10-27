@@ -11,7 +11,8 @@ import pcm.model.ScriptParsingException;
 import pcm.model.ValidationIssue;
 
 public interface Interaction {
-    static final Runnable NoVisuals = () -> {};
+    static final Runnable NoVisuals = () -> {
+        /* no visuals */};
 
     /**
      * Return a range to be executed next.

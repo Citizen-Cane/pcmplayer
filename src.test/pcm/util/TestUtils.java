@@ -39,8 +39,7 @@ public class TestUtils {
 
     public static Player createPlayer(TeaseLib teaseLib, Class<?> scriptClass, Actor dominant) {
         return new Player(teaseLib, new ResourceLoader(scriptClass), dominant, TEST_NAMESPACE, null,
-                scriptClass.getSimpleName()) {
-        };
+                scriptClass.getSimpleName());
     }
 
     public static Player loadScript(Class<?> scriptClass, String script)

@@ -30,7 +30,7 @@ public class LoadSbd implements Interaction {
         Optional<String> scriptName = range.script();
         if (scriptName.isPresent()) {
             try {
-                player.loadScript((LoadSbdRange) range);
+                player.loadScript(range);
             } catch (ScriptParsingException | ValidationIssue | IOException e) {
                 throw new ScriptExecutionException(script, action, e);
             }
