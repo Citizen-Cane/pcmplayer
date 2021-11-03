@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.StringTokenizer;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +45,7 @@ import teaselib.Message;
 import teaselib.Sexuality.Gender;
 import teaselib.Sexuality.Sex;
 import teaselib.TeaseScript;
+import teaselib.core.Host;
 import teaselib.core.ResourceLoader;
 import teaselib.core.ScriptInterruptedException;
 import teaselib.core.TeaseLib;
@@ -68,6 +70,10 @@ public class Player extends TeaseScript implements MainScript {
     public final MappedScriptState state;
     public final BreakPoints breakPoints;
 
+    private final ScriptCache scripts;
+    private final String mistressPath;
+    private final String mainScript;
+
     private final ProbabilityModel probabilityModel = new ProbabilityModelBasedOnPossBucketSum() {
         @Override
         public double random(double from, double to) {
@@ -82,12 +88,8 @@ public class Player extends TeaseScript implements MainScript {
     public boolean validateScripts = false;
     public boolean debugOutput = false;
 
-    final ScriptCache scripts;
-    private final String mistressPath;
-    private final String mainScript;
-
     private boolean invokedOnAllSet = false;
-    boolean intentionalQuit = false;
+    private final AtomicReference<Host.ScriptInterruptedEvent.Reason> scriptInterruptedReason = new AtomicReference<>();
 
     /**
      * The EndAction tells the player to hand over execution from the PCM script engine back to the caller.
@@ -108,7 +110,8 @@ public class Player extends TeaseScript implements MainScript {
             throws IOException, ValidationIssue, ScriptParsingException, InterruptedException, ExecutionException {
         ResourceLoader resources = new ResourceLoader(path, projectName);
         resources.addAssets(assets);
-        try (TextToSpeechRecorder recorder = new TextToSpeechRecorder(path, projectName, resources, new TextVariables())) {
+        try (TextToSpeechRecorder recorder = new TextToSpeechRecorder(path, projectName, resources,
+                new TextVariables())) {
             Symbols dominantSubmissiveRelations = Symbols.getDominantSubmissiveRelations();
             for (Entry<String, String> entry : dominantSubmissiveRelations.entrySet()) {
                 Symbols dominantSubmissiveRelation = new Symbols();
@@ -242,16 +245,13 @@ public class Player extends TeaseScript implements MainScript {
             try {
                 play(startRange, playRange);
             } catch (ScriptInterruptedException e) {
-                if (!intentionalQuit) {
-                    logger.error(e.getMessage(), e);
-                }
+                logger.error(e.getMessage(), e);
             } catch (ScriptException e) {
                 reportError(e);
             } catch (Exception e) {
                 reportError(e, name);
             } finally {
                 teaseLib.host.setQuitHandler(null);
-                intentionalQuit = false;
                 actor.speechRecognitionRejectedScript = srRejectedHandler;
             }
         }
@@ -284,23 +284,17 @@ public class Player extends TeaseScript implements MainScript {
         return new SpeechRecognitionRejectedScript(this) {
             @Override
             public boolean canRun() {
-                return script != null && script.onRecognitionRejected != null && !intentionalQuit;
+                return script != null && script.onRecognitionRejected != null && scriptInterruptedReason.get() == null;
             }
 
             @Override
             public void run() {
                 try {
-                    // The play(Range) method must end on return, not continue somewhere else
+                    // The rejected script must end with a return statement, and not continue somewhere else
                     Player.this.scripts.stack.push(EndAction);
                     action = getAction(Player.this.script.onRecognitionRejected);
                     Player.this.playRange(new ActionRange(0, Integer.MAX_VALUE));
-                    if (action == EndAction) {
-                        // Intentional quit
-                        intentionalQuit = true;
-                        throw new ScriptInterruptedException();
-                        // TODO Interrupting the main script results in the
-                        // onClose handler to be triggered -> bad quit
-                    }
+                    // script is continued normally because playRange(...) restores the previous action on completion
                 } catch (ScriptExecutionException e) {
                     logger.error(e.getMessage(), e);
                 }
@@ -469,16 +463,21 @@ public class Player extends TeaseScript implements MainScript {
     private void resetScript() throws ScriptExecutionException {
         invokedOnAllSet = false;
         if (script.onClose != null) {
-            final Thread scriptThread = Thread.currentThread();
-            teaseLib.host.setQuitHandler(() -> {
-                logger.info("Interrupting script thread '{}'", scriptThread.getName());
-                scriptThread.interrupt();
-                // The main script continues at the onClose range
-            });
+            enableOnClose();
         }
         script.execute(state);
         boolean haveImages = mistressPath != null && script.mistressImages != null;
         actor.images = haveImages ? new RandomImages(resources(mistressPath + script.mistressImages)) : Images.None;
+    }
+
+    private void enableOnClose() {
+        Thread scriptThread = Thread.currentThread();
+        teaseLib.host.setQuitHandler(event -> {
+            logger.info("Interrupting script thread '{}'", scriptThread.getName());
+            scriptInterruptedReason.set(event.reason());
+            scriptThread.interrupt();
+            // -> interrupting the main script continues at the onClose range
+        });
     }
 
     /**
@@ -511,11 +510,14 @@ public class Player extends TeaseScript implements MainScript {
                     // It's kind of a hack, and leaves a small loop hole
                     // (placing the onClose range inside the play range),
                     // but saves us from creating a second player instance
-                    boolean callOnCloseHandler = script.onClose != null && playRange.contains(script.onClose);
-                    if (callOnCloseHandler && !intentionalQuit) {
+                    boolean callOnCloseHandler = script.onClose != null //
+                            && playRange.contains(script.onClose)//
+                            && scriptInterruptedReason.get() != null;
+                    if (callOnCloseHandler) {
+                        Thread.interrupted();
+                        scriptInterruptedReason.set(null);
                         endAll();
                         action = getAction(script.onClose);
-                        Thread.interrupted();
                     } else {
                         throw e;
                     }
@@ -526,10 +528,8 @@ public class Player extends TeaseScript implements MainScript {
                     if (cause instanceof ScriptExecutionException) {
                         throw (ScriptExecutionException) cause;
                     } else {
-                        throw e;
+                        throw new ScriptExecutionException(script, action, e);
                     }
-                } catch (Exception e) {
-                    throw new ScriptExecutionException(script, action, e);
                 }
             }
         } finally {
