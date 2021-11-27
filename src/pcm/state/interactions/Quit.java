@@ -27,7 +27,7 @@ public class Quit implements Interaction {
         logger.info(getClass().getSimpleName());
         visuals.run();
 
-        player.completeAll();
+        player.awaitAllCompleted();
         player.setImage(Message.NoImage);
         player.show("");
 

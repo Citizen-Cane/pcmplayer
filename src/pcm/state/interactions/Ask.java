@@ -76,7 +76,7 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
 
         logger.info("{} {}", getClass().getSimpleName(), choices);
         visuals.run();
-        player.completeMandatory();
+        player.awaitMandatoryCompleted();
         // Don't wait, display checkboxes while displaying the message
         List<Boolean> results;
         results = player.showItems(title, choices, values, false);

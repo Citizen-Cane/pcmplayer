@@ -107,7 +107,7 @@ public abstract class Stop extends AbstractBreakInteraction {
 
             ScriptFunction timeoutFunction = new ScriptFunction(() -> {
                 visuals.run();
-                player.completeMandatory();
+                player.awaitMandatoryCompleted();
             });
 
             return nextAction(player, script, action, timeoutFunction);

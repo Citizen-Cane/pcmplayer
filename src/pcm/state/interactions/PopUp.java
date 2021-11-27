@@ -38,7 +38,7 @@ public class PopUp implements Interaction {
         List<String> choices = menuItems.stream().map(menuItem -> menuItem.message).collect(Collectors.toList());
         logger.info("{} {}", getClass().getSimpleName(), choices);
         visuals.run();
-        player.completeMandatory();
+        player.awaitMandatoryCompleted();
         String result = player.reply(choices);
         return player.getAction(menuItems.get(choices.indexOf(result)).range);
     }
