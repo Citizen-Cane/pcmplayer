@@ -8,7 +8,7 @@ import pcm.state.ValidatableResources;
 import pcm.state.Visual;
 
 public class Image implements Visual, ValidatableResources {
-    public static final String IMAGES = "images/";
+    public static final String IMAGES = "/Mine/images/";
 
     public final String path;
 

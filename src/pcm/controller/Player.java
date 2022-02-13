@@ -37,15 +37,16 @@ import pcm.state.commands.ResetRange;
 import pcm.state.conditions.Should;
 import pcm.state.persistence.MappedScriptState;
 import pcm.state.persistence.ScriptState;
+import pcm.state.visuals.Image;
 import teaselib.Actor;
 import teaselib.Config;
-import teaselib.Images;
 import teaselib.MainScript;
 import teaselib.Message;
 import teaselib.Sexuality.Gender;
 import teaselib.Sexuality.Sex;
 import teaselib.TeaseScript;
 import teaselib.core.Host;
+import teaselib.core.InstructionalImages;
 import teaselib.core.ResourceLoader;
 import teaselib.core.ScriptInterruptedException;
 import teaselib.core.TeaseLib;
@@ -53,7 +54,7 @@ import teaselib.core.media.MediaRenderer;
 import teaselib.core.texttospeech.ScriptScanner;
 import teaselib.core.texttospeech.TextToSpeechRecorder;
 import teaselib.core.texttospeech.Voice;
-import teaselib.util.RandomImages;
+import teaselib.util.MoodImages;
 import teaselib.util.SpeechRecognitionRejectedScript;
 import teaselib.util.TextVariables;
 
@@ -245,7 +246,7 @@ public class Player extends TeaseScript implements MainScript {
             try {
                 play(startRange, playRange);
             } catch (ScriptInterruptedException e) {
-                logger.error(e.getMessage(), e);
+                logger.debug(e.getMessage(), e);
             } catch (ScriptException e) {
                 reportError(e);
             } catch (Exception e) {
@@ -467,7 +468,15 @@ public class Player extends TeaseScript implements MainScript {
         }
         script.execute(state);
         boolean haveImages = mistressPath != null && script.mistressImages != null;
-        actor.images = haveImages ? new RandomImages(resources(mistressPath + script.mistressImages)) : Images.None;
+        if (haveImages) {
+            // TODO use scene-based images
+            // TODO assign each scene to an activity script as before -> use script name as chapter or hint
+            actor.images = new MoodImages(resources(mistressPath + script.mistressImages));
+            // TODO naming scheme is too short for pose cache - need at least project name as root folder
+            // - the assets are stored this way, it's a Mine organization issue
+            // -> change folder names in Mine or added code to SceneBasedImages
+        }
+        actor.instructions = new InstructionalImages(resources(Image.IMAGES + "*.jpg"));
     }
 
     private void enableOnClose() {
