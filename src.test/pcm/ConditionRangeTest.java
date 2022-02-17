@@ -7,26 +7,25 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import pcm.controller.Player;
 import pcm.model.ActionRange;
 import pcm.model.ScriptExecutionException;
 import pcm.model.ScriptParsingException;
 import pcm.model.ValidationIssue;
 import pcm.state.persistence.ScriptState;
-import pcm.util.TestUtils;
+import pcm.util.TestPlayer;
 
 public class ConditionRangeTest {
 
     @Test
     public void testDefaultConditionRange()
             throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
-        Player player = TestUtils.createPlayer(getClass());
+        TestPlayer player = new TestPlayer(getClass());
         player.loadScript(getClass().getSimpleName() + "ConditionsWithDefault");
 
-        TestUtils.play(player, 1000);
+        player.play(1000);
         assertEquals(ScriptState.SET, player.state.get(1000));
 
-        TestUtils.play(player, new ActionRange(1001, 1002));
+        player.play(new ActionRange(1001, 1002));
         assertEquals(ScriptState.UNSET, player.state.get(1001));
         assertEquals(ScriptState.SET, player.state.get(1002));
     }
@@ -34,8 +33,7 @@ public class ConditionRangeTest {
     @Test
     public void testRemoveAllAtOnceWithActionNumbers()
             throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
-        Player player = TestUtils.createPlayer(getClass());
-        player.loadScript(getClass().getSimpleName());
+        TestPlayer player = TestPlayer.loadScript(getClass());
 
         assertEquals(3, player.range(new ActionRange(1400, 1402)).size());
 
@@ -57,8 +55,7 @@ public class ConditionRangeTest {
     @Test
     public void testRemoveOneAfterAnotherWithActionNumbers()
             throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
-        Player player = TestUtils.createPlayer(getClass());
-        player.loadScript(getClass().getSimpleName());
+        TestPlayer player = TestPlayer.loadScript(getClass());
 
         assertEquals(3, player.range(new ActionRange(1400, 1402)).size());
 
@@ -78,8 +75,7 @@ public class ConditionRangeTest {
     @Test
     public void testRemoveOneAfterAnotherConditionRangeOrderWithActionNumbers()
             throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
-        Player player = TestUtils.createPlayer(getClass());
-        player.loadScript(getClass().getSimpleName());
+        TestPlayer player = TestPlayer.loadScript(getClass());
 
         assertEquals(3, player.range(new ActionRange(1400, 1402)).size());
 
@@ -100,8 +96,7 @@ public class ConditionRangeTest {
     @Test
     public void testRemoveOneAfterAnotherConditionRangeOrderWithActionNumbers2()
             throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
-        Player player = TestUtils.createPlayer(getClass());
-        player.loadScript(getClass().getSimpleName());
+        TestPlayer player = TestPlayer.loadScript(getClass());
 
         assertEquals(3, player.range(new ActionRange(1400, 1402)).size());
 
@@ -118,8 +113,7 @@ public class ConditionRangeTest {
     @Test
     public void demonstrateOrderingByRelaxingRangesBelowAndAbove()
             throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
-        Player player = TestUtils.createPlayer(getClass());
-        player.loadScript(getClass().getSimpleName());
+        TestPlayer player = TestPlayer.loadScript(getClass());
 
         assertEquals(3, player.range(new ActionRange(1400, 1402)).size());
 

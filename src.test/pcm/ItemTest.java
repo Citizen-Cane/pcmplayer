@@ -9,36 +9,30 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
-import pcm.controller.Player;
 import pcm.model.ScriptExecutionException;
 import pcm.model.ScriptParsingException;
 import pcm.model.ValidationIssue;
-import pcm.util.TestUtils;
+import pcm.util.TestPlayer;
 import teaselib.Household;
 import teaselib.Toys;
-import teaselib.core.Debugger;
 
 public class ItemTest {
 
     @Test
     public void testApplyItem() throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
-        Player player = TestUtils.createPlayer(getClass());
-        player.loadScript(getClass().getSimpleName());
-
-        Debugger debugger = new Debugger(player.teaseLib);
-        debugger.freezeTime();
+        TestPlayer player = TestPlayer.loadScript(getClass());
 
         assertFalse(player.item(Toys.Collar).applied());
         assertTrue(player.item(Toys.Collar).expired());
 
-        TestUtils.play(player, 1000);
+        player.play(1000);
 
         assertTrue(player.item(Toys.Collar).applied());
         assertFalse(player.item(Toys.Collar).expired());
 
-        debugger.advanceTime(1, TimeUnit.HOURS);
+        player.debugger.advanceTime(1, TimeUnit.HOURS);
 
-        TestUtils.play(player, 1008);
+        player.play(1008);
 
         assertFalse(player.item(Toys.Collar).applied());
         assertTrue(player.item(Toys.Collar).expired());
@@ -47,31 +41,21 @@ public class ItemTest {
     @Test
     public void testApplyItemTo()
             throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
-        Player player = TestUtils.createPlayer(getClass());
-        player.loadScript(getClass().getSimpleName());
-
-        Debugger debugger = new Debugger(player.teaseLib);
-        debugger.freezeTime();
-
-        TestUtils.play(player, 1010);
-
+        TestPlayer player = TestPlayer.loadScript(getClass());
+        player.play(1010);
     }
 
     @Test
     public void testStateNamespaceAndApplyTagsInScript()
             throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
-        Player player = TestUtils.createPlayer(getClass());
-        player.loadScript(getClass().getSimpleName());
-
-        Debugger debugger = new Debugger(player.teaseLib);
-        debugger.freezeTime();
+        TestPlayer player = TestPlayer.loadScript(getClass());
 
         assertFalse(player.item(Toys.Nipple_Clamps).applied());
         assertTrue(player.item(Toys.Nipple_Clamps).expired());
 
-        TestUtils.play(player, 1030);
+        player.play(1030);
 
-        assertFalse(player.item(Toys.Nipple_Clamps).is(TestUtils.TEST_NAMESPACE));
+        assertFalse(player.item(Toys.Nipple_Clamps).is(TestPlayer.NAMESPACE));
 
         assertFalse(player.item(Toys.Nipple_Clamps).applied());
         assertTrue(player.item(Toys.Nipple_Clamps).expired());
@@ -83,181 +67,138 @@ public class ItemTest {
     @Test
     public void testRemainingDuration()
             throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
-        Player player = TestUtils.createPlayer(getClass());
-        player.loadScript(getClass().getSimpleName());
-
-        Debugger debugger = new Debugger(player.teaseLib);
-        debugger.freezeTime();
+        TestPlayer player = TestPlayer.loadScript(getClass());
 
         player.state(Toys.Nipple_Clamps).applyTo().over(30, TimeUnit.MINUTES);
         assertEquals(1800, player.state(Toys.Nipple_Clamps).duration().remaining(TimeUnit.SECONDS));
-        TestUtils.play(player, 1040);
+        player.play(1040);
 
-        debugger.advanceTime(30, TimeUnit.MINUTES);
+        player.debugger.advanceTime(30, TimeUnit.MINUTES);
         assertEquals(0, player.state(Toys.Nipple_Clamps).duration().remaining(TimeUnit.SECONDS));
-        TestUtils.play(player, 1041);
+        player.play(1041);
 
-        debugger.advanceTime(10, TimeUnit.MINUTES);
+        player.debugger.advanceTime(10, TimeUnit.MINUTES);
         assertEquals(-600, player.state(Toys.Nipple_Clamps).duration().remaining(TimeUnit.SECONDS));
-        TestUtils.play(player, 1042);
+        player.play(1042);
     }
 
     @Test
     public void testElapsedDuration()
             throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
-        Player player = TestUtils.createPlayer(getClass());
-        player.loadScript(getClass().getSimpleName());
-
-        Debugger debugger = new Debugger(player.teaseLib);
-        debugger.freezeTime();
+        TestPlayer player = TestPlayer.loadScript(getClass());
 
         player.item(Toys.Nipple_Clamps).apply().over(30, TimeUnit.MINUTES);
         assertEquals(0, player.item(Toys.Nipple_Clamps).duration().elapsed(TimeUnit.MINUTES));
-        TestUtils.play(player, 1050);
+        player.play(1050);
 
-        debugger.advanceTime(10, TimeUnit.MINUTES);
+        player.debugger.advanceTime(10, TimeUnit.MINUTES);
         assertEquals(10, player.item(Toys.Nipple_Clamps).duration().elapsed(TimeUnit.MINUTES));
-        TestUtils.play(player, 1051);
+        player.play(1051);
 
-        debugger.advanceTime(20, TimeUnit.MINUTES);
+        player.debugger.advanceTime(20, TimeUnit.MINUTES);
         assertEquals(30, player.item(Toys.Nipple_Clamps).duration().elapsed(TimeUnit.MINUTES));
-        TestUtils.play(player, 1052);
+        player.play(1052);
 
-        debugger.advanceTime(10, TimeUnit.MINUTES);
+        player.debugger.advanceTime(10, TimeUnit.MINUTES);
         assertEquals(40, player.item(Toys.Nipple_Clamps).duration().elapsed(TimeUnit.MINUTES));
-        TestUtils.play(player, 1053);
+        player.play(1053);
     }
 
     @Test
     public void testIfItemConditionOr()
             throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
-        Player player = TestUtils.createPlayer(getClass());
-        player.loadScript(getClass().getSimpleName());
+        TestPlayer player = TestPlayer.loadScript(getClass());
 
-        Debugger debugger = new Debugger(player.teaseLib);
-        debugger.freezeTime();
-
-        TestUtils.play(player, 1060);
-        TestUtils.play(player, 1065);
+        player.play(1060);
+        player.play(1065);
         player.item(Toys.Nipple_Clamps).apply().over(30, TimeUnit.MINUTES);
-        TestUtils.play(player, 1060);
-        TestUtils.play(player, 1065);
+        player.play(1060);
+        player.play(1065);
     }
 
     @Test
     public void testIfStateConditionAnd()
             throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
-        Player player = TestUtils.createPlayer(getClass());
-        player.loadScript(getClass().getSimpleName());
-
-        Debugger debugger = new Debugger(player.teaseLib);
-        debugger.freezeTime();
+        TestPlayer player = TestPlayer.loadScript(getClass());
 
         player.item(Toys.Nipple_Clamps).apply();
-        TestUtils.play(player, 1070);
+        player.play(1070);
         player.item(Toys.Nipple_Clamps).remove();
-        TestUtils.play(player, 1076);
+        player.play(1076);
 
         player.item(Toys.Nipple_Clamps).apply().over(30, TimeUnit.MINUTES);
-        TestUtils.play(player, 1071);
+        player.play(1071);
         player.item(Toys.Nipple_Clamps).remove();
-        TestUtils.play(player, 1075);
-        debugger.advanceTime(30, TimeUnit.MINUTES);
-        TestUtils.play(player, 1076);
+        player.play(1075);
+        player.debugger.advanceTime(30, TimeUnit.MINUTES);
+        player.play(1076);
     }
 
     @Test
     public void testCanApplyTo() throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
-        Player player = TestUtils.createPlayer(getClass());
-        player.loadScript(getClass().getSimpleName());
-
-        Debugger debugger = new Debugger(player.teaseLib);
-        debugger.freezeTime();
-
-        TestUtils.play(player, 1080);
+        TestPlayer player = TestPlayer.loadScript(getClass());
+        player.play(1080);
     }
 
     @Test
     public void testAppliedTo() throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
-        Player player = TestUtils.createPlayer(getClass());
-        player.loadScript(getClass().getSimpleName());
-
-        Debugger debugger = new Debugger(player.teaseLib);
-        debugger.freezeTime();
-
-        TestUtils.play(player, 1090);
+        TestPlayer player = TestPlayer.loadScript(getClass());
+        player.play(1090);
     }
 
     @Test
     public void testIfItemConditionOrMultipleItems()
             throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
-        Player player = TestUtils.createPlayer(getClass());
-        player.loadScript(getClass().getSimpleName());
-
-        Debugger debugger = new Debugger(player.teaseLib);
-        debugger.freezeTime();
+        TestPlayer player = TestPlayer.loadScript(getClass());
 
         assertFalse(player.item(Toys.Nipple_Clamps).applied());
         player.item(Toys.Gag).apply();
-        TestUtils.play(player, 1101);
-        TestUtils.play(player, 1102);
+        player.play(1101);
+        player.play(1102);
 
         player.item(Toys.Nipple_Clamps).apply();
         player.item(Toys.Gag).remove();
-        TestUtils.play(player, 1101);
-        TestUtils.play(player, 1102);
+        player.play(1101);
+        player.play(1102);
 
         assertTrue(player.item(Toys.Nipple_Clamps).applied());
         player.item(Toys.Gag).apply();
-        TestUtils.play(player, 1100);
-        TestUtils.play(player, 1101);
-        TestUtils.play(player, 1102);
+        player.play(1100);
+        player.play(1101);
+        player.play(1102);
 
         player.item(Toys.Nipple_Clamps).remove();
         player.item(Toys.Gag).remove();
-        TestUtils.play(player, 1103);
+        player.play(1103);
 
     }
 
     @Test
     public void testApplyAndRemoveOneAfterAnother()
             throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
-        Player player = TestUtils.createPlayer(getClass());
-        player.loadScript(getClass().getSimpleName());
-
-        Debugger debugger = new Debugger(player.teaseLib);
-        debugger.freezeTime();
-        TestUtils.play(player, 1120);
+        TestPlayer player = TestPlayer.loadScript(getClass());
+        player.play(1120);
 
     }
 
     @Test
     public void testItemMatching()
             throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
-        Player player = TestUtils.createPlayer(getClass());
-        player.loadScript(getClass().getSimpleName());
-
-        Debugger debugger = new Debugger(player.teaseLib);
-        debugger.freezeTime();
-
-        TestUtils.play(player, 1110);
+        TestPlayer player = TestPlayer.loadScript(getClass());
+        player.play(1110);
     }
 
     @Test
     public void testStateNamespaceAndApplyToTagsInScript()
             throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
-        Player player = TestUtils.createPlayer(getClass());
-        player.loadScript(getClass().getSimpleName());
-
-        Debugger debugger = new Debugger(player.teaseLib);
-        debugger.freezeTime();
+        TestPlayer player = TestPlayer.loadScript(getClass());
 
         assertFalse(player.item(Household.Clothes_Pegs).applied());
         assertTrue(player.item(Household.Clothes_Pegs).expired());
 
-        TestUtils.play(player, 1130);
+        player.play(1130);
 
-        assertFalse(player.item(Household.Clothes_Pegs).is(TestUtils.TEST_NAMESPACE));
+        assertFalse(player.item(Household.Clothes_Pegs).is(TestPlayer.NAMESPACE));
 
         assertFalse(player.item(Household.Clothes_Pegs).applied());
         assertTrue(player.item(Household.Clothes_Pegs).expired());

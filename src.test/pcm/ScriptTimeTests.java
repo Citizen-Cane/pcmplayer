@@ -11,17 +11,16 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Before;
 import org.junit.Test;
 
-import pcm.controller.Player;
 import pcm.model.ActionRange;
 import pcm.model.ScriptExecutionException;
+import pcm.model.ScriptParsingException;
+import pcm.model.ValidationIssue;
 import pcm.state.conditions.TimeTo;
 import pcm.state.persistence.ScriptState;
-import pcm.util.TestUtils;
+import pcm.util.TestPlayer;
 import teaselib.Duration;
-import teaselib.core.Debugger;
 import teaselib.util.DurationFormat;
 
 /**
@@ -29,20 +28,10 @@ import teaselib.util.DurationFormat;
  *
  */
 public class ScriptTimeTests {
-    private final Player player;
-    private final Debugger debugger;
+    private final TestPlayer player;
 
-    public ScriptTimeTests() throws IOException {
-        this.player = TestUtils.createPlayer(getClass());
-        this.debugger = new Debugger(player.teaseLib);
-    }
-
-    /**
-     * @throws java.lang.Exception
-     */
-    @Before
-    public void setUpBefore() throws Exception {
-        player.loadScript("ScriptTimeTests");
+    public ScriptTimeTests() throws IOException, ScriptParsingException, ScriptExecutionException, ValidationIssue {
+        this.player = TestPlayer.loadScript(getClass());
     }
 
     private boolean containsAction(int n) {
@@ -62,8 +51,6 @@ public class ScriptTimeTests {
 
     @Test
     public void testDuration() throws Exception {
-        debugger.freezeTime();
-
         long now = player.teaseLib.getTime(TimeUnit.MILLISECONDS);
         Date date = new Date(now);
         assertEquals(now, date.getTime());
@@ -87,15 +74,13 @@ public class ScriptTimeTests {
 
     @Test
     public void testTimeFromTo() throws ScriptExecutionException {
-        debugger.freezeTime();
-
         ActionRange r = new ActionRange(1000);
         player.action = player.getAction(r);
         player.playFrom(r);
 
         assertEquals(ScriptState.SET, player.state.get(1000));
 
-        debugger.advanceTime(2, TimeUnit.SECONDS);
+        player.debugger.advanceTime(2, TimeUnit.SECONDS);
 
         assertTrue(containsAction(1001));
         assertTrue(!containsAction(1002));
@@ -106,13 +91,11 @@ public class ScriptTimeTests {
 
     @Test
     public void testTimeFromToOffset() throws ScriptExecutionException {
-        debugger.freezeTime();
-
         ActionRange r = new ActionRange(1010);
         player.playFrom(r);
         assertEquals(ScriptState.SET, player.state.get(1010));
 
-        debugger.advanceTime(2, TimeUnit.SECONDS);
+        player.debugger.advanceTime(2, TimeUnit.SECONDS);
 
         assertTrue(containsAction(1011));
         assertFalse(containsAction(1012));
@@ -126,8 +109,6 @@ public class ScriptTimeTests {
 
     @Test
     public void testInfinityPlus() throws ScriptExecutionException {
-        debugger.freezeTime();
-
         ActionRange r = new ActionRange(1020);
         player.action = player.getAction(r);
         player.playFrom(r);
@@ -139,8 +120,6 @@ public class ScriptTimeTests {
 
     @Test(expected = ScriptExecutionException.class)
     public void testThatInfinityMinusIsAnIllegalArgumentToSetTime() throws ScriptExecutionException {
-        debugger.freezeTime();
-
         ActionRange r = new ActionRange(1025);
         player.action = player.getAction(r);
         player.playFrom(r);
@@ -153,8 +132,6 @@ public class ScriptTimeTests {
 
     @Test
     public void showDifferencesOfFiniteVsInfiniteSetTime() throws ScriptExecutionException {
-        debugger.freezeTime();
-
         ActionRange r = new ActionRange(1030);
         player.action = player.getAction(r);
         player.playFrom(r);
@@ -165,7 +142,7 @@ public class ScriptTimeTests {
         assertTrue(containsAction(1033));
 
         assertTrue(containsAction(1034));
-        debugger.advanceTime(71, TimeUnit.MINUTES);
+        player.debugger.advanceTime(71, TimeUnit.MINUTES);
         assertFalse(containsAction(1034));
 
         assertTrue(containsAction(1035));
@@ -177,8 +154,6 @@ public class ScriptTimeTests {
 
     @Test
     public void showHowToCheckForInfinityInCode() {
-        debugger.freezeTime();
-
         player.state.setTime(9, player.duration(10, TimeUnit.SECONDS));
         assertFalse(new TimeTo(9, "-INF").isTrueFor(player.state));
 
@@ -188,8 +163,6 @@ public class ScriptTimeTests {
 
     @Test
     public void showHowToCheckForInfinityInScript() throws ScriptExecutionException {
-        debugger.freezeTime();
-
         ActionRange r = new ActionRange(1040);
         player.action = player.getAction(r);
         player.playFrom(r);

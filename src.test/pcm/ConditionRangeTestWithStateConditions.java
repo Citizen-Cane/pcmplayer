@@ -1,13 +1,15 @@
 package pcm;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
 import org.junit.Test;
 
 import pcm.controller.Declarations;
-import pcm.controller.Player;
 import pcm.model.ActionRange;
 import pcm.model.ConditionRange;
 import pcm.model.ScriptExecutionException;
@@ -17,7 +19,7 @@ import pcm.model.ValidationIssue;
 import pcm.state.Condition;
 import pcm.state.StateCommandLineParameters;
 import pcm.state.conditions.StateCondition;
-import pcm.util.TestUtils;
+import pcm.util.TestPlayer;
 import teaselib.Body;
 import teaselib.Posture;
 
@@ -62,8 +64,7 @@ public class ConditionRangeTestWithStateConditions {
     @Test
     public void testRemoveAllAtOnceWithActionNumbers()
             throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
-        Player player = TestUtils.createPlayer(getClass());
-        player.loadScript(getClass().getSimpleName());
+        TestPlayer player = TestPlayer.loadScript(getClass());
 
         player.state(Body.OnPenis).applyTo();
         assertEquals(3, player.range(new ActionRange(1400, 1402)).size());
@@ -86,8 +87,7 @@ public class ConditionRangeTestWithStateConditions {
     @Test
     public void testRemoveOneAfterAnotherWithActionNumbers()
             throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
-        Player player = TestUtils.createPlayer(getClass());
-        player.loadScript(getClass().getSimpleName());
+        TestPlayer player = TestPlayer.loadScript(getClass());
 
         player.state(Body.OnPenis).applyTo();
         assertEquals(3, player.range(new ActionRange(1400, 1402)).size());
@@ -108,8 +108,7 @@ public class ConditionRangeTestWithStateConditions {
     @Test
     public void testRemoveOneAfterAnotherConditionRangeOrderWithActionNumbers()
             throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
-        Player player = TestUtils.createPlayer(getClass());
-        player.loadScript(getClass().getSimpleName());
+        TestPlayer player = TestPlayer.loadScript(getClass());
 
         player.state(Body.OnPenis).applyTo();
         assertEquals(3, player.range(new ActionRange(1400, 1402)).size());
@@ -131,8 +130,7 @@ public class ConditionRangeTestWithStateConditions {
     @Test
     public void testRemoveOneAfterAnotherConditionRangeOrderWithActionNumbers2()
             throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
-        Player player = TestUtils.createPlayer(getClass());
-        player.loadScript(getClass().getSimpleName());
+        TestPlayer player = TestPlayer.loadScript(getClass());
 
         player.state(Body.OnPenis).applyTo();
         assertEquals(3, player.range(new ActionRange(1400, 1402)).size());
@@ -150,8 +148,7 @@ public class ConditionRangeTestWithStateConditions {
     @Test
     public void ensureCodeCoverageOfShould()
             throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
-        Player player = TestUtils.createPlayer(getClass());
-        player.loadScript(getClass().getSimpleName());
+        TestPlayer player = TestPlayer.loadScript(getClass());
 
         assertEquals(1, player.range(new ActionRange(1400, 1402)).size());
         assertEquals(1400, player.range(new ActionRange(1400, 1402)).get(0).number);

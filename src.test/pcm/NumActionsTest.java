@@ -1,19 +1,17 @@
 package pcm;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
 import org.junit.Test;
 
 import pcm.controller.AllActionsSetException;
-import pcm.controller.Player;
 import pcm.model.ScriptExecutionException;
 import pcm.model.ScriptParsingException;
 import pcm.model.ValidationIssue;
 import pcm.state.persistence.ScriptState;
-import pcm.util.TestUtils;
-import teaselib.core.Debugger;
+import pcm.util.TestPlayer;
 
 /**
  * @author Citizen-Cane
@@ -23,23 +21,14 @@ public class NumActionsTest {
     @Test
     public void testNumActionsFromOneShot()
             throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
-        Player player = TestUtils.createPlayer(getClass());
-        player.loadScript(getClass().getSimpleName());
-
-        Debugger debugger = new Debugger(player.teaseLib);
-        debugger.freezeTime();
-
-        TestUtils.play(player, 1000);
+        TestPlayer player = TestPlayer.loadScript(getClass());
+        player.play(1000);
     }
 
     @Test
     public void testNumActionsFromRepeat()
             throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
-        Player player = TestUtils.createPlayer(getClass());
-        player.loadScript(getClass().getSimpleName());
-
-        Debugger debugger = new Debugger(player.teaseLib);
-        debugger.freezeTime();
+        TestPlayer player = TestPlayer.loadScript(getClass());
 
         assertEquals(ScriptState.UNSET, player.state.get(1013));
         assertThatNumActionsFromWorks(player);
@@ -49,15 +38,15 @@ public class NumActionsTest {
         assertEquals(ScriptState.SET, player.state.get(1013));
     }
 
-    private static void assertThatNumActionsFromWorks(Player player)
+    private static void assertThatNumActionsFromWorks(TestPlayer player)
             throws AllActionsSetException, ScriptExecutionException {
-        TestUtils.play(player, 1010);
+        player.play(1010);
         assertEquals(ScriptState.UNSET, player.state.get(1013));
 
         for (int i = 0; i < 6; i++) {
-            TestUtils.play(player, 1011);
+            player.play(1011);
         }
         assertEquals(ScriptState.UNSET, player.state.get(1013));
-        TestUtils.play(player, 1011);
+        player.play(1011);
     }
 }

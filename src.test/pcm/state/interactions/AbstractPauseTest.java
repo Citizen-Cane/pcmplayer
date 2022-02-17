@@ -1,6 +1,9 @@
 package pcm.state.interactions;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.List;
@@ -14,18 +17,15 @@ import pcm.model.ScriptParsingException;
 import pcm.model.ValidationIssue;
 import pcm.state.visuals.SpokenMessage;
 import pcm.state.visuals.SpokenMessage.Entry;
-import pcm.util.TestUtils;
+import pcm.util.TestPlayer;
 import teaselib.Answer;
-import teaselib.core.Debugger;
 
 public class AbstractPauseTest {
+
     private static Player createPlayer()
             throws IOException, ScriptParsingException, ValidationIssue, ScriptExecutionException {
-        Player player = TestUtils.createPlayer(AbstractPauseTest.class);
+        TestPlayer player = new TestPlayer(AbstractPauseTest.class);
         player.loadScript(AbstractPauseTest.class.getSimpleName());
-
-        Debugger debugger = new Debugger(player.teaseLib);
-        debugger.freezeTime();
         return player;
     }
 

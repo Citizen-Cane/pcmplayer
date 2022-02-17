@@ -3,17 +3,14 @@
  */
 package pcm;
 
-import static org.junit.Assert.*;
-
-import java.io.IOException;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import pcm.controller.Player;
 import pcm.model.Action;
 import pcm.state.visuals.SpokenMessage;
-import pcm.util.TestUtils;
+import pcm.util.TestPlayer;
 import teaselib.Message;
 import teaselib.Mood;
 
@@ -23,14 +20,11 @@ import teaselib.Mood;
  */
 public class MessageTests {
 
-    Player player = TestUtils.createPlayer(getClass());
-
-    public MessageTests() throws IOException {
-    }
+    TestPlayer player;
 
     @Before
     public void setUpBefore() throws Exception {
-        player.loadScript("MessageTests");
+        player = TestPlayer.loadScript(MessageTests.class, "MessageTests");
     }
 
     private Message getMessageOfAction(int n) {

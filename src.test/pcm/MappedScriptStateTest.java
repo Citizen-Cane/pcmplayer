@@ -1,7 +1,11 @@
 package pcm;
 
-import static org.junit.Assert.*;
-import static pcm.state.persistence.ScriptState.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
+import static pcm.state.persistence.ScriptState.SET;
+import static pcm.state.persistence.ScriptState.UNSET;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -10,7 +14,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import pcm.controller.AllActionsSetException;
-import pcm.controller.Player;
 import pcm.model.ScriptExecutionException;
 import pcm.model.ScriptParsingException;
 import pcm.model.ValidationIssue;
@@ -18,10 +21,8 @@ import pcm.state.persistence.MappedScriptState;
 import pcm.state.persistence.MappedScriptStateValue;
 import pcm.state.persistence.ScriptState;
 import pcm.util.TestPlayer;
-import pcm.util.TestUtils;
 import teaselib.Household;
 import teaselib.State;
-import teaselib.core.Debugger;
 import teaselib.core.state.StateProxy;
 
 public class MappedScriptStateTest {
@@ -31,8 +32,7 @@ public class MappedScriptStateTest {
     static final int ChastityCageAction = 44;
     static final int CondomsAction = 46;
 
-    private Player player;
-    private Debugger debugger;
+    private TestPlayer player;
     private State chastityCageState;
     private MappedScriptState pcm;
 
@@ -52,11 +52,8 @@ public class MappedScriptStateTest {
         loadTestScript();
     }
 
-    private void initPlayer() throws IOException {
-        player = TestUtils.createPlayer(getClass());
-        debugger = new Debugger(player.teaseLib);
-        debugger.freezeTime();
-
+    private void initPlayer() throws IOException, ScriptParsingException, ValidationIssue, ScriptExecutionException {
+        player = new TestPlayer(getClass());
         chastityCageState = player.state(Toys.Chastity_Cage);
         pcm = player.state;
     }
@@ -79,14 +76,14 @@ public class MappedScriptStateTest {
             throws AllActionsSetException, ScriptExecutionException {
         assertThatUninitializedStateHasCorrectDefaultValues();
 
-        TestUtils.play(player, 1000);
+        player.play(1000);
 
         assertEquals(ScriptState.SET, pcm.get(1000));
     }
 
     @Test
     public void testThatUninitializedUnmappedStateThrows() {
-        assertThrows(IllegalArgumentException.class, () -> TestUtils.play(player, 1010));
+        assertThrows(IllegalArgumentException.class, () -> player.play(1010));
     }
 
     @Test
@@ -125,7 +122,7 @@ public class MappedScriptStateTest {
         assertTrue(chastityCageState.is(Body.CannotJerkOff));
         assertEquals(SET, pcm.get(ChastityCageAction));
 
-        debugger.advanceTime(10, TimeUnit.SECONDS);
+        player.debugger.advanceTime(10, TimeUnit.SECONDS);
 
         assertTrue(chastityCageState.applied());
         assertTrue(chastityCageState.expired());
@@ -170,17 +167,15 @@ public class MappedScriptStateTest {
     @Test
     public void testThatScriptHandlesUnmappedTimeValuesCorrectly() throws AllActionsSetException,
             ScriptExecutionException, ScriptParsingException, ValidationIssue, IOException {
-        TestPlayer testScript = TestPlayer.loadScript(getClass());
-        Debugger debugger = new Debugger(testScript.teaseLib);
-        debugger.freezeTime();
+        TestPlayer player = TestPlayer.loadScript(getClass());
 
-        TestUtils.play(testScript, 1025);
-        TestUtils.play(testScript, 1038);
+        player.play(1025);
+        player.play(1038);
 
-        assertEquals(ScriptState.SET, testScript.state.get(1025));
-        assertThatScriptTimeFuctionsWork(testScript.state);
-        assertEquals(ScriptState.SET, testScript.state.get(1031));
-        assertEquals(ScriptState.SET, testScript.state.get(1038));
+        assertEquals(ScriptState.SET, player.state.get(1025));
+        assertThatScriptTimeFuctionsWork(player.state);
+        assertEquals(ScriptState.SET, player.state.get(1031));
+        assertEquals(ScriptState.SET, player.state.get(1038));
     }
 
     @Test
@@ -188,9 +183,9 @@ public class MappedScriptStateTest {
             throws AllActionsSetException, ScriptExecutionException {
         assertThatUninitializedStateHasCorrectDefaultValues();
 
-        TestUtils.play(player, 1034);
-        TestUtils.play(player, 1037);
-        TestUtils.play(player, 1039);
+        player.play(1034);
+        player.play(1037);
+        player.play(1039);
         assertEquals(ScriptState.SET, pcm.get(1034));
         assertEquals(ScriptState.SET, pcm.get(1036));
         assertEquals(ScriptState.SET, pcm.get(1037));
@@ -204,15 +199,15 @@ public class MappedScriptStateTest {
             throws AllActionsSetException, ScriptExecutionException {
         assertThatUninitializedStateHasCorrectDefaultValues();
 
-        TestUtils.play(player, 1020);
+        player.play(1020);
         assertEquals(ScriptState.SET, pcm.get(1020));
         assertEquals(ScriptState.SET, pcm.get(1022));
         assertThatScriptTimeFuctionsWork(pcm);
         assertEquals(ScriptState.SET, pcm.get(1030));
         assertEquals(ScriptState.SET, pcm.get(1036));
 
-        TestUtils.play(player, 1037);
-        TestUtils.play(player, 1039);
+        player.play(1037);
+        player.play(1039);
 
         assertEquals(ScriptState.SET, pcm.get(1037));
         assertEquals(ScriptState.SET, pcm.get(1039));
@@ -257,7 +252,7 @@ public class MappedScriptStateTest {
 
         loadTestScript();
 
-        TestUtils.play(player, 1050);
+        player.play(1050);
     }
 
     @Test
@@ -301,17 +296,17 @@ public class MappedScriptStateTest {
             throws AllActionsSetException, ScriptExecutionException {
         assertThatUninitializedStateHasCorrectDefaultValues();
 
-        TestUtils.play(player, 1060);
+        player.play(1060);
         assertTrue(chastityCageState.applied());
         assertFalse(chastityCageState.expired());
 
-        debugger.advanceTime(10, TimeUnit.SECONDS);
+        player.debugger.advanceTime(10, TimeUnit.SECONDS);
 
-        TestUtils.play(player, 1062);
+        player.play(1062);
         assertTrue(chastityCageState.applied());
         assertTrue(chastityCageState.expired());
 
-        TestUtils.play(player, 1063);
+        player.play(1063);
         assertFalse(chastityCageState.applied());
         assertTrue(chastityCageState.expired());
     }

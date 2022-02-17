@@ -1,7 +1,10 @@
 package pcm.state.commands;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
@@ -9,8 +12,11 @@ import org.junit.Test;
 
 import pcm.controller.Declarations;
 import pcm.controller.Player;
+import pcm.model.ScriptExecutionException;
+import pcm.model.ScriptParsingException;
+import pcm.model.ValidationIssue;
 import pcm.state.StateCommandLineParameters;
-import pcm.util.TestUtils;
+import pcm.util.TestPlayer;
 import teaselib.Body;
 import teaselib.State;
 import teaselib.Toys;
@@ -22,8 +28,8 @@ public class ItemCommandTest {
     Player player;
 
     @Before
-    public void initPlayer() throws Exception {
-        player = TestUtils.loadScript(StateCommandTest.class, "ItemCommandTest");
+    public void initPlayer() throws ScriptParsingException, ScriptExecutionException, ValidationIssue, IOException {
+        player = TestPlayer.loadScript(StateCommandTest.class, "ItemCommandTest");
     }
 
     public ItemCommandTest() {

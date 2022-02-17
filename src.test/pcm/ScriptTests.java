@@ -3,11 +3,12 @@
  */
 package pcm;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import pcm.controller.AllActionsSetException;
@@ -17,7 +18,7 @@ import pcm.model.ScriptExecutionException;
 import pcm.model.ScriptParsingException;
 import pcm.model.ValidationIssue;
 import pcm.state.persistence.ScriptState;
-import pcm.util.TestUtils;
+import pcm.util.TestPlayer;
 
 /**
  * @author Citizen-Cane
@@ -26,20 +27,15 @@ import pcm.util.TestUtils;
 public class ScriptTests {
     final Player player;
 
-    public ScriptTests() throws IOException {
-        player = TestUtils.createPlayer(getClass());
-    }
-
-    @Before
-    public void setUpBefore() throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
-        player.loadScript("ScriptTests");
+    public ScriptTests() throws IOException, ValidationIssue, ScriptExecutionException, ScriptParsingException {
+        player = TestPlayer.loadScript(getClass());
     }
 
     @Test
     public void testAllUnsetAfterInit() throws ScriptExecutionException {
         assertEquals(0, player.state.size());
 
-        TestUtils.play(player, new ActionRange(9999), new ActionRange(9999));
+        player.play(new ActionRange(9999), new ActionRange(9999));
 
         assertEquals(ScriptState.SET, player.state.get(9999));
         assertEquals(1, player.state.size());
@@ -113,7 +109,7 @@ public class ScriptTests {
 
     @Test
     public void testResetRange() throws ScriptExecutionException {
-        TestUtils.play(player, new ActionRange(1040), new ActionRange(1040, 1041));
+        player.play(new ActionRange(1040), new ActionRange(1040, 1041));
 
         assertEquals(ScriptState.UNSET, player.state.get(1040));
         assertEquals(ScriptState.UNSET, player.state.get(1041));
@@ -125,7 +121,7 @@ public class ScriptTests {
 
     @Test
     public void testMustNotAllOf() throws ScriptExecutionException {
-        TestUtils.play(player, new ActionRange(1050), new ActionRange(1050, 1059));
+        player.play(new ActionRange(1050), new ActionRange(1050, 1059));
 
         assertEquals(ScriptState.SET, player.state.get(1053));
         assertEquals(ScriptState.SET, player.state.get(1054));
@@ -134,7 +130,7 @@ public class ScriptTests {
 
     @Test
     public void testMustAnyOf() throws ScriptExecutionException {
-        TestUtils.play(player, new ActionRange(1060), new ActionRange(1060, 1069));
+        player.play(new ActionRange(1060), new ActionRange(1060, 1069));
 
         assertEquals(ScriptState.SET, player.state.get(1062));
         assertEquals(ScriptState.SET, player.state.get(1064));

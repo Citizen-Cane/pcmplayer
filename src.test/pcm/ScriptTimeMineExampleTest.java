@@ -3,39 +3,32 @@
  */
 package pcm;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Before;
 import org.junit.Test;
 
-import pcm.controller.Player;
 import pcm.model.ActionRange;
+import pcm.model.ScriptExecutionException;
+import pcm.model.ScriptParsingException;
+import pcm.model.ValidationIssue;
 import pcm.state.persistence.ScriptState;
-import pcm.util.TestUtils;
-import teaselib.core.Debugger;
+import pcm.util.TestPlayer;
 
 /**
  * @author Citizen-Cane
  *
  */
 public class ScriptTimeMineExampleTest {
-    private final Player player;
-    private final Debugger debugger;
+    private final TestPlayer player;
 
-    public ScriptTimeMineExampleTest() throws IOException {
-        this.player = TestUtils.createPlayer(getClass());
-        this.debugger = new Debugger(player.teaseLib);
-    }
-
-    /**
-     * @throws java.lang.Exception
-     */
-    @Before
-    public void setUpBefore() throws Exception {
-        player.loadScript("ScriptTimeMineExampleTest");
+    public ScriptTimeMineExampleTest()
+            throws IOException, ScriptParsingException, ScriptExecutionException, ValidationIssue {
+        this.player = TestPlayer.loadScript(getClass(), "ScriptTimeMineExampleTest");
     }
 
     private boolean containsAction(int n) {
@@ -44,8 +37,6 @@ public class ScriptTimeMineExampleTest {
 
     @Test
     public void testThatMineScriptExampleTablesAreCorrect() throws Exception {
-        debugger.freezeTime();
-
         ActionRange r = new ActionRange(1000);
         player.playFrom(r);
         assertEquals(ScriptState.SET, player.state.get(1000));
@@ -61,7 +52,7 @@ public class ScriptTimeMineExampleTest {
         assertFalse(containsAction(1009));
         assertFalse(containsAction(1010));
 
-        debugger.advanceTime(10, TimeUnit.MINUTES);
+        player.debugger.advanceTime(10, TimeUnit.MINUTES);
 
         assertFalse(containsAction(1001));
         assertFalse(containsAction(1002));
@@ -74,7 +65,7 @@ public class ScriptTimeMineExampleTest {
         assertFalse(containsAction(1009));
         assertFalse(containsAction(1010));
 
-        debugger.advanceTime(10, TimeUnit.MINUTES);
+        player.debugger.advanceTime(10, TimeUnit.MINUTES);
 
         assertFalse(containsAction(1001));
         assertFalse(containsAction(1002));

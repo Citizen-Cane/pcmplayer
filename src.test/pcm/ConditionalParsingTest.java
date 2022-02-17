@@ -1,6 +1,3 @@
-/**
- * 
- */
 package pcm;
 
 import static org.junit.Assert.assertEquals;
@@ -15,7 +12,7 @@ import pcm.model.ScriptExecutionException;
 import pcm.model.ScriptParsingException;
 import pcm.model.ValidationIssue;
 import pcm.state.persistence.ScriptState;
-import pcm.util.TestUtils;
+import pcm.util.TestPlayer;
 import teaselib.Actor;
 import teaselib.Sexuality.Gender;
 import teaselib.Sexuality.Sex;
@@ -28,8 +25,8 @@ import teaselib.test.TestScript;
  */
 public class ConditionalParsingTest {
 
-    public Player createMistress(Sex sex, Gender gender) throws Exception {
-        TeaseLib teaseLib = TestUtils.teaseLib();
+    public TestPlayer createMistress(Sex sex, Gender gender) throws Exception {
+        TeaseLib teaseLib = TestPlayer.teaseLib();
         teaseLib.new PersistentEnum<>(TeaseLib.DefaultDomain, Sex.class).set(sex);
         teaseLib.new PersistentEnum<>(TeaseLib.DefaultDomain, Gender.class).set(gender);
         // TODO persistent enum needs class & default value,
@@ -38,16 +35,16 @@ public class ConditionalParsingTest {
         return createPlayer(teaseLib, TestScript.newActor(Gender.Feminine));
     }
 
-    public Player createMaster(Sex sex, Gender gender) throws Exception {
-        TeaseLib teaseLib = TestUtils.teaseLib();
+    public TestPlayer createMaster(Sex sex, Gender gender) throws Exception {
+        TeaseLib teaseLib = TestPlayer.teaseLib();
         teaseLib.new PersistentEnum<>(TeaseLib.DefaultDomain, Sex.class).set(sex);
         teaseLib.new PersistentEnum<>(TeaseLib.DefaultDomain, Gender.class).set(gender);
         return createPlayer(teaseLib, TestScript.newActor(Gender.Masculine));
     }
 
-    private static Player createPlayer(TeaseLib teaseLib, Actor dominant)
+    private static TestPlayer createPlayer(TeaseLib teaseLib, Actor dominant)
             throws ScriptParsingException, ValidationIssue, IOException, ScriptExecutionException {
-        Player player = TestUtils.createPlayer(teaseLib, ConditionalParsingTest.class, dominant);
+        TestPlayer player = new TestPlayer(teaseLib, ConditionalParsingTest.class, dominant);
         player.loadScript("ConditionalParsingTest");
         assertEquals(3, player.script.actions.size());
         return player;
@@ -59,7 +56,7 @@ public class ConditionalParsingTest {
         assertEquals(Sex.Female, player.persistentEnum(Sex.class).value());
         assertEquals(Gender.Feminine, player.persistentEnum(Gender.class).value());
         ActionRange r = new ActionRange(900);
-        TestUtils.play(player, r, r);
+        player.play(r, r);
 
         assertEquals(ScriptState.SET, player.state.get(r.start));
         assertEquals(9999, player.action.number);
@@ -74,9 +71,9 @@ public class ConditionalParsingTest {
 
     @Test
     public void testDominantFemalePath_Else_in_If_Else() throws Exception {
-        Player player = createMistress(Sex.Male, Gender.Masculine);
+        TestPlayer player = createMistress(Sex.Male, Gender.Masculine);
         ActionRange r = new ActionRange(900);
-        TestUtils.play(player, r, r);
+        player.play(r, r);
 
         assertEquals(ScriptState.SET, player.state.get(r.start));
         assertEquals(9999, player.action.number);
@@ -93,7 +90,7 @@ public class ConditionalParsingTest {
     public void testDominantFemalePath_If_in_If_ElseIf_Else() throws Exception {
         Player player = createMistress(Sex.Female, Gender.Feminine);
         ActionRange r = new ActionRange(901);
-        TestUtils.play(player, r, r);
+        player.play(r, r);
 
         assertEquals(ScriptState.SET, player.state.get(r.start));
         assertEquals("#if not parsed -", ScriptState.SET, player.state.get(1));
@@ -108,7 +105,7 @@ public class ConditionalParsingTest {
     public void testDominantFemalePath_ElseIf_in_If_ElseIf_Else() throws Exception {
         Player player = createMistress(Sex.Male, Gender.Feminine);
         ActionRange r = new ActionRange(901);
-        TestUtils.play(player, r, r);
+        player.play(r, r);
 
         assertEquals(ScriptState.SET, player.state.get(r.start));
         assertEquals(9999, player.action.number);
@@ -125,7 +122,7 @@ public class ConditionalParsingTest {
     public void testDominantFemalePath_Else_in_If_ElseIf_Else() throws Exception {
         Player player = createMistress(Sex.Male, Gender.Masculine);
         ActionRange r = new ActionRange(901);
-        TestUtils.play(player, r, r);
+        player.play(r, r);
 
         assertEquals(ScriptState.SET, player.state.get(r.start));
         assertEquals(9999, player.action.number);
@@ -145,7 +142,7 @@ public class ConditionalParsingTest {
         assertEquals(Gender.Feminine, player.persistentEnum(Gender.class).value());
         // todo player.get(Sexuality.Sex) to hide creation of persistent object
         ActionRange r = new ActionRange(900);
-        TestUtils.play(player, r, r);
+        player.play(r, r);
 
         assertEquals(ScriptState.SET, player.state.get(r.start));
         assertEquals(9999, player.action.number);
@@ -162,7 +159,7 @@ public class ConditionalParsingTest {
     public void testDominantMalePath_Else_in_If_Else() throws Exception {
         Player player = createMaster(Sex.Male, Gender.Masculine);
         ActionRange r = new ActionRange(900);
-        TestUtils.play(player, r, r);
+        player.play(r, r);
 
         assertEquals(ScriptState.SET, player.state.get(r.start));
         assertEquals(9999, player.action.number);
@@ -179,7 +176,7 @@ public class ConditionalParsingTest {
     public void testDominantMalePath_If_in_If_ElseIf_Else() throws Exception {
         Player player = createMaster(Sex.Female, Gender.Feminine);
         ActionRange r = new ActionRange(901);
-        TestUtils.play(player, r, r);
+        player.play(r, r);
 
         assertEquals(ScriptState.SET, player.state.get(r.start));
         assertEquals("#if not parsed -", ScriptState.SET, player.state.get(1));
@@ -195,7 +192,7 @@ public class ConditionalParsingTest {
     public void testDominantMalePath_ElseIf_in_If_ElseIf_Else() throws Exception {
         Player player = createMaster(Sex.Male, Gender.Feminine);
         ActionRange r = new ActionRange(901);
-        TestUtils.play(player, r, r);
+        player.play(r, r);
 
         assertEquals(ScriptState.SET, player.state.get(r.start));
         assertEquals(9999, player.action.number);
@@ -212,7 +209,7 @@ public class ConditionalParsingTest {
     public void testDominantMalePath_Else_in_If_ElseIf_Else() throws Exception {
         Player player = createMaster(Sex.Male, Gender.Masculine);
         ActionRange r = new ActionRange(901);
-        TestUtils.play(player, r, r);
+        player.play(r, r);
 
         assertEquals(ScriptState.SET, player.state.get(r.start));
         assertEquals(9999, player.action.number);
