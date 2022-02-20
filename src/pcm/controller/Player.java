@@ -54,7 +54,7 @@ import teaselib.core.media.MediaRenderer;
 import teaselib.core.texttospeech.ScriptScanner;
 import teaselib.core.texttospeech.TextToSpeechRecorder;
 import teaselib.core.texttospeech.Voice;
-import teaselib.util.MoodImages;
+import teaselib.util.SceneBasedImages;
 import teaselib.util.SpeechRecognitionRejectedScript;
 import teaselib.util.TextVariables;
 
@@ -139,6 +139,18 @@ public class Player extends TeaseScript implements MainScript {
         Symbols symbols = createDominantSubmissiveSymbols();
         this.scripts = new ScriptCache(resources, Player.ScriptFolder, symbols);
         this.mistressPath = mistressPath;
+
+        boolean haveImages = mistressPath != null;
+        if (haveImages) {
+            // TODO assign each scene to an activity script as before -> use script name as chapter or hint
+            // -> befire it was mistressPath + script.mistressImages
+            actor.images = new SceneBasedImages(resources(mistressPath + "*.jpg"));
+            // TODO naming scheme is too short for pose cache - need at least project name as root folder
+            // - the assets are stored this way, it's a Mine organization issue
+            // -> change folder names in Mine or added code to SceneBasedImages
+        }
+        actor.instructions = new InstructionalImages(resources(Image.IMAGES + "*.jpg"));
+
         mainScript = mainscript;
     }
 
@@ -467,16 +479,6 @@ public class Player extends TeaseScript implements MainScript {
             enableOnClose();
         }
         script.execute(state);
-        boolean haveImages = mistressPath != null && script.mistressImages != null;
-        if (haveImages) {
-            // TODO use scene-based images
-            // TODO assign each scene to an activity script as before -> use script name as chapter or hint
-            actor.images = new MoodImages(resources(mistressPath + script.mistressImages));
-            // TODO naming scheme is too short for pose cache - need at least project name as root folder
-            // - the assets are stored this way, it's a Mine organization issue
-            // -> change folder names in Mine or added code to SceneBasedImages
-        }
-        actor.instructions = new InstructionalImages(resources(Image.IMAGES + "*.jpg"));
     }
 
     private void enableOnClose() {

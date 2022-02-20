@@ -23,6 +23,7 @@ import pcm.state.interactions.AbstractPause;
 import pcm.state.visuals.SpokenMessage;
 import pcm.state.visuals.Txt;
 import teaselib.Actor;
+import teaselib.ActorImages.Next;
 import teaselib.core.devices.release.Actuator;
 
 public class Script extends AbstractAction {
@@ -193,6 +194,7 @@ public class Script extends AbstractAction {
         } else if (name == Statement.SsDir) {
             imageDirectory = cmd.allArgs().replace('\\', '/');
             mistressImages = imageDirectory + "/*.jpg";
+            actor.images.advance(Next.Scene, imageDirectory);
         } else if (name == Statement.AskTitle) {
             String args[] = cmd.args();
             AskItem askItem = new AskItem(Integer.parseInt(args[0]), cmd.allAsTextFrom(1));
