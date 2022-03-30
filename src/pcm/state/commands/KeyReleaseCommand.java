@@ -47,7 +47,7 @@ public class KeyReleaseCommand extends BasicCommand {
             public void run(ScriptState state) {
                 var player = state.player;
                 var lockableItems = player.items(items).prefer(Features.Lockable);
-                player.interaction(KeyReleaseSetup.class).prepare(lockableItems, player::show);
+                player.interaction(KeyReleaseSetup.class).prepare(lockableItems.getAvailable(), player::show);
                 // TODO review all scripts to prepare a little in advance
             }
         };

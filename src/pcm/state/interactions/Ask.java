@@ -4,10 +4,10 @@ import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,35 +88,29 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
                 // Handle mapped values
                 if (mappedState.hasScriptValueMapping(n)) {
                     Items items = mappedState.getMappedItems(n);
-                    List<Item> itemList = items.stream().collect(Collectors.toList());
-                    if (itemList.isEmpty()) {
+                    if (items.isEmpty()) {
                         throw new ScriptExecutionException(script, action, "Undefined items in mapping " + n);
                     } else {
-                        if (itemList.size() == 1) {
-                            // single item - just set
+                        if (items.size() == 1) {
+                            // single item - just set the value to set the item available (through the mapping n->item)
                             state.set(n);
                         } else if (items.anyAvailable()) {
-                            // Update availability state
+                            // Items already available
+                            // - just set the action, don't update the mapping (this would set all items available)
                             mappedState.setIgnoreMapping(n);
                         } else {
                             // Execute action for selecting the mapped items
-                            Action detailAction = script.actions.get(n);
-                            if (detailAction == null) {
+                            Action inventoryDetails = script.actions.get(n);
+                            if (inventoryDetails == null) {
                                 throw new ScriptExecutionException(script, action, "Missing mapping action for " + n);
                             }
-                            Map<Statement, Visual> detailVisuals = detailAction.visuals;
-                            if (detailVisuals != null) {
-                                for (Visual visual : detailVisuals.values()) {
-                                    player.render(visual);
-                                }
-                            }
+                            renderInventoryDetails(player, inventoryDetails);
                             boolean anySet = checkDetailedItems(player, title, items);
                             if (anySet) {
-                                // Update, cache result
-                                mappedState.setIgnoreMapping(n);
-                                // execute the state-related part of the action
-                                detailAction.execute(state);
+                                // the action is already set because the item state is mapped
+                                state.execute(inventoryDetails.commands);
                             } else {
+                                // No items selected, unset action to set all items as unavailable
                                 state.unset(n);
                             }
                         }
@@ -125,10 +119,24 @@ public class Ask implements Command, Interaction, NeedsRangeProvider {
                     state.set(n);
                 }
             } else {
+                // set all items as unavailable
                 state.unset(n);
             }
         }
         return rangeProvider.getRange(player, script, action, NoVisuals);
+    }
+
+    private void renderInventoryDetails(Player player, Action inventoryDetails) {
+        Map<Statement, Visual> detailVisuals = new HashMap<>();
+        if (inventoryDetails.message != null) {
+            detailVisuals.put(Statement.Message, inventoryDetails.message);
+        }
+        if (inventoryDetails.visuals != null) {
+            detailVisuals.putAll(inventoryDetails.visuals);
+        }
+        for (Visual visual : detailVisuals.values()) {
+            player.render(visual);
+        }
     }
 
     private static boolean checkDetailedItems(Player player, String title, Items items) {

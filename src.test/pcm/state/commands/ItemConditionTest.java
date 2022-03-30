@@ -51,13 +51,12 @@ public class ItemConditionTest {
 
     @Test
     public void testItemApply() throws Exception {
-        Item chastityDevice = player.item(Toys.Chastity_Device);
         State somethingOnPenis = player.state(Body.OnPenis);
-
         ItemCommand foo = new ItemCommand(new StateCommandLineParameters(
                 new String[] { "teaselib.Toys.Chastity_Device", "Apply" }, declarations));
         foo.execute(scriptState);
 
+        Item chastityDevice = player.item(Toys.Chastity_Device);
         assertTrue(chastityDevice.applied());
         assertTrue(somethingOnPenis.applied());
         assertTrue(player.item("teaselib.Toys.Chastity_Device").applied());

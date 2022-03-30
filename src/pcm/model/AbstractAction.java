@@ -8,9 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import pcm.controller.Declarations;
 import pcm.state.Command;
 import pcm.state.Condition;
@@ -303,13 +300,7 @@ public abstract class AbstractAction {
     }
 
     public void execute(ScriptState state) throws ScriptExecutionException {
-        if (commands != null) {
-            for (Command command : commands) {
-                Logger logger = LoggerFactory.getLogger(command.getClass());
-                logger.info("{}", command);
-                command.execute(state);
-            }
-        }
+        state.execute(commands);
     }
 
     /**

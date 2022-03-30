@@ -22,6 +22,9 @@ public class ItemTest {
     public void testApplyItem() throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
         TestPlayer player = TestPlayer.loadScript(getClass());
 
+        // canApply requires items to be available
+        player.items(Toys.Collar).item().setAvailable(true);
+
         assertFalse(player.item(Toys.Collar).applied());
         assertTrue(player.item(Toys.Collar).expired());
 
@@ -137,6 +140,8 @@ public class ItemTest {
     @Test
     public void testCanApplyTo() throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
         TestPlayer player = TestPlayer.loadScript(getClass());
+        // canApply requires items to be available
+        player.items(Toys.Nipple_Clamps).item().setAvailable(true);
         player.play(1080);
     }
 
@@ -185,6 +190,7 @@ public class ItemTest {
     public void testItemMatching()
             throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
         TestPlayer player = TestPlayer.loadScript(getClass());
+
         player.play(1110);
     }
 

@@ -41,18 +41,17 @@ public class ItemCommandTest {
 
     @Test
     public void testItemApply() throws Exception {
-        Item chastityDeviceItem = player.item(Toys.Chastity_Device);
-        State somethingOnPenisState = player.state(Body.OnPenis);
-
         ItemCommand foo = new ItemCommand(new StateCommandLineParameters(
                 new String[] { "teaselib.Toys.Chastity_Device", "Apply" }, declarations));
         foo.execute(player.state);
 
+        Item chastityDeviceItem = player.item(Toys.Chastity_Device);
         assertTrue(chastityDeviceItem.applied());
         assertTrue(chastityDeviceItem.expired());
         assertTrue(chastityDeviceItem.is(player.namespaceApplyAttribute));
         assertTrue(chastityDeviceItem.is(player.script.scriptApplyAttribute));
 
+        State somethingOnPenisState = player.state(Body.OnPenis);
         assertTrue(somethingOnPenisState.applied());
         assertTrue(somethingOnPenisState.expired());
 
@@ -70,6 +69,7 @@ public class ItemCommandTest {
                 new String[] { "teaselib.Toys.Chastity_Device", "Apply", "over", "10:00\"00" }, declarations));
         fooTimed.execute(player.state);
 
+        chastityDeviceItem = player.item(Toys.Chastity_Device);
         assertTrue(chastityDeviceItem.applied());
         assertFalse(chastityDeviceItem.expired());
         assertEquals(10, player.state(Toys.Chastity_Device).duration().limit(TimeUnit.HOURS));
@@ -80,13 +80,13 @@ public class ItemCommandTest {
 
     @Test
     public void testItemApplyIndefinitely() throws Exception {
-        Item chastityDeviceItem = player.item(Toys.Chastity_Device);
         State somethingOnPenisState = player.state(Body.OnPenis);
 
         new ItemCommand(new StateCommandLineParameters(
                 new String[] { "teaselib.Toys.Chastity_Device", "Apply", "over", "inf" }, declarations))
                         .execute(player.state);
 
+        Item chastityDeviceItem = player.item(Toys.Chastity_Device);
         assertTrue(chastityDeviceItem.applied());
         assertFalse(chastityDeviceItem.expired());
         assertTrue(player.state(Toys.Chastity_Device).duration().limit(TimeUnit.SECONDS) == Long.MAX_VALUE);

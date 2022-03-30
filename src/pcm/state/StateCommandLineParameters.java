@@ -194,7 +194,7 @@ public class StateCommandLineParameters extends CommandLineParameters<StateKeywo
     public void replaceWithMatching(String[] items, String[] attributes, ScriptState state) {
         remove(StateKeywords.Matching);
         remove(StateKeywords.Item);
-        Items matching = state.player.items(items).matching(attributes);
+        Items matching = state.player.items(items).matching(attributes).inventory();
         put(StateKeywords.Item, matching.stream().map(QualifiedString::of).map(QualifiedString::toString).toList());
     }
 

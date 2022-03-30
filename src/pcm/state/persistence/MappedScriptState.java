@@ -143,6 +143,14 @@ public class MappedScriptState extends ScriptState {
         }
     }
 
+    public void unsetIgnoreMapping(Integer n) {
+        if (hasScriptValueMapping(n)) {
+            super.unset(n);
+        } else {
+            throw new IllegalStateException("setOverride can only be called for mappings");
+        }
+    }
+
     @Override
     public void unset(Integer n) {
         if (hasScriptValueMapping(n)) {

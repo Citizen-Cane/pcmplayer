@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -18,6 +19,7 @@ import pcm.model.Action;
 import pcm.model.ActionRange;
 import pcm.model.Script;
 import pcm.model.ScriptExecutionException;
+import pcm.state.Command;
 import teaselib.Duration;
 
 /**
@@ -346,7 +348,7 @@ public class ScriptState {
 
     public void set(Action action) throws ScriptExecutionException {
         Integer n = action.number;
-        final Long value = get(n);
+        Long value = get(n);
         if (value.equals(SET)) {
             throw new ScriptExecutionException(player.script, action, "Action already set");
         } else if (value.equals(UNSET)) {
@@ -403,4 +405,14 @@ public class ScriptState {
     public int size() {
         return data.size() + actions.size() + times.size();
     }
+
+    public void execute(List<Command> commands) throws ScriptExecutionException {
+        if (commands != null) {
+            for (Command command : commands) {
+                logger.info("{}", command);
+                command.execute(this);
+            }
+        }
+    }
+
 }
