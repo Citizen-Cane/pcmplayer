@@ -99,7 +99,7 @@ public class StateTest {
             throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
         TestPlayer player = TestPlayer.loadScript(getClass());
 
-        player.state(Toys.Nipple_Clamps).applyTo().over(30, TimeUnit.MINUTES);
+        player.state(Toys.Nipple_Clamps).apply().over(30, TimeUnit.MINUTES);
         player.play(1040);
 
         player.debugger.advanceTime(30, TimeUnit.MINUTES);
@@ -116,7 +116,7 @@ public class StateTest {
 
         long start = player.teaseLib.getTime(TimeUnit.MILLISECONDS);
 
-        player.state(Toys.Nipple_Clamps).applyTo().over(30, TimeUnit.MINUTES);
+        player.state(Toys.Nipple_Clamps).apply().over(30, TimeUnit.MINUTES);
         assertEquals(0, player.state(Toys.Nipple_Clamps).duration().elapsed(TimeUnit.MINUTES));
 
         player.play(1050);
@@ -144,7 +144,7 @@ public class StateTest {
 
         player.play(1060);
         player.play(1065);
-        player.state(Toys.Nipple_Clamps).applyTo().over(30, TimeUnit.MINUTES);
+        player.state(Toys.Nipple_Clamps).apply().over(30, TimeUnit.MINUTES);
         player.play(1060);
         player.play(1065);
     }
@@ -154,12 +154,12 @@ public class StateTest {
             throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
         TestPlayer player = TestPlayer.loadScript(getClass());
 
-        player.state(Toys.Nipple_Clamps).applyTo();
+        player.state(Toys.Nipple_Clamps).apply();
         player.play(1070);
         player.state(Toys.Nipple_Clamps).remove();
         player.play(1076);
 
-        player.state(Toys.Nipple_Clamps).applyTo().over(30, TimeUnit.MINUTES);
+        player.state(Toys.Nipple_Clamps).apply().over(30, TimeUnit.MINUTES);
         player.play(1071);
         player.state(Toys.Nipple_Clamps).remove();
         player.play(1075);

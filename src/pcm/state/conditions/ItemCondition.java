@@ -3,6 +3,7 @@ package pcm.state.conditions;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiFunction;
 
 import pcm.model.AbstractAction;
 import pcm.model.AbstractAction.Statement;
@@ -80,18 +81,22 @@ public class ItemCondition extends BasicCondition {
     }
 
     private static ParameterizedConditionStatement canApply(StateCommandLineParameters args, String[] items) {
-        String[] peers = args.items(StateKeywords.To);
+        Object[] peers = args.items(StateKeywords.To);
+        if (peers.length > 0) {
+            return canApply(args, items, (state, item) -> state.player.item(item).to(peers).canApply());
+        } else {
+            return canApply(args, items, (state, item) -> state.player.item(item).canApply());
+        }
+    }
+
+    private static ParameterizedConditionStatement canApply(StateCommandLineParameters args, String[] items,
+            BiFunction<ScriptState, String, Boolean> canApply) {
         return new ParameterizedConditionStatement(ITEM, args) {
             @Override
             public boolean call(ScriptState state) {
                 for (String item : items) {
-                    if (!state.player.item(item).canApply()) {
+                    if (!canApply.apply(state, item)) {
                         return false;
-                    }
-                    for (String peer : peers) {
-                        if (state.player.state(peer).applied()) {
-                            return false;
-                        }
                     }
                 }
                 return true;

@@ -72,7 +72,7 @@ public class ItemTest {
             throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
         TestPlayer player = TestPlayer.loadScript(getClass());
 
-        player.state(Toys.Nipple_Clamps).applyTo().over(30, TimeUnit.MINUTES);
+        player.state(Toys.Nipple_Clamps).apply().over(30, TimeUnit.MINUTES);
         assertEquals(1800, player.state(Toys.Nipple_Clamps).duration().remaining(TimeUnit.SECONDS));
         player.play(1040);
 
