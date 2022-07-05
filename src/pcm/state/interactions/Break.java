@@ -65,7 +65,7 @@ public class Break extends AbstractBreakInteraction {
             } catch (ScriptExecutionException e) {
                 throw ExceptionUtil.asRuntimeException(e);
             }
-            player.scriptRenderer.audioSync.completeSpeechRecognition();
+            player.awaitAllCompleted();
         });
     }
 
