@@ -195,11 +195,11 @@ public class ScriptState {
     }
 
     private String read(String name) {
-        return player.getString(script.name + "." + name);
+        return player.persistence.getString(script.name + "." + name);
     }
 
     private void write(String name, Object value) {
-        player.set(script.name + "." + name, value != null ? value.toString() : null);
+        player.persistence.set(script.name + "." + name, value != null ? value.toString() : null);
     }
 
     public Long get(Integer n) {
@@ -384,7 +384,7 @@ public class ScriptState {
     }
 
     public int getRandom(int min, int max) {
-        return player.random.value(min, max);
+        return player.randomValue(min, max);
     }
 
     /**

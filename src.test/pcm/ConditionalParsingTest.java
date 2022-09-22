@@ -1,6 +1,6 @@
 package pcm;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 
@@ -53,8 +53,8 @@ public class ConditionalParsingTest {
     @Test
     public void testDominantFemalePath_If_in_If_Else() throws Exception {
         Player player = createMistress(Sex.Female, Gender.Feminine);
-        assertEquals(Sex.Female, player.persistentEnum(Sex.class).value());
-        assertEquals(Gender.Feminine, player.persistentEnum(Gender.class).value());
+        assertEquals(Sex.Female, player.persistence.newEnum(Sex.class).value());
+        assertEquals(Gender.Feminine, player.persistence.newEnum(Gender.class).value());
         ActionRange r = new ActionRange(900);
         player.play(r, r);
 
@@ -138,8 +138,8 @@ public class ConditionalParsingTest {
     @Test
     public void testDominantMalePath_If_in_If_Else() throws Exception {
         Player player = createMaster(Sex.Female, Gender.Feminine);
-        assertEquals(Sex.Female, player.persistentEnum(Sex.class).value());
-        assertEquals(Gender.Feminine, player.persistentEnum(Gender.class).value());
+        assertEquals(Sex.Female, player.persistence.newEnum(Sex.class).value());
+        assertEquals(Gender.Feminine, player.persistence.newEnum(Gender.class).value());
         // todo player.get(Sexuality.Sex) to hide creation of persistent object
         ActionRange r = new ActionRange(900);
         player.play(r, r);

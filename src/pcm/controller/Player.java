@@ -165,10 +165,10 @@ public class Player extends TeaseScript implements MainScript {
             throw new IllegalArgumentException(actor.toString());
         }
 
-        if (persistentEnum(Sex.class).value() == Sex.Female) {
+        if (persistence.newEnum(Sex.class).value() == Sex.Female) {
             dominantSubmissiveSymbol.append("f");
         } else {
-            if (persistentEnum(Gender.class).value() == Gender.Feminine) {
+            if (persistence.newEnum(Gender.class).value() == Gender.Feminine) {
                 dominantSubmissiveSymbol.append("tv");
             } else {
                 dominantSubmissiveSymbol.append("m");
@@ -794,4 +794,14 @@ public class Player extends TeaseScript implements MainScript {
             // Ignore
         }
     }
+
+    @SafeVarargs
+    public final <T> T randomItem(T... items) {
+        return random.item(items);
+    }
+
+    public int randomValue(int from, int to) {
+        return random.value(from, to);
+    }
+
 }

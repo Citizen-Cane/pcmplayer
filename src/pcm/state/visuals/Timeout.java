@@ -24,7 +24,7 @@ public class Timeout extends Delay {
     @Override
     public void render(Player player) {
         // The timeout class is used to direct the delay to the interaction
-        duration = player.random.value(from, to);
+        duration = player.randomValue(from, to);
     }
 
 }
