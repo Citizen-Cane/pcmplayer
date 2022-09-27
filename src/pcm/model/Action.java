@@ -173,7 +173,7 @@ public abstract class Action extends AbstractAction {
             } else if (args.length >= 4) {
                 addDelayAndReplies(cmd, args);
             } else {
-                throw new IllegalArgumentException(cmd.line);
+                throw new IllegalArgumentException(cmd.code);
             }
         }
 
@@ -259,14 +259,14 @@ public abstract class Action extends AbstractAction {
             if (args.length == 3) {
                 addCondition(new NumberOfActionsSet(parseInt(args[0]), parseInt(args[1]), parseInt(args[2])));
             } else {
-                throw new IllegalArgumentException(cmd.line);
+                throw new IllegalArgumentException(cmd.code);
             }
         } else if (name == Statement.NumActionsAvailable) {
             String args[] = cmd.args();
             if (args.length == 3) {
                 addCondition(new NumActionsAvailable(parseInt(args[0]), parseInt(args[1]), parseInt(args[2])));
             } else {
-                throw new IllegalArgumentException(cmd.line);
+                throw new IllegalArgumentException(cmd.code);
             }
         } else if (name == Statement.Not) {
             addCondition(new Not(createConditionFrom(cmd.lineNumber, cmd.argsFrom(0), cmd.script, cmd.declarations)));
@@ -275,7 +275,7 @@ public abstract class Action extends AbstractAction {
             if (args.length == 1) {
                 addCommand(new Repeat(number, parseInt(args[0])));
             } else {
-                throw new IllegalArgumentException(cmd.line);
+                throw new IllegalArgumentException(cmd.code);
             }
         } else if (name == Statement.RepeatAdd) {
             final Command repeatAdd;
@@ -285,7 +285,7 @@ public abstract class Action extends AbstractAction {
             } else if (args.length == 3) {
                 repeatAdd = new RepeatAdd(parseInt(args[0]), parseInt(args[1]), parseInt(args[2]));
             } else {
-                throw new IllegalArgumentException(cmd.line);
+                throw new IllegalArgumentException(cmd.code);
             }
             addCommand(repeatAdd);
         } else if (name == Statement.RepeatDel) {
@@ -296,7 +296,7 @@ public abstract class Action extends AbstractAction {
             } else if (args.length == 3) {
                 repeatDel = new RepeatDel(parseInt(args[0]), parseInt(args[1]), parseInt(args[2]));
             } else {
-                throw new IllegalArgumentException(cmd.line);
+                throw new IllegalArgumentException(cmd.code);
             }
             addCommand(repeatDel);
         } else if (name == Statement.Save) {
@@ -309,7 +309,7 @@ public abstract class Action extends AbstractAction {
                 String args[] = cmd.args();
                 poss = Integer.valueOf(args[0]);
                 if (poss < 1 || poss > 100) {
-                    throw new IllegalArgumentException(cmd.line);
+                    throw new IllegalArgumentException(cmd.code);
                 }
             }
         } else if (name == Statement.Else) {
@@ -478,7 +478,7 @@ public abstract class Action extends AbstractAction {
             timeoutBehavior = TimeoutBehavior.InDubioProDuriore;
             rangesFromArgv = rangesFromArgv(args, 2);
         } else {
-            throw new IllegalArgumentException(cmd.line);
+            throw new IllegalArgumentException(cmd.code);
         }
 
         if (timeoutType == TimeoutType.Terminate) {

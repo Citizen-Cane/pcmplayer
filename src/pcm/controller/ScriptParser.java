@@ -82,10 +82,11 @@ public class ScriptParser {
     }
 
     private String applyDefines(String string) {
+        String replaced = string;
         for (Entry<String, String> entry : defines.entrySet()) {
-            string = string.replace(entry.getKey(), entry.getValue());
+            replaced = replaced.replace(entry.getKey(), entry.getValue());
         }
-        return string;
+        return replaced;
     }
 
     public Action parseAction(Script script) throws ScriptParsingException, ValidationIssue {
@@ -133,8 +134,7 @@ public class ScriptParser {
                 } else if (line.startsWith("[") && line.endsWith("]")) {
                     handleDeprecatedInlineReply();
                 } else {
-                    collectors.get(Statement.Message)
-                            .parse(new ScriptLineTokenizer(Statement.Message, l, line, script, declarations));
+                    collectors.get(Statement.Message).parse(new ScriptLineTokenizer(Statement.Message, l, line, script, declarations));
                 }
             }
 

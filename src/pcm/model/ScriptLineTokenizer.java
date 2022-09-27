@@ -11,13 +11,13 @@ import pcm.model.AbstractAction.Statement;
 
 public class ScriptLineTokenizer {
     final Script script;
-    public final int lineNumber;
-    public final String originalLine;
-    public final String line;
+    final int lineNumber;
+    final String line;
+    final String code;
     private final StringTokenizer tokenizer;
 
     public final Statement statement;
-    public final Declarations declarations;
+    final Declarations declarations;
 
     private String argv[];
 
@@ -25,26 +25,23 @@ public class ScriptLineTokenizer {
     public ScriptLineTokenizer(int lineNumber, String line, Script script, Declarations declarations) {
         this.script = script;
         this.lineNumber = lineNumber;
-        this.originalLine = line;
+        this.line = line;
         this.declarations = declarations;
         // Cut off comment at the end of the line
         int commentStart = line.indexOf('\'');
-        this.line = (commentStart > 0 ? line.substring(0, commentStart) : line).trim();
-
-        this.tokenizer = new StringTokenizer(this.line, " \t");
+        this.code = (commentStart > 0 ? line.substring(0, commentStart) : line).trim();
+        this.tokenizer = new StringTokenizer(this.code, " \t");
         String token = tokenizer.nextToken().toLowerCase();
         String statementString = token.substring(1);
         this.statement = parseStatement(statementString);
     }
 
-    public ScriptLineTokenizer(Statement statement, int lineNumber, String line, Script script,
-            Declarations declarations) {
+    public ScriptLineTokenizer(Statement statement, int lineNumber, String line, Script script, Declarations declarations) {
         this.script = script;
         this.lineNumber = lineNumber;
-        this.originalLine = line;
-        this.declarations = declarations;
         this.line = line;
-
+        this.declarations = declarations;
+        this.code = line;
         this.tokenizer = null;
         this.statement = statement;
     }
@@ -96,8 +93,8 @@ public class ScriptLineTokenizer {
      */
     public String allAsText() {
         int s = statement.toString().length();
-        if (line.length() > s + 1) {
-            return originalLine.substring(s + 2).trim();
+        if (code.length() > s + 1) {
+            return line.substring(s + 2).trim();
         } else {
             return "";
         }
@@ -114,9 +111,9 @@ public class ScriptLineTokenizer {
         String[] args = args();
         for (int i = 0; i < n; i++) {
             String arg = args[i];
-            index = originalLine.indexOf(arg, index) + arg.length() + 1;
+            index = line.indexOf(arg, index) + arg.length() + 1;
         }
-        return originalLine.substring(index).trim();
+        return line.substring(index).trim();
     }
 
     /**
@@ -126,11 +123,11 @@ public class ScriptLineTokenizer {
      * @return All command line arguments
      */
     public String asFilename() {
-        final int indexOfCommentStart = originalLine.indexOf('\'');
+        final int indexOfCommentStart = line.indexOf('\'');
         if (indexOfCommentStart < 0) {
             return allAsText();
         } else {
-            return originalLine.substring(statement.toString().length() + 1, indexOfCommentStart - 1).trim();
+            return line.substring(statement.toString().length() + 1, indexOfCommentStart - 1).trim();
         }
     }
 
@@ -148,6 +145,6 @@ public class ScriptLineTokenizer {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + ": " + line;
+        return getClass().getSimpleName() + ": " + code;
     }
 }
