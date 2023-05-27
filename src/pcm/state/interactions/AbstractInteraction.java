@@ -20,7 +20,9 @@ public abstract class AbstractInteraction implements Interaction, NeedsRangeProv
             if (this.rangeProvider instanceof NeedsRangeProvider) {
                 ((NeedsRangeProvider) this.rangeProvider).setRangeProvider(rangeProvider);
             } else {
-                throw new IllegalStateException(rangeProvider.toString());
+                throw new IllegalStateException(
+                        "Cannot set interaction [" + this + "] to range [" + rangeProvider + "] because it has alraedy been set to [" + this.rangeProvider
+                                + "].");
             }
         } else {
             this.rangeProvider = rangeProvider;

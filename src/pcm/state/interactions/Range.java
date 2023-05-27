@@ -43,7 +43,11 @@ public class Range implements Interaction {
 
     @Override
     public String toString() {
-        return actionRange.toString();
+        StringBuilder string = new StringBuilder();
+        string.append(getClass().getSimpleName());
+        string.append(" ");
+        string.append(actionRange);
+        return string.toString();
     }
 
 }
