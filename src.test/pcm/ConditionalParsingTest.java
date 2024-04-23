@@ -1,6 +1,6 @@
 package pcm;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
@@ -27,8 +27,8 @@ public class ConditionalParsingTest {
 
     public TestPlayer createMistress(Sex sex, Gender gender) throws Exception {
         TeaseLib teaseLib = TestPlayer.teaseLib();
-        teaseLib.new PersistentEnum<>(TeaseLib.DefaultDomain, Sex.class).set(sex);
-        teaseLib.new PersistentEnum<>(TeaseLib.DefaultDomain, Gender.class).set(gender);
+        teaseLib.getEnum(TeaseLib.DefaultDomain, Sex.class).set(sex);
+        teaseLib.getEnum(TeaseLib.DefaultDomain, Gender.class).set(gender);
         // TODO persistent enum needs class & default value,
         // otherwise The code looks strange
         // TODO set
@@ -37,8 +37,8 @@ public class ConditionalParsingTest {
 
     public TestPlayer createMaster(Sex sex, Gender gender) throws Exception {
         TeaseLib teaseLib = TestPlayer.teaseLib();
-        teaseLib.new PersistentEnum<>(TeaseLib.DefaultDomain, Sex.class).set(sex);
-        teaseLib.new PersistentEnum<>(TeaseLib.DefaultDomain, Gender.class).set(gender);
+        teaseLib.getEnum(TeaseLib.DefaultDomain, Sex.class).set(sex);
+        teaseLib.getEnum(TeaseLib.DefaultDomain, Gender.class).set(gender);
         return createPlayer(teaseLib, TestScript.newActor(Gender.Masculine));
     }
 

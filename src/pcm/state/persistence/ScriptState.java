@@ -188,18 +188,33 @@ public class ScriptState {
             }
         }
         if (keys != null) {
-            write(TIMEKEYS, keys.toString());
+            write(TIMEKEYS, keys);
         } else {
             write(TIMEKEYS, "");
         }
     }
 
     private String read(String name) {
-        return player.persistence.getString(script.name + "." + name);
+        var storage = player.persistence.newString(qualified(script, name)).defaultValue(null);
+        return storage.value();
     }
 
     private void write(String name, Object value) {
-        player.persistence.set(script.name + "." + name, value != null ? value.toString() : null);
+        var storage = player.persistence.newString(qualified(script, name));
+        if (value == null) {
+            storage.clear();
+        } else if (value instanceof String s) {
+            if (s.isEmpty()) storage.clear();
+            else storage.set(s);
+        } else {
+            String s = value.toString();
+            if (s.isEmpty()) storage.clear();
+            else storage.set(s);
+        }
+    }
+
+    String qualified(Script scipt, String name) {
+        return script.name + "." + name;
     }
 
     public Long get(Integer n) {

@@ -20,6 +20,7 @@ import pcm.state.persistence.ScriptState;
 import pcm.util.TestPlayer;
 import teaselib.Toys;
 import teaselib.core.TeaseLib;
+import teaselib.core.util.QualifiedName;
 
 public class PersistencyTest {
 
@@ -101,8 +102,8 @@ public class PersistencyTest {
         assertTrue(player.state(Toys.Chastity_Device).applied());
 
         // Not persisted because not remembered
-        TeaseLib.PersistentString chastifiedState = player.teaseLib.new PersistentString(TeaseLib.DefaultDomain,
-                "pcm.PersistencyTest.Body.Chastified", "state.duration");
+        TeaseLib.PersistentString chastifiedState = player.teaseLib.getString(QualifiedName.of(TeaseLib.DefaultDomain,
+                "pcm.PersistencyTest.Body.Chastified", "state.duration"));
         assertTrue(chastifiedState.available());
 
         // TODO only if in save range -> resolves declaration as infinite
@@ -121,8 +122,8 @@ public class PersistencyTest {
         player.loadScript(mainScript);
         player.play(new ActionRange(1000));
 
-        TeaseLib.PersistentString enemaState = player.teaseLib.new PersistentString(TeaseLib.DefaultDomain,
-                "pcm.PersistencyTest.Body.Chastified", "state.duration");
+        TeaseLib.PersistentString enemaState = player.teaseLib.getString(QualifiedName.of(TeaseLib.DefaultDomain,
+                "pcm.PersistencyTest.Body.Chastified", "state.duration"));
 
         assertFalse(enemaState.available());
     }
@@ -139,8 +140,8 @@ public class PersistencyTest {
         player.loadScript(mainScript);
         player.play(new ActionRange(1000));
 
-        TeaseLib.PersistentString chastifiedState = player.teaseLib.new PersistentString(TeaseLib.DefaultDomain,
-                "pcm.PersistencyTest.Body.Chastified", "state.duration");
+        TeaseLib.PersistentString chastifiedState = player.teaseLib.getString(QualifiedName.of(TeaseLib.DefaultDomain,
+                "pcm.PersistencyTest.Body.Chastified", "state.duration"));
         assertTrue(chastifiedState.available());
 
         // TODO only if in save range -> resolves declaration
@@ -158,8 +159,8 @@ public class PersistencyTest {
         player.loadScript(mainScript);
         player.play(new ActionRange(1010));
 
-        TeaseLib.PersistentString chastifiedState = player.teaseLib.new PersistentString(TeaseLib.DefaultDomain,
-                "pcm.PersistencyTest.Body.Chastified", "state.duration");
+        TeaseLib.PersistentString chastifiedState = player.teaseLib.getString(QualifiedName.of(TeaseLib.DefaultDomain,
+                "pcm.PersistencyTest.Body.Chastified", "state.duration"));
         assertTrue(chastifiedState.available());
     }
 
