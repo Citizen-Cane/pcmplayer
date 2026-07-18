@@ -1,11 +1,9 @@
 package pcm;
 
-import static org.junit.Assert.*;
-
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import pcm.controller.Player;
 import pcm.controller.ProbabilityModel;
@@ -13,6 +11,9 @@ import pcm.controller.ProbabilityModelBasedOnPossBucketSum;
 import pcm.model.Action;
 import pcm.model.ActionRange;
 import pcm.util.TestPlayer;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class PossTest {
     final AtomicInteger randomResult = new AtomicInteger(0);
@@ -33,7 +34,7 @@ public class PossTest {
         assertEquals(10, actions.get(0).poss.intValue());
         assertEquals(20, actions.get(1).poss.intValue());
         assertEquals(30, actions.get(2).poss.intValue());
-        assertEquals(null, actions.get(3).poss);
+        assertNull(actions.get(3).poss);
 
         assertDecision(actions.get(0), actions, 0);
         assertDecision(actions.get(0), actions, 9);
@@ -58,11 +59,11 @@ public class PossTest {
         List<Action> actions = player.range(r);
 
         assertEquals(1, actions.size());
-        assertEquals(100, actions.get(0).poss.intValue());
-
-        assertDecision(actions.get(0), actions, 0);
-        assertDecision(actions.get(0), actions, 50);
-        assertDecision(actions.get(0), actions, 100);
+        Action first = actions.getFirst();
+        assertEquals(100, first.poss.intValue());
+        assertDecision(first, actions, 0);
+        assertDecision(first, actions, 50);
+        assertDecision(first, actions, 100);
     }
 
     @Test
@@ -103,10 +104,10 @@ public class PossTest {
         List<Action> actions = player.range(r);
 
         assertEquals(1, actions.size());
-        assertEquals(100, actions.get(0).poss.intValue());
-
-        assertDecision(actions.get(0), actions, 0);
-        assertDecision(actions.get(0), actions, 100);
+        Action first = actions.getFirst();
+        assertEquals(100, first.poss.intValue());
+        assertDecision(first, actions, 0);
+        assertDecision(first, actions, 100);
     }
 
     @Test

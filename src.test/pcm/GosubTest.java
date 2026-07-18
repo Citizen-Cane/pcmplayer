@@ -2,7 +2,7 @@ package pcm;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import pcm.model.ActionRange;
 import pcm.model.ScriptExecutionException;

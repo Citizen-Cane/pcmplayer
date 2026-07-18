@@ -1,17 +1,14 @@
 package pcm;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static pcm.state.persistence.ScriptState.SET;
 import static pcm.state.persistence.ScriptState.UNSET;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import pcm.controller.AllActionsSetException;
 import pcm.model.ScriptExecutionException;
@@ -45,7 +42,7 @@ public class MappedScriptStateTest {
         Chastity_Cage
     }
 
-    @Before
+    @BeforeEach
     public void before() throws ScriptParsingException, ValidationIssue, ScriptExecutionException, IOException {
         initPlayer();
         installMapping();
@@ -179,7 +176,7 @@ public class MappedScriptStateTest {
     }
 
     @Test
-    public void testThatSettimeOnMultiMappedTimeValuesAppliesToPeers()
+    public void testThatSetTimeOnMultiMappedTimeValuesAppliesToPeers()
             throws AllActionsSetException, ScriptExecutionException {
         assertThatUninitializedStateHasCorrectDefaultValues();
 

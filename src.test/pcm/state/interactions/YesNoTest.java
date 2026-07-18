@@ -1,11 +1,9 @@
 package pcm.state.interactions;
 
-import static org.junit.Assert.*;
-
 import java.io.IOException;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import pcm.controller.Player;
 import pcm.model.AbstractAction.Statement;
@@ -17,6 +15,8 @@ import pcm.state.visuals.SpokenMessage;
 import pcm.state.visuals.SpokenMessage.Entry;
 import pcm.util.TestPlayer;
 import teaselib.Answer;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class YesNoTest {
 
@@ -38,12 +38,14 @@ public class YesNoTest {
         List<Entry> entries = spokenMessage.entries();
         assertEquals(2, entries.size());
 
-        assertEquals("Foo.", entries.get(0).message.get(0).value);
-        assertTrue(entries.get(0).answer.isPresent());
-        assertEquals(Answer.no("No Foo"), entries.get(0).answer.get());
+        Entry first = entries.getFirst();
+        assertEquals("Foo.", first.message.get(0).value);
+        assertTrue(first.answer.isPresent());
+        assertEquals(Answer.no("No Foo"), first.answer.get());
 
-        assertEquals("Bar.", entries.get(1).message.get(0).value);
-        assertFalse(entries.get(1).answer.isPresent());
+        Entry second = entries.get(1);
+        assertEquals("Bar.", second.message.get(0).value);
+        assertFalse(second.answer.isPresent());
 
         testYesNo(action);
     }
@@ -65,19 +67,21 @@ public class YesNoTest {
     private static void testChat(List<Entry> entries) {
         assertEquals(2, entries.size());
 
-        assertEquals("Foo.", entries.get(0).message.get(0).value);
+        Entry first = entries.getFirst();
+        assertEquals("Foo.", first.message.get(0).value);
 
-        assertTrue(entries.get(0).answer.isPresent());
-        assertEquals(Answer.no("No Foo"), entries.get(0).answer.get());
+        assertTrue(first.answer.isPresent());
+        assertEquals(Answer.no("No Foo"), first.answer.get());
 
-        assertEquals("Bar.", entries.get(1).message.get(0).value);
+        Entry second = entries.get(1);
+        assertEquals("Bar.", second.message.get(0).value);
 
-        assertTrue(entries.get(1).answer.isPresent());
-        assertEquals(Answer.yes("Yes Bar"), entries.get(1).answer.get());
+        assertTrue(second.answer.isPresent());
+        assertEquals(Answer.yes("Yes Bar"), second.answer.get());
     }
 
     private static void testYesNo(Action action) {
-        assertTrue(action.interaction instanceof YesNo);
+        assertInstanceOf(YesNo.class, action.interaction);
         assertEquals("YesNo Yes Foo", action.getResponseText(Statement.YesText, null));
         assertEquals("YesNo No Bar", action.getResponseText(Statement.NoText, null));
     }

@@ -1,13 +1,8 @@
 package pcm;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import pcm.controller.Declarations;
 import pcm.model.ActionRange;
@@ -22,6 +17,8 @@ import pcm.state.conditions.StateCondition;
 import pcm.util.TestPlayer;
 import teaselib.Body;
 import teaselib.Posture;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ConditionRangeTestWithStateConditions {
 
@@ -102,7 +99,7 @@ public class ConditionRangeTestWithStateConditions {
         assertEquals(3, player.range(new ActionRange(1400, 1402)).size());
         player.state(Posture.CantKneel).apply();
         assertEquals(1, player.range(new ActionRange(1400, 1402)).size());
-        assertEquals(1401, player.range(new ActionRange(1400, 1402)).get(0).number);
+        assertEquals(1401, player.range(new ActionRange(1400, 1402)).getFirst().number);
     }
 
     @Test
@@ -124,7 +121,7 @@ public class ConditionRangeTestWithStateConditions {
         // -> condition ranges are removed until .shouldnot 28 is removed
         // As a result, 1401 is available
         assertEquals(1, player.range(new ActionRange(1400, 1402)).size());
-        assertEquals(1401, player.range(new ActionRange(1400, 1402)).get(0).number);
+        assertEquals(1401, player.range(new ActionRange(1400, 1402)).getFirst().number);
     }
 
     @Test
@@ -151,7 +148,7 @@ public class ConditionRangeTestWithStateConditions {
         TestPlayer player = TestPlayer.loadScript(getClass());
 
         assertEquals(1, player.range(new ActionRange(1400, 1402)).size());
-        assertEquals(1400, player.range(new ActionRange(1400, 1402)).get(0).number);
+        assertEquals(1400, player.range(new ActionRange(1400, 1402)).getFirst().number);
 
         player.state(Body.OnPenis).apply();
         assertEquals(3, player.range(new ActionRange(1400, 1402)).size());
@@ -171,6 +168,6 @@ public class ConditionRangeTestWithStateConditions {
 
         player.state(Body.OnPenis).remove();
         assertEquals(1, player.range(new ActionRange(1400, 1402)).size());
-        assertEquals(1400, player.range(new ActionRange(1400, 1402)).get(0).number);
+        assertEquals(1400, player.range(new ActionRange(1400, 1402)).getFirst().number);
     }
 }

@@ -1,13 +1,8 @@
 package pcm;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
 
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import pcm.controller.AllActionsSetException;
 import pcm.model.ActionRange;
 import pcm.model.ScriptExecutionException;
@@ -22,13 +17,15 @@ import teaselib.Toys;
 import teaselib.core.TeaseLib;
 import teaselib.core.util.QualifiedName;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 public class PersistencyTest {
 
     enum Body {
         Chastified
     }
 
-    @Test(expected = AllActionsSetException.class)
+    @Test
     public void testThatResetRangeUnsetsMappings()
             throws IOException, ScriptParsingException, ValidationIssue, ScriptExecutionException {
         TestPlayer player = new TestPlayer(getClass());
@@ -51,15 +48,19 @@ public class PersistencyTest {
 
         player.state.unset(100);
         player.state.set(101);
-        try {
-            // This throws since when returning from the subscript,
-            // action 365 has been set, and is thus cleared by .resetrange
-            player.play(new ActionRange(1000));
-        } catch (AllActionsSetException e) {
-            assertEquals(1, e.actions.size());
-            assertEquals(1001, e.actions.get(0).number);
-            throw e;
-        }
+        assertThrows(
+                AllActionsSetException.class,
+                ()-> {
+                    try {
+                        // This throws since when returning from the subscript,
+                        // action 365 has been set, and is thus cleared by .resetrange
+                        player.play(new ActionRange(1000));
+                    } catch (AllActionsSetException e) {
+                        assertEquals(1, e.actions.size());
+                        assertEquals(1001, e.actions.getFirst().number);
+                        throw e;
+                    }
+                });
     }
 
     @Test
@@ -102,9 +103,9 @@ public class PersistencyTest {
         assertTrue(player.state(Toys.Chastity_Device).applied());
 
         // Not persisted because not remembered
-        TeaseLib.PersistentString chastifiedState = player.teaseLib.getString(QualifiedName.of(TeaseLib.DefaultDomain,
+        TeaseLib.PersistentString chastisedState = player.teaseLib.getString(QualifiedName.of(TeaseLib.DefaultDomain,
                 "pcm.PersistencyTest.Body.Chastified", "state.duration"));
-        assertTrue(chastifiedState.available());
+        assertTrue(chastisedState.available());
 
         // TODO only if in save range -> resolves declaration as infinite
     }

@@ -1,12 +1,11 @@
 package pcm.model;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import teaselib.util.DurationFormat;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DurationTest {
     @Test

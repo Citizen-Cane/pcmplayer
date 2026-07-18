@@ -1,11 +1,8 @@
 package pcm;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import pcm.model.ActionRange;
 import pcm.model.ScriptExecutionException;
@@ -13,6 +10,9 @@ import pcm.model.ScriptParsingException;
 import pcm.model.ValidationIssue;
 import pcm.state.persistence.ScriptState;
 import pcm.util.TestPlayer;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class ConditionRangeTest {
 
@@ -69,7 +69,7 @@ public class ConditionRangeTest {
         assertEquals(3, player.range(new ActionRange(1400, 1402)).size());
         player.state.set(33);
         assertEquals(1, player.range(new ActionRange(1400, 1402)).size());
-        assertEquals(1401, player.range(new ActionRange(1400, 1402)).get(0).number);
+        assertEquals(1401, player.range(new ActionRange(1400, 1402)).getFirst().number);
     }
 
     @Test
@@ -90,7 +90,7 @@ public class ConditionRangeTest {
         // -> condition ranges are removed until .shouldnot 28 is removed
         // As a result, 1401 is available
         assertEquals(1, player.range(new ActionRange(1400, 1402)).size());
-        assertEquals(1401, player.range(new ActionRange(1400, 1402)).get(0).number);
+        assertEquals(1401, player.range(new ActionRange(1400, 1402)).getFirst().number);
     }
 
     @Test

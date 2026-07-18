@@ -1,10 +1,8 @@
 package pcm;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import pcm.controller.AllActionsSetException;
 import pcm.model.ScriptExecutionException;
@@ -12,6 +10,8 @@ import pcm.model.ScriptParsingException;
 import pcm.model.ValidationIssue;
 import pcm.state.persistence.ScriptState;
 import pcm.util.TestPlayer;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Citizen-Cane

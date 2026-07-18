@@ -1,11 +1,9 @@
 package pcm.state.commands;
 
-import static org.junit.Assert.*;
-
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import pcm.controller.Declarations;
 import pcm.controller.Player;
@@ -13,6 +11,8 @@ import pcm.state.StateCommandLineParameters;
 import pcm.util.TestPlayer;
 import teaselib.State;
 import teaselib.Toys;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class StateCommandTest {
     final Declarations declarations = new Declarations();
@@ -26,7 +26,7 @@ public class StateCommandTest {
         declarations.add("teaselib.Body", Declarations.STATE);
     }
 
-    @Before
+    @BeforeEach
     public void initPlayer() throws Exception {
         player = TestPlayer.loadScript(getClass());
     }
@@ -72,7 +72,7 @@ public class StateCommandTest {
 
         assertTrue(state.applied());
         assertFalse(state.expired());
-        assertTrue(state.duration().limit(TimeUnit.SECONDS) == Long.MAX_VALUE);
+        assertEquals(Long.MAX_VALUE, state.duration().limit(TimeUnit.SECONDS));
 
         new StateCommand(new StateCommandLineParameters(new String[] { "teaselib.Toys.Chastity_Device", "Remove" },
                 declarations)).execute(player.state);

@@ -1,10 +1,8 @@
 package pcm;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import pcm.controller.Player;
 import pcm.model.ActionRange;
@@ -18,6 +16,8 @@ import teaselib.Sexuality.Gender;
 import teaselib.Sexuality.Sex;
 import teaselib.core.TeaseLib;
 import teaselib.test.TestScript;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Citizen-Cane
@@ -61,11 +61,11 @@ public class ConditionalParsingTest {
         assertEquals(ScriptState.SET, player.state.get(r.start));
         assertEquals(9999, player.action.number);
 
-        assertEquals("#if not parsed -", ScriptState.SET, player.state.get(1));
-        assertEquals("#elseif parsed -", ScriptState.UNSET, player.state.get(2));
-        assertEquals("#else parsed -", ScriptState.UNSET, player.state.get(3));
+        assertEquals(ScriptState.SET, player.state.get(1), "#if not parsed -");
+        assertEquals(ScriptState.UNSET, player.state.get(2), "#elseif parsed -");
+        assertEquals(ScriptState.UNSET, player.state.get(3), "#else parsed -");
 
-        assertEquals("after #else not parsed -", ScriptState.SET, player.state.get(4));
+        assertEquals(ScriptState.SET, player.state.get(4), "after #else not parsed -");
         assertEquals(9999, player.action.number);
     }
 
@@ -78,11 +78,11 @@ public class ConditionalParsingTest {
         assertEquals(ScriptState.SET, player.state.get(r.start));
         assertEquals(9999, player.action.number);
 
-        assertEquals("#if parsed -", ScriptState.UNSET, player.state.get(1));
-        assertEquals("#elseif parsed -", ScriptState.UNSET, player.state.get(2));
-        assertEquals("#else not parsed -", ScriptState.SET, player.state.get(3));
+        assertEquals(ScriptState.UNSET, player.state.get(1), "#if parsed -");
+        assertEquals(ScriptState.UNSET, player.state.get(2), "#elseif parsed -");
+        assertEquals(ScriptState.SET, player.state.get(3), "#else not parsed -");
 
-        assertEquals("after #else not parsed -", ScriptState.SET, player.state.get(4));
+        assertEquals(ScriptState.SET, player.state.get(4), "after #else not parsed -");
         assertEquals(9999, player.action.number);
     }
 
@@ -93,11 +93,11 @@ public class ConditionalParsingTest {
         player.play(r, r);
 
         assertEquals(ScriptState.SET, player.state.get(r.start));
-        assertEquals("#if not parsed -", ScriptState.SET, player.state.get(1));
-        assertEquals("#elseif parsed -", ScriptState.UNSET, player.state.get(2));
-        assertEquals("#else parsed -", ScriptState.UNSET, player.state.get(3));
+        assertEquals(ScriptState.SET, player.state.get(1), "#if not parsed -");
+        assertEquals(ScriptState.UNSET, player.state.get(2), "#elseif parsed -");
+        assertEquals(ScriptState.UNSET, player.state.get(3), "#else parsed -");
 
-        assertEquals("after #else not parsed -", ScriptState.SET, player.state.get(4));
+        assertEquals(ScriptState.SET, player.state.get(4), "after #else not parsed -");
         assertEquals(9999, player.action.number);
     }
 
@@ -110,11 +110,11 @@ public class ConditionalParsingTest {
         assertEquals(ScriptState.SET, player.state.get(r.start));
         assertEquals(9999, player.action.number);
 
-        assertEquals("#if parsed -", ScriptState.UNSET, player.state.get(1));
-        assertEquals("#elseif not parsed -", ScriptState.SET, player.state.get(2));
-        assertEquals("#else parsed -", ScriptState.UNSET, player.state.get(3));
+        assertEquals(ScriptState.UNSET, player.state.get(1), "#if parsed -");
+        assertEquals(ScriptState.SET, player.state.get(2), "#elseif not parsed -");
+        assertEquals(ScriptState.UNSET, player.state.get(3), "#else parsed -");
 
-        assertEquals("after #else not parsed -", ScriptState.SET, player.state.get(4));
+        assertEquals(ScriptState.SET, player.state.get(4), "after #else not parsed -");
         assertEquals(9999, player.action.number);
     }
 
@@ -127,11 +127,11 @@ public class ConditionalParsingTest {
         assertEquals(ScriptState.SET, player.state.get(r.start));
         assertEquals(9999, player.action.number);
 
-        assertEquals("#if parsed -", ScriptState.UNSET, player.state.get(1));
-        assertEquals("#elseif parsed -", ScriptState.UNSET, player.state.get(2));
-        assertEquals("#else not parsed -", ScriptState.SET, player.state.get(3));
+        assertEquals(ScriptState.UNSET, player.state.get(1), "#if parsed -");
+        assertEquals(ScriptState.UNSET, player.state.get(2), "#elseif parsed -");
+        assertEquals(ScriptState.SET, player.state.get(3), "#else not parsed -");
 
-        assertEquals("after #else not parsed -", ScriptState.SET, player.state.get(4));
+        assertEquals(ScriptState.SET, player.state.get(4), "after #else not parsed -");
         assertEquals(9999, player.action.number);
     }
 
@@ -147,11 +147,11 @@ public class ConditionalParsingTest {
         assertEquals(ScriptState.SET, player.state.get(r.start));
         assertEquals(9999, player.action.number);
 
-        assertEquals("#if not parsed -", ScriptState.SET, player.state.get(1));
-        assertEquals("#elseif parsed -", ScriptState.UNSET, player.state.get(2));
-        assertEquals("#else parsed -", ScriptState.UNSET, player.state.get(3));
+        assertEquals(ScriptState.SET, player.state.get(1), "#if not parsed -");
+        assertEquals(ScriptState.UNSET, player.state.get(2), "#elseif parsed -");
+        assertEquals(ScriptState.UNSET, player.state.get(3), "#else parsed -");
 
-        assertEquals("after #else not parsed -", ScriptState.SET, player.state.get(4));
+        assertEquals(ScriptState.SET, player.state.get(4), "after #else not parsed -");
         assertEquals(9999, player.action.number);
     }
 
@@ -164,11 +164,11 @@ public class ConditionalParsingTest {
         assertEquals(ScriptState.SET, player.state.get(r.start));
         assertEquals(9999, player.action.number);
 
-        assertEquals("#if parsed -", ScriptState.UNSET, player.state.get(1));
-        assertEquals("#elseif parsed -", ScriptState.UNSET, player.state.get(2));
-        assertEquals("#else not parsed -", ScriptState.SET, player.state.get(3));
+        assertEquals(ScriptState.UNSET, player.state.get(1), "#if parsed -");
+        assertEquals(ScriptState.UNSET, player.state.get(2), "#elseif parsed -");
+        assertEquals(ScriptState.SET, player.state.get(3), "#else not parsed -");
 
-        assertEquals("after #else not parsed -", ScriptState.SET, player.state.get(4));
+        assertEquals(ScriptState.SET, player.state.get(4), "after #else not parsed -");
         assertEquals(9999, player.action.number);
     }
 
@@ -179,12 +179,12 @@ public class ConditionalParsingTest {
         player.play(r, r);
 
         assertEquals(ScriptState.SET, player.state.get(r.start));
-        assertEquals("#if not parsed -", ScriptState.SET, player.state.get(1));
-        assertEquals("#elseif parsed -", ScriptState.UNSET, player.state.get(2));
-        assertEquals("#else parsed -", ScriptState.UNSET, player.state.get(3));
+        assertEquals(ScriptState.SET, player.state.get(1), "#if not parsed -");
+        assertEquals(ScriptState.UNSET, player.state.get(2), "#elseif parsed -");
+        assertEquals(ScriptState.UNSET, player.state.get(3), "#else parsed -");
         assertEquals(9999, player.action.number);
 
-        assertEquals("after #else not parsed -", ScriptState.SET, player.state.get(4));
+        assertEquals(ScriptState.SET, player.state.get(4), "after #else not parsed -");
         assertEquals(9999, player.action.number);
     }
 
@@ -197,11 +197,11 @@ public class ConditionalParsingTest {
         assertEquals(ScriptState.SET, player.state.get(r.start));
         assertEquals(9999, player.action.number);
 
-        assertEquals("#if parsed -", ScriptState.UNSET, player.state.get(1));
-        assertEquals("#elseif not parsed -", ScriptState.SET, player.state.get(2));
-        assertEquals("#else parsed -", ScriptState.UNSET, player.state.get(3));
+        assertEquals(ScriptState.UNSET, player.state.get(1), "#if parsed -");
+        assertEquals(ScriptState.SET, player.state.get(2), "#elseif not parsed -");
+        assertEquals(ScriptState.UNSET, player.state.get(3), "#else parsed -");
 
-        assertEquals("after #else not parsed -", ScriptState.SET, player.state.get(4));
+        assertEquals(ScriptState.SET, player.state.get(4), "after #else not parsed -");
         assertEquals(9999, player.action.number);
     }
 
@@ -214,11 +214,11 @@ public class ConditionalParsingTest {
         assertEquals(ScriptState.SET, player.state.get(r.start));
         assertEquals(9999, player.action.number);
 
-        assertEquals("#if parsed -", ScriptState.UNSET, player.state.get(1));
-        assertEquals("#elseif parsed -", ScriptState.UNSET, player.state.get(2));
-        assertEquals("#else not parsed -", ScriptState.SET, player.state.get(3));
+        assertEquals(ScriptState.UNSET, player.state.get(1), "#if parsed -");
+        assertEquals(ScriptState.UNSET, player.state.get(2), "#elseif parsed -");
+        assertEquals(ScriptState.SET, player.state.get(3), "#else not parsed -");
 
-        assertEquals("after #else not parsed -", ScriptState.SET, player.state.get(4));
+        assertEquals(ScriptState.SET, player.state.get(4), "after #else not parsed -");
         assertEquals(9999, player.action.number);
     }
 }

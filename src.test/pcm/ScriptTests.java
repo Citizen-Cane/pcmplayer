@@ -3,13 +3,9 @@
  */
 package pcm;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import pcm.controller.AllActionsSetException;
 import pcm.controller.Player;
@@ -19,6 +15,8 @@ import pcm.model.ScriptParsingException;
 import pcm.model.ValidationIssue;
 import pcm.state.persistence.ScriptState;
 import pcm.util.TestPlayer;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Citizen-Cane
@@ -51,7 +49,7 @@ public class ScriptTests {
         assertEquals(9999, player.action.number);
         try {
             player.playOnly(r);
-            assertTrue("Unexpected action available", false);
+            fail("Unexpected action available");
         } catch (AllActionsSetException e) {
             assertEquals(ScriptState.SET, player.state.get(9));
             assertEquals(ScriptState.SET, player.state.get(1000));
@@ -74,7 +72,7 @@ public class ScriptTests {
         assertEquals(-0, player.state.get(1011).intValue());
         assertEquals(ScriptState.UNSET, player.state.get(1011));
         player.playOnly(r);
-        assertTrue(player.state.get(1011) == ScriptState.SET);
+        assertSame(ScriptState.SET, player.state.get(1011));
     }
 
     @Test
@@ -94,7 +92,7 @@ public class ScriptTests {
     }
 
     @Test
-    public void testShouldnotWithDefaultConditionRange() throws ScriptExecutionException {
+    public void testShouldNotWithDefaultConditionRange() throws ScriptExecutionException {
         ActionRange r = new ActionRange(1030, 1030);
         assertEquals(ScriptState.UNSET, player.state.get(1030));
         player.playOnly(r);

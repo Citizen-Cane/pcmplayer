@@ -1,14 +1,10 @@
 package pcm.state.commands;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import pcm.controller.Declarations;
 import pcm.controller.Player;
@@ -22,12 +18,14 @@ import teaselib.State;
 import teaselib.Toys;
 import teaselib.util.Item;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 public class ItemCommandTest {
     final Declarations declarations = new Declarations();
 
     Player player;
 
-    @Before
+    @BeforeEach
     public void initPlayer() throws ScriptParsingException, ScriptExecutionException, ValidationIssue, IOException {
         player = TestPlayer.loadScript(StateCommandTest.class, "ItemCommandTest");
     }
@@ -83,19 +81,22 @@ public class ItemCommandTest {
         State somethingOnPenisState = player.state(Body.OnPenis);
 
         new ItemCommand(new StateCommandLineParameters(
-                new String[] { "teaselib.Toys.Chastity_Device", "Apply", "over", "inf" }, declarations))
-                        .execute(player.state);
+                new String[] { "teaselib.Toys.Chastity_Device", "Apply", "over", "inf" },
+                declarations))
+                .execute(player.state);
 
         Item chastityDeviceItem = player.item(Toys.Chastity_Device);
         assertTrue(chastityDeviceItem.applied());
         assertFalse(chastityDeviceItem.expired());
-        assertTrue(player.state(Toys.Chastity_Device).duration().limit(TimeUnit.SECONDS) == Long.MAX_VALUE);
+        assertEquals(Long.MAX_VALUE, player.state(Toys.Chastity_Device).duration().limit(TimeUnit.SECONDS));
 
         assertTrue(somethingOnPenisState.applied());
         assertFalse(somethingOnPenisState.expired());
 
-        new ItemCommand(new StateCommandLineParameters(new String[] { "teaselib.Toys.Chastity_Device", "Remove" },
-                declarations)).execute(player.state);
+        new ItemCommand(new StateCommandLineParameters(
+                new String[] { "teaselib.Toys.Chastity_Device", "Remove" },
+                declarations))
+                .execute(player.state);
 
         assertFalse(chastityDeviceItem.applied());
         assertFalse(chastityDeviceItem.expired()); // Item never expires

@@ -3,16 +3,13 @@
  */
 package pcm;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import pcm.controller.AllActionsSetException;
 import pcm.model.ActionRange;
 import pcm.model.ScriptExecutionException;
 import pcm.model.ScriptParsingException;
@@ -22,6 +19,8 @@ import pcm.state.persistence.ScriptState;
 import pcm.util.TestPlayer;
 import teaselib.Duration;
 import teaselib.util.DurationFormat;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Citizen-Cane
@@ -83,10 +82,10 @@ public class ScriptTimeTests {
         player.debugger.advanceTime(2, TimeUnit.SECONDS);
 
         assertTrue(containsAction(1001));
-        assertTrue(!containsAction(1002));
+        assertFalse(containsAction(1002));
         assertTrue(containsAction(1003));
-        assertTrue(!containsAction(1004));
-        assertTrue(!containsAction(1005));
+        assertFalse(containsAction(1004));
+        assertFalse(containsAction(1005));
     }
 
     @Test
@@ -118,16 +117,10 @@ public class ScriptTimeTests {
         assertTrue(containsAction(1023));
     }
 
-    @Test(expected = ScriptExecutionException.class)
+    @Test
     public void testThatInfinityMinusIsAnIllegalArgumentToSetTime() throws ScriptExecutionException {
         ActionRange r = new ActionRange(1025);
-        player.action = player.getAction(r);
-        player.playFrom(r);
-        assertEquals(ScriptState.SET, player.state.get(1025));
-        assertTrue(containsAction(1026));
-        assertTrue(containsAction(1027));
-        assertFalse(containsAction(1028));
-        assertFalse(containsAction(1029));
+        assertThrows(AllActionsSetException.class, ()->player.getAction(r));
     }
 
     @Test

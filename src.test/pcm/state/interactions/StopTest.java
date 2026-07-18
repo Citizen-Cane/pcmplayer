@@ -1,10 +1,8 @@
 package pcm.state.interactions;
 
-import static org.junit.Assert.*;
-
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import pcm.controller.LambdaTrigger;
 import pcm.model.Action;
@@ -14,6 +12,8 @@ import pcm.model.ValidationIssue;
 import pcm.state.persistence.ScriptState;
 import pcm.util.TestPlayer;
 import teaselib.core.Debugger.Response;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Citizen-Cane
@@ -34,8 +34,8 @@ public class StopTest {
         player.debugger.addResponse("Stop!", Response.Ignore);
         player.play(action.number);
         assertEquals(ScriptState.SET, player.state.get(1001));
-        assertEquals("Execution of action that contains the delay x y STOP statement", ScriptState.SET,
-                player.state.get(8));
+        assertEquals(ScriptState.SET, player.state.get(8),
+                "Execution of action that contains the delay x y STOP statement");
         assertEquals(ScriptState.SET, player.state.get(9992));
     }
 
@@ -46,8 +46,8 @@ public class StopTest {
         player.debugger.addResponse("Stop!", Response.Choose);
         player.play(action.number);
         assertEquals(ScriptState.SET, player.state.get(1001));
-        assertEquals("Execution of action that contains the delay x y STOP statement", ScriptState.SET,
-                player.state.get(8));
+        assertEquals(ScriptState.SET, player.state.get(8),
+                "Execution of action that contains the delay x y STOP statement");
         assertEquals(ScriptState.SET, player.state.get(9990));
     }
 

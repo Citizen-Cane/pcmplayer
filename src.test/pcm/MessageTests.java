@@ -3,16 +3,16 @@
  */
 package pcm;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import pcm.model.Action;
 import pcm.state.visuals.SpokenMessage;
 import pcm.util.TestPlayer;
 import teaselib.Message;
 import teaselib.Mood;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Citizen-Cane
@@ -22,14 +22,14 @@ public class MessageTests {
 
     TestPlayer player;
 
-    @Before
+    @BeforeEach
     public void setUpBefore() throws Exception {
         player = TestPlayer.loadScript(MessageTests.class, "MessageTests");
     }
 
     private Message getMessageOfAction(int n) {
         Action action = player.script.actions.get(n);
-        return ((SpokenMessage) action.message).getMessages().get(0);
+        return ((SpokenMessage) action.message).getMessages().getFirst();
     }
 
     @Test

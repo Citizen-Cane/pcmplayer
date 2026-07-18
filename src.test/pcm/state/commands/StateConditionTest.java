@@ -1,12 +1,9 @@
 package pcm.state.commands;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import pcm.controller.Declarations;
 import pcm.controller.Player;
@@ -20,13 +17,16 @@ import teaselib.State;
 import teaselib.Toys;
 import teaselib.core.Debugger;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class StateConditionTest {
     final Declarations declarations = new Declarations();
 
     Player player;
     ScriptState scriptState;
 
-    @Before
+    @BeforeEach
     public void initPlayer() throws Exception {
         player = TestPlayer.loadScript(StateCommandTest.class, "ItemCommandTest");
         scriptState = player.state;
