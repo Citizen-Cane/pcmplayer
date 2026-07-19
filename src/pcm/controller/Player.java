@@ -1,10 +1,6 @@
 package pcm.controller;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -102,17 +98,19 @@ public class Player extends TeaseScript implements MainScript {
      */
     public static final Action EndAction = new Action(0) {
         @Override
-        public void execute(ScriptState state) throws ScriptExecutionException {
+        public void execute(ScriptState state)  {
             throw new UnsupportedOperationException();
         }
     };
 
     public static void recordVoices(Actor actor, File path, String projectName, String[] scriptNames, String[] assets)
             throws IOException, ValidationIssue, ScriptParsingException, InterruptedException, ExecutionException {
+        if (!path.exists()) throw new FileNotFoundException(path.toString());
+        if (TextToSpeechRecorder.isUpToDate(path, projectName)) return;
         ResourceLoader resources = new ResourceLoader(path, projectName);
         resources.addAssets(assets);
-        try (TextToSpeechRecorder recorder = new TextToSpeechRecorder(path, projectName, resources,
-                new TextVariables())) {
+        try (TextToSpeechRecorder recorder
+                = new TextToSpeechRecorder(path, projectName, resources, new TextVariables())) {
             Symbols dominantSubmissiveRelations = Symbols.getDominantSubmissiveRelations();
             for (Entry<String, String> entry : dominantSubmissiveRelations.entrySet()) {
                 Symbols dominantSubmissiveRelation = new Symbols();
@@ -198,7 +196,7 @@ public class Player extends TeaseScript implements MainScript {
             if (debugStream != null) {
                 debugOutput = true;
                 validateScripts = Boolean.parseBoolean(teaseLib.config.get(Config.Debug.StopOnAssetNotFound));
-                try (var debugReader = new BufferedReader(new InputStreamReader(debugStream));) {
+                try (var debugReader = new BufferedReader(new InputStreamReader(debugStream))) {
                     String line;
                     while ((line = debugReader.readLine()) != null) {
                         line = line.trim();
@@ -404,8 +402,7 @@ public class Player extends TeaseScript implements MainScript {
             if (callingScript != script) {
                 for (Action a : callingScript.actions.getAll()) {
                     for (ActionRange coverage : a.interaction.coverage()) {
-                        if (coverage instanceof LoadSbdRange) {
-                            LoadSbdRange loadSbdRange = (LoadSbdRange) coverage;
+                        if (coverage instanceof LoadSbdRange loadSbdRange) {
                             if (loadSbdRange.script.equalsIgnoreCase(script.name)) {
                                 uncovered.removeAll(script.actions.getAll(loadSbdRange));
                             }
@@ -497,8 +494,6 @@ public class Player extends TeaseScript implements MainScript {
      * 
      * @param playRange
      *            The range to play.
-     * @throws AllActionsSetException
-     * @throws ScriptExecutionException
      */
     public void playRange(ActionRange playRange) throws ScriptExecutionException {
         ActionRange previous = this.playRange;
@@ -518,22 +513,20 @@ public class Player extends TeaseScript implements MainScript {
                     // running in the same player instance as the main script,
                     // we have to check the play range in order to find out if the
                     // onClose handler should be called.
-                    // It's kind of a hack, and leaves a small loop hole
+                    // It's kind of a hack, and leaves a small loophole
                     // (placing the onClose range inside the play range),
                     // but saves us from creating a second player instance
                     boolean callOnCloseHandler = script.onClose != null //
                             && playRange.contains(script.onClose)//
                             && scriptInterruptedReason.get() != null;
                     if (callOnCloseHandler) {
-                        Thread.interrupted();
+                        boolean interrupted = Thread.interrupted();
                         scriptInterruptedReason.set(null);
                         endAll();
                         action = getAction(script.onClose);
                     } else {
                         throw e;
                     }
-                } catch (ScriptExecutionException e) {
-                    throw e;
                 } catch (RuntimeException e) {
                     Throwable cause = e.getCause();
                     if (cause instanceof ScriptExecutionException) {
@@ -607,7 +600,6 @@ public class Player extends TeaseScript implements MainScript {
     /**
      * Build a list of all executable actions, after evaluating conditions.
      * 
-     * @param range
      * @return List of available actions.
      */
     public List<Action> range(ActionRange range) {
@@ -617,8 +609,6 @@ public class Player extends TeaseScript implements MainScript {
     /**
      * Build a list of all executable actions, after evaluating conditions.
      * 
-     * @param script
-     * @param range
      * @return List of available actions.
      */
     private List<Action> range(Script script, ActionRange range) {
@@ -683,8 +673,7 @@ public class Player extends TeaseScript implements MainScript {
             for (Condition condition : action.conditions) {
                 if (!ignoreOptionalCondition(condition, conditionRanges) && !condition.isTrueFor(state)) {
                     if (logger.isInfoEnabled())
-                        logger.info("Action " + action.number + ": " + condition.getClass().getSimpleName() + " "
-                                + condition.toString());
+                        logger.info("Action {}: {} {}", action.number, condition.getClass().getSimpleName(), condition);
                     return false;
                 }
             }
@@ -709,13 +698,12 @@ public class Player extends TeaseScript implements MainScript {
      * 
      * @param actions
      *            A list of executable actions, sorted out by getActions(...)
-     * @return
      */
     public Action chooseAction(List<Action> actions) {
         if (actions.isEmpty()) {
             return null;
         } else if (actions.size() == 1) {
-            Action chosenAction = actions.get(0);
+            Action chosenAction = actions.getFirst();
             logger.info("Action {}", chosenAction.number);
             return chosenAction;
         } else {
@@ -745,7 +733,7 @@ public class Player extends TeaseScript implements MainScript {
     private static void testResources(Script script, Action action, ResourceLoader resourceLoader,
             List<ValidationIssue> validationIssues) {
         for (String resource : action.validateResources()) {
-            InputStream stream = null;
+            InputStream stream;
             try {
                 stream = resourceLoader.get(resource);
                 if (stream != null) {
